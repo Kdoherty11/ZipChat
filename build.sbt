@@ -1,4 +1,4 @@
-name := "ZipChat"
+name := """ZipChat"""
 
 version := "1.0-SNAPSHOT"
 
