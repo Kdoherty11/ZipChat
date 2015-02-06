@@ -14,7 +14,7 @@ public class Room extends Model {
 
     @Constraints.Required
     public String name;
-    
+
     public Room(String name) {
         this.name = name;
     }

@@ -11,3 +11,4 @@ GET     /foo                        controllers.Application.index()
 
 POST /rooms                         controllers.Application.createRoom()
 GET  /rooms                         controllers.Application.getRooms()
+GET  /chat                          controllers.Application.chat()
