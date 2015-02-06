@@ -33,7 +33,7 @@ public class Application extends Controller {
                 System.out.println("Socket received userId: " + userId + " and roomId: " + roomId);
 
                 in.onMessage(json -> System.out.println(json));
-                
+
                 in.onClose(() -> System.out.println("Closed"));
             }
 
