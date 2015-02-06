@@ -29,22 +29,19 @@ public class Application extends Controller {
     public static WebSocket<JsonNode> chat() {
         return new WebSocket<JsonNode>() {
             public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-//                in.onMessage(new F.Callback<JsonNode>() {
-//                    @Override
-//                    public void invoke(JsonNode s) throws Throwable {
-//                        System.out.println(s);
-//                    }
-//                });
+                in.onMessage(new F.Callback<JsonNode>() {
+                    @Override
+                    public void invoke(JsonNode s) throws Throwable {
+                        System.out.println(s);
+                    }
+                });
 
-                in.onMessage((JsonNode s)->System.out.println(s));
-                in.onClose(()->System.out.println("Closed"));
-
-//                in.onClose(new F.Callback0() {
-//                    @Override
-//                    public void invoke() throws Throwable {
-//                        System.out.println("Closed");
-//                    }
-//                });
+                in.onClose(new F.Callback0() {
+                    @Override
+                    public void invoke() throws Throwable {
+                        System.out.println("Closed");
+                    }
+                });
             }
 
         };
