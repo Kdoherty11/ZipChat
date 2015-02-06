@@ -26,22 +26,15 @@ public class Application extends Controller {
         return ok(index.render("Your new application is ready."));
     }
 
-    public static WebSocket<JsonNode> chat() {
+    public static WebSocket<JsonNode> chat(final String userId, final String roomId) {
         return new WebSocket<JsonNode>() {
             public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-                in.onMessage(new F.Callback<JsonNode>() {
-                    @Override
-                    public void invoke(JsonNode s) throws Throwable {
-                        System.out.println(s);
-                    }
-                });
 
-                in.onClose(new F.Callback0() {
-                    @Override
-                    public void invoke() throws Throwable {
-                        System.out.println("Closed");
-                    }
-                });
+                System.out.println("Socket received userId: " + userId + " and roomId: " + roomId);
+
+                in.onMessage(s -> System.out.println(s));
+
+                in.onClose(() -> System.out.println("Closed"));
             }
 
         };
