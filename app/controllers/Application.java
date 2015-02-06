@@ -32,21 +32,9 @@ public class Application extends Controller {
 
                 System.out.println("Socket received userId: " + userId + " and roomId: " + roomId);
 
-                in.onMessage(new F.Callback<JsonNode>() {
-                    @Override
-                    public void invoke(JsonNode s) throws Throwable {
-                        System.out.println(s);
-                    }
-                });
-
-
-
-                in.onClose(new F.Callback0() {
-                    @Override
-                    public void invoke() throws Throwable {
-                        System.out.println("Closed");
-                    }
-                });
+                in.onMessage(json -> System.out.println(json));
+                
+                in.onClose(() -> System.out.println("Closed"));
             }
 
         };
