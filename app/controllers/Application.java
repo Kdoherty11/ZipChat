@@ -26,12 +26,12 @@ public class Application extends Controller {
         return ok(index.render("Your new application is ready."));
     }
 
-    public static WebSocket<String> chat() {
-        return new WebSocket<String>() {
-            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
-                in.onMessage(new F.Callback<String>() {
+    public static WebSocket<JsonNode> chat() {
+        return new WebSocket<JsonNode>() {
+            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
+                in.onMessage(new F.Callback<JsonNode>() {
                     @Override
-                    public void invoke(String s) throws Throwable {
+                    public void invoke(JsonNode s) throws Throwable {
                         System.out.println(s);
                     }
                 });
