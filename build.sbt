@@ -8,11 +8,14 @@ lazy val root = (project in file(".")).enablePlugins(PlayJava)
 
 scalaVersion := "2.11.1"
 
+
 libraryDependencies ++= Seq(
   javaJdbc,
   javaEbean,
   cache,
-  javaWs)
+  javaWs,
+  "redis.clients" % "jedis" % "2.6.0"
+)
 
 resolvers ++= Seq(
   "pk11 repo" at "http://pk11-scratch.googlecode.com/svn/trunk"

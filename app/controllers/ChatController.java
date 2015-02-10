@@ -35,7 +35,7 @@ public class ChatController {
         in.onMessage(str -> {
             try {
                 Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                System.out.println("Jeddis " + j);
+                System.out.println("Jeddis success " + j);
             } catch (Exception e ){
                 System.out.println(e);
             }
