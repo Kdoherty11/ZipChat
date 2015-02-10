@@ -1,24 +1,23 @@
 package controllers;
 
-import akka.actor.ActorRef;
-import akka.actor.Cancellable;
-import akka.actor.Props;
+
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import play.*;
-import play.data.DynamicForm;
-import play.data.Form;
-import play.libs.Akka;
-import play.libs.F;
-import play.mvc.*;
+import com.typesafe.plugin.RedisPlugin;
+import javafx.util.Callback;
 import models.Room;
+import play.data.Form;
 import play.db.ebean.Model;
+import play.libs.F;
+import play.mvc.Controller;
+import play.mvc.Result;
+import play.mvc.WebSocket;
+import redis.clients.jedis.Jedis;
+import views.html.index;
+
+
 import java.util.List;
 
 import static play.libs.Json.toJson;
-
-import scala.concurrent.duration.Duration;
-import views.html.*;
 
 public class Application extends Controller {
 
@@ -26,15 +25,17 @@ public class Application extends Controller {
         return ok(index.render("Your new application is ready."));
     }
 
-    public static WebSocket<JsonNode> chat(final String userId, final String roomId) {
-        return new WebSocket<JsonNode>() {
-            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
+    public static WebSocket<String> chat() {
+        return new WebSocket<String>() {
+            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
 
-                System.out.println("Socket received userId: " + userId + " and roomId: " + roomId);
+                System.out.println("ready");
+                ChatController.join("test", in, out);
 
-                in.onMessage(json -> System.out.println(json));
-
-                in.onClose(() -> System.out.println("Closed"));
+                // When the socket is closed.
+                in.onClose(() -> {
+                    System.out.println("quit");
+                });
             }
 
         };

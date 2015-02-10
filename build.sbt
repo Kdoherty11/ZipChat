@@ -10,8 +10,12 @@ libraryDependencies ++= Seq(
   javaJdbc,
   javaEbean,
   cache,
-  javaWs
+  javaWs)
+
+resolvers ++= Seq(
+  "pk11 repo" at "http://pk11-scratch.googlecode.com/svn/trunk"
 )
 
 libraryDependencies += "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
 
+libraryDependencies += "com.typesafe.play.plugins" %% "play-plugins-redis" % "2.3.1"
