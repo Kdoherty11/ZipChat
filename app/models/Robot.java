@@ -19,6 +19,7 @@ public class Robot {
         WebSocket.Out<JsonNode> robotChannel = new WebSocket.Out<JsonNode>() {
 
             public void write(JsonNode frame) {
+                Logger.debug("robot write");
                 Logger.of("robot").info(Json.stringify(frame));
             }
 
@@ -28,6 +29,7 @@ public class Robot {
 
         // Join the room
         chatRoom.tell(new ChatRoom.Join("Robot", robotChannel), null);
+        Logger.debug("Robot joined");
 
         // Make the robot talk every 30 seconds
         Akka.system().scheduler().schedule(

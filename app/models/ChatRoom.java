@@ -7,9 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
+import play.Logger;
 import play.libs.Akka;
-import play.libs.F.Callback;
-import play.libs.F.Callback0;
 import play.libs.Json;
 import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
@@ -38,11 +37,9 @@ public class ChatRoom extends UntypedActor {
         //subscribe to the message channel
         Akka.system().scheduler().scheduleOnce(
                 Duration.create(10, TimeUnit.MILLISECONDS),
-                new Runnable() {
-                    public void run() {
-                        Jedis jedis = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                        jedis.subscribe(new MyListener(), CHANNEL);
-                    }
+                () -> {
+                    Jedis jedis = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                    jedis.subscribe(new MyListener(), CHANNEL);
                 },
                 Akka.system().dispatcher()
         );
@@ -59,30 +56,24 @@ public class ChatRoom extends UntypedActor {
         if("OK".equals(result)) {
 
             // For each event received on the socket,
-            in.onMessage(new Callback<JsonNode>() {
-                public void invoke(JsonNode event) {
+            in.onMessage(event -> {
 
-                    Talk talk = new Talk(username, event.get("text").asText());
+                Talk talk = new Talk(username, event.get("text").asText());
 
-                    Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                    try {
-                        //All messages are pushed through the pub/sub channel
-                        j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(talk)));
-                    } finally {
-                        play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
-                    }
-
+                Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                try {
+                    //All messages are pushed through the pub/sub channel
+                    j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(talk)));
+                } finally {
+                    play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                 }
+
             });
 
             // When the socket is closed.
-            in.onClose(new Callback0() {
-                public void invoke() {
-
-                    // Send a Quit message to the room.
-                    defaultRoom.tell(new Quit(username), null);
-
-                }
+            in.onClose(() -> {
+                // Send a Quit message to the room.
+                defaultRoom.tell(new Quit(username), null);
             });
 
         } else {
@@ -103,7 +94,7 @@ public class ChatRoom extends UntypedActor {
     }
 
     // Users connected to this node
-    Map<String, WebSocket.Out<JsonNode>> members = new HashMap<String, WebSocket.Out<JsonNode>>();
+    Map<String, WebSocket.Out<JsonNode>> members = new HashMap<>();
 
     public void onReceive(Object message) throws Exception {
 
@@ -268,6 +259,7 @@ public class ChatRoom extends UntypedActor {
         public void onMessage(String channel, String messageBody) {
             //Process messages from the pub/sub channel
             JsonNode parsedMessage = Json.parse(messageBody);
+            Logger.debug("MyListener onMessage: " + parsedMessage);
             Object message = null;
             String messageType = parsedMessage.get("type").asText();
             if("talk".equals(messageType)) {
