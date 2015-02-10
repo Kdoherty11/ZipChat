@@ -1,8 +1,10 @@
 package controllers;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.typesafe.plugin.RedisPlugin;
-import models.Room;
+import models.ChatRoom;
+import models.ChatRoomModel;
 import play.Logger;
 import play.data.Form;
 import play.db.ebean.Model;
@@ -22,22 +24,22 @@ public class Application extends Controller {
         return ok(index.render("Your new application is ready."));
     }
 
-    public static WebSocket<String> chat() {
+    /**
+     * Handle the chat websocket.
+     */
+    public static WebSocket<JsonNode> chat(final String username) {
+        return new WebSocket<JsonNode>() {
 
-        System.out.println("Chat endpoint");
+            // Called when the Websocket Handshake is done.
+            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out){
 
-        return new WebSocket<String>() {
-            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
-
-                System.out.println("ready");
-                ChatController.join("test", in, out);
-
-                in.onMessage(json -> System.out.println(json));
-
-                // When the socket is closed.
-                in.onClose(() -> System.out.println("quit"));
+                // Join the chat room.
+                try {
+                    ChatRoom.join(username, in, out);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
-
         };
     }
 
@@ -65,18 +67,18 @@ public class Application extends Controller {
     }
 
     public static Result createRoom() {
-        Form<Room> roomForm = Form.form(Room.class).bindFromRequest();
+        Form<ChatRoomModel> roomForm = Form.form(ChatRoomModel.class).bindFromRequest();
         if (roomForm.hasErrors()) {
             return badRequest(roomForm.errorsAsJson());
         } else {
-            Room room = roomForm.get();
-            room.save();
-            return ok(toJson(room));
+            ChatRoomModel chatRoom = roomForm.get();
+            chatRoom.save();
+            return ok(toJson(chatRoom));
         }
     }
 
     public static Result getRooms() {
-        List<Room> tasks = new Model.Finder(String.class, Room.class).all();
+        List<ChatRoom> tasks = new Model.Finder(String.class, ChatRoomModel.class).all();
         return ok(toJson(tasks));
     }
 

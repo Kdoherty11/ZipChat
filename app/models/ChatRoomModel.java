@@ -3,11 +3,12 @@ package models;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
-public class Room extends Model {
+/**
+ * Created by kevindoherty on 2/9/15.
+ */
+public class ChatRoomModel extends Model {
 
     @Id
     public String id;
@@ -15,9 +16,7 @@ public class Room extends Model {
     @Constraints.Required
     public String name;
 
-    public Room(String name) {
+    public ChatRoomModel(String name) {
         this.name = name;
     }
-
-
 }
