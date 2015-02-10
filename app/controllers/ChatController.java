@@ -1,11 +1,9 @@
 package controllers;
 
 import com.typesafe.plugin.RedisPlugin;
-import models.Room;
 import play.libs.Akka;
 import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;
@@ -33,9 +31,11 @@ public class ChatController {
     }
 
     public static void join(final String username, WebSocket.In<String> in, WebSocket.Out<String> out) {
+        System.out.println("******* Join called ********");
         in.onMessage(str -> {
             try {
                 Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                System.out.println("Jeddis " + j);
             } catch (Exception e ){
                 System.out.println(e);
             }
@@ -52,26 +52,26 @@ public class ChatController {
         System.out.println(message);
     }
 
-    public static class MyListener extends JedisPubSub {
-        @Override
-        public void onMessage(String channel, String messageBody) {
-            //Process messages from the pub/sub channel
-            ChatController.message(messageBody);
-        }
-        @Override
-        public void onPMessage(String arg0, String arg1, String arg2) {
-        }
-        @Override
-        public void onPSubscribe(String arg0, int arg1) {
-        }
-        @Override
-        public void onPUnsubscribe(String arg0, int arg1) {
-        }
-        @Override
-        public void onSubscribe(String arg0, int arg1) {
-        }
-        @Override
-        public void onUnsubscribe(String arg0, int arg1) {
-        }
-    }
+//    public static class MyListener extends JedisPubSub {
+//        @Override
+//        public void onMessage(String channel, String messageBody) {
+//            //Process messages from the pub/sub channel
+//            ChatController.message(messageBody);
+//        }
+//        @Override
+//        public void onPMessage(String arg0, String arg1, String arg2) {
+//        }
+//        @Override
+//        public void onPSubscribe(String arg0, int arg1) {
+//        }
+//        @Override
+//        public void onPUnsubscribe(String arg0, int arg1) {
+//        }
+//        @Override
+//        public void onSubscribe(String arg0, int arg1) {
+//        }
+//        @Override
+//        public void onUnsubscribe(String arg0, int arg1) {
+//        }
+//    }
 }

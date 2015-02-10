@@ -1,19 +1,16 @@
 package controllers;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.typesafe.plugin.RedisPlugin;
-import javafx.util.Callback;
 import models.Room;
+import play.Logger;
 import play.data.Form;
 import play.db.ebean.Model;
-import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
 import views.html.index;
-
 
 import java.util.List;
 
@@ -26,19 +23,45 @@ public class Application extends Controller {
     }
 
     public static WebSocket<String> chat() {
+
+        System.out.println("Chat endpoint");
+
         return new WebSocket<String>() {
             public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
 
                 System.out.println("ready");
                 ChatController.join("test", in, out);
 
+                in.onMessage(json -> System.out.println(json));
+
                 // When the socket is closed.
-                in.onClose(() -> {
-                    System.out.println("quit");
-                });
+                in.onClose(() -> System.out.println("quit"));
             }
 
         };
+    }
+
+    public static Result  test() {
+        System.out.println("I am here");
+        Logger.debug("Debug log");
+
+        try {
+
+            play.Application app = play.Play.application();
+            Logger.debug("app: " + app);
+            Object plugin = app.plugin(RedisPlugin.class);
+            Logger.debug("plugin: " + plugin);
+
+            Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+
+            Logger.info("Success init Jedis!!!!");
+        } catch (Exception e) {
+            Logger.error("Jedis init error: " + e);
+        }
+
+
+        return ok(toJson("Ok Json"));
+
     }
 
     public static Result createRoom() {

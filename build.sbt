@@ -1,3 +1,5 @@
+import play.PlayJava
+
 name := """ZipChat"""
 
 version := "1.0-SNAPSHOT"
