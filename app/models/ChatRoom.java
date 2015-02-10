@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
-import play.Logger;
 import play.libs.Akka;
+import play.libs.F;
 import play.libs.Json;
 import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
@@ -31,15 +31,17 @@ public class ChatRoom extends UntypedActor {
     private static final String MEMBERS = "members";
 
     static {
-
+        //add the robot
         new Robot(defaultRoom);
 
         //subscribe to the message channel
         Akka.system().scheduler().scheduleOnce(
                 Duration.create(10, TimeUnit.MILLISECONDS),
-                () -> {
-                    Jedis jedis = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                    jedis.subscribe(new MyListener(), CHANNEL);
+                new Runnable() {
+                    public void run() {
+                        Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                        j.subscribe(new MyListener(), CHANNEL);
+                    }
                 },
                 Akka.system().dispatcher()
         );
@@ -51,29 +53,35 @@ public class ChatRoom extends UntypedActor {
     public static void join(final String username, WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) throws Exception{
         System.out.println("joining: " + username);
         // Join the default room. Timeout should be longer than the Redis connect timeout (2 seconds)
-        String result = (String) Await.result(ask(defaultRoom, new Join(username, out), 3000), Duration.create(3, SECONDS));
+        String result = (String)Await.result(ask(defaultRoom,new Join(username, out), 3000), Duration.create(3, SECONDS));
 
         if("OK".equals(result)) {
 
             // For each event received on the socket,
-            in.onMessage(event -> {
+            in.onMessage(new F.Callback<JsonNode>() {
+                public void invoke(JsonNode event) {
 
-                Talk talk = new Talk(username, event.get("text").asText());
+                    Talk talk = new Talk(username, event.get("text").asText());
 
-                Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                try {
-                    //All messages are pushed through the pub/sub channel
-                    j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(talk)));
-                } finally {
-                    play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+                    Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                    try {
+                        //All messages are pushed through the pub/sub channel
+                        j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(talk)));
+                    } finally {
+                        play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+                    }
+
                 }
-
             });
 
             // When the socket is closed.
-            in.onClose(() -> {
-                // Send a Quit message to the room.
-                defaultRoom.tell(new Quit(username), null);
+            in.onClose(new F.Callback0() {
+                public void invoke() {
+
+                    // Send a Quit message to the room.
+                    defaultRoom.tell(new Quit(username), null);
+
+                }
             });
 
         } else {
@@ -259,7 +267,6 @@ public class ChatRoom extends UntypedActor {
         public void onMessage(String channel, String messageBody) {
             //Process messages from the pub/sub channel
             JsonNode parsedMessage = Json.parse(messageBody);
-            Logger.debug("MyListener onMessage: " + parsedMessage);
             Object message = null;
             String messageType = parsedMessage.get("type").asText();
             if("talk".equals(messageType)) {
@@ -295,4 +302,5 @@ public class ChatRoom extends UntypedActor {
         public void onUnsubscribe(String arg0, int arg1) {
         }
     }
+
 }
