@@ -44,22 +44,12 @@ public class ChatRoom extends UntypedActor {
                 Duration.create(10, TimeUnit.MILLISECONDS),
                 new Runnable() {
                     public void run() {
-                        Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                        j.subscribe(new MyListener(), CHANNEL);
+                        Jedis jedis = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                        jedis.subscribe(new MyListener(), CHANNEL);
                     }
                 },
                 Akka.system().dispatcher()
         );
-    }
-
-    @Id
-    public String id;
-
-    @Constraints.Required
-    public String name;
-
-    public ChatRoom(String name) {
-        this.name = name;
     }
 
     /**
