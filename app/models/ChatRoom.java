@@ -19,6 +19,7 @@ import scala.concurrent.duration.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static akka.pattern.Patterns.ask;
@@ -33,6 +34,7 @@ public class ChatRoom extends UntypedActor {
 
     // Key is roomId, value is the users connected to that room
     Map<String, Map<String, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
+    Map<String, Robot> keepAlives = new HashMap<>();
 
     static {
 
@@ -54,6 +56,7 @@ public class ChatRoom extends UntypedActor {
      * Join the default room.
      */
     public static void join(final String roomId, final String userId, WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) throws Exception {
+
         Logger.debug("User " + userId + " is joining " + roomId);
         // Join the default room. Timeout should be longer than the Redis connect timeout (2 seconds)
         String result = (String) Await.result(ask(defaultRoom, new Join(roomId, userId, out), 3000), Duration.create(3, SECONDS));
@@ -113,70 +116,23 @@ public class ChatRoom extends UntypedActor {
             if (message instanceof Join) {
                 // Received a Join message
                 Join join = (Join) message;
-
                 Logger.debug("onReceive: " + join);
-
-                // Check if this username is free.
-                if (j.sismember(join.roomId, join.username)) {
-                    getSender().tell("This username is already used", getSelf());
-                } else {
-                    if (!rooms.containsKey(join.roomId)) {
-                        // Creating a new room
-                        Logger.debug("Adding new room and keep alive: " + join.roomId);
-
-                        rooms.put(join.roomId, new HashMap<>());
-
-                        new Robot(join.roomId, defaultRoom);
-                    }
-                    //Add the member to this node and the global roster
-                    rooms.get(join.roomId).put(join.username, join.channel);
-                    j.sadd(join.roomId, join.username);
-
-                    //Publish the join notification to all nodes
-                    RosterNotification rosterNotify = new RosterNotification(join.roomId, join.username, "join");
-
-                    Logger.debug("rosterNotify in join: " + rosterNotify);
-                    Logger.debug("rosterNotify in join json: " + Json.stringify(Json.toJson(rosterNotify)));
-                    Logger.debug("here... " + Json.toJson(rosterNotify));
-
-                    j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(rosterNotify)));
-
-                    getSender().tell("OK", getSelf());
-                }
-
+                receiveJoin(j, join);
             } else if (message instanceof Quit) {
                 // Received a Quit message
                 Quit quit = (Quit) message;
-
                 Logger.debug("onReceive: " + quit);
-
-                //Remove the member from this node and the global roster
-                rooms.get(quit.roomId).remove(quit.username);
-                j.srem(quit.roomId, quit.username);
-
-                // TODO: Check if there is nobody left in the room so we can remove the keep alives somehow
-
-                //Publish the quit notification to all nodes
-                RosterNotification rosterNotify = new RosterNotification(quit.roomId, quit.username, "quit");
-                j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(rosterNotify)));
+                receiveQuit(j, quit);
             } else if (message instanceof RosterNotification) {
                 //Received a roster notification
                 RosterNotification rosterNotify = (RosterNotification) message;
-
                 Logger.debug("onReceive: " + rosterNotify);
-
-                if ("join".equals(rosterNotify.direction)) {
-                    notifyAll(rosterNotify.roomId, "join", rosterNotify.username, "has entered the room");
-                } else if ("quit".equals(rosterNotify.direction)) {
-                    notifyAll(rosterNotify.roomId, "quit", rosterNotify.username, "has left the room");
-                }
+                receiveRosterNotification(rosterNotify);
             } else if (message instanceof Talk) {
                 // Received a Talk message
                 Talk talk = (Talk) message;
-                notifyAll(talk.roomId, "talk", talk.username, talk.text);
-
                 Logger.debug("onReceive: " + talk);
-
+                notifyRoom(talk.roomId, "talk", talk.username, talk.text);
             } else {
                 unhandled(message);
             }
@@ -185,8 +141,74 @@ public class ChatRoom extends UntypedActor {
         }
     }
 
+    private void receiveJoin(Jedis j, Join join) {
+        if (j.sismember(join.roomId, join.username)) {
+            getSender().tell("This username is already used", getSelf());
+        } else {
+            if (!rooms.containsKey(join.roomId)) {
+                // Creating a new room
+                Logger.debug("Adding new room and keep alive: " + join.roomId);
+
+                rooms.put(join.roomId, new HashMap<>());
+
+                Robot robot = new Robot(join.roomId, defaultRoom);
+                keepAlives.put(join.roomId, robot);
+            }
+            //Add the member to this node and the global roster
+            rooms.get(join.roomId).put(join.username, join.channel);
+            j.sadd(join.roomId, join.username);
+
+            //Publish the join notification to all nodes
+            RosterNotification rosterNotify = new RosterNotification(join.roomId, join.username, "join");
+            j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(rosterNotify)));
+
+            getSender().tell("OK", getSelf());
+        }
+    }
+
+    private void receiveQuit(Jedis j, Quit quit) {
+        Map<String, WebSocket.Out<JsonNode>> members = rooms.get(quit.roomId);
+
+        if (members != null) {
+            members.remove(quit.username);
+        }
+
+        j.srem(quit.roomId, quit.username);
+
+        Set<String> roomMembers = j.smembers(quit.roomId);
+
+        // For the robot
+        if (roomMembers.size() == 1) {
+
+            Logger.debug("Removing robot from room: " + quit.roomId);
+
+            rooms.remove(quit.roomId);
+
+            // Remove robot
+            if (keepAlives.containsKey(quit.roomId)) {
+                keepAlives.get(quit.roomId).stop();
+            }
+
+        } else {
+
+            Logger.debug("There are still members in room " + quit.roomId + "\n" + roomMembers);
+
+            //Publish the quit notification to all nodes
+            RosterNotification rosterNotify = new RosterNotification(quit.roomId, quit.username, "quit");
+            j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(rosterNotify)));
+        }
+    }
+
+    private void receiveRosterNotification(RosterNotification rosterNotification) {
+        if ("join".equals(rosterNotification.direction)) {
+            notifyRoom(rosterNotification.roomId, "join", rosterNotification.username, "has entered the room");
+        } else if ("quit".equals(rosterNotification.direction)) {
+            notifyRoom(rosterNotification.roomId, "quit", rosterNotification.username, "has left the room");
+        }
+    }
+
     // Send a Json event to all members connected to this node
-    public void notifyAll(String roomId, String kind, String user, String text) {
+    public void notifyRoom(String roomId, String kind, String user, String text) {
         Logger.debug("NotifyAll called with roomId: " + roomId);
         Map<String, WebSocket.Out<JsonNode>> roomMembers = rooms.get(roomId);
 
@@ -243,6 +265,11 @@ public class ChatRoom extends UntypedActor {
             this.username = username;
             this.channel = channel;
         }
+
+        @Override
+        public String toString() {
+            return "Join (" + roomId + ") from " + username;
+        }
     }
 
     public static class RosterNotification {
@@ -275,7 +302,7 @@ public class ChatRoom extends UntypedActor {
 
         @Override
         public String toString() {
-            return "RosterNotification (" + roomId + ") user " + username + " is " + direction + "ing";
+            return "RosterNotification (" + roomId + ") " + username + " is " + direction + "ing";
         }
     }
 
@@ -338,7 +365,7 @@ public class ChatRoom extends UntypedActor {
 
         @Override
         public String toString() {
-            return username + "is quiting room: " + roomId;
+            return "Quit (" + roomId + ") " + username;
         }
 
     }
@@ -391,7 +418,6 @@ public class ChatRoom extends UntypedActor {
 
         @Override
         public void onUnsubscribe(String arg0, int arg1) {
-            // TODO: return resources here?
         }
     }
 

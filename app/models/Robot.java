@@ -13,6 +13,9 @@ import static java.util.concurrent.TimeUnit.*;
 
 public class Robot {
 
+    Cancellable cancellable;
+    String roomId;
+
     public Robot(String roomId, ActorRef chatRoom) {
 
         // Create a Fake socket out for the robot that log events to the console.
@@ -31,8 +34,10 @@ public class Robot {
         chatRoom.tell(new ChatRoom.Join(roomId, "Robot", robotChannel), null);
         Logger.debug("Robot joined");
 
+        this.roomId = roomId;
+
         // Make the robot talk every 30 seconds
-        Akka.system().scheduler().schedule(
+        cancellable = Akka.system().scheduler().schedule(
                 Duration.create(30, SECONDS),
                 Duration.create(30, SECONDS),
                 chatRoom,
@@ -41,6 +46,13 @@ public class Robot {
                 /** sender **/ null
         );
 
+    }
+
+    public void stop() {
+        Logger.debug("Stopped robot with roomId " + roomId);
+        if (cancellable != null && !cancellable.isCancelled()) {
+            cancellable.cancel();
+        }
     }
 
 }
