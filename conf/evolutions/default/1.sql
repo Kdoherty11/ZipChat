@@ -3,13 +3,13 @@
 
 # --- !Ups
 
-create table chat_room_model (
+create table room (
   id                        varchar(255) not null,
   name                      varchar(255),
-  constraint pk_chat_room_model primary key (id))
+  constraint pk_room primary key (id))
 ;
 
-create sequence chat_room_model_seq;
+create sequence room_seq;
 
 
 
@@ -18,9 +18,8 @@ create sequence chat_room_model_seq;
 
 SET REFERENTIAL_INTEGRITY FALSE;
 
-drop table if exists chat_room_model;
+drop table if exists room;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 
-drop sequence if exists chat_room_model_seq;
-
+drop sequence if exists room_seq;
