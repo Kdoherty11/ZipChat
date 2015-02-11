@@ -27,7 +27,7 @@ public class Application extends Controller {
     /**
      * Handle the chat websocket.
      */
-    public static WebSocket<JsonNode> chat(final String username) {
+    public static WebSocket<JsonNode> chat(final String roomId, final String username) {
         return new WebSocket<JsonNode>() {
 
             // Called when the Websocket Handshake is done.
@@ -35,7 +35,7 @@ public class Application extends Controller {
 
                 // Join the chat room.
                 try {
-                    ChatRoom.join(username, in, out);
+                    ChatRoom.join(roomId, username, in, out);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

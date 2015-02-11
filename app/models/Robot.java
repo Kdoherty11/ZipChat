@@ -13,7 +13,7 @@ import static java.util.concurrent.TimeUnit.*;
 
 public class Robot {
 
-    public Robot(ActorRef chatRoom) {
+    public Robot(String roomId, ActorRef chatRoom) {
 
         // Create a Fake socket out for the robot that log events to the console.
         WebSocket.Out<JsonNode> robotChannel = new WebSocket.Out<JsonNode>() {
@@ -28,7 +28,7 @@ public class Robot {
         };
 
         // Join the room
-        chatRoom.tell(new ChatRoom.Join("Robot", robotChannel), null);
+        chatRoom.tell(new ChatRoom.Join(roomId, "Robot", robotChannel), null);
         Logger.debug("Robot joined");
 
         // Make the robot talk every 30 seconds
@@ -36,7 +36,7 @@ public class Robot {
                 Duration.create(30, SECONDS),
                 Duration.create(30, SECONDS),
                 chatRoom,
-                new ChatRoom.Talk("Robot", "I'm still alive"),
+                new ChatRoom.Talk(roomId, "Robot", "I'm still alive"),
                 Akka.system().dispatcher(),
                 /** sender **/ null
         );
