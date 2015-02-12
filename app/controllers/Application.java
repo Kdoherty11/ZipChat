@@ -66,23 +66,4 @@ public class Application extends Controller {
 
     }
 
-    public static Result createRoom() {
-        Logger.debug("Received create rooms request");
-
-        Form<ChatRoomModel> roomForm = Form.form(ChatRoomModel.class).bindFromRequest();
-        if (roomForm.hasErrors()) {
-            return badRequest(roomForm.errorsAsJson());
-        } else {
-            ChatRoomModel chatRoom = roomForm.get();
-            chatRoom.save();
-            return ok(toJson(chatRoom));
-        }
-    }
-
-    public static Result getRooms() {
-        Logger.debug("Received get rooms request");
-        List<ChatRoom> tasks = new Model.Finder(String.class, ChatRoomModel.class).all();
-        return ok(toJson(tasks));
-    }
-
 }

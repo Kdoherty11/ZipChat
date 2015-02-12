@@ -7,10 +7,17 @@ GET     /                           controllers.Application.index()
 
 GET     /foo                        controllers.Application.index()
 
-POST /rooms                         controllers.Application.createRoom()
-GET  /rooms                         controllers.Application.getRooms()
+POST /rooms                         controllers.RoomsController.createRoom()
+GET  /rooms                         controllers.RoomsController.getRooms()
+
+POST /users                         controllers.UsersController.createUser()
+GET /users                          controllers.UsersController.getUsers()
+GET /users/:id                      controllers.UsersController.getUser(id: String)
+PUT /users/:id                      controllers.UsersController.updateUser(id: String)
+DELETE /users/:id                   controllers.UsersController.deleteUser(id: String)
+
 GET  /chat                          controllers.Application.chat(r, u)
-GET /test                           controllers.Application.test()
+GET  /test                          controllers.Application.test()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
