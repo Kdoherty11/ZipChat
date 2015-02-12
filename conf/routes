@@ -3,14 +3,10 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index()
 
-GET     /foo                        controllers.Application.index()
-
-POST /rooms                         controllers.Application.createRoom()
-GET  /rooms                         controllers.Application.getRooms()
-GET  /chat                          controllers.Application.chat(r, u)
-GET /test                           controllers.Application.test()
+POST /rooms                         controllers.ChatRoomsController.createRoom()
+GET  /rooms                         controllers.ChatRoomsController.getRooms()
+GET  /join                          controllers.ChatRoomsController.joinRoom(r, u)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

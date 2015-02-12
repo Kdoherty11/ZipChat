@@ -6,9 +6,6 @@ import play.db.ebean.Model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-/**
- * Created by kevindoherty on 2/9/15.
- */
 @Entity
 public class ChatRoomModel extends Model {
 
@@ -18,7 +15,24 @@ public class ChatRoomModel extends Model {
     @Constraints.Required
     public String name;
 
-    public ChatRoomModel(String name) {
+    @Constraints.Required
+    public double latitude;
+
+    @Constraints.Required
+    public double longitude;
+
+    @Constraints.Required
+    public int radius;
+
+    public long timeStamp;
+
+    public long lastActivity;
+
+    public ChatRoomModel(String name, int radius, double latitude, double longitude) {
         this.name = name;
+        this.radius = radius;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
+
 }
