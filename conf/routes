@@ -8,5 +8,11 @@ POST /rooms                         controllers.ChatRoomsController.createRoom()
 GET  /rooms                         controllers.ChatRoomsController.getRooms()
 GET  /join                          controllers.ChatRoomsController.joinRoom(r, u)
 
+POST /users                         controllers.UsersController.createUser()
+GET /users                          controllers.UsersController.getUsers()
+GET /users/:id                      controllers.UsersController.getUser(id: String)
+PUT /users/:id                      controllers.UsersController.updateUser(id: String)
+DELETE /users/:id                   controllers.UsersController.deleteUser(id: String)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

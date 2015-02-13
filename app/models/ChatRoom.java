@@ -44,7 +44,12 @@ public class ChatRoom extends UntypedActor {
                 new Runnable() {
                     public void run() {
                         Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                        j.subscribe(new MyListener(), CHANNEL);
+                        try {
+                            j.subscribe(new MyListener(), CHANNEL);
+                        } finally {
+                            Logger.debug("Returning resources");
+                            play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+                        }
                     }
                 },
                 Akka.system().dispatcher()
