@@ -38,8 +38,8 @@ public class CrudUtils {
     }
 
     public static <T extends Model> Promise<Result> read(Class<T> clazz, ReadCallback cb) {
-        List<T> entities = new Model.Finder(String.class, clazz).all();
-        return Promise.promise(() -> cb.success((toJson(entities))));
+        Promise<List<T>> promiseEntities = Promise.promise(() -> new Model.Finder<>(String.class, clazz).all());
+        return promiseEntities.flatMap(entities -> Promise.promise(() -> cb.success(toJson(entities))));
     }
 
     public static <T extends Model> Promise<Result> update(String id, Class<T> clazz, DynamicForm requestForm, Callback cb) {
