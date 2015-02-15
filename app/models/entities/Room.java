@@ -1,13 +1,15 @@
-package models;
+package models.entities;
 
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-public class ChatRoomModel extends Model {
+@Table(name = "rooms")
+public class Room extends Model {
 
     @Id
     public String id;
@@ -28,11 +30,14 @@ public class ChatRoomModel extends Model {
 
     public long lastActivity;
 
-    public ChatRoomModel(String name, int radius, double latitude, double longitude) {
+    public int score;
+
+    public Room(String name, int radius, double latitude, double longitude) {
         this.name = name;
         this.radius = radius;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.score = 0;
     }
 
 }

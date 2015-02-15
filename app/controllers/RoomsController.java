@@ -1,37 +1,70 @@
 package controllers;
 
-import models.ChatRoom;
-import models.ChatRoomModel;
-import play.Logger;
-import play.data.Form;
-import play.db.ebean.Model;
+import com.fasterxml.jackson.databind.JsonNode;
+import models.RoomSocket;
+import models.entities.Room;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.WebSocket;
 
-import java.util.List;
+import static play.data.Form.form;
+import static play.libs.F.Promise;
 
-import static play.libs.Json.toJson;
 
 /**
  * Created by zacharywebert on 2/11/15.
  */
 public class RoomsController extends Controller {
-    public static Result createRoom() {
-        Logger.debug("Received create rooms request");
 
-        Form<ChatRoomModel> roomForm = Form.form(ChatRoomModel.class).bindFromRequest();
-        if (roomForm.hasErrors()) {
-            return badRequest(roomForm.errorsAsJson());
-        } else {
-            ChatRoomModel chatRoom = roomForm.get();
-            chatRoom.save();
-            return ok(toJson(chatRoom));
+    private static final CrudUtils.Callback DEFAULT_CB = new CrudUtils.Callback() {
+        @Override
+        public Result success(JsonNode entity) {
+            return ok(entity);
         }
+
+        @Override
+        public Result failure(JsonNode error) {
+            return badRequest(error);
+        }
+    };
+
+    /**
+     * Handle the chat websocket.
+     */
+    public static WebSocket<JsonNode> joinRoom(final String roomId, final String username) {
+        return new WebSocket<JsonNode>() {
+
+            // Called when the Websocket Handshake is done.
+            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out){
+
+                // Join the chat room.
+                try {
+                    RoomSocket.join(roomId, username, in, out);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
     }
 
-    public static Result getRooms() {
-        Logger.debug("Received get rooms request");
-        List<ChatRoom> tasks = new Model.Finder(String.class, ChatRoomModel.class).all();
-        return ok(toJson(tasks));
+    public static Promise<Result> createRoom() {
+        return CrudUtils.create(form(Room.class).bindFromRequest(), DEFAULT_CB);
+    }
+
+    public static Promise<Result> getRooms() {
+        return CrudUtils.read(Room.class, entities -> ok(entities));
+    }
+
+    public static Promise<Result> updateRoom(String id) {
+        return CrudUtils.update(id, Room.class, form().bindFromRequest(), DEFAULT_CB);
+    }
+
+    public static Promise<Result> getRoom(String id) {
+        return CrudUtils.show(id, Room.class, DEFAULT_CB);
+    }
+
+    public static Promise<Result> deleteRoom(String id) {
+        return CrudUtils.delete(id, Room.class, DEFAULT_CB);
+
     }
 }

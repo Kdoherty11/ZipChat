@@ -25,16 +25,16 @@ import java.util.concurrent.TimeUnit;
 import static akka.pattern.Patterns.ask;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-public class ChatRoom extends UntypedActor {
+public class RoomSocket extends UntypedActor {
 
     // Default room.
-    static ActorRef defaultRoom = Akka.system().actorOf(Props.create(ChatRoom.class));
+    static ActorRef defaultRoom = Akka.system().actorOf(Props.create(RoomSocket.class));
 
     private static final String CHANNEL = "messages";
 
     // Key is roomId, value is the users connected to that room
     Map<String, Map<String, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
-    Map<String, Robot> keepAlives = new HashMap<>();
+    Map<String, SocketKeepalive> keepalives = new HashMap<>();
 
     static {
 
@@ -78,7 +78,7 @@ public class ChatRoom extends UntypedActor {
                     Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
                     try {
                         //All messages are pushed through the pub/sub channel
-                        j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(talk)));
+                        j.publish(RoomSocket.CHANNEL, Json.stringify(Json.toJson(talk)));
                     } finally {
                         play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                     }
@@ -156,8 +156,8 @@ public class ChatRoom extends UntypedActor {
 
                 rooms.put(join.roomId, new HashMap<>());
 
-                Robot robot = new Robot(join.roomId, defaultRoom);
-                keepAlives.put(join.roomId, robot);
+                SocketKeepalive socketKeepalive = new SocketKeepalive(join.roomId, defaultRoom);
+                keepalives.put(join.roomId, socketKeepalive);
             }
             //Add the member to this node and the global roster
             rooms.get(join.roomId).put(join.username, join.channel);
@@ -165,7 +165,7 @@ public class ChatRoom extends UntypedActor {
 
             //Publish the join notification to all nodes
             RosterNotification rosterNotify = new RosterNotification(join.roomId, join.username, "join");
-            j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(rosterNotify)));
+            j.publish(RoomSocket.CHANNEL, Json.stringify(Json.toJson(rosterNotify)));
 
             getSender().tell("OK", getSelf());
         }
@@ -190,8 +190,8 @@ public class ChatRoom extends UntypedActor {
             rooms.remove(quit.roomId);
 
             // Remove robot
-            if (keepAlives.containsKey(quit.roomId)) {
-                keepAlives.get(quit.roomId).stop();
+            if (keepalives.containsKey(quit.roomId)) {
+                keepalives.get(quit.roomId).stop();
             }
 
         } else {
@@ -200,7 +200,7 @@ public class ChatRoom extends UntypedActor {
 
             //Publish the quit notification to all nodes
             RosterNotification rosterNotify = new RosterNotification(quit.roomId, quit.username, "quit");
-            j.publish(ChatRoom.CHANNEL, Json.stringify(Json.toJson(rosterNotify)));
+            j.publish(RoomSocket.CHANNEL, Json.stringify(Json.toJson(rosterNotify)));
         }
     }
 
@@ -402,7 +402,7 @@ public class ChatRoom extends UntypedActor {
                         parsedMessage.get("username").asText()
                 );
             }
-            ChatRoom.remoteMessage(message);
+            RoomSocket.remoteMessage(message);
         }
 
         @Override

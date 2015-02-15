@@ -3,6 +3,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.NoUpdate;
+import play.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.db.ebean.Model;
@@ -28,6 +29,9 @@ public class CrudUtils {
     }
 
     public static <T extends Model> Promise<Result> create(Form<T> form, Callback cb) {
+
+        Logger.debug("Creating a " + form.get().getClass().getSimpleName());
+
         if (form.hasErrors()) {
             return Promise.promise(() -> cb.failure(form.errorsAsJson()));
         } else {
@@ -38,11 +42,16 @@ public class CrudUtils {
     }
 
     public static <T extends Model> Promise<Result> read(Class<T> clazz, ReadCallback cb) {
+
+        Logger.debug("Getting all " + clazz.getSimpleName() + "s");
+
         Promise<List<T>> promiseEntities = Promise.promise(() -> new Model.Finder<>(String.class, clazz).all());
         return promiseEntities.flatMap(entities -> Promise.promise(() -> cb.success(toJson(entities))));
     }
 
     public static <T extends Model> Promise<Result> update(String id, Class<T> clazz, DynamicForm requestForm, Callback cb) {
+
+        Logger.debug("Updating " + clazz.getSimpleName() + " with id " + id);
 
         Promise<T> promiseEntity = Promise.promise(() -> new Model.Finder<>(String.class, clazz).byId(id));
 
@@ -84,6 +93,8 @@ public class CrudUtils {
 
     public static <T extends Model> Promise<Result> delete(String id, Class<T> clazz, Callback cb) {
 
+        Logger.debug("Deleting " + clazz.getSimpleName() + " with id " + id);
+
         Promise<T> promiseEntity = Promise.promise(() -> new Model.Finder<>(String.class, clazz).byId(id));
 
         Promise<Result> resultPromise = promiseEntity.flatMap(entity -> {
@@ -100,6 +111,8 @@ public class CrudUtils {
     }
 
     public static <T extends Model> Promise<Result> show(String id, Class<T> clazz, Callback cb) {
+
+        Logger.debug("Showing " + clazz.getSimpleName() + " with id " + id);
 
         Promise<T> promiseEntity = Promise.promise(() -> new Model.Finder<>(String.class, clazz).byId(id));
 

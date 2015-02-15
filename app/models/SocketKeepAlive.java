@@ -11,19 +11,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import static java.util.concurrent.TimeUnit.*;
 
-public class Robot {
+public class SocketKeepalive {
 
     Cancellable cancellable;
     String roomId;
 
-    public Robot(String roomId, ActorRef chatRoom) {
+    public SocketKeepalive(String roomId, ActorRef chatRoom) {
 
         // Create a Fake socket out for the robot that log events to the console.
         WebSocket.Out<JsonNode> robotChannel = new WebSocket.Out<JsonNode>() {
 
             public void write(JsonNode frame) {
-                Logger.debug("robot write");
-                Logger.of("robot").info(Json.stringify(frame));
+                Logger.debug("heartbeat write");
+                Logger.of("heartbeat").info(Json.stringify(frame));
             }
 
             public void close() {}
@@ -31,8 +31,7 @@ public class Robot {
         };
 
         // Join the room
-        chatRoom.tell(new ChatRoom.Join(roomId, "Robot", robotChannel), null);
-        Logger.debug("Robot joined");
+        chatRoom.tell(new RoomSocket.Join(roomId, "Heartbeat", robotChannel), null);
 
         this.roomId = roomId;
 
@@ -41,7 +40,7 @@ public class Robot {
                 Duration.create(30, SECONDS),
                 Duration.create(30, SECONDS),
                 chatRoom,
-                new ChatRoom.Talk(roomId, "Robot", "I'm still alive"),
+                new RoomSocket.Talk(roomId, "Heartbeat", "beat"),
                 Akka.system().dispatcher(),
                 /** sender **/ null
         );
@@ -49,7 +48,7 @@ public class Robot {
     }
 
     public void stop() {
-        Logger.debug("Stopped robot with roomId " + roomId);
+        Logger.debug("Stopped heartbeat with roomId " + roomId);
         if (cancellable != null && !cancellable.isCancelled()) {
             cancellable.cancel();
         }
