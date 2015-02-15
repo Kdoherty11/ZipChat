@@ -17,10 +17,6 @@ import static play.libs.F.Promise;
 import static play.libs.Json.toJson;
 
 
-/**
- * Created by kevindoherty on 2/12/15.
- */
-
 public class CrudUtils {
 
     public static String DELETE_SUCCESS_RESPONSE = "OK";
@@ -60,7 +56,7 @@ public class CrudUtils {
             boolean updated = false;
 
             if (entity == null) {
-                return Promise.promise(() -> cb.failure(toJson(getNotFoundError(id, clazz))));
+                return Promise.promise(() -> cb.failure(toJson(buildEntityNotFoundError(clazz, id))));
             }
 
             Field[] modelFields = clazz.getDeclaredFields();
@@ -99,7 +95,7 @@ public class CrudUtils {
 
         Promise<Result> resultPromise = promiseEntity.flatMap(entity -> {
             if (entity == null) {
-                return Promise.promise(() -> cb.failure(getNotFoundError(id, clazz)));
+                return Promise.promise(() -> cb.failure(buildEntityNotFoundError(clazz, id)));
             } else {
                 entity.delete();
                 return Promise.promise(() -> cb.success(toJson(DELETE_SUCCESS_RESPONSE)));
@@ -118,7 +114,7 @@ public class CrudUtils {
 
         return promiseEntity.flatMap(entity -> {
             if (entity == null) {
-                return Promise.promise(() -> cb.failure(getNotFoundError(id, clazz)));
+                return Promise.promise(() -> cb.failure(buildEntityNotFoundError(clazz, id)));
             } else {
                 return Promise.promise(() -> cb.success(toJson(entity)));
             }
@@ -126,9 +122,13 @@ public class CrudUtils {
         });
     }
 
-    private static JsonNode getNotFoundError(String id, Class clazz) {
+    public static JsonNode buildEntityNotFoundError(Class clazz, String id) {
+        return buildEntityNotFoundError(id, clazz.getSimpleName());
+    }
+
+    public static JsonNode buildEntityNotFoundError(String entityName, String id) {
         StringBuilder sb = new StringBuilder();
-        sb.append(clazz.getSimpleName());
+        sb.append(entityName);
         sb.append(" with id ");
         sb.append(id);
         sb.append(" was not found");

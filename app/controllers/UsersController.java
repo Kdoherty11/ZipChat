@@ -25,12 +25,10 @@ public class UsersController extends Controller {
 
     public static Promise<Result> createUser() {
         return CrudUtils.create(form(User.class).bindFromRequest(), DEFAULT_CB);
-
     }
 
     public static Promise<Result> getUsers() {
         return CrudUtils.read(User.class, entities -> ok(entities));
-
     }
 
     public static Promise<Result> getUser(String id) {

@@ -11,9 +11,6 @@ import static play.data.Form.form;
 import static play.libs.F.Promise;
 
 
-/**
- * Created by zacharywebert on 2/11/15.
- */
 public class RoomsController extends Controller {
 
     private static final CrudUtils.Callback DEFAULT_CB = new CrudUtils.Callback() {
@@ -65,6 +62,5 @@ public class RoomsController extends Controller {
 
     public static Promise<Result> deleteRoom(String id) {
         return CrudUtils.delete(id, Room.class, DEFAULT_CB);
-
     }
 }

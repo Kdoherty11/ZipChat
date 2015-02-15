@@ -1,11 +1,14 @@
 package models.entities;
 
+import com.google.common.base.Objects;
+import play.data.format.Formats;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Entity
 @Table(name = "rooms")
@@ -26,18 +29,31 @@ public class Room extends Model {
     @Constraints.Required
     public int radius;
 
-    public long timeStamp;
+    @Formats.DateTime(pattern="dd/MM/yyyy")
+    public Date creationTime;
 
-    public long lastActivity;
+    @Formats.DateTime(pattern="dd/MM/yyyy")
+    public Date lastActivity;
 
     public int score;
 
-    public Room(String name, int radius, double latitude, double longitude) {
-        this.name = name;
-        this.radius = radius;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.score = 0;
+    public static Finder<String, Room> find = new Finder<>(String.class, Room.class);
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("id", id)
+                .add("name", name)
+                .add("latitude", latitude)
+                .add("longitude", longitude)
+                .add("radius", radius)
+                .add("creationTime", creationTime)
+                .add("lastActivity", lastActivity)
+                .add("score", score)
+                .toString();
     }
+
+
+
 
 }

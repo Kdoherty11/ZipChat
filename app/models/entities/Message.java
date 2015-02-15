@@ -1,14 +1,16 @@
 package models.entities;
 
+import com.google.common.base.Objects;
+import play.data.format.Formats;
 import play.data.validation.Constraints;
+import play.db.ebean.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "messages")
-public class Message {
+public class Message extends Model {
 
     @Id
     public String id;
@@ -16,12 +18,30 @@ public class Message {
     @Constraints.Required
     public String message;
 
-    public String roomId;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    public Room room;
 
-    public User sender;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    @Constraints.Required
+    public User user;
 
-    public long timeStamp;
+    @Formats.DateTime(pattern="dd/MM/yyyy")
+    public Date timeStamp = new Date();
 
+    public static Finder<String, Message> find = new Finder<>(String.class, Message.class);
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("id", id)
+                .add("message", message)
+                .add("room", user.id)
+                .add("user", room.id)
+                .add("timeStamp", timeStamp)
+                .toString();
+    }
 
 
 }
