@@ -53,25 +53,22 @@ public class Room extends Model {
 
         int earthRadius = 6371;  // earth's mean radius, km
 
-        String firstCutSql = "select r.id" +
+        String firstCutSql = "select r.id, r.latitude, r.longitude, r.radius" +
                 " from rooms r" +
-                " where :lat >= r.latitude - (r.radius * 1000) / :R and :lat <= r.latitude + (r.radius * 1000) / :R" +
-                " and radians(:lon) >= radians(r.longitude/:R) and radians(:lon) <= radians(r.longitude/:R);";
+                " where :lat >= r.latitude - degrees((r.radius * 1000) / :R) and :lat <= r.latitude + degrees((r.radius * 1000) / :R)" +
+                " and :lon >= r.longitude - degrees((r.radius * 1000) / :R) and :lon <= r.longitude + degrees((r.radius * 1000) / :R)";
 
-        String sql = "select r.id, r.name" +
-                " from rooms r" +
-                " where acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - :lon)) *:R <= radius * 1000";
+        String sql = "select id" +
+                " from (" + firstCutSql + ") as FirstCut" +
+                " where acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - :lon)) * :R <= radius * 1000;";
 
+        RawSql rawSql = RawSqlBuilder.parse(sql).create();
 
-        RawSql rawSql = RawSqlBuilder.parse(firstCutSql)
-                .columnMapping("r.id", "id")
-                .create();
-
-        Query<Room> query = Ebean.find(Room.class);
-        query.setRawSql(rawSql);
-        query.setParameter("lat", lat);
-        query.setParameter("lon", lon);
-        query.setParameter("R", earthRadius);
+        Query<Room> query = Ebean.find(Room.class)
+                .setRawSql(rawSql)
+                .setParameter("lat", lat)
+                .setParameter("lon", lon)
+                .setParameter("R", earthRadius);
 
         return query.findList();
     }
