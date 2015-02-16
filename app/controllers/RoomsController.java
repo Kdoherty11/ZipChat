@@ -9,6 +9,7 @@ import play.mvc.WebSocket;
 
 import static play.data.Form.form;
 import static play.libs.F.Promise;
+import static play.libs.Json.toJson;
 
 
 public class RoomsController extends Controller {
@@ -50,6 +51,10 @@ public class RoomsController extends Controller {
 
     public static Promise<Result> getRooms() {
         return CrudUtils.read(Room.class, entities -> ok(entities));
+    }
+
+    public static Promise<Result> getGeoRooms(double lat, double lng) {
+        return Promise.promise(() -> ok(toJson(Room.allInGeoRange(lat, lng))));
     }
 
     public static Promise<Result> updateRoom(String id) {
