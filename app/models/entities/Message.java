@@ -20,12 +20,12 @@ public class Message extends Model {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
-    public Room room;
+    public String roomId;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     @Constraints.Required
-    public User user;
+    public String userId;
 
     @Formats.DateTime(pattern="dd/MM/yyyy")
     public Date timeStamp = new Date();
@@ -37,8 +37,8 @@ public class Message extends Model {
         return Objects.toStringHelper(this)
                 .add("id", id)
                 .add("message", message)
-                .add("room", user.id)
-                .add("user", room.id)
+                .add("roomId", roomId)
+                .add("userId", userId)
                 .add("timeStamp", timeStamp)
                 .toString();
     }

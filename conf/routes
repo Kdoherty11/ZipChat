@@ -6,15 +6,11 @@
 
 GET  /join                              controllers.RoomsController.joinRoom(r, u)
 
-POST /rooms/:roomId/messages            controllers.MessagesController.createMessage(roomId: String)
 GET  /rooms/:roomId/messages            controllers.MessagesController.getMessages(roomId: String)
-GET /rooms/:roomId/messages/:msgId      controllers.MessagesController.getMessage(roomId: String, msgId: String)
-PUT /rooms/:roomId/messages/:msgId      controllers.MessagesController.updateMessage(roomId: String, msgId: String)
-DELETE /rooms/:roomId/messages/:msgId   controllers.MessagesController.deleteMessage(roomId: String, msgId: String)
 
 POST /rooms                             controllers.RoomsController.createRoom()
 GET  /rooms                             controllers.RoomsController.getRooms()
-GET /test                               controllers.RoomsController.getGeoRooms(lat: Double, lng: Double)
+GET /test                               controllers.RoomsController.getGeoRooms(lat: Double, lon: Double)
 GET /rooms/:id                          controllers.RoomsController.getRoom(id: String)
 PUT /rooms/:id                          controllers.RoomsController.updateRoom(id: String)
 DELETE /rooms/:id                       controllers.RoomsController.deleteRoom(id: String)

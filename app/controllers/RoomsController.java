@@ -3,6 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.RoomSocket;
 import models.entities.Room;
+import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
@@ -33,13 +34,11 @@ public class RoomsController extends Controller {
         return new WebSocket<JsonNode>() {
 
             // Called when the Websocket Handshake is done.
-            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out){
-
-                // Join the chat room.
+            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
                 try {
                     RoomSocket.join(roomId, username, in, out);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    Logger.error("Problem joining the RoomSocket: " + ex.getMessage());
                 }
             }
         };
@@ -53,8 +52,8 @@ public class RoomsController extends Controller {
         return CrudUtils.read(Room.class, entities -> ok(entities));
     }
 
-    public static Promise<Result> getGeoRooms(double lat, double lng) {
-        return Promise.promise(() -> ok(toJson(Room.allInGeoRange(lat, lng))));
+    public static Promise<Result> getGeoRooms(double lat, double lon) {
+        return Promise.promise(() -> ok(toJson(Room.allInGeoRange(lat, lon))));
     }
 
     public static Promise<Result> updateRoom(String id) {

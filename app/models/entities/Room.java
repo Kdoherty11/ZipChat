@@ -1,7 +1,11 @@
 package models.entities;
 
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Query;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
 import com.google.common.base.Objects;
+import play.Logger;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
@@ -45,19 +49,31 @@ public class Room extends Model {
 
     public static List<Room> allInGeoRange(double lat, double lon) {
 
+        Logger.debug("Getting all rooms containing " + lat + ", " + lon);
+
         int earthRadius = 6371;  // earth's mean radius, km
 
-        String sql = "select id, name, latitude, longitude, radius, lastActivity, score," +
-                " acos(sin(:lat)*sin(radians(latitude)) + cos(:lat)*cos(radians(latitude))*cos(radians(longitude)-:lon)) * :R As distance" +
-                " from rooms" +
-                " where acos(sin(:lat)*sin(radians(latitude)) + cos(:lat)*cos(radians(latitude))*cos(radians(longitude)-:lon)) * :R <= radius" +
-                " order by distance";
+        String firstCutSql = "select r.id" +
+                " from rooms r" +
+                " where :lat >= r.latitude - (r.radius * 1000) / :R and :lat <= r.latitude + (r.radius * 1000) / :R" +
+                " and radians(:lon) >= radians(r.longitude/:R) and radians(:lon) <= radians(r.longitude/:R);";
 
-        return Ebean.createQuery(Room.class, sql)
-                .setParameter("lat", lat)
-                .setParameter("lon", lon)
-                .setParameter("R", earthRadius)
-                .findList();
+        String sql = "select r.id, r.name" +
+                " from rooms r" +
+                " where acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - :lon)) *:R <= radius * 1000";
+
+
+        RawSql rawSql = RawSqlBuilder.parse(firstCutSql)
+                .columnMapping("r.id", "id")
+                .create();
+
+        Query<Room> query = Ebean.find(Room.class);
+        query.setRawSql(rawSql);
+        query.setParameter("lat", lat);
+        query.setParameter("lon", lon);
+        query.setParameter("R", earthRadius);
+
+        return query.findList();
     }
 
     @Override
