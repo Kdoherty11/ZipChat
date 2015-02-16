@@ -4,12 +4,11 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
+import models.entities.Message;
 import models.entities.User;
 import play.Logger;
-import play.db.ebean.Model;
 import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
@@ -146,13 +145,19 @@ public class RoomSocket extends UntypedActor {
                 Talk talk = (Talk) message;
                 Logger.debug("onReceive: " + talk);
                 notifyRoom(talk.roomId, "talk", talk.username, talk.text);
+                storeMessage(talk);
             } else {
                 unhandled(message);
             }
         } finally {
             play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
-            Logger.debug("Retrun resource C");
+            Logger.debug("Return resource C");
         }
+    }
+
+    private void storeMessage(Talk talk) {
+        Message message = new Message(talk.getText(), talk.getRoomId(), talk.getUsername());
+        message.save();
     }
 
     private void receiveJoin(Jedis j, Join join) {

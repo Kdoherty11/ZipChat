@@ -32,6 +32,12 @@ public class Message extends Model {
 
     public static Finder<String, Message> find = new Finder<>(String.class, Message.class);
 
+    public Message(String message, String roomId, String userId) {
+        this.message = message;
+        this.roomId = roomId;
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
