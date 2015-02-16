@@ -14,7 +14,7 @@ import static play.libs.Json.toJson;
 public class MessagesController extends Controller {
 
     public static Promise<Result> getMessages(String roomId) {
-        Logger.debug("Getting all messages with roomId " + roomId);
+        Logger.debug("Getting all messages in room " + roomId);
 
         Promise<List<Message>> promiseEntities = Promise.promise(() -> Message.find.where().ieq("roomId", roomId).findList());
         return promiseEntities.flatMap(entities -> Promise.promise(() -> ok(toJson(entities))));
