@@ -11,12 +11,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import static java.util.concurrent.TimeUnit.*;
 
-public class SocketKeepalive {
+public class SocketKeepAlive {
 
     Cancellable cancellable;
     String roomId;
 
-    public SocketKeepalive(String roomId, ActorRef chatRoom) {
+    public SocketKeepAlive(String roomId, ActorRef chatRoom) {
 
         // Create a Fake socket out for the robot that log events to the console.
         WebSocket.Out<JsonNode> robotChannel = new WebSocket.Out<JsonNode>() {

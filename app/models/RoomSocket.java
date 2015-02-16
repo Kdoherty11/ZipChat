@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
+import models.entities.User;
 import play.Logger;
+import play.db.ebean.Model;
 import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
@@ -34,7 +36,9 @@ public class RoomSocket extends UntypedActor {
 
     // Key is roomId, value is the users connected to that room
     Map<String, Map<String, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
-    Map<String, SocketKeepalive> keepalives = new HashMap<>();
+    Map<String, User> users = new HashMap<>();
+
+    Map<String, SocketKeepAlive> keepalives = new HashMap<>();
 
     static {
 
@@ -44,10 +48,11 @@ public class RoomSocket extends UntypedActor {
                 new Runnable() {
                     public void run() {
                         Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                        Logger.debug("Get resource A");
                         try {
                             j.subscribe(new MyListener(), CHANNEL);
                         } finally {
-                            Logger.debug("Returning resources");
+                            Logger.debug("Returning resource A");
                             play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                         }
                     }
@@ -72,15 +77,17 @@ public class RoomSocket extends UntypedActor {
             // For each event received on the socket,
             in.onMessage(new F.Callback<JsonNode>() {
                 public void invoke(JsonNode event) {
-
-                    Talk talk = new Talk(roomId, userId, event.get("text").asText());
+                    Logger.debug("Event:" + event);
+                    Talk talk = new Talk(roomId, userId, event.get("message").asText());
 
                     Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                    Logger.debug("Get resource B");
                     try {
                         //All messages are pushed through the pub/sub channel
                         j.publish(RoomSocket.CHANNEL, Json.stringify(Json.toJson(talk)));
                     } finally {
                         play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+                        Logger.debug("Return resource B");
                     }
 
                 }
@@ -116,6 +123,7 @@ public class RoomSocket extends UntypedActor {
     public void onReceive(Object message) throws Exception {
 
         Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+        Logger.debug("Get resource C");
 
         try {
             if (message instanceof Join) {
@@ -143,6 +151,7 @@ public class RoomSocket extends UntypedActor {
             }
         } finally {
             play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+            Logger.debug("Retrun resource C");
         }
     }
 
@@ -156,8 +165,8 @@ public class RoomSocket extends UntypedActor {
 
                 rooms.put(join.roomId, new HashMap<>());
 
-                SocketKeepalive socketKeepalive = new SocketKeepalive(join.roomId, defaultRoom);
-                keepalives.put(join.roomId, socketKeepalive);
+                SocketKeepAlive socketKeepAlive = new SocketKeepAlive(join.roomId, defaultRoom);
+                keepalives.put(join.roomId, socketKeepAlive);
             }
             //Add the member to this node and the global roster
             rooms.get(join.roomId).put(join.username, join.channel);
@@ -213,33 +222,23 @@ public class RoomSocket extends UntypedActor {
     }
 
     // Send a Json event to all members connected to this node
-    public void notifyRoom(String roomId, String kind, String user, String text) {
+    public void notifyRoom(String roomId, String kind, String userId, String text) {
         Logger.debug("NotifyAll called with roomId: " + roomId);
-        Map<String, WebSocket.Out<JsonNode>> roomMembers = rooms.get(roomId);
-
-        if (roomMembers == null) {
-            Logger.warn("Room: " + roomId + " is null");
-            return;
-        }
 
         for (WebSocket.Out<JsonNode> channel : rooms.get(roomId).values()) {
 
-            ObjectNode event = Json.newObject();
-            event.put("kind", kind);
-            event.put("user", user);
-            event.put("message", text);
-
-            ArrayNode m = event.putArray("members");
-
-            //Go to Redis to read the full roster of members. Push it down with the message.
-            Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-            try {
-                for (String u : j.smembers(roomId)) {
-                    m.add(u);
-                }
-            } finally {
-                play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+            User u;
+            if (users.containsKey(userId)) {
+                u = users.get(userId);
+            } else {
+                u = User.find.byId(userId);
+                users.put(userId, u);
             }
+
+            ObjectNode event = Json.newObject();
+            event.put("event", kind);
+            event.put("user", Json.toJson(u));
+            event.put("message", text);
 
             channel.write(event);
         }

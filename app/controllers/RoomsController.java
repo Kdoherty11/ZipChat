@@ -31,10 +31,12 @@ public class RoomsController extends Controller {
      * Handle the chat websocket.
      */
     public static WebSocket<JsonNode> joinRoom(final String roomId, final String username) {
+
         return new WebSocket<JsonNode>() {
 
             // Called when the Websocket Handshake is done.
             public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
+                Logger.debug("join" + roomId + " " + username);
                 try {
                     RoomSocket.join(roomId, username, in, out);
                 } catch (Exception ex) {
