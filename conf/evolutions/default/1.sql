@@ -12,6 +12,19 @@ create table messages (
   constraint pk_messages primary key (id))
 ;
 
+create table rooms (
+  id                        varchar(255) not null,
+  name                      varchar(255),
+  latitude                  double,
+  longitude                 double,
+  radius                    integer,
+  creation_time             timestamp,
+  last_activity             timestamp,
+  distance                  integer,
+  score                     integer,
+  constraint pk_rooms primary key (id))
+;
+
 create table users (
   id                        varchar(255) not null,
   facebook_id               varchar(255),
@@ -21,6 +34,8 @@ create table users (
 ;
 
 create sequence messages_seq;
+
+create sequence rooms_seq;
 
 create sequence users_seq;
 
@@ -37,11 +52,15 @@ SET REFERENTIAL_INTEGRITY FALSE;
 
 drop table if exists messages;
 
+drop table if exists rooms;
+
 drop table if exists users;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 
 drop sequence if exists messages_seq;
+
+drop sequence if exists rooms_seq;
 
 drop sequence if exists users_seq;
 
