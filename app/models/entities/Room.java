@@ -10,6 +10,7 @@ import play.data.format.Formats;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -27,9 +28,11 @@ public class Room extends Model {
     public String name;
 
     @Constraints.Required
+    @Column(columnDefinition = "NUMERIC")
     public double latitude;
 
     @Constraints.Required
+    @Column(columnDefinition = "NUMERIC")
     public double longitude;
 
     @Constraints.Required
