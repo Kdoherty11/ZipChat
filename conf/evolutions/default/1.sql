@@ -15,8 +15,8 @@ create table messages (
 create table rooms (
   id                        varchar(255) not null,
   name                      varchar(255),
-  latitude                  NUMERIC,
-  longitude                 NUMERIC,
+  latitude                  double precision,
+  longitude                 double precision,
   radius                    integer,
   creation_time             timestamp,
   last_activity             timestamp,
