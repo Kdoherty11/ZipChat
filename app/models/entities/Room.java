@@ -60,7 +60,7 @@ public class Room extends Model {
 
         String sql = "select id" +
                 " from (" + firstCutSql + ") as FirstCut" +
-                " where acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - :lon)) * :R <= radius * 1000;";
+                " where acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - :lon)) * :R <= radius / 1000;";
 
         RawSql rawSql = RawSqlBuilder.parse(sql).create();
 

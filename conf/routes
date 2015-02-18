@@ -4,10 +4,11 @@
 
 # Home page
 
-GET /test                               controllers.RoomsController.getRooms()
 GET /rooms                              controllers.RoomsController.getGeoRooms(lat: Double, lon: Double)
+GET /test                               controllers.RoomsController.getRooms()
 GET  /rooms/:roomId/messages            controllers.MessagesController.getMessages(roomId: String)
 GET  /join                              controllers.RoomsController.joinRoom(r, u)
+POST /rooms                             controllers.RoomsController.createRoom()
 
 GET /rooms/:id                          controllers.RoomsController.getRoom(id: String)
 PUT /rooms/:id                          controllers.RoomsController.updateRoom(id: String)
