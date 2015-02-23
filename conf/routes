@@ -4,21 +4,33 @@
 
 # Home page
 
-GET /rooms                              controllers.RoomsController.getGeoRooms(lat: Double, lon: Double)
-GET /test                               controllers.RoomsController.getRooms()
-GET  /rooms/:roomId/messages            controllers.MessagesController.getMessages(roomId: String)
-GET  /join                              controllers.RoomsController.joinRoom(r, u)
-POST /rooms                             controllers.RoomsController.createRoom()
+GET /rooms                                   controllers.RoomsController.getGeoRooms(lat: Double, lon: Double)
+GET /test                                    controllers.RoomsController.getRooms()
+GET  /rooms/:roomId/messages                 controllers.MessagesController.getMessages(roomId: String)
+GET  /join                                   controllers.RoomsController.joinRoom(r, u)
+POST /rooms                                  controllers.RoomsController.createRoom()
+POST /users/:userId/sendNotification         controllers.UsersController.sendNotification(userId: String)
 
-GET /rooms/:id                          controllers.RoomsController.getRoom(id: String)
-PUT /rooms/:id                          controllers.RoomsController.updateRoom(id: String)
-DELETE /rooms/:id                       controllers.RoomsController.deleteRoom(id: String)
+GET /rooms/:id                               controllers.RoomsController.showRoom(id: String)
+PUT /rooms/:id                               controllers.RoomsController.updateRoom(id: String)
+DELETE /rooms/:id                            controllers.RoomsController.deleteRoom(id: String)
 
-POST /users                             controllers.UsersController.createUser()
-GET /users                              controllers.UsersController.getUsers()
-GET /users/:id                          controllers.UsersController.getUser(id: String)
-PUT /users/:id                          controllers.UsersController.updateUser(id: String)
-DELETE /users/:id                       controllers.UsersController.deleteUser(id: String)
+POST /users                                  controllers.UsersController.createUser()
+GET /users                                   controllers.UsersController.getUsers()
+GET /users/:id                               controllers.UsersController.showUser(id: String)
+PUT /users/:id                               controllers.UsersController.updateUser(id: String)
+DELETE /users/:id                            controllers.UsersController.deleteUser(id: String)
+
+#POST /rooms/:roomId/subscriptions            controllers.SubscriptionsController.createSubscription(roomId: String)
+#GET /rooms/:roomId/subscriptions             controllers.SubscriptionsController.getSubscriptions(roomId: String)
+#GET /rooms/:roomId/subscriptions/:id         controllers.SubscriptionsController.showSubscriptions(roomId: String, id: String)
+#DELETE /rooms/:roomId/subscriptions/:id      controllers.SubscriptionController.deleteSubscription(roomId: String, id: String)
+
+POST /requests                               controllers.RequestsController.createRequest()
+GET /requests                                controllers.RequestsController.getRequests(u: String)
+GET /requests/:id                            controllers.RequestsController.showRequest(id: String)
+PUT /requests/:id                            controllers.RequestsController.updateRequest(id: String)
+DELETE /requests/:id                         controllers.RequestsController.deleteRequest(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                   controllers.Assets.at(path="/public", file)
