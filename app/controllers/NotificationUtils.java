@@ -1,12 +1,15 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.MulticastResult;
+import com.google.android.gcm.server.Result;
+import com.google.android.gcm.server.Sender;
 import play.Logger;
 import play.libs.F;
-import play.libs.Json;
-import play.libs.ws.WS;
-import play.libs.ws.WSResponse;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,45 +20,46 @@ public class NotificationUtils {
 
     public static final String GCM_URL = "https://android.googleapis.com/gcm/send";
     public static final String GCM_API_KEY = "AIzaSyDp2t64B8FsJUAOszaFl14-uiDVoZRu4W4";
+    private static final int GCM_RETRIES = 3;
+
+    private static final Sender GCM_SENDER = new Sender(GCM_API_KEY);
 
     private NotificationUtils() { }
 
-    private static class AndroidGcmRequest {
+    private static Message buildGcmMessage(Optional<Map<String, String>> dataOptional) {
+        Message.Builder builder = new Message.Builder();
 
-        public String[] registration_ids;
-        public ObjectNode data = Json.newObject();
-
-        private AndroidGcmRequest(String[] registration_ids, Map<String, String> dataMap) {
-            this.registration_ids = registration_ids;
-            setData(dataMap);
-        }
-
-        private AndroidGcmRequest(String[] registration_ids) {
-            this.registration_ids = registration_ids;
-        }
-
-        private void setData(Map<String, String> map) {
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                data.put(entry.getKey(), entry.getValue());
+        if (dataOptional.isPresent()) {
+            Map<String, String> data = dataOptional.get();
+            for (Map.Entry<String, String> entry : data.entrySet()) {
+                builder.addData(entry.getKey(), entry.getValue());
             }
+        }
+
+        return builder.build();
+    }
+
+    public static F.Promise<JsonNode> sendAndroidNotification(String regId, Optional<Map<String, String>> dataOptional) {
+        Message message = buildGcmMessage(dataOptional);
+
+        try {
+            Result result = GCM_SENDER.send(message, regId, GCM_RETRIES);
+            return F.Promise.promise(() -> toJson(result));
+        } catch (IOException e) {
+            Logger.error("Problem sending GCM Message " + e.getMessage());
+            return F.Promise.promise(() -> toJson("GCM Error: " + e.getMessage()));
         }
     }
 
+    public static F.Promise<JsonNode> sendAndroidMulticastNotification(List<String> regIds, Optional<Map<String, String>> dataOptional) {
+        Message message = buildGcmMessage(dataOptional);
 
-    public static F.Promise<WSResponse> sendAndroidNotification(String[] regIds, Optional<Map<String, String>> dataOptional) {
-        AndroidGcmRequest request;
-        if (dataOptional.isPresent()) {
-            request = new AndroidGcmRequest(regIds, dataOptional.get());
-        } else {
-            request = new AndroidGcmRequest(regIds);
+        try {
+            MulticastResult result = GCM_SENDER.send(message, regIds, GCM_RETRIES);
+            return F.Promise.promise(() -> toJson(result.getResults()));
+        } catch (IOException e) {
+            Logger.error("Problem sending GCM multicast message " + e.getMessage());
+            return F.Promise.promise(() -> toJson("GCM Multicast Error: " + e.getMessage()));
         }
-
-        Logger.debug("sendAndroidNotification called with json: " + toJson(request));
-
-        return WS.url(GCM_URL)
-                .setAuth("key", GCM_API_KEY)
-                .setContentType("application/json")
-                .setHeader("key", GCM_API_KEY)
-                .post(toJson(request));
     }
 }
