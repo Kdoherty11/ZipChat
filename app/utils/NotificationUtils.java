@@ -25,7 +25,7 @@ public class NotificationUtils {
     private static final Sender GCM_SENDER = new Sender(GCM_API_KEY);
 
     public static final ApnsService SERVICE = APNS.newService()
-            .withCert("/Users/zacharywebert/Documents/Play/ZipChat/certificates/dev.p12", "password")
+            .withCert("certificates/dev.p12", "password")
             .withSandboxDestination()
             .build();
 
