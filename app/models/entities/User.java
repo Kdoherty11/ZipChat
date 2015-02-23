@@ -59,7 +59,7 @@ public class User extends Model {
                 return NotificationUtils.sendAndroidNotification(registrationId, data);
             case ios:
                 Logger.debug("send ios notification");
-                NotificationUtils.sendAppleNotification();
+                NotificationUtils.sendAppleNotification(registrationId, data);
                 return F.Promise.promise(new F.Function0<JsonNode>() {
                     @Override
                     public JsonNode apply() throws Throwable {
