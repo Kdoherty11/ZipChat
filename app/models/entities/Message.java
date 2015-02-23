@@ -18,12 +18,9 @@ public class Message extends Model {
     @Constraints.Required
     public String message;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
+    @Constraints.Required
     public String roomId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
     @Constraints.Required
     public String userId;
 
@@ -48,6 +45,4 @@ public class Message extends Model {
                 .add("timeStamp", timeStamp)
                 .toString();
     }
-
-
 }

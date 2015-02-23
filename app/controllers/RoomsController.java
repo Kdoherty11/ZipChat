@@ -55,14 +55,14 @@ public class RoomsController extends Controller {
     }
 
     public static Promise<Result> getGeoRooms(double lat, double lon) {
-        return Promise.promise(() -> ok(toJson(Room.allInGeoRange(lat, lon))));
+        return Promise.promise(() -> ok(toJson(Room.allInGeoRange(lat, lon).get())));
     }
 
     public static Promise<Result> updateRoom(String id) {
         return CrudUtils.update(id, Room.class, form().bindFromRequest(), DEFAULT_CB);
     }
 
-    public static Promise<Result> getRoom(String id) {
+    public static Promise<Result> showRoom(String id) {
         return CrudUtils.show(id, Room.class, DEFAULT_CB);
     }
 

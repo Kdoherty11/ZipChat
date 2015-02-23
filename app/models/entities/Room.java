@@ -1,9 +1,6 @@
 package models.entities;
 
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Query;
-import com.avaje.ebean.RawSql;
-import com.avaje.ebean.RawSqlBuilder;
+import com.avaje.ebean.*;
 import com.google.common.base.Objects;
 import play.Logger;
 import play.data.format.Formats;
@@ -15,7 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "rooms")
@@ -44,13 +40,11 @@ public class Room extends Model {
     @Formats.DateTime(pattern="dd/MM/yyyy")
     public Date lastActivity = new Date();
 
-    private int distance;
-
     public int score;
 
     public static Finder<String, Room> find = new Finder<>(String.class, Room.class);
 
-    public static List<Room> allInGeoRange(double lat, double lon) {
+    public static FutureList<Room> allInGeoRange(double lat, double lon) {
 
         Logger.debug("Getting all rooms containing " + lat + ", " + lon);
 
@@ -73,7 +67,7 @@ public class Room extends Model {
                 .setParameter("lon", lon)
                 .setParameter("R", earthRadius);
 
-        return query.findList();
+        return query.findFutureList();
     }
 
     @Override
@@ -84,7 +78,6 @@ public class Room extends Model {
                 .add("latitude", latitude)
                 .add("longitude", longitude)
                 .add("radius", radius)
-                .add("distance", distance)
                 .add("score", score)
                 .add("creationTime", creationTime)
                 .add("lastActivity", lastActivity)
