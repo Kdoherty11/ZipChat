@@ -27,7 +27,7 @@ public class NotificationUtils {
     private static final Sender GCM_SENDER = new Sender(GCM_API_KEY);
 
     public static final ApnsService SERVICE = APNS.newService()
-            .withCert("/Users/zacharywebert/Documents/Play/ZipChat/certificates/dev.p12", "password")
+            .withCert("certificates/dev.p12", "password")
             .withSandboxDestination()
             .build();
 
@@ -37,7 +37,7 @@ public class NotificationUtils {
     private static Message buildGcmMessage(Map<String, String> data) {
         Message.Builder builder = new Message.Builder();
 
-        data.entrySet().forEach(entry -> builder.addData(entry.getKey(), entry.getValue()) );
+        data.entrySet().forEach(entry -> builder.addData(entry.getKey(), entry.getValue()));
 
         return builder.build();
     }
@@ -64,10 +64,13 @@ public class NotificationUtils {
 
     public static F.Promise<JsonNode> sendAppleNotification(String token, Map<String, String> data) {
         String payload = buildAppleMessage(data);
+
+        //"a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
         try {
             SERVICE.push(token, payload);
             return F.Promise.promise(() -> toJson("OK"));
         } catch (NetworkIOException e) {
+            Logger.error("Problem sending APN " + e.getMessage());
             return F.Promise.promise(() -> toJson("Failed"));
         }
     }
