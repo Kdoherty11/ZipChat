@@ -27,7 +27,7 @@ public class NotificationUtils {
     private static final Sender GCM_SENDER = new Sender(GCM_API_KEY);
 
     public static final ApnsService service = APNS.newService()
-            .withCert("/certificates/dev.cer", "")
+            .withCert("/Users/zacharywebert/Documents/Play/ZipChat/certificates/dev.p12", "password")
             .withSandboxDestination()
             .build();
 
@@ -35,8 +35,10 @@ public class NotificationUtils {
 
     public static void sendAppleNotification() {
         String payload = APNS.newPayload().alertBody("message").build();
-        String token = "deviceToken";
+        String token = "a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
+        
         service.push(token, payload);
+        Logger.debug("finished sending notification");
     }
 
     private static Message buildGcmMessage(Optional<Map<String, String>> dataOptional) {

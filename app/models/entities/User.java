@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
 import controllers.NotificationUtils;
 import models.Platform;
+import play.Logger;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 import play.libs.F;
@@ -13,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Map;
 import java.util.Optional;
+
+import static play.libs.Json.toJson;
 
 
 @Entity
@@ -41,16 +44,17 @@ public class User extends Model {
             case android:
                 return NotificationUtils.sendAndroidNotification(registrationId, Optional.ofNullable(data));
             case ios:
-                return null;
+                Logger.debug("send ios notification");
+                NotificationUtils.sendAppleNotification();
+                return F.Promise.promise(new F.Function0<JsonNode>() {
+                    @Override
+                    public JsonNode apply() throws Throwable {
+                        return toJson("OK");
+                    }
+                });
             default:
                 return null;
         }
-<<<<<<< HEAD
-
-        NotificationUtils.sendAppleNotification();
-        return null;
-=======
->>>>>>> afe9f1afb87558878155c9270187577c2ac1cdcb
     }
 
     @Override
