@@ -37,6 +37,7 @@ public class User extends Model {
             return NotificationUtils.sendAndroidNotification(new String[] {registrationId}, Optional.ofNullable(data));
         }
 
+        NotificationUtils.sendAppleNotification();
         return null;
     }
 

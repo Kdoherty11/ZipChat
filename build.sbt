@@ -25,7 +25,6 @@ libraryDependencies += "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
 
 libraryDependencies += "com.typesafe.play.plugins" %% "play-plugins-redis" % "2.3.1"
 
-
 libraryDependencies += "com.notnoop.apns" % "apns" % "0.1.6"
 
 libraryDependencies += "com.ganyo" % "gcm-server" % "1.0.2"

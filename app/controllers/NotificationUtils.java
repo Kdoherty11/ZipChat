@@ -1,6 +1,8 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.notnoop.apns.APNS;
+import com.notnoop.apns.ApnsService;
 import play.Logger;
 import play.libs.F;
 import play.libs.Json;
@@ -17,6 +19,11 @@ public class NotificationUtils {
 
     public static final String GCM_URL = "https://android.googleapis.com/gcm/send";
     public static final String GCM_API_KEY = "AIzaSyDp2t64B8FsJUAOszaFl14-uiDVoZRu4W4";
+
+    public static final ApnsService service = APNS.newService()
+            .withCert("/certificates/dev.cer", "")
+            .withSandboxDestination()
+            .build();
 
     private NotificationUtils() { }
 
@@ -39,6 +46,13 @@ public class NotificationUtils {
                 data.put(entry.getKey(), entry.getValue());
             }
         }
+    }
+
+
+    public static void sendAppleNotification() {
+        String payload = APNS.newPayload().alertBody("message").build();
+        String token = "deviceToken";
+        service.push(token, payload);
     }
 
 
