@@ -7,6 +7,7 @@ import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
+import com.notnoop.exceptions.NetworkIOException;
 import play.Logger;
 import play.libs.F;
 
@@ -32,12 +33,6 @@ public class NotificationUtils {
     private NotificationUtils() {
     }
 
-    public static void sendAppleNotification() {
-        String payload = APNS.newPayload().alertBody("message").build();
-        String token = "a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
-        SERVICE.push(token, payload);
-    }
-
     private static Message buildGcmMessage(Map<String, String> data) {
         Message.Builder builder = new Message.Builder();
 
@@ -55,6 +50,17 @@ public class NotificationUtils {
         } catch (IOException e) {
             Logger.error("Problem sending GCM Message " + e.getMessage());
             return F.Promise.promise(() -> toJson("GCM Error: " + e.getMessage()));
+        }
+    }
+
+    public static F.Promise<JsonNode> sendAppleNotification(String regId, Map<String, String> data) {
+        String payload = APNS.newPayload().alertBody("message").build();
+        String token = regId;//"a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
+        try {
+            SERVICE.push(token, payload);
+            return F.Promise.promise(() -> toJson("OK"));
+        } catch (NetworkIOException e) {
+            return F.Promise.promise(() -> toJson("Failed"));
         }
     }
 
