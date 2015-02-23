@@ -62,9 +62,8 @@ public class NotificationUtils {
         }
     }
 
-    public static F.Promise<JsonNode> sendAppleNotification(String regId, Map<String, String> data) {
+    public static F.Promise<JsonNode> sendAppleNotification(String token, Map<String, String> data) {
         String payload = buildAppleMessage(data);
-        String token = regId;//"a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
         try {
             SERVICE.push(token, payload);
             return F.Promise.promise(() -> toJson("OK"));
@@ -82,6 +81,16 @@ public class NotificationUtils {
         } catch (IOException e) {
             Logger.error("Problem sending GCM multicast message " + e.getMessage());
             return F.Promise.promise(() -> toJson("GCM Multicast Error: " + e.getMessage()));
+        }
+    }
+
+    public static F.Promise<JsonNode> sendBatchAppleNotifications(List<String> tokens, Map<String, String> data) {
+        String payload = buildAppleMessage(data);
+        try {
+            SERVICE.push(tokens, payload);
+            return F.Promise.promise(() -> toJson("OK"));
+        } catch (NetworkIOException e) {
+            return F.Promise.promise(() -> toJson("Failed"));
         }
     }
 }
