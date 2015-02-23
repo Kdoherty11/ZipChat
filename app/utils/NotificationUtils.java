@@ -6,6 +6,7 @@ import com.google.android.gcm.server.MulticastResult;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
 import com.notnoop.apns.APNS;
+import com.notnoop.apns.ApnsService;
 import play.Logger;
 import play.libs.F;
 
@@ -23,18 +24,18 @@ public class NotificationUtils {
 
     private static final Sender GCM_SENDER = new Sender(GCM_API_KEY);
 
-//    public static final ApnsService service = APNS.newService()
-//            .withCert("/certificates/dev.cer", "")
-//            .withSandboxDestination()
-//            .build();
+    public static final ApnsService SERVICE = APNS.newService()
+            .withCert("/Users/zacharywebert/Documents/Play/ZipChat/certificates/dev.p12", "password")
+            .withSandboxDestination()
+            .build();
 
     private NotificationUtils() {
     }
 
     public static void sendAppleNotification() {
         String payload = APNS.newPayload().alertBody("message").build();
-        String token = "deviceToken";
-        //service.push(token, payload);
+        String token = "a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
+        SERVICE.push(token, payload);
     }
 
     private static Message buildGcmMessage(Map<String, String> data) {
