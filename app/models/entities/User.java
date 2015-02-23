@@ -1,12 +1,12 @@
 package models.entities;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import controllers.NotificationUtils;
+import models.Platform;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 import play.libs.F;
-import play.libs.ws.WSResponse;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -28,17 +28,29 @@ public class User extends Model {
     @Constraints.Required
     public String name;
 
+    @Constraints.Required
     public String registrationId;
+
+    @Constraints.Required
+    public Platform platform;
 
     public static Finder<String, User> find = new Finder<>(String.class, User.class);
 
-    public F.Promise<WSResponse> sendNotification(Map<String, String> data) {
-        if (!Strings.isNullOrEmpty(registrationId)) {
-            return NotificationUtils.sendAndroidNotification(new String[] {registrationId}, Optional.ofNullable(data));
+    public F.Promise<JsonNode> sendNotification(Map<String, String> data) {
+        switch (platform) {
+            case android:
+                return NotificationUtils.sendAndroidNotification(registrationId, Optional.ofNullable(data));
+            case ios:
+                return null;
+            default:
+                return null;
         }
+<<<<<<< HEAD
 
         NotificationUtils.sendAppleNotification();
         return null;
+=======
+>>>>>>> afe9f1afb87558878155c9270187577c2ac1cdcb
     }
 
     @Override
@@ -48,6 +60,7 @@ public class User extends Model {
                 .add("facebookId", facebookId)
                 .add("name", name)
                 .add("registrationId", registrationId)
+                .add("platform", platform)
                 .toString();
     }
 }

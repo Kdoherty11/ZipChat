@@ -3,11 +3,12 @@ package models.entities;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-/**
- * Created by kevindoherty on 2/19/15.
- */
+@Entity
+@Table(name = "subscriptions")
 public class Subscription extends Model {
 
     @Id

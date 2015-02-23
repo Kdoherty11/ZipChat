@@ -11,7 +11,6 @@ import java.util.Map;
 
 import static play.data.Form.form;
 import static play.libs.F.Promise;
-import static play.libs.Json.toJson;
 
 
 public class UsersController extends Controller {
@@ -53,7 +52,7 @@ public class UsersController extends Controller {
         F.Promise<User> userPromise = F.Promise.promise(() -> new Model.Finder<>(String.class, User.class).byId(userId));
         Map<String, String> data = form().bindFromRequest().data();
 
-        return userPromise.flatMap(user -> user.sendNotification(data)).map(response -> ok(toJson(response.getBody())));
+        return userPromise.flatMap(user -> user.sendNotification(data)).map(response -> ok(response));
     }
 
 }
