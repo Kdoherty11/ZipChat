@@ -2,7 +2,7 @@ package models.entities;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
-import controllers.NotificationUtils;
+import utils.NotificationUtils;
 import models.Platform;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Map;
-import java.util.Optional;
 
 
 @Entity
@@ -36,21 +35,31 @@ public class User extends Model {
 
     public static Finder<String, User> find = new Finder<>(String.class, User.class);
 
+    public static F.Promise<JsonNode> sendNotification(String id, Map<String, String> data) {
+        F.Promise<User> userPromise = F.Promise.promise(new F.Function0<User>() {
+            @Override
+            public User apply() throws Throwable {
+                return find.byId(id);
+            }
+        });
+        return userPromise.flatMap(new F.Function<User, F.Promise<JsonNode>>() {
+            @Override
+            public F.Promise<JsonNode> apply(User user) throws Throwable {
+                return user.sendNotification(data);
+            }
+        });
+    }
+
     public F.Promise<JsonNode> sendNotification(Map<String, String> data) {
         switch (platform) {
             case android:
-                return NotificationUtils.sendAndroidNotification(registrationId, Optional.ofNullable(data));
+                return NotificationUtils.sendAndroidNotification(registrationId, data);
             case ios:
+                NotificationUtils.sendAppleNotification();
                 return null;
             default:
                 return null;
         }
-<<<<<<< HEAD
-
-        NotificationUtils.sendAppleNotification();
-        return null;
-=======
->>>>>>> afe9f1afb87558878155c9270187577c2ac1cdcb
     }
 
     @Override

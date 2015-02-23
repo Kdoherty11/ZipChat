@@ -1,5 +1,6 @@
 package models.entities;
 
+import com.avaje.ebean.FutureList;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
@@ -21,4 +22,8 @@ public class Subscription extends Model {
     public String userId;
 
     public static Model.Finder<String, Subscription> find = new Model.Finder<>(String.class, Subscription.class);
+
+    public static FutureList<Subscription> findByRoomId(String roomId) {
+        return find.select("userId").where().eq("roomId", roomId).findFutureList();
+    }
 }

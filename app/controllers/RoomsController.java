@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import utils.CrudUtils;
 import models.RoomSocket;
 import models.entities.Room;
 import play.Logger;

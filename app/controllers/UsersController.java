@@ -2,10 +2,9 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.entities.User;
-import play.db.ebean.Model;
-import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
+import utils.CrudUtils;
 
 import java.util.Map;
 
@@ -48,11 +47,8 @@ public class UsersController extends Controller {
     }
 
     public static Promise<Result> sendNotification(String userId) {
-
-        F.Promise<User> userPromise = F.Promise.promise(() -> new Model.Finder<>(String.class, User.class).byId(userId));
         Map<String, String> data = form().bindFromRequest().data();
 
-        return userPromise.flatMap(user -> user.sendNotification(data)).map(response -> ok(response));
+        return User.sendNotification(userId, data).map(response -> ok(response));
     }
-
 }

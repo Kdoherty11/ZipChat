@@ -70,6 +70,16 @@ public class Room extends Model {
         return query.findFutureList();
     }
 
+//    public void sendToSubscribers(Optional<Map<String, String>> data) {
+//        FutureList<Subscription> subscribers = Subscription.findByRoomId(id);
+//        try {
+//            subscribers.get().stream().map(subscriber -> subscriber.userId).collect(Collectors.toList())
+//                    .forEach(id -> UsersController.sendNotification(id));
+//        } catch (InterruptedException | ExecutionException e) {
+//            Logger.error("Problem getting subscriptions for room " + id  + " " + e.getMessage());
+//        }
+//    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)

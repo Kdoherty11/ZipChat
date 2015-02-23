@@ -1,4 +1,4 @@
-package controllers;
+package utils;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,7 +26,7 @@ public class CrudUtils {
 
     public static <T extends Model> Promise<Result> create(Form<T> form, Callback cb) {
 
-        Logger.info("Creating a " + form.get().getClass().getSimpleName());
+        Logger.debug("Creating a " + form.get().getClass().getSimpleName());
 
         if (form.hasErrors()) {
             return Promise.promise(() -> cb.failure(form.errorsAsJson()));
@@ -47,7 +47,7 @@ public class CrudUtils {
 
     public static <T extends Model> Promise<Result> update(String id, Class<T> clazz, DynamicForm requestForm, Callback cb) {
 
-        Logger.info("Updating " + clazz.getSimpleName() + " with id " + id);
+        Logger.debug("Updating " + clazz.getSimpleName() + " with id " + id);
 
         Promise<T> promiseEntity = Promise.promise(() -> new Model.Finder<>(String.class, clazz).byId(id));
 
@@ -89,7 +89,7 @@ public class CrudUtils {
 
     public static <T extends Model> Promise<Result> delete(String id, Class<T> clazz, Callback cb) {
 
-        Logger.info("Deleting " + clazz.getSimpleName() + " with id " + id);
+        Logger.debug("Deleting " + clazz.getSimpleName() + " with id " + id);
 
         Promise<T> promiseEntity = Promise.promise(() -> new Model.Finder<>(String.class, clazz).byId(id));
 
@@ -108,7 +108,7 @@ public class CrudUtils {
 
     public static <T extends Model> Promise<Result> show(String id, Class<T> clazz, Callback cb) {
 
-        Logger.info("Showing " + clazz.getSimpleName() + " with id " + id);
+        Logger.debug("Showing " + clazz.getSimpleName() + " with id " + id);
 
         Promise<T> promiseEntity = Promise.promise(() -> new Model.Finder<>(String.class, clazz).byId(id));
 

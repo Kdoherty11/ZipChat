@@ -1,6 +1,6 @@
 package models;
 
-import controllers.CrudUtils;
+import utils.CrudUtils;
 import play.data.DynamicForm;
 import play.db.ebean.Model;
 import play.libs.F;
