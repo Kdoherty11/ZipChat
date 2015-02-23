@@ -7,6 +7,7 @@ import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
+import com.notnoop.apns.PayloadBuilder;
 import com.notnoop.exceptions.NetworkIOException;
 import play.Logger;
 import play.libs.F;
@@ -41,6 +42,14 @@ public class NotificationUtils {
         return builder.build();
     }
 
+    private static String buildAppleMessage(Map<String, String> data) {
+        PayloadBuilder builder = PayloadBuilder.newPayload();
+        builder.alertBody("New message");
+
+        data.entrySet().forEach(entry -> builder.customField(entry.getKey(), entry.getValue()));
+        return builder.build();
+    }
+
     public static F.Promise<JsonNode> sendAndroidNotification(String regId, Map<String, String> data) {
         Message message = buildGcmMessage(data);
 
@@ -54,7 +63,8 @@ public class NotificationUtils {
     }
 
     public static F.Promise<JsonNode> sendAppleNotification(String token, Map<String, String> data) {
-        String payload = APNS.newPayload().alertBody("message").build();
+        String payload = buildAppleMessage(data);
+
         //"a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
         try {
             SERVICE.push(token, payload);
