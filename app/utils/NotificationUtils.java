@@ -86,4 +86,14 @@ public class NotificationUtils {
             return F.Promise.promise(() -> toJson("GCM Multicast Error: " + e.getMessage()));
         }
     }
+
+    public static F.Promise<JsonNode> sendBatchAppleNotifications(List<String> tokens, Map<String, String> data) {
+        String payload = buildAppleMessage(data);
+        try {
+            SERVICE.push(tokens, payload);
+            return F.Promise.promise(() -> toJson("OK"));
+        } catch (NetworkIOException e) {
+            return F.Promise.promise(() -> toJson("Failed"));
+        }
+    }
 }
