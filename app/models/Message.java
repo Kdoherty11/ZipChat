@@ -1,38 +1,41 @@
-package models.entities;
+package models;
 
 import com.google.common.base.Objects;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
-import play.db.ebean.Model;
+import play.db.jpa.JPA;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "messages")
-public class Message extends Model {
+public class Message {
 
     @Id
-    public String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long id;
 
     @Constraints.Required
     public String message;
 
     @Constraints.Required
-    public String roomId;
+    public long roomId;
 
     @Constraints.Required
-    public String userId;
+    public long userId;
 
     @Formats.DateTime(pattern="dd/MM/yyyy")
     public Date timeStamp = new Date();
 
-    public static Finder<String, Message> find = new Finder<>(String.class, Message.class);
+    public static List<Message> getByRoomId(long roomId) {
+        String queryString = "select m from Message m where m.roomId = :roomId";
 
-    public Message(String message, String roomId, String userId) {
-        this.message = message;
-        this.roomId = roomId;
-        this.userId = userId;
+        Query query = JPA.em().createQuery(queryString)
+                .setParameter("roomId", roomId);
+
+        return query.getResultList();
     }
 
     @Override

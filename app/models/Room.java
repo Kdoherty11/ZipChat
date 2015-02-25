@@ -1,89 +1,91 @@
-package models.entities;
+package models;
 
-import com.avaje.ebean.*;
 import com.google.common.base.Objects;
 import play.Logger;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
-import play.db.ebean.Model;
+import play.db.jpa.JPA;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "rooms")
-public class Room extends Model {
+public class Room {
 
     @Id
-    public String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long roomId;
 
     @Constraints.Required
+    @NoUpdate
     public String name;
 
     @Constraints.Required
     @Column(columnDefinition = "NUMERIC")
+    @NoUpdate
     public double latitude;
 
     @Constraints.Required
     @Column(columnDefinition = "NUMERIC")
+    @NoUpdate
     public double longitude;
 
     @Constraints.Required
+    @NoUpdate
     public int radius;
 
     @Formats.DateTime(pattern="dd/MM/yyyy")
+    @NoUpdate
     public Date creationTime = new Date();
 
     @Formats.DateTime(pattern="dd/MM/yyyy")
+    @NoUpdate
     public Date lastActivity = new Date();
+
+//    @ManyToMany
+//    @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name="roomId")}, inverseJoinColumns = {@JoinColumn(name="userId")})
+//    public List<Long> subscribers = new ArrayList<>();
 
     public int score;
 
-    public static Finder<String, Room> find = new Finder<>(String.class, Room.class);
-
-    public static FutureList<Room> allInGeoRange(double lat, double lon) {
+    public static List<Room> allInGeoRange(double lat, double lon) {
 
         Logger.debug("Getting all rooms containing " + lat + ", " + lon);
 
         int earthRadius = 6371;  // earth's mean radius, km
 
-        String firstCutSql = "select r.id, r.latitude, r.longitude, r.radius" +
-                " from rooms r" +
+        String firstCutSql = "select r" +
+                " from Room r" +
                 " where :lat >= r.latitude - degrees((r.radius * 1000) / :R) and :lat <= r.latitude + degrees((r.radius * 1000) / :R)" +
                 " and :lon >= r.longitude - degrees((r.radius * 1000) / :R) and :lon <= r.longitude + degrees((r.radius * 1000) / :R)";
 
-        String sql = "select id" +
+        // TODO: Fix for JPA
+        String sql = "select r" +
                 " from (" + firstCutSql + ") as FirstCut" +
                 " where acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lon))) * :R * 1000 <= radius;";
 
-        RawSql rawSql = RawSqlBuilder.parse(sql).create();
-
-        Query<Room> query = Ebean.find(Room.class)
-                .setRawSql(rawSql)
+        Query query = JPA.em().createQuery(firstCutSql, Room.class)
                 .setParameter("lat", lat)
                 .setParameter("lon", lon)
                 .setParameter("R", earthRadius);
 
-        return query.findFutureList();
+        return query.getResultList();
     }
 
-//    public void sendToSubscribers(Optional<Map<String, String>> data) {
-//        FutureList<Subscription> subscribers = Subscription.findByRoomId(id);
-//        try {
-//            subscribers.get().stream().map(subscriber -> subscriber.userId).collect(Collectors.toList())
-//                    .forEach(id -> UsersController.sendNotification(id));
-//        } catch (InterruptedException | ExecutionException e) {
-//            Logger.error("Problem getting subscriptions for room " + id  + " " + e.getMessage());
-//        }
+//    public void notifySubscribers(Map<String, String> data) {
+//        subscribers.forEach(user -> user.sendNotification(data));
 //    }
+
+    //public void addSubscription(long userId) {
+   //     subscribers.add(userId);
+   // }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("id", id)
+                .add("roomId", roomId)
                 .add("name", name)
                 .add("latitude", latitude)
                 .add("longitude", longitude)

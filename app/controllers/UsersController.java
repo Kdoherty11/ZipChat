@@ -1,54 +1,44 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import models.entities.User;
-import play.mvc.Controller;
+import models.User;
+import play.db.jpa.Transactional;
 import play.mvc.Result;
-import utils.CrudUtils;
 
 import java.util.Map;
 
 import static play.data.Form.form;
 import static play.libs.F.Promise;
 
+public class UsersController extends BaseController {
 
-public class UsersController extends Controller {
-
-    private static final CrudUtils.Callback DEFAULT_CB = new CrudUtils.Callback() {
-        @Override
-        public Result success(JsonNode entity) {
-            return ok(entity);
-        }
-
-        @Override
-        public Result failure(JsonNode error) {
-            return badRequest(error);
-        }
-    };
-
-    public static Promise<Result> createUser() {
-        return CrudUtils.create(form(User.class).bindFromRequest(), DEFAULT_CB);
+    @Transactional
+    public static Result createUser() {
+        return create(User.class);
     }
 
-    public static Promise<Result> getUsers() {
-        return CrudUtils.read(User.class, entities -> ok(entities));
+    @Transactional
+    public static Result getUsers() {
+        return read(User.class);
     }
 
-    public static Promise<Result> showUser(String id) {
-        return CrudUtils.show(id, User.class, DEFAULT_CB);
+    @Transactional
+    public static Result showUser(long id) {
+        return show(User.class, id);
     }
 
-    public static Promise<Result> updateUser(String id) {
-        return CrudUtils.update(id, User.class, form().bindFromRequest(), DEFAULT_CB);
+    @Transactional
+    public static Result updateUser(long id) {
+        return update(User.class, id);
     }
 
-    public static Promise<Result> deleteUser(String id) {
-        return CrudUtils.delete(id, User.class, DEFAULT_CB);
+    @Transactional
+    public static Result deleteUser(long id) {
+        return delete(User.class, id);
     }
 
-    public static Promise<Result> sendNotification(String userId) {
+    @Transactional
+    public static Promise<Result> sendNotification(long userId) {
         Map<String, String> data = form().bindFromRequest().data();
-
         return User.sendNotification(userId, data).map(response -> ok(response));
     }
 }

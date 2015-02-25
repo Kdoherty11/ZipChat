@@ -6,9 +6,8 @@ import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
-import models.entities.Message;
-import models.entities.User;
 import play.Logger;
+import play.db.jpa.JPA;
 import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
@@ -156,8 +155,12 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void storeMessage(Talk talk) {
-        Message message = new Message(talk.getText(), talk.getRoomId(), talk.getUsername());
-        message.save();
+        //Message message = new Message(talk.getText(), talk.getRoomId(), talk.getUsername());
+      //  Message message = new Message();
+//        message.message = talk.getText();
+//        message.roomId = talk.getRoomId();
+//        message.userId = talk.getUsername();
+//        JPA.em().persist(message);
     }
 
     private void receiveJoin(Jedis j, Join join) {
@@ -236,7 +239,8 @@ public class RoomSocket extends UntypedActor {
             if (users.containsKey(userId)) {
                 u = users.get(userId);
             } else {
-                u = User.find.byId(userId);
+                u = JPA.em().find(User.class, userId);
+
                 users.put(userId, u);
             }
 

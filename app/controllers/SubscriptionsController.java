@@ -1,30 +1,32 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import utils.CrudUtils;
-import models.entities.Subscription;
-import play.libs.F;
 import play.mvc.Controller;
-import play.mvc.Result;
-
-import static play.data.Form.form;
 
 public class SubscriptionsController extends Controller {
 
-    private static final CrudUtils.Callback DEFAULT_CB = new CrudUtils.Callback() {
-        @Override
-        public Result success(JsonNode entity) {
-            return ok(entity);
-        }
-
-        @Override
-        public Result failure(JsonNode error) {
-            return badRequest(error);
-        }
-    };
-
-    public static F.Promise<Result> createRequest() {
-        return CrudUtils.create(form(Subscription.class).bindFromRequest(), DEFAULT_CB);
-    }
+//    @Transactional
+//    public static Result createSubscription(long roomId) {
+//        Optional<Room> roomOptional = CrudUtils.findEntityById(Room.class, roomId);
+//
+//        if (roomOptional.isPresent()) {
+//
+//            Map<String, String> formData = form().bindFromRequest().data();
+//
+//            if (!formData.containsKey("userId")) {
+//                return badRequest(toJson("Field userId is required"));
+//            }
+//
+//            long userId;
+//            try {
+//                userId = Long.valueOf(formData.get("userId"));
+//            } catch (NumberFormatException e) {
+//                return badRequest(toJson("userId must be a long"));
+//            }
+//            roomOptional.get().addSubscription(userId);
+//            return ok(toJson("OK"));
+//        } else {
+//            return badRequest(toJson(CrudUtils.buildEntityNotFoundError("Room", roomId)));
+//        }
+//    }
 
 }

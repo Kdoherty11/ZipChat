@@ -34,32 +34,12 @@ public class NotificationUtils {
     private NotificationUtils() {
     }
 
-    private static Message buildGcmMessage(Map<String, String> data) {
-        Message.Builder builder = new Message.Builder();
-
-        data.entrySet().forEach(entry -> builder.addData(entry.getKey(), entry.getValue()));
-
-        return builder.build();
-    }
-
     private static String buildAppleMessage(Map<String, String> data) {
         PayloadBuilder builder = PayloadBuilder.newPayload();
         builder.alertBody("New message");
 
         data.entrySet().forEach(entry -> builder.customField(entry.getKey(), entry.getValue()));
         return builder.build();
-    }
-
-    public static F.Promise<JsonNode> sendAndroidNotification(String regId, Map<String, String> data) {
-        Message message = buildGcmMessage(data);
-
-        try {
-            Result result = GCM_SENDER.send(message, regId, GCM_RETRIES);
-            return F.Promise.promise(() -> toJson(result));
-        } catch (IOException e) {
-            Logger.error("Problem sending GCM Message " + e.getMessage());
-            return F.Promise.promise(() -> toJson("GCM Error: " + e.getMessage()));
-        }
     }
 
     public static F.Promise<JsonNode> sendAppleNotification(String token, Map<String, String> data) {
@@ -72,6 +52,26 @@ public class NotificationUtils {
         } catch (NetworkIOException e) {
             Logger.error("Problem sending APN " + e.getMessage());
             return F.Promise.promise(() -> toJson("Failed"));
+        }
+    }
+
+    private static Message buildGcmMessage(Map<String, String> data) {
+        Message.Builder builder = new Message.Builder();
+
+        data.entrySet().forEach(entry -> builder.addData(entry.getKey(), entry.getValue()));
+
+        return builder.build();
+    }
+
+    public static F.Promise<JsonNode> sendAndroidNotification(String regId, Map<String, String> data) {
+        Message message = buildGcmMessage(data);
+
+        try {
+            Result result = GCM_SENDER.send(message, regId, GCM_RETRIES);
+            return F.Promise.promise(() -> toJson(result));
+        } catch (IOException e) {
+            Logger.error("Problem sending GCM Message " + e.getMessage());
+            return F.Promise.promise(() -> toJson("GCM Error: " + e.getMessage()));
         }
     }
 

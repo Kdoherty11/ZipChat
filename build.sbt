@@ -14,6 +14,8 @@ libraryDependencies ++= Seq(
   javaEbean,
   cache,
   javaWs,
+  javaJpa,
+  "org.hibernate" % "hibernate-entitymanager" % "3.6.9.Final",
   "redis.clients" % "jedis" % "2.6.0"
 )
 

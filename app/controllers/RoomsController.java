@@ -1,32 +1,15 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import utils.CrudUtils;
+import models.Room;
 import models.RoomSocket;
-import models.entities.Room;
 import play.Logger;
-import play.mvc.Controller;
+import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 
-import static play.data.Form.form;
-import static play.libs.F.Promise;
-import static play.libs.Json.toJson;
 
-
-public class RoomsController extends Controller {
-
-    private static final CrudUtils.Callback DEFAULT_CB = new CrudUtils.Callback() {
-        @Override
-        public Result success(JsonNode entity) {
-            return ok(entity);
-        }
-
-        @Override
-        public Result failure(JsonNode error) {
-            return badRequest(error);
-        }
-    };
+public class RoomsController extends BaseController {
 
     /**
      * Handle the chat websocket.
@@ -47,27 +30,33 @@ public class RoomsController extends Controller {
         };
     }
 
-    public static Promise<Result> createRoom() {
-        return CrudUtils.create(form(Room.class).bindFromRequest(), DEFAULT_CB);
+    @Transactional
+    public static Result createRoom() {
+        return create(Room.class);
     }
 
-    public static Promise<Result> getRooms() {
-        return CrudUtils.read(Room.class, entities -> ok(entities));
+    @Transactional
+    public static Result getRooms() {
+        return read(Room.class);
     }
 
-    public static Promise<Result> getGeoRooms(double lat, double lon) {
-        return Promise.promise(() -> ok(toJson(Room.allInGeoRange(lat, lon).get())));
+    @Transactional
+    public static Result updateRoom(long id) {
+        return update(Room.class, id);
     }
 
-    public static Promise<Result> updateRoom(String id) {
-        return CrudUtils.update(id, Room.class, form().bindFromRequest(), DEFAULT_CB);
+    @Transactional
+    public static Result showRoom(long id) {
+        return show(Room.class, id);
     }
 
-    public static Promise<Result> showRoom(String id) {
-        return CrudUtils.show(id, Room.class, DEFAULT_CB);
+    @Transactional
+    public static Result deleteRoom(long id) {
+        return delete(Room.class, id);
     }
 
-    public static Promise<Result> deleteRoom(String id) {
-        return CrudUtils.delete(id, Room.class, DEFAULT_CB);
+    @Transactional
+    public static Result getGeoRooms(double lat, double lon) {
+        return okJson(Room.allInGeoRange(lat, lon));
     }
 }
