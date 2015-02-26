@@ -6,8 +6,8 @@
 
 GET /test                                    controllers.RoomsController.getGeoRooms(lat: Double, lon: Double)
 GET /rooms                                   controllers.RoomsController.getRooms()
-GET /rooms/:roomId/messages                  controllers.MessagesController.getMessages(roomId: String)
-POST /rooms/:roomId/messages                 controllers.MessagesController.createMessage(roomId: String)
+GET /rooms/:roomId/messages                  controllers.RoomsController.getMessages(roomId: String)
+POST /rooms/:roomId/messages                 controllers.RoomsController.createMessage(roomId: String)
 GET /join                                    controllers.RoomsController.joinRoom(r, u)
 POST /rooms                                  controllers.RoomsController.createRoom()
 POST /users/:userId/sendNotification         controllers.UsersController.sendNotification(userId: String)

@@ -20,8 +20,9 @@ public class Message {
     @Constraints.Required
     public String message;
 
-    @Constraints.Required
-    public long roomId;
+    @ManyToOne
+    @JoinColumn(name="roomId")
+    public Room room;
 
     @Constraints.Required
     public long userId;
@@ -38,10 +39,9 @@ public class Message {
         return query.getResultList();
     }
 
-
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, message, roomId, userId, timeStamp);
+        return Objects.hashCode(id, message, room, userId, timeStamp);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class Message {
         final Message other = (Message) obj;
         return Objects.equal(this.id, other.id)
                 && Objects.equal(this.message, other.message)
-                && Objects.equal(this.roomId, other.roomId)
+                && Objects.equal(this.room, other.room)
                 && Objects.equal(this.userId, other.userId)
                 && Objects.equal(this.timeStamp, other.timeStamp);
     }
@@ -65,7 +65,7 @@ public class Message {
         return Objects.toStringHelper(this)
                 .add("id", id)
                 .add("message", message)
-                .add("roomId", roomId)
+                .add("roomId", room)
                 .add("userId", userId)
                 .add("timeStamp", timeStamp)
                 .toString();

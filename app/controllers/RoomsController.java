@@ -1,10 +1,13 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import models.entities.Room;
 import models.RoomSocket;
+import models.entities.Message;
+import models.entities.Room;
 import models.entities.User;
 import play.Logger;
+import play.data.Form;
+import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.WebSocket;
@@ -101,6 +104,41 @@ public class RoomsController extends BaseController {
 
         if (roomOptional.isPresent()) {
             return okJson(roomOptional.get().subscribers);
+        } else {
+            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+        }
+    }
+
+    @Transactional
+    public static Result createMessage(String roomId) {
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+
+        if (roomOptional.isPresent()) {
+
+            Form<Message> form = form(Message.class).bindFromRequest();
+
+            if (form.hasErrors()) {
+                return badRequest(form.errorsAsJson());
+            }
+
+            Message message = form.get();
+
+            JPA.em().persist(message);
+
+            roomOptional.get().addMessage(message);
+
+            return okJson(message);
+        } else {
+            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+        }
+    }
+
+    @Transactional
+    public static Result getMessages(String roomId) {
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+
+        if (roomOptional.isPresent()) {
+            return okJson(roomOptional.get().messages);
         } else {
             return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
         }

@@ -53,6 +53,9 @@ public class Room {
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name="roomId")}, inverseJoinColumns = {@JoinColumn(name="userId")})
     public List<User> subscribers = new ArrayList<>();
 
+    @OneToMany(targetEntity = Message.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List<Message> messages = new ArrayList<>();
+
     public int score;
 
     public static List<Room> allInGeoRange(double lat, double lon) {
@@ -86,6 +89,10 @@ public class Room {
     public void addSubscription(User user) {
         subscribers.add(user);
    }
+
+    public void addMessage(Message message) {
+        messages.add(message);
+    }
 
     @Override
     public int hashCode() {
