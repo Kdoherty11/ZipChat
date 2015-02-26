@@ -54,7 +54,7 @@ public class BaseController extends Controller {
         return okJson(entities);
     }
 
-    protected static <T> Result update(Class<T> clazz, long id) {
+    protected static <T> Result update(Class<T> clazz, String id) {
         Logger.debug("Updating " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
@@ -74,7 +74,7 @@ public class BaseController extends Controller {
         }
     }
 
-    protected static <T> Result delete(Class<T> clazz, long id) {
+    protected static <T> Result delete(Class<T> clazz, String id) {
         Logger.debug("Deleting " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
@@ -87,7 +87,7 @@ public class BaseController extends Controller {
         }
     }
 
-    protected static <T> Result show(Class<T> clazz, long id) {
+    protected static <T> Result show(Class<T> clazz, String id) {
         Logger.debug("Showing " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
@@ -101,6 +101,10 @@ public class BaseController extends Controller {
 
     protected static Result okJson(Object obj) {
         return ok(toJson(obj));
+    }
+
+    protected static Result badRequestJson(Object obj) {
+        return badRequest(toJson(obj));
     }
 
     private static String[] getUpdateWhiteList(Class clazz) {

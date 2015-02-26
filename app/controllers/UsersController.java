@@ -1,6 +1,6 @@
 package controllers;
 
-import models.User;
+import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 
@@ -22,22 +22,22 @@ public class UsersController extends BaseController {
     }
 
     @Transactional
-    public static Result showUser(long id) {
+    public static Result showUser(String id) {
         return show(User.class, id);
     }
 
     @Transactional
-    public static Result updateUser(long id) {
+    public static Result updateUser(String id) {
         return update(User.class, id);
     }
 
     @Transactional
-    public static Result deleteUser(long id) {
+    public static Result deleteUser(String id) {
         return delete(User.class, id);
     }
 
     @Transactional
-    public static Promise<Result> sendNotification(long userId) {
+    public static Promise<Result> sendNotification(String userId) {
         Map<String, String> data = form().bindFromRequest().data();
         return User.sendNotification(userId, data).map(response -> ok(response));
     }

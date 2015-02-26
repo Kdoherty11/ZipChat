@@ -1,8 +1,9 @@
-package models;
+package models.entities;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import models.Platform;
 import play.Logger;
 import play.data.validation.Constraints;
 import play.libs.F;
@@ -22,7 +23,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long userId;
+    public String userId;
 
     @Constraints.Required
     public String facebookId;
@@ -39,7 +40,7 @@ public class User {
 //    @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name="userId")}, inverseJoinColumns = {@JoinColumn(name="roomId")})
 //    public List<Room> subscribedTo;
 
-    public static F.Promise<JsonNode> sendNotification(long id, Map<String, String> data) {
+    public static F.Promise<JsonNode> sendNotification(String id, Map<String, String> data) {
         Optional<User> userOptional = DbUtils.findEntityById(User.class, id);
 
         if (userOptional.isPresent()) {
@@ -63,6 +64,27 @@ public class User {
                 Logger.error("Attempted to send a notification to an " + platform + " device");
                 return F.Promise.promise(() -> toJson("Sending notifications to " + platform + " devices is not supported"));
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(userId, facebookId, name, registrationId, platform);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        return Objects.equal(this.userId, other.userId)
+                && Objects.equal(this.facebookId, other.facebookId)
+                && Objects.equal(this.name, other.name)
+                && Objects.equal(this.registrationId, other.registrationId)
+                && Objects.equal(this.platform, other.platform);
     }
 
     @Override

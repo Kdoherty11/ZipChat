@@ -6,6 +6,7 @@ import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
+import models.entities.User;
 import play.Logger;
 import play.db.jpa.JPA;
 import play.libs.Akka;

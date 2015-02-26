@@ -1,4 +1,4 @@
-package models;
+package models.entities;
 
 import com.google.common.base.Objects;
 import play.data.format.Formats;
@@ -15,7 +15,7 @@ public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long id;
+    public String id;
 
     @Constraints.Required
     public String message;
@@ -29,13 +29,35 @@ public class Message {
     @Formats.DateTime(pattern="dd/MM/yyyy")
     public Date timeStamp = new Date();
 
-    public static List<Message> getByRoomId(long roomId) {
+    public static List<Message> getByRoomId(String roomId) {
         String queryString = "select m from Message m where m.roomId = :roomId";
 
-        Query query = JPA.em().createQuery(queryString)
+        TypedQuery<Message> query = JPA.em().createQuery(queryString, Message.class)
                 .setParameter("roomId", roomId);
 
         return query.getResultList();
+    }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id, message, roomId, userId, timeStamp);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final Message other = (Message) obj;
+        return Objects.equal(this.id, other.id)
+                && Objects.equal(this.message, other.message)
+                && Objects.equal(this.roomId, other.roomId)
+                && Objects.equal(this.userId, other.userId)
+                && Objects.equal(this.timeStamp, other.timeStamp);
     }
 
     @Override

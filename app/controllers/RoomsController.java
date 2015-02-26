@@ -1,12 +1,19 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import models.Room;
+import models.entities.Room;
 import models.RoomSocket;
+import models.entities.User;
 import play.Logger;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.WebSocket;
+import utils.DbUtils;
+
+import java.util.Map;
+import java.util.Optional;
+
+import static play.data.Form.form;
 
 
 public class RoomsController extends BaseController {
@@ -41,17 +48,17 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
-    public static Result updateRoom(long id) {
+    public static Result updateRoom(String id) {
         return update(Room.class, id);
     }
 
     @Transactional
-    public static Result showRoom(long id) {
+    public static Result showRoom(String id) {
         return show(Room.class, id);
     }
 
     @Transactional
-    public static Result deleteRoom(long id) {
+    public static Result deleteRoom(String id) {
         return delete(Room.class, id);
     }
 
@@ -59,4 +66,44 @@ public class RoomsController extends BaseController {
     public static Result getGeoRooms(double lat, double lon) {
         return okJson(Room.allInGeoRange(lat, lon));
     }
+
+    @Transactional
+    public static Result createSubscription(String roomId) {
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+
+        if (roomOptional.isPresent()) {
+
+            Map<String, String> formData = form().bindFromRequest().data();
+
+            if (!formData.containsKey("userId")) {
+                return badRequestJson("Field userId is required");
+            }
+
+            String userId = formData.get("userId");
+
+            Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
+
+            if (userOptional.isPresent()) {
+                roomOptional.get().addSubscription(userOptional.get());
+
+                return okJson("OK");
+            } else {
+                return badRequestJson(DbUtils.buildEntityNotFoundError("User", userId));
+            }
+        } else {
+            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+        }
+    }
+
+    @Transactional
+    public static Result getSubscriptions(String roomId) {
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+
+        if (roomOptional.isPresent()) {
+            return okJson(roomOptional.get().subscribers);
+        } else {
+            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+        }
+    }
+
 }
