@@ -1,0 +1,11 @@
+users:
+  - !!models.entities.User
+        name: Kevin Doherty
+        facebookId: 1234567
+        registrationId: 123456
+        platform: android
+  - !!models.entities.User
+        name: Zach Webert
+        facebookId: 1234567
+        registrationId: 123456
+        platform: ios

@@ -17,9 +17,7 @@ public class UsersController extends BaseController {
     }
 
     @Transactional
-    public static Result getUsers() {
-        return read(User.class);
-    }
+    public static Result getUsers() { return read(User.class); }
 
     @Transactional
     public static Result showUser(String id) {

@@ -6,6 +6,7 @@ import org.springframework.validation.DataBinder;
 import play.Logger;
 import play.data.Form;
 import play.db.jpa.JPA;
+import play.libs.Yaml;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utils.DbUtils;
@@ -117,5 +118,12 @@ public class BaseController extends Controller {
 
     private static boolean canBeUpdated(Field field) {
         return !Modifier.isStatic(field.getModifiers()) && !field.isAnnotationPresent(Id.class) && !field.isAnnotationPresent(NoUpdate.class);
+    }
+
+    @play.db.jpa.Transactional
+    public static Result init() {
+        Map<String, List<Object>> all = (Map<String, List<Object>>) Yaml.load("seed_data.yml");
+        all.get("users").forEach(user -> JPA.em().persist(user));
+        return okJson("OK");
     }
 }
