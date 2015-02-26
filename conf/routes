@@ -4,26 +4,28 @@
 
 # Home page
 
-GET /test                                    controllers.RoomsController.getGeoRooms(lat: Double, lon: Double)
-GET /rooms                                   controllers.RoomsController.getRooms()
-GET /rooms/:roomId/messages                  controllers.RoomsController.getMessages(roomId: String)
-POST /rooms/:roomId/messages                 controllers.RoomsController.createMessage(roomId: String)
-GET /join                                    controllers.RoomsController.joinRoom(r, u)
-POST /rooms                                  controllers.RoomsController.createRoom()
-POST /users/:userId/sendNotification         controllers.UsersController.sendNotification(userId: String)
 
+GET /join                                    controllers.RoomsController.joinRoom(r, u)
+GET /test                                    controllers.RoomsController.getGeoRooms(lat: Double, lon: Double)
+
+POST /rooms                                  controllers.RoomsController.createRoom()
+GET /rooms                                   controllers.RoomsController.getRooms()
 GET /rooms/:id                               controllers.RoomsController.showRoom(id: String)
 PUT /rooms/:id                               controllers.RoomsController.updateRoom(id: String)
 DELETE /rooms/:id                            controllers.RoomsController.deleteRoom(id: String)
+
+POST /rooms/:roomId/messages                 controllers.RoomsController.createMessage(roomId: String)
+GET /rooms/:roomId/messages                  controllers.RoomsController.getMessages(roomId: String)
+
+POST /rooms/:roomId/subscriptions            controllers.RoomsController.createSubscription(roomId: String)
+GET /rooms/:roomId/subscriptions             controllers.RoomsController.getSubscriptions(roomId: String)
 
 POST /users                                  controllers.UsersController.createUser()
 GET /users                                   controllers.UsersController.getUsers()
 GET /users/:id                               controllers.UsersController.showUser(id: String)
 PUT /users/:id                               controllers.UsersController.updateUser(id: String)
 DELETE /users/:id                            controllers.UsersController.deleteUser(id: String)
-
-POST /rooms/:roomId/subscriptions            controllers.RoomsController.createSubscription(roomId: String)
-GET /rooms/:roomId/subscriptions             controllers.RoomsController.getSubscriptions(roomId: String)
+POST /users/:userId/sendNotification         controllers.UsersController.sendNotification(userId: String)
 
 POST /requests                               controllers.RequestsController.createRequest()
 GET /requests                                controllers.RequestsController.getRequests(u: String)

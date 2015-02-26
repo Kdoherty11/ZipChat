@@ -1,13 +1,15 @@
 package models.entities;
 
 import com.google.common.base.Objects;
+import play.Logger;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
-import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
+import utils.DbUtils;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "messages")
@@ -25,18 +27,38 @@ public class Message {
     public Room room;
 
     @Constraints.Required
-    public long userId;
+    public String userId;
 
     @Formats.DateTime(pattern="dd/MM/yyyy")
     public Date timeStamp = new Date();
 
-    public static List<Message> getByRoomId(String roomId) {
-        String queryString = "select m from Message m where m.roomId = :roomId";
+    public Message() { }
 
-        TypedQuery<Message> query = JPA.em().createQuery(queryString, Message.class)
-                .setParameter("roomId", roomId);
+    public Message(String roomId, String userId, String message) {
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+        if (roomOptional.isPresent()) {
+            this.room = roomOptional.get();
+        } else {
+           throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString("Room", roomId));
+        }
 
-        return query.getResultList();
+        Optional<User> userOptional = DbUtils.findEntityById(User.class, roomId);
+        if (userOptional.isPresent()) {
+            this.userId = userId;
+        } else {
+            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString("User", userId));
+        }
+
+        this.message = message;
+    }
+
+    @Transactional
+    public void addToRoom() {
+        if (room != null) {
+            room.addMessage(this);
+        } else {
+            Logger.error("Message: " + this + " has a null room");
+        }
     }
 
     @Override
