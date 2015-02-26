@@ -9,3 +9,25 @@ users:
         facebookId: 1234567
         registrationId: 123456
         platform: ios
+  - !!models.entities.User
+          name: Chris Wise
+          facebookId: 1234567
+          registrationId: 123456
+          platform: ios
+  - !!models.entities.User
+          name: Nick Tyler
+          facebookId: 1234567
+          registrationId: 123456
+          platform: android
+  - !!models.entities.User
+          name: Mike Chase
+          facebookId: 1234567
+          registrationId: 123456
+          platform: ios
+
+rooms:
+   - !!models.entities.Room
+          name: 16 Stockwell
+          latitude: 1
+          longitude: 1
+          radius: 100
