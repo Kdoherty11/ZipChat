@@ -53,7 +53,6 @@ public class Room {
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name="roomId")}, inverseJoinColumns = {@JoinColumn(name="userId")})
     public List<User> subscribers = new ArrayList<>();
 
-    @JsonIgnore
     @OneToMany(targetEntity = Message.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Message> messages = new ArrayList<>();
 

@@ -122,7 +122,6 @@ public class RoomsController extends BaseController {
             }
 
             Message message = form.get();
-            message.room = roomOptional.get();
 
             JPA.em().persist(message);
 
