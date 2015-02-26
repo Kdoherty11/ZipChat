@@ -1,13 +1,16 @@
 package models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
+import play.Logger;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
-import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
+import utils.DbUtils;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "messages")
@@ -24,24 +27,41 @@ public class Message {
     @JoinColumn(name="roomId")
     public Room room;
 
+    @ManyToOne
+    @JoinColumn(name="userId")
     @Constraints.Required
-    public long userId;
+    public User user;
 
     @Formats.DateTime(pattern="dd/MM/yyyy")
     public Date timeStamp = new Date();
 
-    public static List<Message> getByRoomId(String roomId) {
-        String queryString = "select m from Message m where m.roomId = :roomId";
+    public Message() { }
 
-        TypedQuery<Message> query = JPA.em().createQuery(queryString, Message.class)
-                .setParameter("roomId", roomId);
+    public Message(String roomId, User user, String message) {
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+        if (roomOptional.isPresent()) {
+            roomOptional.get().addMessage(this);
+        } else {
+           throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString("Room", roomId));
+        }
 
-        return query.getResultList();
+
+        this.user = user;
+        this.message = message;
+    }
+
+    @Transactional
+    public void addToRoom() {
+        if (room != null) {
+            room.addMessage(this);
+        } else {
+            Logger.error("Message: " + this + " has a null room");
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, message, room, userId, timeStamp);
+        return Objects.hashCode(id, message, room, user, timeStamp);
     }
 
     @Override
@@ -56,7 +76,7 @@ public class Message {
         return Objects.equal(this.id, other.id)
                 && Objects.equal(this.message, other.message)
                 && Objects.equal(this.room, other.room)
-                && Objects.equal(this.userId, other.userId)
+                && Objects.equal(this.user, other.user)
                 && Objects.equal(this.timeStamp, other.timeStamp);
     }
 
@@ -66,7 +86,7 @@ public class Message {
                 .add("id", id)
                 .add("message", message)
                 .add("roomId", room)
-                .add("userId", userId)
+                .add("user", user)
                 .add("timeStamp", timeStamp)
                 .toString();
     }

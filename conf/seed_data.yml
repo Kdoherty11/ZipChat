@@ -1,33 +1,44 @@
 users:
-  - !!models.entities.User
+  - &kevin !!models.entities.User
         name: Kevin Doherty
-        facebookId: 1234567
-        registrationId: 123456
+        facebookId: 10152896220537410
+        registrationId: APA91bFusim6I9TJpcoq0PFkzxYXcgegKyQdTqd8dLx-IW2elgYGvTrzuXDpzj35mVWG3G_doP1qtfiQSkvGpg4III9qHVLIOu2X2UvksgIK18cs7JMBE3b_kbRHpR_7CR-pylvV8R7bMeRHWT3e0eXnDZd7rRg_yg
         platform: android
-  - !!models.entities.User
+  - &zach !!models.entities.User
         name: Zach Webert
-        facebookId: 1234567
-        registrationId: 123456
+        facebookId: 10205781147312156
+        registrationId: a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4
         platform: ios
-  - !!models.entities.User
+  - &chris !!models.entities.User
           name: Chris Wise
-          facebookId: 1234567
-          registrationId: 123456
+          facebookId: 100000117980932
           platform: ios
-  - !!models.entities.User
+  - &nick !!models.entities.User
           name: Nick Tyler
-          facebookId: 1234567
-          registrationId: 123456
+          facebookId: 1115876739
           platform: android
-  - !!models.entities.User
+  - &mike !!models.entities.User
           name: Mike Chase
-          facebookId: 1234567
-          registrationId: 123456
+          facebookId: 1078640151
           platform: ios
 
+messages:
+   - &m1 !!models.entities.Message
+          message: Hello
+          user: *kevin
+
 rooms:
-   - !!models.entities.Room
+   - &stockwell !!models.entities.Room
           name: 16 Stockwell
-          latitude: 1
-          longitude: 1
-          radius: 100
+          latitude: 42.332061
+          longitude: -71.107277
+          radius: 700
+
+   - &marino !!models.entities.Room
+          name: Marino Center
+          latitude: 42.340333
+          longitude: -71.090352
+          radius: 700
+          messages:
+                - *m1
+

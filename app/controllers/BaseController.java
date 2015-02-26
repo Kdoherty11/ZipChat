@@ -1,6 +1,8 @@
 package controllers;
 
 import models.NoUpdate;
+import models.entities.Message;
+import models.entities.Room;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.validation.DataBinder;
 import play.Logger;
@@ -21,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static play.data.Form.form;
 import static play.libs.Json.toJson;
@@ -124,6 +127,11 @@ public class BaseController extends Controller {
     public static Result init() {
         Map<String, List<Object>> all = (Map<String, List<Object>>) Yaml.load("seed_data.yml");
         all.get("users").forEach(user -> JPA.em().persist(user));
+        all.get("messages").forEach(message -> JPA.em().persist(message));
+
+        all.get("rooms").forEach(room -> {
+                        JPA.em().persist(room);});
+        all.get("messages").forEach(message -> JPA.em().persist(message));
         return okJson("OK");
     }
 }

@@ -27,10 +27,14 @@ public class DbUtils {
     }
 
     public static JsonNode buildEntityNotFoundError(String entityName, String id) {
-        String errorMessage = entityName + " with id " + id + " was not found";
+        String errorMessage = buildEntityNotFoundString(entityName, id);
 
         Logger.warn(errorMessage);
 
         return toJson(errorMessage);
+    }
+
+    public static String buildEntityNotFoundString(String entityName, String id) {
+        return entityName + " with id " + id + " was not found";
     }
 }

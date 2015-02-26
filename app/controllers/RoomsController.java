@@ -115,16 +115,17 @@ public class RoomsController extends BaseController {
 
         if (roomOptional.isPresent()) {
 
-            Form<Message> form = form(Message.class).bindFromRequest();
+            Map<String, String> data = form().bindFromRequest().data();
 
-            if (form.hasErrors()) {
-                return badRequest(form.errorsAsJson());
-            }
 
-            Message message = form.get();
+            Optional<User> user = DbUtils.findEntityById(User.class, data.get("userId"));
+            Message message = new Message(roomId, user.get(), data.get("message"));
             message.room = roomOptional.get();
 
+            JPA.em().persist(message);
+
             roomOptional.get().addMessage(message);
+
 
             return okJson(message);
         } else {

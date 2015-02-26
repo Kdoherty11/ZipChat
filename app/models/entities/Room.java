@@ -92,6 +92,7 @@ public class Room {
    }
 
     public void addMessage(Message message) {
+        message.room = this;
         messages.add(message);
     }
 

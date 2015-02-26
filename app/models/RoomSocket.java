@@ -6,9 +6,12 @@ import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
+import models.entities.Message;
+import models.entities.Room;
 import models.entities.User;
 import play.Logger;
 import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
@@ -17,9 +20,11 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
+import utils.DbUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -28,11 +33,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class RoomSocket extends UntypedActor {
 
+    private static final String CHANNEL = "messages";
     // Default room.
     static ActorRef defaultRoom = Akka.system().actorOf(Props.create(RoomSocket.class));
-
-    private static final String CHANNEL = "messages";
-
     // Key is roomId, value is the users connected to that room
     Map<String, Map<String, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
     Map<String, User> users = new HashMap<>();
@@ -155,13 +158,11 @@ public class RoomSocket extends UntypedActor {
         }
     }
 
+    @Transactional
     private void storeMessage(Talk talk) {
-        //Message message = new Message(talk.getText(), talk.getRoomId(), talk.getUsername());
-      //  Message message = new Message();
-//        message.message = talk.getText();
-//        message.roomId = talk.getRoomId();
-//        message.userId = talk.getUsername();
-//        JPA.em().persist(message);
+        //Optional<User> roomOptional = DbUtils.findEntityById(User.class, talk.getUsername());
+        //Message message = new Message(talk.getRoomId(), roomOptional.get().userId, talk.getText());
+        //message.addToRoom();
     }
 
     private void receiveJoin(Jedis j, Join join) {
@@ -231,26 +232,48 @@ public class RoomSocket extends UntypedActor {
     }
 
     // Send a Json event to all members connected to this node
+    @Transactional
     public void notifyRoom(String roomId, String kind, String userId, String text) {
         Logger.debug("NotifyAll called with roomId: " + roomId);
 
+        if (!rooms.containsKey(roomId)) {
+            Logger.error("Not notifying rooms because rooms map does not contain room with id " + roomId);
+            return;
+        }
+
         for (WebSocket.Out<JsonNode> channel : rooms.get(roomId).values()) {
 
-            User u;
-            if (users.containsKey(userId)) {
-                u = users.get(userId);
-            } else {
-                u = JPA.em().find(User.class, userId);
+            try {
+                JPA.withTransaction(() -> {
 
-                users.put(userId, u);
+                    User user;
+                    if (users.containsKey(userId)) {
+                        user = users.get(userId);
+                    } else {
+                        Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
+                        if (userOptional.isPresent()) {
+                            user = userOptional.get();
+                            users.put(userId, user);
+                        } else {
+                            Logger.error("Not notifying room because " + DbUtils.buildEntityNotFoundString("User", userId));
+                            return;
+                        }
+
+                        ObjectNode event = Json.newObject();
+                        event.put("event", kind);
+                        event.put("user", Json.toJson(user));
+                        event.put("message", text);
+
+                        channel.write(event);
+                    }
+                });
+            } catch (Throwable throwable) {
+                Logger.error("Problem with JPA Transaction: " + throwable.getMessage());
             }
 
-            ObjectNode event = Json.newObject();
-            event.put("event", kind);
-            event.put("user", Json.toJson(u));
-            event.put("message", text);
+            //}
 
-            channel.write(event);
+
         }
     }
 
@@ -261,6 +284,12 @@ public class RoomSocket extends UntypedActor {
         final String roomId;
         final String username;
         final WebSocket.Out<JsonNode> channel;
+
+        public Join(String roomId, String username, WebSocket.Out<JsonNode> channel) {
+            this.roomId = roomId;
+            this.username = username;
+            this.channel = channel;
+        }
 
         public String getRoomId() {
             return roomId;
@@ -274,12 +303,6 @@ public class RoomSocket extends UntypedActor {
             return "join";
         }
 
-        public Join(String roomId, String username, WebSocket.Out<JsonNode> channel) {
-            this.roomId = roomId;
-            this.username = username;
-            this.channel = channel;
-        }
-
         @Override
         public String toString() {
             return "Join (" + roomId + ") from " + username;
@@ -291,6 +314,12 @@ public class RoomSocket extends UntypedActor {
         final String roomId;
         final String username;
         final String direction;
+
+        public RosterNotification(String roomId, String username, String direction) {
+            this.roomId = roomId;
+            this.username = username;
+            this.direction = direction;
+        }
 
         public String getUsername() {
             return username;
@@ -308,12 +337,6 @@ public class RoomSocket extends UntypedActor {
             return roomId;
         }
 
-        public RosterNotification(String roomId, String username, String direction) {
-            this.roomId = roomId;
-            this.username = username;
-            this.direction = direction;
-        }
-
         @Override
         public String toString() {
             return "RosterNotification (" + roomId + ") " + username + " is " + direction + "ing";
@@ -325,6 +348,12 @@ public class RoomSocket extends UntypedActor {
         final String roomId;
         final String username;
         final String text;
+
+        public Talk(String roomId, String username, String text) {
+            this.roomId = roomId;
+            this.username = username;
+            this.text = text;
+        }
 
         public String getUsername() {
             return username;
@@ -342,12 +371,6 @@ public class RoomSocket extends UntypedActor {
             return roomId;
         }
 
-        public Talk(String roomId, String username, String text) {
-            this.roomId = roomId;
-            this.username = username;
-            this.text = text;
-        }
-
         @Override
         public String toString() {
             return "Talk (" + roomId + ") " + username + " - " + text;
@@ -360,6 +383,11 @@ public class RoomSocket extends UntypedActor {
         final String roomId;
         final String username;
 
+        public Quit(String roomId, String username) {
+            this.roomId = roomId;
+            this.username = username;
+        }
+
         public String getUsername() {
             return username;
         }
@@ -370,11 +398,6 @@ public class RoomSocket extends UntypedActor {
 
         public String getRoomId() {
             return roomId;
-        }
-
-        public Quit(String roomId, String username) {
-            this.roomId = roomId;
-            this.username = username;
         }
 
         @Override
