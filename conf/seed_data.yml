@@ -1,11 +1,11 @@
 users:
   - !!models.entities.User
         name: Kevin Doherty
-        facebookId: 1234567
-        registrationId: 123456
+        facebookId: 10152896220537410
+        registrationId: APA91bFusim6I9TJpcoq0PFkzxYXcgegKyQdTqd8dLx-IW2elgYGvTrzuXDpzj35mVWG3G_doP1qtfiQSkvGpg4III9qHVLIOu2X2UvksgIK18cs7JMBE3b_kbRHpR_7CR-pylvV8R7bMeRHWT3e0eXnDZd7rRg_yg
         platform: android
   - !!models.entities.User
         name: Zach Webert
-        facebookId: 1234567
-        registrationId: 123456
+        facebookId: 10205781147312156
+        registrationId: a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4
         platform: ios
