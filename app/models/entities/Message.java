@@ -1,14 +1,14 @@
 package models.entities;
 
 import com.google.common.base.Objects;
+import models.NoUpdate;
 import play.Logger;
-import play.data.format.Formats;
 import play.data.validation.Constraints;
 import play.db.jpa.Transactional;
 import utils.DbUtils;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
@@ -29,8 +29,8 @@ public class Message {
     @Constraints.Required
     public String userId;
 
-    @Formats.DateTime(pattern="dd/MM/yyyy")
-    public Date timeStamp = new Date();
+    @NoUpdate
+    public LocalDateTime timeStamp = LocalDateTime.now();
 
     public Message() { }
 
@@ -77,7 +77,7 @@ public class Message {
         final Message other = (Message) obj;
         return Objects.equal(this.id, other.id)
                 && Objects.equal(this.message, other.message)
-                && Objects.equal(this.room, other.room)
+                && Objects.equal(this.room.roomId, other.room.roomId)
                 && Objects.equal(this.userId, other.userId)
                 && Objects.equal(this.timeStamp, other.timeStamp);
     }

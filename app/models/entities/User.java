@@ -36,10 +36,6 @@ public class User {
     @Constraints.Required
     public Platform platform;
 
-//    @ManyToMany
-//    @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name="userId")}, inverseJoinColumns = {@JoinColumn(name="roomId")})
-//    public List<Room> subscribedTo;
-
     public static F.Promise<JsonNode> sendNotification(String id, Map<String, String> data) {
         Optional<User> userOptional = DbUtils.findEntityById(User.class, id);
 

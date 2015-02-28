@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import models.NoUpdate;
 import play.Logger;
-import play.data.format.Formats;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -40,13 +39,12 @@ public class Room {
     @NoUpdate
     public int radius;
 
-    @Formats.DateTime(pattern="dd/MM/yyyy")
     @NoUpdate
-    public Date creationTime = new Date();
+    public LocalDateTime creationTime = LocalDateTime.now();
 
-    @Formats.DateTime(pattern="dd/MM/yyyy")
+
     @NoUpdate
-    public Date lastActivity = new Date();
+    public LocalDateTime lastActivity = LocalDateTime.now();
 
     @JsonIgnore
     @ManyToMany
@@ -60,7 +58,6 @@ public class Room {
     public int score;
 
     public static List<Room> allInGeoRange(double lat, double lon) {
-
         Logger.debug("Getting all rooms containing " + lat + ", " + lon);
 
         int earthRadius = 6371;  // earth's mean radius, km
@@ -75,7 +72,7 @@ public class Room {
                 " from (" + firstCutSql + ") as FirstCut" +
                 " where acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lon))) * :R * 1000 <= radius;";
 
-        Query query = JPA.em().createQuery(firstCutSql, Room.class)
+        TypedQuery<Room> query = JPA.em().createQuery(firstCutSql, Room.class)
                 .setParameter("lat", lat)
                 .setParameter("lon", lon)
                 .setParameter("R", earthRadius);
@@ -109,6 +106,7 @@ public class Room {
             return false;
         }
         final Room other = (Room) obj;
+
         return Objects.equal(this.roomId, other.roomId)
                 && Objects.equal(this.name, other.name)
                 && Objects.equal(this.latitude, other.latitude)

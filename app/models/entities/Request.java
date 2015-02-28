@@ -6,6 +6,7 @@ import play.data.validation.Constraints;
 import play.db.jpa.JPA;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -29,6 +30,9 @@ public class Request {
 
     @NoUpdate
     public String message;
+
+    @NoUpdate
+    public LocalDateTime timeStamp = LocalDateTime.now();
 
     public static List<Request> getPendingRequests(String userId) {
         String queryString = "select r from Request r where r.toUserId = :toUserId and status = :status";
