@@ -5,7 +5,6 @@
 # Home page
 
 
-GET /join                                    controllers.RoomsController.joinRoom(r, u)
 GET /test                                    controllers.RoomsController.getGeoRooms(lat: Double, lon: Double)
 
 POST /rooms                                  controllers.RoomsController.createRoom()
@@ -13,6 +12,8 @@ GET /rooms                                   controllers.RoomsController.getRoom
 GET /rooms/:id                               controllers.RoomsController.showRoom(id: String)
 PUT /rooms/:id                               controllers.RoomsController.updateRoom(id: String)
 DELETE /rooms/:id                            controllers.RoomsController.deleteRoom(id: String)
+POST /rooms/:id/notify                       controllers.RoomsController.notifySubscribers(id: String)
+GET /rooms/:id/join                          controllers.RoomsController.joinRoom(id: String, u)
 
 POST /rooms/:roomId/messages                 controllers.RoomsController.createMessage(roomId: String)
 GET /rooms/:roomId/messages                  controllers.RoomsController.getMessages(roomId: String)

@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import static akka.pattern.Patterns.ask;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static play.libs.Json.toJson;
 
 public class RoomSocket extends UntypedActor {
 
@@ -84,7 +85,7 @@ public class RoomSocket extends UntypedActor {
                     Logger.debug("Get resource B");
                     try {
                         //All messages are pushed through the pub/sub channel
-                        j.publish(RoomSocket.CHANNEL, Json.stringify(Json.toJson(talk)));
+                        j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(talk)));
                     } finally {
                         play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                         Logger.debug("Return resource B");
@@ -120,6 +121,7 @@ public class RoomSocket extends UntypedActor {
     }
 
     @Override
+    @Transactional
     public void onReceive(Object message) throws Exception {
 
         Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
@@ -182,7 +184,7 @@ public class RoomSocket extends UntypedActor {
 
             //Publish the join notification to all nodes
             RosterNotification rosterNotify = new RosterNotification(join.roomId, join.username, "join");
-            j.publish(RoomSocket.CHANNEL, Json.stringify(Json.toJson(rosterNotify)));
+            j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
 
             getSender().tell("OK", getSelf());
         }
@@ -217,7 +219,7 @@ public class RoomSocket extends UntypedActor {
 
             //Publish the quit notification to all nodes
             RosterNotification rosterNotify = new RosterNotification(quit.roomId, quit.username, "quit");
-            j.publish(RoomSocket.CHANNEL, Json.stringify(Json.toJson(rosterNotify)));
+            j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
         }
     }
 
@@ -230,7 +232,6 @@ public class RoomSocket extends UntypedActor {
     }
 
     // Send a Json event to all members connected to this node
-    @Transactional
     public void notifyRoom(String roomId, String kind, String userId, String text) {
         Logger.debug("NotifyAll called with roomId: " + roomId);
 
@@ -241,37 +242,31 @@ public class RoomSocket extends UntypedActor {
 
         for (WebSocket.Out<JsonNode> channel : rooms.get(roomId).values()) {
 
-            try {
-                JPA.withTransaction(() -> {
-
-                    User user;
-                    if (users.containsKey(userId)) {
-                        user = users.get(userId);
+            JPA.withTransaction(() -> {
+                JsonNode userJson;
+                if (SocketKeepAlive.USER_ID.equals(userId)) {
+                    userJson = toJson("Heartbeat");
+                } else if (users.containsKey(userId)) {
+                    userJson = toJson(users.get(userId));
+                } else {
+                    Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
+                    if (userOptional.isPresent()) {
+                        User user = userOptional.get();
+                        users.put(userId, user);
+                        userJson = toJson(user);
                     } else {
-                        Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
-                        if (userOptional.isPresent()) {
-                            user = userOptional.get();
-                            users.put(userId, user);
-                        } else {
-                            Logger.error("Not notifying room because " + DbUtils.buildEntityNotFoundString("User", userId));
-                            return;
-                        }
-
-                        ObjectNode event = Json.newObject();
-                        event.put("event", kind);
-                        event.put("user", Json.toJson(user));
-                        event.put("message", text);
-
-                        channel.write(event);
+                        Logger.error("Not notifying room because " + DbUtils.buildEntityNotFoundString("User", userId));
+                        return;
                     }
-                });
-            } catch (Throwable throwable) {
-                Logger.error("Problem with JPA Transaction: " + throwable.getMessage());
-            }
+                }
 
-            //}
+                ObjectNode event = Json.newObject();
+                event.put("event", kind);
+                event.put("user", userJson);
+                event.put("message", text);
 
-
+                channel.write(event);
+            });
         }
     }
 

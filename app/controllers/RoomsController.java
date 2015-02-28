@@ -20,25 +20,6 @@ import static play.data.Form.form;
 
 public class RoomsController extends BaseController {
 
-    /**
-     * Handle the chat websocket.
-     */
-    public static WebSocket<JsonNode> joinRoom(final String roomId, final String username) {
-
-        return new WebSocket<JsonNode>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-                Logger.debug("join " + roomId + " " + username);
-                try {
-                    RoomSocket.join(roomId, username, in, out);
-                } catch (Exception ex) {
-                    Logger.error("Problem joining the RoomSocket: " + ex.getMessage());
-                }
-            }
-        };
-    }
-
     @Transactional
     public static Result createRoom() {
         return create(Room.class);
@@ -106,6 +87,17 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
+    public static Result notifySubscribers(String roomId) {
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+        if (roomOptional.isPresent()) {
+            roomOptional.get().notifySubscribers(form().bindFromRequest().data());
+            return okJson("OK");
+        } else {
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
+        }
+    }
+
+    @Transactional
     public static Result createMessage(String roomId) {
         Map<String, String> data = form().bindFromRequest().data();
 
@@ -145,4 +137,20 @@ public class RoomsController extends BaseController {
         }
     }
 
+    @Transactional
+    public static WebSocket<JsonNode> joinRoom(final String roomId, final String userId) {
+
+        return new WebSocket<JsonNode>() {
+
+            // Called when the Websocket Handshake is done.
+            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
+                Logger.debug("joining " + roomId + " " + userId);
+                try {
+                    RoomSocket.join(roomId, userId, in, out);
+                } catch (Exception ex) {
+                    Logger.error("Problem joining the RoomSocket: " + ex.getMessage());
+                }
+            }
+        };
+    }
 }

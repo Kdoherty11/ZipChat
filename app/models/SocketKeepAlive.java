@@ -1,17 +1,20 @@
 package models;
 
-import play.*;
-import play.mvc.*;
-import play.libs.*;
-
-import scala.concurrent.duration.*;
-import akka.actor.*;
-
+import akka.actor.ActorRef;
+import akka.actor.Cancellable;
 import com.fasterxml.jackson.databind.JsonNode;
+import play.Logger;
+import play.libs.Akka;
+import play.libs.Json;
+import play.mvc.WebSocket;
+import scala.concurrent.duration.Duration;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SocketKeepAlive {
+
+    public static final String USER_ID = "Heartbeat";
+    public static final String HEARTBEAT_MESSAGE = "Beat";
 
     Cancellable cancellable;
     String roomId;
@@ -31,7 +34,7 @@ public class SocketKeepAlive {
         };
 
         // Join the room
-        chatRoom.tell(new RoomSocket.Join(roomId, "Heartbeat", robotChannel), null);
+        chatRoom.tell(new RoomSocket.Join(roomId, USER_ID, robotChannel), null);
 
         this.roomId = roomId;
 
@@ -40,7 +43,7 @@ public class SocketKeepAlive {
                 Duration.create(30, SECONDS),
                 Duration.create(30, SECONDS),
                 chatRoom,
-                new RoomSocket.Talk(roomId, "Heartbeat", "beat"),
+                new RoomSocket.Talk(roomId, USER_ID, HEARTBEAT_MESSAGE),
                 Akka.system().dispatcher(),
                 /** sender **/ null
         );
