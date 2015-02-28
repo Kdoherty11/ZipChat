@@ -9,6 +9,7 @@ import play.db.jpa.JPA;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,8 @@ import java.util.Map;
 @Entity
 @Table(name = "rooms")
 public class Room {
+
+    public static final String ENTITY_NAME = "Room";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,11 +43,10 @@ public class Room {
     public int radius;
 
     @NoUpdate
-    public LocalDateTime creationTime = LocalDateTime.now();
-
+    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     @NoUpdate
-    public LocalDateTime lastActivity = LocalDateTime.now();
+    public long lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     @JsonIgnore
     @ManyToMany
@@ -56,6 +58,10 @@ public class Room {
     public List<Message> messages = new ArrayList<>();
 
     public int score;
+
+    public static String getId(Room room) {
+        return room == null ? "" : room.roomId;
+    }
 
     public static List<Room> allInGeoRange(double lat, double lon) {
         Logger.debug("Getting all rooms containing " + lat + ", " + lon);
@@ -89,12 +95,13 @@ public class Room {
    }
 
     public void addMessage(Message message) {
+        message.room = this;
         messages.add(message);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(roomId, name, latitude, longitude, radius, creationTime, lastActivity, subscribers, score);
+        return Objects.hashCode(roomId, name, latitude, longitude, radius, timeStamp, lastActivity, subscribers, score);
     }
 
     @Override
@@ -106,13 +113,12 @@ public class Room {
             return false;
         }
         final Room other = (Room) obj;
-
         return Objects.equal(this.roomId, other.roomId)
                 && Objects.equal(this.name, other.name)
                 && Objects.equal(this.latitude, other.latitude)
                 && Objects.equal(this.longitude, other.longitude)
                 && Objects.equal(this.radius, other.radius)
-                && Objects.equal(this.creationTime, other.creationTime)
+                && Objects.equal(this.timeStamp, other.timeStamp)
                 && Objects.equal(this.lastActivity, other.lastActivity)
                 && Objects.equal(this.subscribers, other.subscribers)
                 && Objects.equal(this.score, other.score);
@@ -127,7 +133,7 @@ public class Room {
                 .add("longitude", longitude)
                 .add("radius", radius)
                 .add("score", score)
-                .add("creationTime", creationTime)
+                .add("creationTime", timeStamp)
                 .add("lastActivity", lastActivity)
                 .toString();
     }

@@ -1,48 +1,21 @@
 package models.entities;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import models.NoUpdate;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
+import utils.DbUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "requests")
 public class Request {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public String id;
-
-    @Constraints.Required
-    @NoUpdate
-    public long toUserId;
-
-    @Constraints.Required
-    @NoUpdate
-    public long fromUserId;
-
-    @Constraints.Required
-    public Status status = Status.pending;
-
-    @NoUpdate
-    public String message;
-
-    @NoUpdate
-    public LocalDateTime timeStamp = LocalDateTime.now();
-
-    public static List<Request> getPendingRequests(String userId) {
-        String queryString = "select r from Request r where r.toUserId = :toUserId and status = :status";
-
-        Query query = JPA.em().createQuery(queryString)
-                .setParameter("toUserId", userId)
-                .setParameter("status", Status.pending);
-
-        return query.getResultList();
-    }
 
     public static enum Status {
         accepted,
@@ -50,9 +23,58 @@ public class Request {
         pending
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public String id;
+
+    @NoUpdate
+    @Constraints.Required
+    public User fromUser;
+
+    @NoUpdate
+    @Constraints.Required
+    public User toUser;
+
+    @NoUpdate
+    public String message;
+
+    public Status status = Status.pending;
+
+    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+
+    public long respondedTimeStamp;
+
+    public Request() { }
+
+    public Request(String fromUserId, String toUserId) {
+        Optional<User> fromUserOptional = DbUtils.findEntityById(User.class, Preconditions.checkNotNull(fromUserId));
+        if (fromUserOptional.isPresent()) {
+            this.fromUser = fromUserOptional.get();
+        } else {
+            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, fromUserId));
+        }
+
+        Optional<User> toUserOptional = DbUtils.findEntityById(User.class, Preconditions.checkNotNull(toUserId));
+        if (toUserOptional.isPresent()) {
+            this.toUser = toUserOptional.get();
+        } else {
+            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, toUserId));
+        }
+    }
+
+    public static List<Request> getPendingRequests(String userId) {
+        String queryString = "select r from Request r where r.toUser.userId = :toUserId and status = :status";
+
+        TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
+                .setParameter("toUserId", userId)
+                .setParameter("status", Status.pending);
+
+        return query.getResultList();
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, toUserId, fromUserId, status, message);
+        return Objects.hashCode(id, User.getId(toUser), User.getId(fromUser), status, message, timeStamp, respondedTimeStamp);
     }
 
     @Override
@@ -65,20 +87,24 @@ public class Request {
         }
         final Request other = (Request) obj;
         return Objects.equal(this.id, other.id)
-                && Objects.equal(this.toUserId, other.toUserId)
-                && Objects.equal(this.fromUserId, other.fromUserId)
+                && Objects.equal(User.getId(this.toUser), User.getId(other.toUser))
+                && Objects.equal(User.getId(this.fromUser), User.getId(other.fromUser))
                 && Objects.equal(this.status, other.status)
-                && Objects.equal(this.message, other.message);
+                && Objects.equal(this.message, other.message)
+                && Objects.equal(this.timeStamp, other.timeStamp)
+                && Objects.equal(this.respondedTimeStamp, other.respondedTimeStamp);
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("id", id)
-                .add("toUserId", toUserId)
-                .add("fromUserId", fromUserId)
+                .add("toUser", User.getId(toUser))
+                .add("fromUser", User.getId(fromUser))
                 .add("status", status)
                 .add("message", message)
+                .add("timeStamp", timeStamp)
+                .add("respondedTimeStamp", respondedTimeStamp)
                 .toString();
     }
 }

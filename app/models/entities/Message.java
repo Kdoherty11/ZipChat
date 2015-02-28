@@ -1,7 +1,8 @@
 package models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
-import models.NoUpdate;
+import com.google.common.base.Preconditions;
 import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.Transactional;
@@ -9,6 +10,7 @@ import utils.DbUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 @Entity
@@ -17,6 +19,7 @@ public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     public String id;
 
     @Constraints.Required
@@ -24,32 +27,36 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name="roomId")
+    @JsonIgnore
     public Room room;
 
+    @ManyToOne
+    @JoinColumn(name="userId")
     @Constraints.Required
-    public String userId;
+    public User sender;
 
-    @NoUpdate
-    public LocalDateTime timeStamp = LocalDateTime.now();
+    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     public Message() { }
 
     public Message(String roomId, String userId, String message) {
-        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+        this.message = Preconditions.checkNotNull(message);
+
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, Preconditions.checkNotNull(roomId));
         if (roomOptional.isPresent()) {
-            this.room = roomOptional.get();
+            Room room = roomOptional.get();
+            this.room = room;
+            room.addMessage(this);
         } else {
-           throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString("Room", roomId));
+           throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(Room.ENTITY_NAME, roomId));
         }
 
-        Optional<User> userOptional = DbUtils.findEntityById(User.class, roomId);
+        Optional<User> userOptional = DbUtils.findEntityById(User.class, Preconditions.checkNotNull(userId));
         if (userOptional.isPresent()) {
-            this.userId = userId;
+            this.sender = userOptional.get();
         } else {
-            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString("User", userId));
+            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, userId));
         }
-
-        this.message = message;
     }
 
     @Transactional
@@ -57,13 +64,13 @@ public class Message {
         if (room != null) {
             room.addMessage(this);
         } else {
-            Logger.error("Message: " + this + " has a null room");
+            Logger.error(this + " has a null room");
         }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, message, room, userId, timeStamp);
+        return Objects.hashCode(id, message, Room.getId(room), User.getId(sender), timeStamp);
     }
 
     @Override
@@ -77,8 +84,8 @@ public class Message {
         final Message other = (Message) obj;
         return Objects.equal(this.id, other.id)
                 && Objects.equal(this.message, other.message)
-                && Objects.equal(this.room.roomId, other.room.roomId)
-                && Objects.equal(this.userId, other.userId)
+                && Objects.equal(Room.getId(this.room), Room.getId(other.room))
+                && Objects.equal(User.getId(this.sender), User.getId(other.sender))
                 && Objects.equal(this.timeStamp, other.timeStamp);
     }
 
@@ -87,8 +94,8 @@ public class Message {
         return Objects.toStringHelper(this)
                 .add("id", id)
                 .add("message", message)
-                .add("roomId", room)
-                .add("userId", userId)
+                .add("roomId", Room.getId(room))
+                .add("userId", User.getId(sender))
                 .add("timeStamp", timeStamp)
                 .toString();
     }

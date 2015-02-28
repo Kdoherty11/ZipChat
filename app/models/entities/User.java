@@ -1,8 +1,10 @@
 package models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import models.NoUpdate;
 import models.Platform;
 import play.Logger;
 import play.data.validation.Constraints;
@@ -11,6 +13,8 @@ import utils.DbUtils;
 import utils.NotificationUtils;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,6 +24,8 @@ import static play.libs.Json.toJson;
 @Entity
 @Table(name = "users")
 public class User {
+
+    public static final String ENTITY_NAME = "User";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,12 +37,23 @@ public class User {
     @Constraints.Required
     public String name;
 
+    @JsonIgnore
     public String registrationId;
 
     @Constraints.Required
+    @JsonIgnore
     public Platform platform;
 
+    @NoUpdate
+    @JsonIgnore
+    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+
+    public static String getId(User user) {
+        return user == null ? "" : user.userId;
+    }
+
     public static F.Promise<JsonNode> sendNotification(String id, Map<String, String> data) {
+
         Optional<User> userOptional = DbUtils.findEntityById(User.class, id);
 
         if (userOptional.isPresent()) {

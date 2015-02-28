@@ -6,7 +6,6 @@ import models.entities.Message;
 import models.entities.Room;
 import models.entities.User;
 import play.Logger;
-import play.data.Form;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
@@ -30,7 +29,7 @@ public class RoomsController extends BaseController {
 
             // Called when the Websocket Handshake is done.
             public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-                Logger.debug("join" + roomId + " " + username);
+                Logger.debug("join " + roomId + " " + username);
                 try {
                     RoomSocket.join(roomId, username, in, out);
                 } catch (Exception ex) {
@@ -72,29 +71,26 @@ public class RoomsController extends BaseController {
 
     @Transactional
     public static Result createSubscription(String roomId) {
+        Map<String, String> data = form().bindFromRequest().data();
+
+        String userIdKey = "userId";
+        if (!data.containsKey(userIdKey)) {
+            return badRequestJson(userIdKey + " is required");
+        }
+
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
-
         if (roomOptional.isPresent()) {
-
-            Map<String, String> formData = form().bindFromRequest().data();
-
-            if (!formData.containsKey("userId")) {
-                return badRequestJson("Field userId is required");
-            }
-
-            String userId = formData.get("userId");
+            String userId = data.get(userIdKey);
 
             Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
-
             if (userOptional.isPresent()) {
                 roomOptional.get().addSubscription(userOptional.get());
-
                 return okJson("OK");
             } else {
-                return badRequestJson(DbUtils.buildEntityNotFoundError("User", userId));
+                return badRequestJson(DbUtils.buildEntityNotFoundError(User.ENTITY_NAME, userId));
             }
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
         }
     }
 
@@ -105,30 +101,36 @@ public class RoomsController extends BaseController {
         if (roomOptional.isPresent()) {
             return okJson(roomOptional.get().subscribers);
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
         }
     }
 
     @Transactional
     public static Result createMessage(String roomId) {
+        Map<String, String> data = form().bindFromRequest().data();
+
+        String userIdKey = "userId";
+        String messageKey = "message";
+
+        if (!data.containsKey(userIdKey)) {
+            return badRequestJson(userIdKey + " is required");
+        }
+
+        if (!data.containsKey(messageKey)) {
+            return badRequestJson(messageKey + " is required");
+        }
+
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
 
         if (roomOptional.isPresent()) {
-
-            Form<Message> form = form(Message.class).bindFromRequest();
-
-            if (form.hasErrors()) {
-                return badRequest(form.errorsAsJson());
-            }
-
-            Message message = form.get();
-            message.room = roomOptional.get();
+            Message message = new Message(roomId, data.get(userIdKey), data.get(messageKey));
+            JPA.em().persist(message);
 
             roomOptional.get().addMessage(message);
 
             return okJson(message);
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
         }
     }
 
@@ -139,7 +141,7 @@ public class RoomsController extends BaseController {
         if (roomOptional.isPresent()) {
             return okJson(roomOptional.get().messages);
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
         }
     }
 

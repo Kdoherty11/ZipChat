@@ -6,6 +6,7 @@ import org.springframework.validation.DataBinder;
 import play.Logger;
 import play.data.Form;
 import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 import play.libs.Yaml;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -31,7 +32,6 @@ public class BaseController extends Controller {
         Logger.debug("Creating a " + clazz.getSimpleName());
 
         Form<T> form = Form.form(clazz).bindFromRequest();
-
         if (form.hasErrors()) {
             return badRequest(form.errorsAsJson());
         } else {
@@ -45,14 +45,11 @@ public class BaseController extends Controller {
         Logger.debug("Getting all " + clazz.getSimpleName() + "s");
 
         CriteriaQuery<T> cq = JPA.em().getCriteriaBuilder().createQuery(clazz);
-
         Root<T> root = cq.from(clazz);
         CriteriaQuery<T> all = cq.select(root);
-
         TypedQuery<T> allQuery = JPA.em().createQuery(all);
-        List<T> entities = allQuery.getResultList();
 
-        return okJson(entities);
+        return okJson(allQuery.getResultList());
     }
 
     protected static <T> Result update(Class<T> clazz, String id) {
@@ -79,7 +76,6 @@ public class BaseController extends Controller {
         Logger.debug("Deleting " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
-
         if (entityOptional.isPresent()) {
             JPA.em().remove(entityOptional.get());
             return okJson("OK");
@@ -92,7 +88,6 @@ public class BaseController extends Controller {
         Logger.debug("Showing " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
-
         if (entityOptional.isPresent()) {
             return okJson(entityOptional.get());
         } else {
@@ -111,7 +106,7 @@ public class BaseController extends Controller {
     private static String[] getUpdateWhiteList(Class clazz) {
         return Arrays.asList(clazz.getDeclaredFields())
                 .stream()
-                .filter(field -> canBeUpdated(field))
+                .filter(BaseController::canBeUpdated)
                 .map(Field::getName)
                 .toArray(String[]::new);
     }
@@ -120,10 +115,13 @@ public class BaseController extends Controller {
         return !Modifier.isStatic(field.getModifiers()) && !field.isAnnotationPresent(Id.class) && !field.isAnnotationPresent(NoUpdate.class);
     }
 
-    @play.db.jpa.Transactional
+    @Transactional
     public static Result init() {
         Map<String, List<Object>> all = (Map<String, List<Object>>) Yaml.load("seed_data.yml");
         all.get("users").forEach(user -> JPA.em().persist(user));
+        all.get("messages").forEach(message -> JPA.em().persist(message));
+        all.get("rooms").forEach(room -> JPA.em().persist(room));
+        all.get("messages").forEach(message -> JPA.em().persist(message));
         return okJson("OK");
     }
 }
