@@ -39,24 +39,24 @@ messages:
 - &m1 !!models.entities.Message
       message: Hello
       room: *marino
-      user: *kevin
+      sender: *kevin
 - &m2 !!models.entities.Message
       message: Hey
       room: *marino
-      user: *zach
+      sender: *zach
 - &m3 !!models.entities.Message
       message: Whats up
       room: *marino
-      user: *mike
+      sender: *mike
 - &m4 !!models.entities.Message
       message: Just peeing on the stars.. U?
       room: *marino
-      user: *nick
+      sender: *nick
 - &m5 !!models.entities.Message
       message: Not much
       room: *marino
-      user: *chris
+      sender: *chris
 - &m6 !!models.entities.Message
       message: Same
       room: *marino
-      user: *kevin
+      sender: *kevin
