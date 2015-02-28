@@ -1,17 +1,14 @@
 package models.entities;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 import models.NoUpdate;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
-import utils.DbUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "requests")
@@ -29,11 +26,11 @@ public class Request {
 
     @NoUpdate
     @Constraints.Required
-    public User fromUser;
+    public String fromUserId;
 
     @NoUpdate
     @Constraints.Required
-    public User toUser;
+    public String toUserId;
 
     @NoUpdate
     public String message;
@@ -46,24 +43,8 @@ public class Request {
 
     public Request() { }
 
-    public Request(String fromUserId, String toUserId) {
-        Optional<User> fromUserOptional = DbUtils.findEntityById(User.class, Preconditions.checkNotNull(fromUserId));
-        if (fromUserOptional.isPresent()) {
-            this.fromUser = fromUserOptional.get();
-        } else {
-            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, fromUserId));
-        }
-
-        Optional<User> toUserOptional = DbUtils.findEntityById(User.class, Preconditions.checkNotNull(toUserId));
-        if (toUserOptional.isPresent()) {
-            this.toUser = toUserOptional.get();
-        } else {
-            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, toUserId));
-        }
-    }
-
     public static List<Request> getPendingRequests(String userId) {
-        String queryString = "select r from Request r where r.toUser.userId = :toUserId and status = :status";
+        String queryString = "select r from Request r where r.toUserId = :toUserId and status = :status";
 
         TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
                 .setParameter("toUserId", userId)
@@ -74,7 +55,7 @@ public class Request {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, User.getId(toUser), User.getId(fromUser), status, message, timeStamp, respondedTimeStamp);
+        return Objects.hashCode(id, toUserId, fromUserId, status, message, timeStamp, respondedTimeStamp);
     }
 
     @Override
@@ -87,8 +68,8 @@ public class Request {
         }
         final Request other = (Request) obj;
         return Objects.equal(this.id, other.id)
-                && Objects.equal(User.getId(this.toUser), User.getId(other.toUser))
-                && Objects.equal(User.getId(this.fromUser), User.getId(other.fromUser))
+                && Objects.equal(this.toUserId, other.toUserId)
+                && Objects.equal(this.fromUserId, other.fromUserId)
                 && Objects.equal(this.status, other.status)
                 && Objects.equal(this.message, other.message)
                 && Objects.equal(this.timeStamp, other.timeStamp)
@@ -99,8 +80,8 @@ public class Request {
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("id", id)
-                .add("toUser", User.getId(toUser))
-                .add("fromUser", User.getId(fromUser))
+                .add("toUserId", toUserId)
+                .add("fromUserId", fromUserId)
                 .add("status", status)
                 .add("message", message)
                 .add("timeStamp", timeStamp)
