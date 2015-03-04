@@ -42,9 +42,7 @@ public class Message {
     public Message(long roomId, long userId, String message) {
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
         if (roomOptional.isPresent()) {
-            Room room = roomOptional.get();
-            this.room = room;
-            room.addMessage(this);
+            this.room = roomOptional.get();
         } else {
            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(Room.ENTITY_NAME, roomId));
         }

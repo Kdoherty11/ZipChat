@@ -28,7 +28,7 @@ import static play.libs.Json.toJson;
 
 public class BaseController extends Controller {
 
-    public static final long NOT_AN_ID = -1l;
+    public static final long INVALID_ID = -1l;
 
     protected static <T> Result create(Class<T> clazz) {
         Logger.debug("Creating a " + clazz.getSimpleName());
@@ -117,17 +117,17 @@ public class BaseController extends Controller {
         return !Modifier.isStatic(field.getModifiers()) && !field.isAnnotationPresent(Id.class) && !field.isAnnotationPresent(NoUpdate.class);
     }
 
-    public static long getId(String id) {
+    public static long checkId(String id) {
         try {
             long longId = Long.valueOf(id);
 
             if (longId > 0) {
                 return longId;
             } else {
-                return NOT_AN_ID;
+                return INVALID_ID;
             }
         } catch (NumberFormatException e) {
-           return NOT_AN_ID;
+           return INVALID_ID;
         }
     }
 

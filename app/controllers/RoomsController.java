@@ -59,13 +59,13 @@ public class RoomsController extends BaseController {
             return badRequestJson(userIdKey + " is required");
         }
 
+        long userId = checkId(data.get(userIdKey));
+        if (userId == INVALID_ID) {
+            return badRequestJson(userIdKey + " must be a positive long");
+        }
+
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
         if (roomOptional.isPresent()) {
-            long userId = getId(data.get(userIdKey));
-
-            if (userId == NOT_AN_ID) {
-                return badRequestJson(userIdKey + " must be a positive long");
-            }
 
             Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
             if (userOptional.isPresent()) {
@@ -116,15 +116,13 @@ public class RoomsController extends BaseController {
             return badRequestJson(messageKey + " is required");
         }
 
+        long userId = checkId(data.get(userIdKey));
+        if (userId == INVALID_ID) {
+            return badRequestJson(userIdKey + " must be a positive long");
+        }
+
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
-
         if (roomOptional.isPresent()) {
-
-            long userId = getId(data.get(userIdKey));
-
-            if (userId == NOT_AN_ID) {
-                return badRequestJson(userIdKey + " must be a positive long");
-            }
 
             Message message = new Message(roomOptional.get(), userId, data.get(messageKey));
             JPA.em().persist(message);
