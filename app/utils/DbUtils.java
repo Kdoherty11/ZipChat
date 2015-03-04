@@ -17,16 +17,16 @@ public class DbUtils {
     private DbUtils() { }
 
     @Transactional
-    public static <T> Optional<T> findEntityById(Class<T> clazz, String id) {
+    public static <T> Optional<T> findEntityById(Class<T> clazz, long id) {
         T entity = JPA.em().find(clazz, id);
         return Optional.ofNullable(entity);
     }
 
-    public static JsonNode buildEntityNotFoundError(Class clazz, String id) {
+    public static JsonNode buildEntityNotFoundError(Class clazz, long id) {
         return buildEntityNotFoundError(clazz.getSimpleName(), id);
     }
 
-    public static JsonNode buildEntityNotFoundError(String entityName, String id) {
+    public static JsonNode buildEntityNotFoundError(String entityName, long id) {
         String errorMessage = buildEntityNotFoundString(entityName, id);
 
         Logger.warn(errorMessage);
@@ -34,7 +34,7 @@ public class DbUtils {
         return toJson(errorMessage);
     }
 
-    public static String buildEntityNotFoundString(String entityName, String id) {
+    public static String buildEntityNotFoundString(String entityName, long id) {
         return entityName + " with id " + id + " was not found";
     }
 }

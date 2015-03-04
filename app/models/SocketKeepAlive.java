@@ -13,13 +13,13 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SocketKeepAlive {
 
-    public static final String USER_ID = "Heartbeat";
+    public static final long USER_ID = -10;
     public static final String HEARTBEAT_MESSAGE = "Beat";
 
     Cancellable cancellable;
-    String roomId;
+    long roomId;
 
-    public SocketKeepAlive(String roomId, ActorRef chatRoom) {
+    public SocketKeepAlive(long roomId, ActorRef chatRoom) {
 
         // Create a Fake socket out for the robot that log events to the console.
         WebSocket.Out<JsonNode> robotChannel = new WebSocket.Out<JsonNode>() {

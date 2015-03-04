@@ -13,22 +13,22 @@ public class RequestsController extends BaseController {
     }
 
     @Transactional
-    public static Result getRequests(String userId) {
+    public static Result getRequests(long userId) {
         return okJson(Request.getPendingRequests(userId));
     }
 
     @Transactional
-    public static Result showRequest(String requestId) {
+    public static Result showRequest(long requestId) {
         return show(Request.class, requestId);
     }
 
     @Transactional
-    public static Result updateRequest(String requestId) {
+    public static Result updateRequest(long requestId) {
         return update(Request.class, requestId);
     }
 
     @Transactional
-    public static Result deleteRequest(String requestId) {
+    public static Result deleteRequest(long requestId) {
         return delete(Request.class, requestId);
     }
 }

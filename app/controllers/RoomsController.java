@@ -31,17 +31,17 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
-    public static Result updateRoom(String id) {
+    public static Result updateRoom(long id) {
         return update(Room.class, id);
     }
 
     @Transactional
-    public static Result showRoom(String id) {
+    public static Result showRoom(long id) {
         return show(Room.class, id);
     }
 
     @Transactional
-    public static Result deleteRoom(String id) {
+    public static Result deleteRoom(long id) {
         return delete(Room.class, id);
     }
 
@@ -51,7 +51,7 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
-    public static Result createSubscription(String roomId) {
+    public static Result createSubscription(long roomId) {
         Map<String, String> data = form().bindFromRequest().data();
 
         String userIdKey = "userId";
@@ -61,7 +61,11 @@ public class RoomsController extends BaseController {
 
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
         if (roomOptional.isPresent()) {
-            String userId = data.get(userIdKey);
+            long userId = getId(data.get(userIdKey));
+
+            if (userId == NOT_AN_ID) {
+                return badRequestJson(userIdKey + " must be a positive long");
+            }
 
             Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
             if (userOptional.isPresent()) {
@@ -76,7 +80,7 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
-    public static Result getSubscriptions(String roomId) {
+    public static Result getSubscriptions(long roomId) {
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
 
         if (roomOptional.isPresent()) {
@@ -87,7 +91,7 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
-    public static Result notifySubscribers(String roomId) {
+    public static Result notifySubscribers(long roomId) {
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
         if (roomOptional.isPresent()) {
             roomOptional.get().notifySubscribers(form().bindFromRequest().data());
@@ -98,7 +102,7 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
-    public static Result createMessage(String roomId) {
+    public static Result createMessage(long roomId) {
         Map<String, String> data = form().bindFromRequest().data();
 
         String userIdKey = "userId";
@@ -115,10 +119,17 @@ public class RoomsController extends BaseController {
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
 
         if (roomOptional.isPresent()) {
-            Message message = new Message(roomId, data.get(userIdKey), data.get(messageKey));
+
+            long userId = getId(data.get(userIdKey));
+
+            if (userId == NOT_AN_ID) {
+                return badRequestJson(userIdKey + " must be a positive long");
+            }
+
+            Message message = new Message(roomOptional.get(), userId, data.get(messageKey));
             JPA.em().persist(message);
 
-            roomOptional.get().addMessage(message);
+            message.addToRoom();
 
             return okJson(message);
         } else {
@@ -127,7 +138,7 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
-    public static Result getMessages(String roomId) {
+    public static Result getMessages(long roomId) {
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
 
         if (roomOptional.isPresent()) {
@@ -138,7 +149,7 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
-    public static WebSocket<JsonNode> joinRoom(final String roomId, final String userId) {
+    public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId) {
 
         return new WebSocket<JsonNode>() {
 

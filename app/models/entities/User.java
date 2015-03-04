@@ -29,7 +29,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public String userId;
+    public long userId;
 
     @Constraints.Required
     public String facebookId;
@@ -48,12 +48,11 @@ public class User {
     @JsonIgnore
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
-    public static String getId(User user) {
-        return user == null ? "" : user.userId;
+    public static long getId(User user) {
+        return user == null ? -1 : user.userId;
     }
 
-    public static F.Promise<JsonNode> sendNotification(String id, Map<String, String> data) {
-
+    public static F.Promise<JsonNode> sendNotification(long id, Map<String, String> data) {
         Optional<User> userOptional = DbUtils.findEntityById(User.class, id);
 
         if (userOptional.isPresent()) {

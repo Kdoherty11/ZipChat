@@ -20,7 +20,7 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
-    public String id;
+    public long id;
 
     @Constraints.Required
     public String message;
@@ -39,10 +39,8 @@ public class Message {
 
     public Message() { }
 
-    public Message(String roomId, String userId, String message) {
-        this.message = Preconditions.checkNotNull(message);
-
-        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, Preconditions.checkNotNull(roomId));
+    public Message(long roomId, long userId, String message) {
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
             this.room = room;
@@ -50,7 +48,17 @@ public class Message {
         } else {
            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(Room.ENTITY_NAME, roomId));
         }
+        setUserById(userId);
+        this.message = Preconditions.checkNotNull(message);
+    }
 
+    public Message(Room room, long userId, String message) {
+        this.room = Preconditions.checkNotNull(room);
+        setUserById(userId);
+        this.message = Preconditions.checkNotNull(message);
+    }
+
+    private void setUserById(long userId) {
         Optional<User> userOptional = DbUtils.findEntityById(User.class, Preconditions.checkNotNull(userId));
         if (userOptional.isPresent()) {
             this.sender = userOptional.get();

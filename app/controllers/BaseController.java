@@ -28,6 +28,8 @@ import static play.libs.Json.toJson;
 
 public class BaseController extends Controller {
 
+    public static final long NOT_AN_ID = -1l;
+
     protected static <T> Result create(Class<T> clazz) {
         Logger.debug("Creating a " + clazz.getSimpleName());
 
@@ -52,7 +54,7 @@ public class BaseController extends Controller {
         return okJson(allQuery.getResultList());
     }
 
-    protected static <T> Result update(Class<T> clazz, String id) {
+    protected static <T> Result update(Class<T> clazz, long id) {
         Logger.debug("Updating " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
@@ -72,7 +74,7 @@ public class BaseController extends Controller {
         }
     }
 
-    protected static <T> Result delete(Class<T> clazz, String id) {
+    protected static <T> Result delete(Class<T> clazz, long id) {
         Logger.debug("Deleting " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
@@ -84,7 +86,7 @@ public class BaseController extends Controller {
         }
     }
 
-    protected static <T> Result show(Class<T> clazz, String id) {
+    protected static <T> Result show(Class<T> clazz, long id) {
         Logger.debug("Showing " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
@@ -113,6 +115,20 @@ public class BaseController extends Controller {
 
     private static boolean canBeUpdated(Field field) {
         return !Modifier.isStatic(field.getModifiers()) && !field.isAnnotationPresent(Id.class) && !field.isAnnotationPresent(NoUpdate.class);
+    }
+
+    public static long getId(String id) {
+        try {
+            long longId = Long.valueOf(id);
+
+            if (longId > 0) {
+                return longId;
+            } else {
+                return NOT_AN_ID;
+            }
+        } catch (NumberFormatException e) {
+           return NOT_AN_ID;
+        }
     }
 
     @Transactional

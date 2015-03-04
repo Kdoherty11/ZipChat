@@ -22,7 +22,7 @@ public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public String id;
+    public long id;
 
     @NoUpdate
     @Constraints.Required
@@ -43,8 +43,8 @@ public class Request {
 
     public Request() { }
 
-    public static List<Request> getPendingRequests(String userId) {
-        String queryString = "select r from Request r where r.toUserId = :toUserId and status = :status";
+    public static List<Request> getPendingRequests(long userId) {
+        String queryString = "select r from Request r where r.toUserId = :toUserId and r.status = :status";
 
         TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
                 .setParameter("toUserId", userId)

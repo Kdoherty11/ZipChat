@@ -18,13 +18,9 @@ import java.util.Map;
 
 @Entity
 @Table(name = "rooms")
-public class Room {
+public class Room extends AbstractRoom {
 
     public static final String ENTITY_NAME = "Room";
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public String roomId;
 
     @Constraints.Required
     @NoUpdate
@@ -61,8 +57,8 @@ public class Room {
 
     public int score;
 
-    public static String getId(Room room) {
-        return room == null ? "" : room.roomId;
+    public static long getId(Room room) {
+        return room == null ? -1 : room.roomId;
     }
 
     public static List<Room> allInGeoRange(double lat, double lon) {
@@ -111,8 +107,8 @@ public class Room {
     }
 
     public void addMessage(Message message) {
-        message.room = this;
         messages.add(message);
+        lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
 
     @Override
