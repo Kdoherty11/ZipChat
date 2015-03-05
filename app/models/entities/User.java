@@ -1,8 +1,10 @@
 package models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import models.NoUpdate;
 import models.Platform;
 import play.Logger;
 import play.data.validation.Constraints;
@@ -11,6 +13,8 @@ import utils.DbUtils;
 import utils.NotificationUtils;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,9 +25,11 @@ import static play.libs.Json.toJson;
 @Table(name = "users")
 public class User {
 
+    public static final String ENTITY_NAME = "User";
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public String userId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public long userId;
 
     @Constraints.Required
     public String facebookId;
@@ -31,16 +37,22 @@ public class User {
     @Constraints.Required
     public String name;
 
+    @JsonIgnore
     public String registrationId;
 
     @Constraints.Required
+    @JsonIgnore
     public Platform platform;
 
-//    @ManyToMany
-//    @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name="userId")}, inverseJoinColumns = {@JoinColumn(name="roomId")})
-//    public List<Room> subscribedTo;
+    @NoUpdate
+    @JsonIgnore
+    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
-    public static F.Promise<JsonNode> sendNotification(String id, Map<String, String> data) {
+    public static long getId(User user) {
+        return user == null ? -1 : user.userId;
+    }
+
+    public static F.Promise<JsonNode> sendNotification(long id, Map<String, String> data) {
         Optional<User> userOptional = DbUtils.findEntityById(User.class, id);
 
         if (userOptional.isPresent()) {

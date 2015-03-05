@@ -22,11 +22,6 @@ users:
           facebookId: 1078640151
           platform: ios
 
-messages:
-   - &m1 !!models.entities.Message
-          message: Hello
-          user: *kevin
-
 rooms:
    - &stockwell !!models.entities.Room
           name: 16 Stockwell
@@ -39,6 +34,29 @@ rooms:
           latitude: 42.340333
           longitude: -71.090352
           radius: 700
-          messages:
-                - *m1
 
+messages:
+- &m1 !!models.entities.Message
+      message: Hello
+      room: *marino
+      sender: *kevin
+- &m2 !!models.entities.Message
+      message: Hey
+      room: *marino
+      sender: *zach
+- &m3 !!models.entities.Message
+      message: Whats up
+      room: *marino
+      sender: *mike
+- &m4 !!models.entities.Message
+      message: Just peeing on the stars.. U?
+      room: *marino
+      sender: *nick
+- &m5 !!models.entities.Message
+      message: Not much
+      room: *marino
+      sender: *chris
+- &m6 !!models.entities.Message
+      message: Same
+      room: *marino
+      sender: *kevin

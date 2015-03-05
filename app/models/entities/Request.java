@@ -6,39 +6,13 @@ import play.data.validation.Constraints;
 import play.db.jpa.JPA;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Entity
 @Table(name = "requests")
 public class Request {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public String id;
-
-    @Constraints.Required
-    @NoUpdate
-    public long toUserId;
-
-    @Constraints.Required
-    @NoUpdate
-    public long fromUserId;
-
-    @Constraints.Required
-    public Status status = Status.pending;
-
-    @NoUpdate
-    public String message;
-
-    public static List<Request> getPendingRequests(String userId) {
-        String queryString = "select r from Request r where r.toUserId = :toUserId and status = :status";
-
-        Query query = JPA.em().createQuery(queryString)
-                .setParameter("toUserId", userId)
-                .setParameter("status", Status.pending);
-
-        return query.getResultList();
-    }
 
     public static enum Status {
         accepted,
@@ -46,9 +20,42 @@ public class Request {
         pending
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public long id;
+
+    @NoUpdate
+    @Constraints.Required
+    public String fromUserId;
+
+    @NoUpdate
+    @Constraints.Required
+    public String toUserId;
+
+    @NoUpdate
+    public String message;
+
+    public Status status = Status.pending;
+
+    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+
+    public long respondedTimeStamp;
+
+    public Request() { }
+
+    public static List<Request> getPendingRequests(long userId) {
+        String queryString = "select r from Request r where r.toUserId = :toUserId and r.status = :status";
+
+        TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
+                .setParameter("toUserId", userId)
+                .setParameter("status", Status.pending);
+
+        return query.getResultList();
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, toUserId, fromUserId, status, message);
+        return Objects.hashCode(id, toUserId, fromUserId, status, message, timeStamp, respondedTimeStamp);
     }
 
     @Override
@@ -64,7 +71,9 @@ public class Request {
                 && Objects.equal(this.toUserId, other.toUserId)
                 && Objects.equal(this.fromUserId, other.fromUserId)
                 && Objects.equal(this.status, other.status)
-                && Objects.equal(this.message, other.message);
+                && Objects.equal(this.message, other.message)
+                && Objects.equal(this.timeStamp, other.timeStamp)
+                && Objects.equal(this.respondedTimeStamp, other.respondedTimeStamp);
     }
 
     @Override
@@ -75,6 +84,8 @@ public class Request {
                 .add("fromUserId", fromUserId)
                 .add("status", status)
                 .add("message", message)
+                .add("timeStamp", timeStamp)
+                .add("respondedTimeStamp", respondedTimeStamp)
                 .toString();
     }
 }

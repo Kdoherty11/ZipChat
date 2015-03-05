@@ -2,7 +2,6 @@ package utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.MulticastResult;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
 import com.notnoop.apns.APNS;
@@ -75,15 +74,13 @@ public class NotificationUtils {
         }
     }
 
-    public static F.Promise<JsonNode> sendBatchAndroidNotifications(List<String> regIds, Map<String, String> data) {
+    public static void sendBatchAndroidNotifications(List<String> regIds, Map<String, String> data) {
         Message message = buildGcmMessage(data);
 
         try {
-            MulticastResult result = GCM_SENDER.send(message, regIds, GCM_RETRIES);
-            return F.Promise.promise(() -> toJson(result.getResults()));
+            GCM_SENDER.send(message, regIds, GCM_RETRIES);
         } catch (IOException e) {
-            Logger.error("Problem sending GCM multicast message " + e.getMessage());
-            return F.Promise.promise(() -> toJson("GCM Multicast Error: " + e.getMessage()));
+            Logger.error("Problem sending batch GCM message " + e.getMessage());
         }
     }
 

@@ -20,22 +20,22 @@ public class UsersController extends BaseController {
     public static Result getUsers() { return read(User.class); }
 
     @Transactional
-    public static Result showUser(String id) {
+    public static Result showUser(long id) {
         return show(User.class, id);
     }
 
     @Transactional
-    public static Result updateUser(String id) {
+    public static Result updateUser(long id) {
         return update(User.class, id);
     }
 
     @Transactional
-    public static Result deleteUser(String id) {
+    public static Result deleteUser(long id) {
         return delete(User.class, id);
     }
 
     @Transactional
-    public static Promise<Result> sendNotification(String userId) {
+    public static Promise<Result> sendNotification(long userId) {
         Map<String, String> data = form().bindFromRequest().data();
         return User.sendNotification(userId, data).map(response -> ok(response));
     }

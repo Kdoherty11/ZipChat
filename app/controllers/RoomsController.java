@@ -6,7 +6,6 @@ import models.entities.Message;
 import models.entities.Room;
 import models.entities.User;
 import play.Logger;
-import play.data.Form;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
@@ -21,25 +20,6 @@ import static play.data.Form.form;
 
 public class RoomsController extends BaseController {
 
-    /**
-     * Handle the chat websocket.
-     */
-    public static WebSocket<JsonNode> joinRoom(final String roomId, final String username) {
-
-        return new WebSocket<JsonNode>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-                Logger.debug("join" + roomId + " " + username);
-                try {
-                    RoomSocket.join(roomId, username, in, out);
-                } catch (Exception ex) {
-                    Logger.error("Problem joining the RoomSocket: " + ex.getMessage());
-                }
-            }
-        };
-    }
-
     @Transactional
     public static Result createRoom() {
         return create(Room.class);
@@ -51,17 +31,17 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
-    public static Result updateRoom(String id) {
+    public static Result updateRoom(long id) {
         return update(Room.class, id);
     }
 
     @Transactional
-    public static Result showRoom(String id) {
+    public static Result showRoom(long id) {
         return show(Room.class, id);
     }
 
     @Transactional
-    public static Result deleteRoom(String id) {
+    public static Result deleteRoom(long id) {
         return delete(Room.class, id);
     }
 
@@ -71,77 +51,115 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
-    public static Result createSubscription(String roomId) {
-        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+    public static Result createSubscription(long roomId) {
+        Map<String, String> data = form().bindFromRequest().data();
 
+        String userIdKey = "userId";
+        if (!data.containsKey(userIdKey)) {
+            return badRequestJson(userIdKey + " is required");
+        }
+
+        long userId = checkId(data.get(userIdKey));
+        if (userId == INVALID_ID) {
+            return badRequestJson(userIdKey + " must be a positive long");
+        }
+
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
         if (roomOptional.isPresent()) {
 
-            Map<String, String> formData = form().bindFromRequest().data();
-
-            if (!formData.containsKey("userId")) {
-                return badRequestJson("Field userId is required");
-            }
-
-            String userId = formData.get("userId");
-
             Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
-
             if (userOptional.isPresent()) {
                 roomOptional.get().addSubscription(userOptional.get());
-
                 return okJson("OK");
             } else {
-                return badRequestJson(DbUtils.buildEntityNotFoundError("User", userId));
+                return badRequestJson(DbUtils.buildEntityNotFoundError(User.ENTITY_NAME, userId));
             }
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
         }
     }
 
     @Transactional
-    public static Result getSubscriptions(String roomId) {
+    public static Result getSubscriptions(long roomId) {
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
 
         if (roomOptional.isPresent()) {
             return okJson(roomOptional.get().subscribers);
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
         }
     }
 
     @Transactional
-    public static Result createMessage(String roomId) {
+    public static Result notifySubscribers(long roomId) {
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+        if (roomOptional.isPresent()) {
+            roomOptional.get().notifySubscribers(form().bindFromRequest().data());
+            return okJson("OK");
+        } else {
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
+        }
+    }
 
+    @Transactional
+    public static Result createMessage(long roomId) {
+        Map<String, String> data = form().bindFromRequest().data();
+
+        String userIdKey = "userId";
+        String messageKey = "message";
+
+        if (!data.containsKey(userIdKey)) {
+            return badRequestJson(userIdKey + " is required");
+        }
+
+        if (!data.containsKey(messageKey)) {
+            return badRequestJson(messageKey + " is required");
+        }
+
+        long userId = checkId(data.get(userIdKey));
+        if (userId == INVALID_ID) {
+            return badRequestJson(userIdKey + " must be a positive long");
+        }
+
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
         if (roomOptional.isPresent()) {
 
-            Map<String, String> data = form().bindFromRequest().data();
-
-
-            Optional<User> user = DbUtils.findEntityById(User.class, data.get("userId"));
-            Message message = new Message(roomId, user.get(), data.get("message"));
-            message.room = roomOptional.get();
-
+            Message message = new Message(roomOptional.get(), userId, data.get(messageKey));
             JPA.em().persist(message);
 
-            roomOptional.get().addMessage(message);
-
+            message.addToRoom();
 
             return okJson(message);
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
         }
     }
 
     @Transactional
-    public static Result getMessages(String roomId) {
+    public static Result getMessages(long roomId) {
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
 
         if (roomOptional.isPresent()) {
             return okJson(roomOptional.get().messages);
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError("Room", roomId));
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
         }
     }
 
+    @Transactional
+    public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId) {
+
+        return new WebSocket<JsonNode>() {
+
+            // Called when the Websocket Handshake is done.
+            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
+                Logger.debug("joining " + roomId + " " + userId);
+                try {
+                    RoomSocket.join(roomId, userId, in, out);
+                } catch (Exception ex) {
+                    Logger.error("Problem joining the RoomSocket: " + ex.getMessage());
+                }
+            }
+        };
+    }
 }

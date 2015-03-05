@@ -3,24 +3,24 @@ package models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import models.NoUpdate;
+import models.Platform;
 import play.Logger;
-import play.data.format.Formats;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
+import utils.NotificationUtils;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Entity
 @Table(name = "rooms")
-public class Room {
+public class Room extends AbstractRoom {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public String roomId;
+    public static final String ENTITY_NAME = "Room";
 
     @Constraints.Required
     @NoUpdate
@@ -40,17 +40,15 @@ public class Room {
     @NoUpdate
     public int radius;
 
-    @Formats.DateTime(pattern="dd/MM/yyyy")
     @NoUpdate
-    public Date creationTime = new Date();
+    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
-    @Formats.DateTime(pattern="dd/MM/yyyy")
     @NoUpdate
-    public Date lastActivity = new Date();
+    public long lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     @JsonIgnore
     @ManyToMany
-    @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name="roomId")}, inverseJoinColumns = {@JoinColumn(name="userId")})
+    @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public List<User> subscribers = new ArrayList<>();
 
     @JsonIgnore
@@ -59,23 +57,26 @@ public class Room {
 
     public int score;
 
+    public static long getId(Room room) {
+        return room == null ? -1 : room.roomId;
+    }
+
     public static List<Room> allInGeoRange(double lat, double lon) {
+        Logger.debug("Getting all rooms containing location " + lat + ", " + lon);
 
-        Logger.debug("Getting all rooms containing " + lat + ", " + lon);
+        int earthRadius = 6371; // in km
 
-        int earthRadius = 6371;  // earth's mean radius, km
+        String firstCutSql = "select r2.id" +
+                " from Room r2" +
+                " where :lat >= r2.latitude - degrees((r2.radius * 1000) / :R) and :lat <= r2.latitude + degrees((r2.radius * 1000) / :R)" +
+                " and :lon >= r2.longitude - degrees((r2.radius * 1000) / :R) and :lon <= r2.longitude + degrees((r2.radius * 1000) / :R)";
 
-        String firstCutSql = "select r" +
-                " from Room r" +
-                " where :lat >= r.latitude - degrees((r.radius * 1000) / :R) and :lat <= r.latitude + degrees((r.radius * 1000) / :R)" +
-                " and :lon >= r.longitude - degrees((r.radius * 1000) / :R) and :lon <= r.longitude + degrees((r.radius * 1000) / :R)";
-
-        // TODO: Fix for JPA
         String sql = "select r" +
-                " from (" + firstCutSql + ") as FirstCut" +
-                " where acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lon))) * :R * 1000 <= radius;";
+                " from Room r" +
+                " where r.id in (" + firstCutSql + ") and" +
+                " acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lon))) * :R * 1000 <= radius";
 
-        Query query = JPA.em().createQuery(firstCutSql, Room.class)
+        TypedQuery<Room> query = JPA.em().createQuery(sql, Room.class)
                 .setParameter("lat", lat)
                 .setParameter("lon", lon)
                 .setParameter("R", earthRadius);
@@ -84,21 +85,35 @@ public class Room {
     }
 
     public void notifySubscribers(Map<String, String> data) {
-        subscribers.forEach(user -> user.sendNotification(data));
+        new Thread(() -> {
+            List<String> androidRegIds = new ArrayList<>();
+            List<String> iosRegIds = new ArrayList<>();
+
+            subscribers.forEach(user -> {
+                if (user.platform == Platform.android) {
+                    androidRegIds.add(user.registrationId);
+                } else if (user.platform == Platform.ios) {
+                    iosRegIds.add(user.registrationId);
+                }
+            });
+
+            NotificationUtils.sendBatchAndroidNotifications(androidRegIds, data);
+            NotificationUtils.sendBatchAppleNotifications(iosRegIds, data);
+        }).start();
     }
 
     public void addSubscription(User user) {
         subscribers.add(user);
-   }
+    }
 
     public void addMessage(Message message) {
-        message.room = this;
         messages.add(message);
+        lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(roomId, name, latitude, longitude, radius, creationTime, lastActivity, subscribers, score);
+        return Objects.hashCode(roomId, name, latitude, longitude, radius, timeStamp, lastActivity, subscribers, score);
     }
 
     @Override
@@ -115,7 +130,7 @@ public class Room {
                 && Objects.equal(this.latitude, other.latitude)
                 && Objects.equal(this.longitude, other.longitude)
                 && Objects.equal(this.radius, other.radius)
-                && Objects.equal(this.creationTime, other.creationTime)
+                && Objects.equal(this.timeStamp, other.timeStamp)
                 && Objects.equal(this.lastActivity, other.lastActivity)
                 && Objects.equal(this.subscribers, other.subscribers)
                 && Objects.equal(this.score, other.score);
@@ -130,7 +145,7 @@ public class Room {
                 .add("longitude", longitude)
                 .add("radius", radius)
                 .add("score", score)
-                .add("creationTime", creationTime)
+                .add("creationTime", timeStamp)
                 .add("lastActivity", lastActivity)
                 .toString();
     }
