@@ -8,8 +8,11 @@ import javax.persistence.*;
 public class AbstractRoom {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-
+    @SequenceGenerator(name="room_id_seq",
+            sequenceName="room_id_seq",
+            allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY,
+            generator="room_id_seq")
     public long roomId;
 
 }

@@ -21,7 +21,7 @@ public class Message {
     @SequenceGenerator(name="messages_id_seq",
             sequenceName="messages_id_seq",
             allocationSize=1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    @GeneratedValue(strategy = GenerationType.IDENTITY,
             generator="messages_id_seq")
     @JsonIgnore
     public long id;
