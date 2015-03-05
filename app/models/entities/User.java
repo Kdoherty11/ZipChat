@@ -19,12 +19,14 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "users")
+@SequenceGenerator(name="users_userId_seq", sequenceName="users_userId_seq", allocationSize=1)
 public class User {
 
     public static final String ENTITY_NAME = "User";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="users_userId_seq")
+    @Column(name = "userId")
     public long userId;
 
     @Constraints.Required
