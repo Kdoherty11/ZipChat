@@ -29,6 +29,7 @@ import static play.libs.Json.toJson;
 public class BaseController extends Controller {
 
     public static final long INVALID_ID = -1l;
+    public static final String OK = "OK";
 
     protected static <T> Result create(Class<T> clazz) {
         Logger.debug("Creating a " + clazz.getSimpleName());
@@ -80,7 +81,7 @@ public class BaseController extends Controller {
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
         if (entityOptional.isPresent()) {
             JPA.em().remove(entityOptional.get());
-            return okJson("OK");
+            return okJson(OK);
         } else {
             return badRequest(DbUtils.buildEntityNotFoundError(clazz, id));
         }

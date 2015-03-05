@@ -1,21 +1,17 @@
 package utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
 import com.notnoop.apns.PayloadBuilder;
 import com.notnoop.exceptions.NetworkIOException;
+import controllers.BaseController;
 import play.Logger;
-import play.libs.F;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
-import static play.libs.Json.toJson;
 
 
 public class NotificationUtils {
@@ -41,16 +37,29 @@ public class NotificationUtils {
         return builder.build();
     }
 
-    public static F.Promise<JsonNode> sendAppleNotification(String token, Map<String, String> data) {
+    public static String sendAppleNotification(String token, Map<String, String> data) {
         String payload = buildAppleMessage(data);
 
         //"a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
         try {
             SERVICE.push(token, payload);
-            return F.Promise.promise(() -> toJson("OK"));
+            return BaseController.OK;
         } catch (NetworkIOException e) {
-            Logger.error("Problem sending APN " + e.getMessage());
-            return F.Promise.promise(() -> toJson("Failed"));
+            String error = "Problem sending APN " + e.getMessage();
+            Logger.error(error);
+            return error;
+        }
+    }
+
+    public static String sendBatchAppleNotifications(List<String> tokens, Map<String, String> data) {
+        String payload = buildAppleMessage(data);
+        try {
+            SERVICE.push(tokens, payload);
+            return BaseController.OK;
+        } catch (NetworkIOException e) {
+            String error = "Problem sending batch APN " + e.getMessage();
+            Logger.error(error);
+            return error;
         }
     }
 
@@ -62,35 +71,29 @@ public class NotificationUtils {
         return builder.build();
     }
 
-    public static F.Promise<JsonNode> sendAndroidNotification(String regId, Map<String, String> data) {
+    public static String sendAndroidNotification(String regId, Map<String, String> data) {
         Message message = buildGcmMessage(data);
 
         try {
-            Result result = GCM_SENDER.send(message, regId, GCM_RETRIES);
-            return F.Promise.promise(() -> toJson(result));
+            GCM_SENDER.send(message, regId, GCM_RETRIES);
+            return BaseController.OK;
         } catch (IOException e) {
-            Logger.error("Problem sending GCM Message " + e.getMessage());
-            return F.Promise.promise(() -> toJson("GCM Error: " + e.getMessage()));
+            String error = "Problem sending GCM Message " + e.getMessage();
+            Logger.error(error);
+            return error;
         }
     }
 
-    public static void sendBatchAndroidNotifications(List<String> regIds, Map<String, String> data) {
+    public static String sendBatchAndroidNotifications(List<String> regIds, Map<String, String> data) {
         Message message = buildGcmMessage(data);
 
         try {
             GCM_SENDER.send(message, regIds, GCM_RETRIES);
+            return BaseController.OK;
         } catch (IOException e) {
-            Logger.error("Problem sending batch GCM message " + e.getMessage());
-        }
-    }
-
-    public static F.Promise<JsonNode> sendBatchAppleNotifications(List<String> tokens, Map<String, String> data) {
-        String payload = buildAppleMessage(data);
-        try {
-            SERVICE.push(tokens, payload);
-            return F.Promise.promise(() -> toJson("OK"));
-        } catch (NetworkIOException e) {
-            return F.Promise.promise(() -> toJson("Failed"));
+            String error = "Problem sending batch GCM message " + e.getMessage();
+            Logger.error(error);
+            return error;
         }
     }
 }
