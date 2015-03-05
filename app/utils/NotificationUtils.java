@@ -31,16 +31,15 @@ public class NotificationUtils {
 
     private static String buildAppleMessage(Map<String, String> data) {
         PayloadBuilder builder = PayloadBuilder.newPayload();
-        builder.alertBody("New message");
 
+        builder.alertBody("New message");
         data.entrySet().forEach(entry -> builder.customField(entry.getKey(), entry.getValue()));
+
         return builder.build();
     }
 
     public static String sendAppleNotification(String token, Map<String, String> data) {
         String payload = buildAppleMessage(data);
-
-        //"a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
         try {
             SERVICE.push(token, payload);
             return BaseController.OK;
