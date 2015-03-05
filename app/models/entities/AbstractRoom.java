@@ -9,6 +9,7 @@ public class AbstractRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
+
     public long roomId;
 
 }

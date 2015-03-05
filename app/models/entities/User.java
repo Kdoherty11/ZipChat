@@ -24,7 +24,11 @@ public class User {
     public static final String ENTITY_NAME = "User";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name="user_id_seq",
+            sequenceName="user_id_seq",
+            allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator="user_id_seq")
     public long userId;
 
     @Constraints.Required

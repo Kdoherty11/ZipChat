@@ -18,7 +18,11 @@ import java.util.Optional;
 public class Message {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name="messages_id_seq",
+            sequenceName="messages_id_seq",
+            allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator="messages_id_seq")
     @JsonIgnore
     public long id;
 

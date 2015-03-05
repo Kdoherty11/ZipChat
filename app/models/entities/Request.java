@@ -21,7 +21,11 @@ public class Request {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name="requests_id_seq",
+            sequenceName="requests_id_seq",
+            allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator="requests_id_seq")
     public long id;
 
     @NoUpdate
