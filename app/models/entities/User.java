@@ -11,6 +11,7 @@ import utils.DbUtils;
 import utils.NotificationUtils;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
 
     public static final String ENTITY_NAME = "User";
 
