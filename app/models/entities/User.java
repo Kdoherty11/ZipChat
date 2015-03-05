@@ -25,7 +25,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long id;
+    public long userId;
 
     @Constraints.Required
     public String facebookId;
@@ -45,7 +45,7 @@ public class User {
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     public static long getId(User user) {
-        return user == null ? -1 : user.id;
+        return user == null ? -1 : user.userId;
     }
 
     public static String sendNotification(long id, Map<String, String> data) {
@@ -78,7 +78,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, facebookId, name, registrationId, platform);
+        return Objects.hashCode(userId, facebookId, name, registrationId, platform);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class User {
             return false;
         }
         final User other = (User) obj;
-        return Objects.equal(this.id, other.id)
+        return Objects.equal(this.userId, other.userId)
                 && Objects.equal(this.facebookId, other.facebookId)
                 && Objects.equal(this.name, other.name)
                 && Objects.equal(this.registrationId, other.registrationId)
@@ -100,7 +100,7 @@ public class User {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("id", id)
+                .add("userId", userId)
                 .add("name", name)
                 .add("facebookId", facebookId)
                 .add("registrationId", registrationId)

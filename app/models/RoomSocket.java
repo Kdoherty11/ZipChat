@@ -161,7 +161,7 @@ public class RoomSocket extends UntypedActor {
     @Transactional
     private void storeMessage(Talk talk) {
         //Optional<User> roomOptional = DbUtils.findEntityById(User.class, talk.getUsername());
-        //Message message = new Message(talk.getRoomId(), roomOptional.get().id, talk.getText());
+        //Message message = new Message(talk.getRoomId(), roomOptional.get().userId, talk.getText());
         //message.addToRoom();
     }
 
@@ -236,7 +236,7 @@ public class RoomSocket extends UntypedActor {
         Logger.debug("NotifyAll called with roomId: " + roomId);
 
         if (!rooms.containsKey(roomId)) {
-            Logger.error("Not notifying rooms because rooms map does not contain room with id " + roomId);
+            Logger.error("Not notifying rooms because rooms map does not contain room with userId " + roomId);
             return;
         }
 

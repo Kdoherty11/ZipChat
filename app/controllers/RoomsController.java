@@ -54,7 +54,7 @@ public class RoomsController extends BaseController {
     public static Result createSubscription(long roomId) {
         Map<String, String> data = form().bindFromRequest().data();
 
-        String userIdKey = "id";
+        String userIdKey = "userId";
         if (!data.containsKey(userIdKey)) {
             return badRequestJson(userIdKey + " is required");
         }
@@ -105,7 +105,7 @@ public class RoomsController extends BaseController {
     public static Result createMessage(long roomId) {
         Map<String, String> data = form().bindFromRequest().data();
 
-        String userIdKey = "id";
+        String userIdKey = "userId";
         String messageKey = "message";
 
         if (!data.containsKey(userIdKey)) {

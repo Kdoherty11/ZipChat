@@ -79,7 +79,7 @@ public class Request {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("id", id)
+                .add("userId", id)
                 .add("toUserId", toUserId)
                 .add("fromUserId", fromUserId)
                 .add("status", status)

@@ -56,7 +56,7 @@ public class BaseController extends Controller {
     }
 
     protected static <T> Result update(Class<T> clazz, long id) {
-        Logger.debug("Updating " + clazz.getSimpleName() + " with id " + id);
+        Logger.debug("Updating " + clazz.getSimpleName() + " with userId " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
 
@@ -76,7 +76,7 @@ public class BaseController extends Controller {
     }
 
     protected static <T> Result delete(Class<T> clazz, long id) {
-        Logger.debug("Deleting " + clazz.getSimpleName() + " with id " + id);
+        Logger.debug("Deleting " + clazz.getSimpleName() + " with userId " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
         if (entityOptional.isPresent()) {
@@ -88,7 +88,7 @@ public class BaseController extends Controller {
     }
 
     protected static <T> Result show(Class<T> clazz, long id) {
-        Logger.debug("Showing " + clazz.getSimpleName() + " with id " + id);
+        Logger.debug("Showing " + clazz.getSimpleName() + " with userId " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
         if (entityOptional.isPresent()) {
