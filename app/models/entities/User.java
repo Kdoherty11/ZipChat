@@ -24,7 +24,7 @@ public class User {
     public static final String ENTITY_NAME = "User";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long userId;
 
     @Constraints.Required
