@@ -70,7 +70,7 @@ public class RoomsController extends BaseController {
             Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
             if (userOptional.isPresent()) {
                 roomOptional.get().addSubscription(userOptional.get());
-                return okJson("OK");
+                return okJson(OK);
             } else {
                 return badRequestJson(DbUtils.buildEntityNotFoundError(User.ENTITY_NAME, userId));
             }
@@ -95,7 +95,7 @@ public class RoomsController extends BaseController {
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
         if (roomOptional.isPresent()) {
             roomOptional.get().notifySubscribers(form().bindFromRequest().data());
-            return okJson("OK");
+            return okJson(OK);
         } else {
             return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
         }

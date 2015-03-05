@@ -4,10 +4,7 @@ import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 
-import java.util.Map;
-
 import static play.data.Form.form;
-import static play.libs.F.Promise;
 
 public class UsersController extends BaseController {
 
@@ -35,8 +32,12 @@ public class UsersController extends BaseController {
     }
 
     @Transactional
-    public static Promise<Result> sendNotification(long userId) {
-        Map<String, String> data = form().bindFromRequest().data();
-        return User.sendNotification(userId, data).map(response -> ok(response));
+    public static Result sendNotification(long userId) {
+        String result = User.sendNotification(userId, form().bindFromRequest().data());
+        if (OK.equals(result)) {
+            return okJson(OK);
+        } else {
+            return badRequestJson(result);
+        }
     }
 }

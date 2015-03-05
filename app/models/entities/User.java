@@ -1,14 +1,12 @@
 package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import models.NoUpdate;
 import models.Platform;
 import play.Logger;
 import play.data.validation.Constraints;
-import play.libs.F;
 import utils.DbUtils;
 import utils.NotificationUtils;
 
@@ -17,8 +15,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Optional;
-
-import static play.libs.Json.toJson;
 
 
 @Entity
@@ -52,29 +48,31 @@ public class User {
         return user == null ? -1 : user.userId;
     }
 
-    public static F.Promise<JsonNode> sendNotification(long id, Map<String, String> data) {
+    public static String sendNotification(long id, Map<String, String> data) {
         Optional<User> userOptional = DbUtils.findEntityById(User.class, id);
 
         if (userOptional.isPresent()) {
             return userOptional.get().sendNotification(data);
         } else {
-            return F.Promise.promise(() -> toJson(DbUtils.buildEntityNotFoundError("User", id)));
+            return DbUtils.buildEntityNotFoundString("User", id);
         }
     }
 
-    public F.Promise<JsonNode> sendNotification(Map<String, String> data) {
+    public String sendNotification(Map<String, String> data) {
         if (Strings.isNullOrEmpty(registrationId)) {
-            return F.Promise.promise(() -> toJson("No registration ID found for user " + this));
+            String error = "No registrationId found for user: " + this;
+            Logger.error(error);
+            return error;
         }
         switch (platform) {
             case android:
                 return NotificationUtils.sendAndroidNotification(registrationId, data);
             case ios:
-                NotificationUtils.sendAppleNotification(registrationId, data);
-                return F.Promise.promise(() -> toJson("OK"));
+                return NotificationUtils.sendAppleNotification(registrationId, data);
             default:
-                Logger.error("Attempted to send a notification to an " + platform + " device");
-                return F.Promise.promise(() -> toJson("Sending notifications to " + platform + " devices is not supported"));
+                String error = "Attempted to send a notification to an " + platform + " device";
+                Logger.error(error);
+                return error;
         }
     }
 
