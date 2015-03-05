@@ -15,10 +15,12 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "messages")
+@SequenceGenerator(name="messages_id_seq", sequenceName="messages_id_seq", allocationSize=1)
 public class Message {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="messages_id_seq")
+    @Column(name = "id")
     @JsonIgnore
     public long id;
 
