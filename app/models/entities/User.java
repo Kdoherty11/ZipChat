@@ -20,12 +20,13 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class User {
 
     public static final String ENTITY_NAME = "User";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq_gen")
+    @SequenceGenerator(name = "users_seq_gen", sequenceName = "users_userId_seq")
     public long userId;
 
     @Constraints.Required
