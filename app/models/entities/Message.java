@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "messages")
-@SequenceGenerator(name="messages_id_seq", sequenceName="messages_id_seq", allocationSize=1)
+@SequenceGenerator(name="messages_id_seq", sequenceName="messages_id_seq", allocationSize=10)
 public class Message {
 
     @Id

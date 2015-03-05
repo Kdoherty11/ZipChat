@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "requests")
-@SequenceGenerator(name="requests_id_seq", sequenceName="requests_id_seq", allocationSize=1)
+@SequenceGenerator(name="requests_id_seq", sequenceName="requests_id_seq", allocationSize=10)
 public class Request {
 
     public static enum Status {

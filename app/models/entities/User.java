@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "users")
-@SequenceGenerator(name="users_userId_seq", sequenceName="users_userId_seq", allocationSize=1)
+@SequenceGenerator(name="users_userId_seq", sequenceName="users_userId_seq", allocationSize=10)
 public class User {
 
     public static final String ENTITY_NAME = "User";
