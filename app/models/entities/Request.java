@@ -23,10 +23,10 @@ public class Request {
 
     @Id
     @GenericGenerator(name = "requests_gen", strategy = "sequence", parameters = {
-            @org.hibernate.annotations.Parameter(name = "sequenceName", value = "requests"),
+            @org.hibernate.annotations.Parameter(name = "sequenceName", value = "requests_gen"),
             @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
     })
-    @GeneratedValue(generator = "requests", strategy=GenerationType.SEQUENCE)
+    @GeneratedValue(generator = "requests_gen", strategy=GenerationType.SEQUENCE)
     public long id;
 
     @NoUpdate
