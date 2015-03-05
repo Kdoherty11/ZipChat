@@ -19,7 +19,7 @@ import java.util.Map;
 public class Room {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public String roomId;
 
     @Constraints.Required

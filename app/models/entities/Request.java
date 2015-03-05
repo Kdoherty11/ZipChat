@@ -13,7 +13,7 @@ import java.util.List;
 public class Request {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public String id;
 
     @Constraints.Required

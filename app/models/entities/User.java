@@ -22,7 +22,7 @@ import static play.libs.Json.toJson;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public String userId;
 
     @Constraints.Required

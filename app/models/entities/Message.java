@@ -17,7 +17,7 @@ import java.util.Optional;
 public class Message {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public String id;
 
     @Constraints.Required
