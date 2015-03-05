@@ -2,6 +2,7 @@ package models.entities;
 
 import com.google.common.base.Objects;
 import models.NoUpdate;
+import org.hibernate.annotations.GenericGenerator;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
 
@@ -12,7 +13,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "requests")
-@SequenceGenerator(name="requests_id_seq", sequenceName="requests_id_seq", allocationSize=10)
 public class Request {
 
     public static enum Status {
@@ -22,8 +22,11 @@ public class Request {
     }
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="requests_id_seq")
-    @Column(name = "id")
+    @GenericGenerator(name = "requests_gen", strategy = "sequence", parameters = {
+            @org.hibernate.annotations.Parameter(name = "sequenceName", value = "requests"),
+            @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
+    })
+    @GeneratedValue(generator = "requests", strategy=GenerationType.SEQUENCE)
     public long id;
 
     @NoUpdate

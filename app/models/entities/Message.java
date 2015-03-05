@@ -3,6 +3,7 @@ package models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.Transactional;
@@ -15,12 +16,14 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "messages")
-@SequenceGenerator(name="messages_id_seq", sequenceName="messages_id_seq", allocationSize=10)
 public class Message {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="messages_id_seq")
-    @Column(name = "id")
+    @GenericGenerator(name = "messages_gen", strategy = "sequence", parameters = {
+            @org.hibernate.annotations.Parameter(name = "sequenceName", value = "messages_gen"),
+            @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
+    })
+    @GeneratedValue(generator = "messages_gen", strategy=GenerationType.SEQUENCE)
     @JsonIgnore
     public long id;
 

@@ -5,6 +5,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import models.NoUpdate;
 import models.Platform;
+import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
 import utils.DbUtils;
@@ -25,8 +26,11 @@ public class User {
     public static final String ENTITY_NAME = "User";
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="users_userId_seq")
-    @Column(name = "userId")
+    @GenericGenerator(name = "users_gen", strategy = "sequence", parameters = {
+            @org.hibernate.annotations.Parameter(name = "sequenceName", value = "users_gen"),
+            @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
+    })
+    @GeneratedValue(generator = "users_gen", strategy=GenerationType.SEQUENCE)
     public long userId;
 
     @Constraints.Required
