@@ -48,7 +48,7 @@ public class Room extends AbstractRoom {
 
     @JsonIgnore
     @ManyToMany
-    @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
+    @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "id")})
     public List<User> subscribers = new ArrayList<>();
 
     @JsonIgnore

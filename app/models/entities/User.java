@@ -11,7 +11,6 @@ import utils.DbUtils;
 import utils.NotificationUtils;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
@@ -25,10 +24,9 @@ public class User {
     public static final String ENTITY_NAME = "User";
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(insertable=false, updatable=false,
-            columnDefinition="BigSerial not null")
-    public long userId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq_gen")
+    @SequenceGenerator(name = "users_seq_gen", sequenceName = "users_id_seq")
+    public long id;
 
     @Constraints.Required
     public String facebookId;
@@ -48,7 +46,7 @@ public class User {
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     public static long getId(User user) {
-        return user == null ? -1 : user.userId;
+        return user == null ? -1 : user.id;
     }
 
     public static String sendNotification(long id, Map<String, String> data) {
@@ -81,7 +79,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(userId, facebookId, name, registrationId, platform);
+        return Objects.hashCode(id, facebookId, name, registrationId, platform);
     }
 
     @Override
@@ -93,7 +91,7 @@ public class User {
             return false;
         }
         final User other = (User) obj;
-        return Objects.equal(this.userId, other.userId)
+        return Objects.equal(this.id, other.id)
                 && Objects.equal(this.facebookId, other.facebookId)
                 && Objects.equal(this.name, other.name)
                 && Objects.equal(this.registrationId, other.registrationId)
@@ -103,7 +101,7 @@ public class User {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("id", userId)
+                .add("id", id)
                 .add("name", name)
                 .add("facebookId", facebookId)
                 .add("registrationId", registrationId)

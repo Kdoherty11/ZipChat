@@ -35,7 +35,7 @@ public class Message {
     public Room room;
 
     @ManyToOne
-    @JoinColumn(name="userId")
+    @JoinColumn(name="id")
     @Constraints.Required
     public User sender;
 
@@ -105,7 +105,7 @@ public class Message {
                 .add("id", id)
                 .add("message", message)
                 .add("roomId", Room.getId(room))
-                .add("userId", User.getId(sender))
+                .add("id", User.getId(sender))
                 .add("timeStamp", timeStamp)
                 .toString();
     }

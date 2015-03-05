@@ -161,7 +161,7 @@ public class RoomSocket extends UntypedActor {
     @Transactional
     private void storeMessage(Talk talk) {
         //Optional<User> roomOptional = DbUtils.findEntityById(User.class, talk.getUsername());
-        //Message message = new Message(talk.getRoomId(), roomOptional.get().userId, talk.getText());
+        //Message message = new Message(talk.getRoomId(), roomOptional.get().id, talk.getText());
         //message.addToRoom();
     }
 
