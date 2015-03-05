@@ -12,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "requests")
+@SequenceGenerator(name="requests_id_seq", sequenceName="requests_id_seq", allocationSize=1)
 public class Request {
 
     public static enum Status {
@@ -21,7 +22,8 @@ public class Request {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="requests_id_seq")
+    @Column(name = "id")
     public long id;
 
     @NoUpdate
