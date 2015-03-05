@@ -5,6 +5,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import models.NoUpdate;
 import models.Platform;
+import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
 import utils.DbUtils;
@@ -19,12 +20,17 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "users")
+@SequenceGenerator(name="users_userId_seq", sequenceName="users_userId_seq", allocationSize=10)
 public class User {
 
     public static final String ENTITY_NAME = "User";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GenericGenerator(name = "users_gen", strategy = "sequence", parameters = {
+            @org.hibernate.annotations.Parameter(name = "sequenceName", value = "users_gen"),
+            @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
+    })
+    @GeneratedValue(generator = "users_gen", strategy=GenerationType.SEQUENCE)
     public long userId;
 
     @Constraints.Required
@@ -100,7 +106,7 @@ public class User {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("id", userId)
+                .add("userId", userId)
                 .add("name", name)
                 .add("facebookId", facebookId)
                 .add("registrationId", registrationId)

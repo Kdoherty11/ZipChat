@@ -2,6 +2,7 @@ package models.entities;
 
 import com.google.common.base.Objects;
 import models.NoUpdate;
+import org.hibernate.annotations.GenericGenerator;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
 
@@ -21,7 +22,11 @@ public class Request {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GenericGenerator(name = "requests_gen", strategy = "sequence", parameters = {
+            @org.hibernate.annotations.Parameter(name = "sequenceName", value = "requests_gen"),
+            @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
+    })
+    @GeneratedValue(generator = "requests_gen", strategy=GenerationType.SEQUENCE)
     public long id;
 
     @NoUpdate
@@ -79,7 +84,7 @@ public class Request {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("id", id)
+                .add("userId", id)
                 .add("toUserId", toUserId)
                 .add("fromUserId", fromUserId)
                 .add("status", status)

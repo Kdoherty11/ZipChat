@@ -236,7 +236,7 @@ public class RoomSocket extends UntypedActor {
         Logger.debug("NotifyAll called with roomId: " + roomId);
 
         if (!rooms.containsKey(roomId)) {
-            Logger.error("Not notifying rooms because rooms map does not contain room with id " + roomId);
+            Logger.error("Not notifying rooms because rooms map does not contain room with userId " + roomId);
             return;
         }
 
