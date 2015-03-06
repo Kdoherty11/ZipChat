@@ -3,6 +3,7 @@ package models.entities;
 import com.google.common.base.Objects;
 import models.NoUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
 
@@ -47,6 +48,16 @@ public class Request {
     public long respondedTimeStamp;
 
     public Request() { }
+
+    public void setStatus(Status status) {
+        if (this.status == Status.pending) {
+            if (status == Status.accepted) {
+                //create the private chatroom here if one does not already exist
+            }
+        }
+        this.status = status;
+
+    }
 
     public static List<Request> getPendingRequests(long userId) {
         String queryString = "select r from Request r where r.receiverId = :receiverId and r.status = :status";
