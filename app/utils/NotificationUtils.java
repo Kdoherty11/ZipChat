@@ -43,7 +43,7 @@ public class NotificationUtils {
         //"a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
         try {
             SERVICE.push(token, payload);
-            return BaseController.OK;
+            return BaseController.OK_STRING;
         } catch (NetworkIOException e) {
             String error = "Problem sending APN " + e.getMessage();
             Logger.error(error);
@@ -55,7 +55,7 @@ public class NotificationUtils {
         String payload = buildAppleMessage(data);
         try {
             SERVICE.push(tokens, payload);
-            return BaseController.OK;
+            return BaseController.OK_STRING;
         } catch (NetworkIOException e) {
             String error = "Problem sending batch APN " + e.getMessage();
             Logger.error(error);
@@ -76,7 +76,7 @@ public class NotificationUtils {
 
         try {
             GCM_SENDER.send(message, regId, GCM_RETRIES);
-            return BaseController.OK;
+            return BaseController.OK_STRING;
         } catch (IOException e) {
             String error = "Problem sending GCM Message " + e.getMessage();
             Logger.error(error);
@@ -89,7 +89,7 @@ public class NotificationUtils {
 
         try {
             GCM_SENDER.send(message, regIds, GCM_RETRIES);
-            return BaseController.OK;
+            return BaseController.OK_STRING;
         } catch (IOException e) {
             String error = "Problem sending batch GCM message " + e.getMessage();
             Logger.error(error);

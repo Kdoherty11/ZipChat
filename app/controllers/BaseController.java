@@ -28,8 +28,10 @@ import static play.libs.Json.toJson;
 
 public class BaseController extends Controller {
 
-    public static final long INVALID_ID = -1l;
-    public static final String OK = "OK";
+    public static final String OK_STRING = "OK";
+    public static final Result OK_RESULT = okJson(OK_STRING);
+
+    public static final long INVALID_ID = -1L;
 
     protected static <T> Result create(Class<T> clazz) {
         Logger.debug("Creating a " + clazz.getSimpleName());
@@ -81,7 +83,7 @@ public class BaseController extends Controller {
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
         if (entityOptional.isPresent()) {
             JPA.em().remove(entityOptional.get());
-            return okJson(OK);
+            return OK_RESULT;
         } else {
             return badRequest(DbUtils.buildEntityNotFoundError(clazz, id));
         }
@@ -134,11 +136,12 @@ public class BaseController extends Controller {
 
     @Transactional
     public static Result init() {
+        @SuppressWarnings("unchecked")
         Map<String, List<Object>> all = (Map<String, List<Object>>) Yaml.load("seed_data.yml");
         all.get("users").forEach(user -> JPA.em().persist(user));
         all.get("messages").forEach(message -> JPA.em().persist(message));
         all.get("rooms").forEach(room -> JPA.em().persist(room));
         all.get("messages").forEach(message -> JPA.em().persist(message));
-        return okJson("OK");
+        return OK_RESULT;
     }
 }

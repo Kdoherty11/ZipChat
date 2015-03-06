@@ -34,8 +34,8 @@ public class UsersController extends BaseController {
     @Transactional
     public static Result sendNotification(long userId) {
         String result = User.sendNotification(userId, form().bindFromRequest().data());
-        if (OK.equals(result)) {
-            return okJson(OK);
+        if (OK_STRING.equals(result)) {
+            return OK_RESULT;
         } else {
             return badRequestJson(result);
         }
