@@ -190,6 +190,7 @@ public class BaseController extends Controller {
         all.get("rooms").forEach(room -> JPA.em().persist(room));
         all.get("messages").forEach(message -> JPA.em().persist(message));
         all.get("privateRooms").forEach(privateRoom -> JPA.em().persist(privateRoom));
+        all.get("requests").forEach(request -> JPA.em().persist(request));
         return okJson("OK");
     }
 

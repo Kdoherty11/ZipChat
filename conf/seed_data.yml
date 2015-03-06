@@ -35,6 +35,11 @@ rooms:
           longitude: -71.090352
           radius: 700
 
+privateRooms:
+    - &kevin_zach !!models.entities.PrivateRoom
+        sender: *kevin
+        receiver: *zach
+
 messages:
 - &m1 !!models.entities.Message
       message: Hello
@@ -60,8 +65,48 @@ messages:
       message: Same
       room: *marino
       sender: *kevin
+- &m7 !!models.entities.Message
+      message: Hello
+      room: *kevin_zach
+      sender: *kevin
+- &m8 !!models.entities.Message
+      message: Hey
+      room: *kevin_zach
+      sender: *zach
+- &m9 !!models.entities.Message
+      message: Whats up
+      room: *kevin_zach
+      sender: *mike
+- &m10 !!models.entities.Message
+      message: Just peeing on the stars.. U?
+      room: *kevin_zach
+      sender: *nick
+- &m11 !!models.entities.Message
+      message: Not much
+      room: *kevin_zach
+      sender: *chris
+- &m12 !!models.entities.Message
+      message: Same
+      room: *kevin_zach
+      sender: *kevin
 
-privateRooms:
-    - &kevin_zach !!models.entities.PrivateRoom
+requests:
+    - &kevin_zach_req !!models.entities.Request
         sender: *kevin
         receiver: *zach
+        status: accepted
+
+    - &mike_nick_req !!models.entities.Request
+        sender: *mike
+        receiver: *nick
+        status: pending
+
+    - &chris_zach_req !!models.entities.Request
+        sender: *chris
+        receiver: *zach
+        status: pending
+
+    - &mike_zach_req !!models.entities.Request
+            sender: *mike
+            receiver: *zach
+            status: pending

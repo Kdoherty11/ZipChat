@@ -36,7 +36,7 @@ public class AbstractRoom {
     @OneToMany(targetEntity = Message.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Message> messages = new ArrayList<>();
 
-    public static long getId(Room room) {
+    public static long getId(AbstractRoom room) {
         return room == null ? -1 : room.roomId;
     }
 

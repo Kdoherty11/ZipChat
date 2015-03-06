@@ -33,7 +33,7 @@ public class Message {
     @ManyToOne
     @JoinColumn(name="roomId")
     @JsonIgnore
-    public Room room;
+    public AbstractRoom room;
 
     @ManyToOne
     @JoinColumn(name="userId")
@@ -45,17 +45,17 @@ public class Message {
     public Message() { }
 
     public Message(long roomId, long userId, String message) {
-        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
         if (roomOptional.isPresent()) {
             this.room = roomOptional.get();
         } else {
-           throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(Room.ENTITY_NAME, roomId));
+           throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(AbstractRoom.class.getSimpleName(), roomId));
         }
         setUserById(userId);
         this.message = Preconditions.checkNotNull(message);
     }
 
-    public Message(Room room, long userId, String message) {
+    public Message(AbstractRoom room, long userId, String message) {
         this.room = Preconditions.checkNotNull(room);
         setUserById(userId);
         this.message = Preconditions.checkNotNull(message);
@@ -81,7 +81,7 @@ public class Message {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, message, Room.getId(room), User.getId(sender), timeStamp);
+        return Objects.hashCode(id, message, AbstractRoom.getId(room), User.getId(sender), timeStamp);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class Message {
         final Message other = (Message) obj;
         return Objects.equal(this.id, other.id)
                 && Objects.equal(this.message, other.message)
-                && Objects.equal(Room.getId(this.room), Room.getId(other.room))
+                && Objects.equal(AbstractRoom.getId(this.room), AbstractRoom.getId(other.room))
                 && Objects.equal(User.getId(this.sender), User.getId(other.sender))
                 && Objects.equal(this.timeStamp, other.timeStamp);
     }
@@ -105,7 +105,7 @@ public class Message {
         return Objects.toStringHelper(this)
                 .add("userId", id)
                 .add("message", message)
-                .add("roomId", Room.getId(room))
+                .add("roomId", AbstractRoom.getId(room))
                 .add("userId", User.getId(sender))
                 .add("timeStamp", timeStamp)
                 .toString();
