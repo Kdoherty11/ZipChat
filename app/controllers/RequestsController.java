@@ -1,15 +1,19 @@
 package controllers;
 
 import models.entities.Request;
+import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class RequestsController extends BaseController {
 
     @Transactional
     public static Result createRequest() {
-       return create(Request.class);
+        return createWithObjects(Request.class);
     }
 
     @Transactional

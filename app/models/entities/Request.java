@@ -1,6 +1,7 @@
 package models.entities;
 
 import com.google.common.base.Objects;
+import models.ForeignEntity;
 import models.NoUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import play.data.validation.Constraints;
@@ -29,13 +30,19 @@ public class Request {
     @GeneratedValue(generator = "requests_gen", strategy=GenerationType.SEQUENCE)
     public long id;
 
+    @ManyToOne
     @NoUpdate
+    @ForeignEntity
+    @JoinColumn(name="sender")
     @Constraints.Required
-    public String fromUserId;
+    public User sender;
 
-    @NoUpdate
+
+    @ManyToOne
+    @ForeignEntity
+    @JoinColumn(name="receiver")
     @Constraints.Required
-    public String toUserId;
+    public User receiver;
 
     @NoUpdate
     public String message;
@@ -48,11 +55,21 @@ public class Request {
 
     public Request() { }
 
+    public void setStatus(Status status) {
+        if (this.status == Status.pending) {
+            if (status == Status.accepted) {
+                //create the private chatroom here if one does not already exist
+            }
+        }
+        this.status = status;
+
+    }
+
     public static List<Request> getPendingRequests(long userId) {
-        String queryString = "select r from Request r where r.toUserId = :toUserId and r.status = :status";
+        String queryString = "select r from Request r where r.receiver.id = :receiverId and r.status = :status";
 
         TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
-                .setParameter("toUserId", userId)
+                .setParameter("receiverId", userId)
                 .setParameter("status", Status.pending);
 
         return query.getResultList();
@@ -60,7 +77,7 @@ public class Request {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, toUserId, fromUserId, status, message, timeStamp, respondedTimeStamp);
+        return Objects.hashCode(id, receiver.userId, sender.userId, status, message, timeStamp, respondedTimeStamp);
     }
 
     @Override
@@ -73,8 +90,8 @@ public class Request {
         }
         final Request other = (Request) obj;
         return Objects.equal(this.id, other.id)
-                && Objects.equal(this.toUserId, other.toUserId)
-                && Objects.equal(this.fromUserId, other.fromUserId)
+                && Objects.equal(this.receiver.userId, other.receiver.userId)
+                && Objects.equal(this.sender.userId, other.sender.userId)
                 && Objects.equal(this.status, other.status)
                 && Objects.equal(this.message, other.message)
                 && Objects.equal(this.timeStamp, other.timeStamp)
@@ -85,8 +102,8 @@ public class Request {
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("userId", id)
-                .add("toUserId", toUserId)
-                .add("fromUserId", fromUserId)
+                .add("receiverId", receiver.userId)
+                .add("senderId", sender.userId)
                 .add("status", status)
                 .add("message", message)
                 .add("timeStamp", timeStamp)

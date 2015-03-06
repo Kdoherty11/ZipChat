@@ -1,5 +1,6 @@
 package controllers;
 
+import models.ForeignEntity;
 import models.NoUpdate;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.validation.DataBinder;
@@ -18,10 +19,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static play.data.Form.form;
 import static play.libs.Json.toJson;
@@ -42,6 +40,59 @@ public class BaseController extends Controller {
             JPA.em().persist(entity);
             return okJson(entity);
         }
+    }
+
+    protected static <T> Result createWithObjects(Class<T> clazz) {
+        Map<String, String> data = Form.form().bindFromRequest().data();
+        T createdObject = null;
+        try {
+            createdObject = clazz.newInstance();
+        } catch (InstantiationException e) {
+            return internalServerError(e.getMessage());
+        } catch (IllegalAccessException e) {
+            return internalServerError(e.getMessage());
+        }
+
+        Map<String, String> remainingForm = new HashMap<>();
+
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+
+            String key = entry.getKey();
+
+            try {
+                Optional<Field> fieldOptional = Optional.ofNullable(clazz.getField(key));
+                Field field = fieldOptional.get();
+                if (field.isAnnotationPresent(ForeignEntity.class)) {
+
+                    long id = checkId(entry.getValue());
+                    if (id == INVALID_ID) {
+                        return badRequestJson(entry.getKey() + " must be a positive long");
+                    }
+
+                    Class foreignClass = field.getType();
+                    Optional<?> entityOptional = DbUtils.findEntityById(foreignClass, id);
+                    if (entityOptional.isPresent()) {
+                        Object entity = entityOptional.get();
+                        fieldOptional.get().set(createdObject, entity);
+                    } else {
+                        return badRequestJson(DbUtils.buildEntityNotFoundString(foreignClass.getSimpleName(), id));
+                    }
+                } else {
+                    remainingForm.put(entry.getKey(), entry.getValue());
+                }
+            } catch (NoSuchFieldException e) {
+                return internalServerError(e.toString());
+            } catch (IllegalAccessException e) {
+                return internalServerError(e.toString());
+            }
+        }
+
+        DataBinder dataBinder = new DataBinder(createdObject);
+        dataBinder.setAllowedFields(remainingForm.keySet().toArray(new String[data.size()]));
+        dataBinder.bind(new MutablePropertyValues(data));
+
+        JPA.em().persist(createdObject);
+        return okJson(createdObject);
     }
 
     protected static <T> Result read(Class<T> clazz) {
@@ -136,9 +187,20 @@ public class BaseController extends Controller {
     public static Result init() {
         Map<String, List<Object>> all = (Map<String, List<Object>>) Yaml.load("seed_data.yml");
         all.get("users").forEach(user -> JPA.em().persist(user));
-        all.get("messages").forEach(message -> JPA.em().persist(message));
         all.get("rooms").forEach(room -> JPA.em().persist(room));
         all.get("messages").forEach(message -> JPA.em().persist(message));
+        all.get("privateRooms").forEach(privateRoom -> JPA.em().persist(privateRoom));
+        all.get("requests").forEach(request -> JPA.em().persist(request));
         return okJson("OK");
+    }
+
+    public static final class EntityIdentifier<T> {
+        Class<T> clazz;
+        long id;
+
+        public EntityIdentifier(Class<T> clazz, long id) {
+            this.clazz = clazz;
+            this.id = id;
+        }
     }
 }
