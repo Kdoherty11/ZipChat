@@ -20,4 +20,11 @@ public class PrivateRoom extends AbstractRoom {
     @JoinColumn(name="receiver")
     @Constraints.Required
     public User receiver;
+
+    public PrivateRoom(){}
+
+    public PrivateRoom(User sender, User receiver) {
+        this.sender = sender;
+        this.receiver = receiver;
+    }
 }
