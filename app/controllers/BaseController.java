@@ -44,6 +44,7 @@ public class BaseController extends Controller {
 
     protected static <T> Result createWithObjects(Class<T> clazz) {
         Map<String, String> data = Form.form().bindFromRequest().data();
+
         T createdObject = null;
         try {
             createdObject = clazz.newInstance();
@@ -54,37 +55,42 @@ public class BaseController extends Controller {
         }
 
         Map<String, String> remainingForm = new HashMap<>();
-
         for (Map.Entry<String, String> entry : data.entrySet()) {
-
             String key = entry.getKey();
 
+            Optional<Field> fieldOptional = Optional.empty();
+
             try {
-                Optional<Field> fieldOptional = Optional.ofNullable(clazz.getField(key));
-                Field field = fieldOptional.get();
-                if (field.isAnnotationPresent(ForeignEntity.class)) {
-
-                    long id = checkId(entry.getValue());
-                    if (id == INVALID_ID) {
-                        return badRequestJson(entry.getKey() + " must be a positive long");
-                    }
-
-                    Class foreignClass = field.getType();
-                    Optional<?> entityOptional = DbUtils.findEntityById(foreignClass, id);
-                    if (entityOptional.isPresent()) {
-                        Object entity = entityOptional.get();
-                        fieldOptional.get().set(createdObject, entity);
-                    } else {
-                        return badRequestJson(DbUtils.buildEntityNotFoundString(foreignClass.getSimpleName(), id));
-                    }
-                } else {
-                    remainingForm.put(entry.getKey(), entry.getValue());
-                }
+                fieldOptional = Optional.ofNullable(clazz.getField(key));
             } catch (NoSuchFieldException e) {
-                return internalServerError(e.toString());
-            } catch (IllegalAccessException e) {
-                return internalServerError(e.toString());
+                Logger.warn(e.toString());
             }
+            if (fieldOptional.isPresent()) {
+                    Field field = fieldOptional.get();
+
+                    if (field.isAnnotationPresent(ForeignEntity.class)) {
+
+                        long id = checkId(entry.getValue());
+                        if (id == INVALID_ID) {
+                            return badRequestJson(key + " must be a positive long");
+                        }
+
+                        Class foreignClass = field.getType();
+                        Optional<?> entityOptional = DbUtils.findEntityById(foreignClass, id);
+                        if (entityOptional.isPresent()) {
+                            Object entity = entityOptional.get();
+                            try {
+                                field.set(createdObject, entity);
+                            } catch (IllegalAccessException e) {
+                                Logger.error("Field " + key + " must be public");
+                            }
+                        } else {
+                            return badRequestJson(DbUtils.buildEntityNotFoundString(foreignClass.getSimpleName(), id));
+                        }
+                    } else {
+                        remainingForm.put(key, entry.getValue());
+                    }
+                }
         }
 
         DataBinder dataBinder = new DataBinder(createdObject);
