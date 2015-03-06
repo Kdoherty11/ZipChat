@@ -60,3 +60,8 @@ messages:
       message: Same
       room: *marino
       sender: *kevin
+
+privateRooms:
+    - &kevin_zach !!models.entities.PrivateRoom
+        sender: *kevin
+        receiver: *zach

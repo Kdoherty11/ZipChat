@@ -31,11 +31,11 @@ public class Request {
 
     @NoUpdate
     @Constraints.Required
-    public String fromUserId;
+    public String senderId;
 
     @NoUpdate
     @Constraints.Required
-    public String toUserId;
+    public String receiverId;
 
     @NoUpdate
     public String message;
@@ -49,10 +49,10 @@ public class Request {
     public Request() { }
 
     public static List<Request> getPendingRequests(long userId) {
-        String queryString = "select r from Request r where r.toUserId = :toUserId and r.status = :status";
+        String queryString = "select r from Request r where r.receiverId = :receiverId and r.status = :status";
 
         TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
-                .setParameter("toUserId", userId)
+                .setParameter("receiverId", userId)
                 .setParameter("status", Status.pending);
 
         return query.getResultList();
@@ -60,7 +60,7 @@ public class Request {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, toUserId, fromUserId, status, message, timeStamp, respondedTimeStamp);
+        return Objects.hashCode(id, receiverId, senderId, status, message, timeStamp, respondedTimeStamp);
     }
 
     @Override
@@ -73,8 +73,8 @@ public class Request {
         }
         final Request other = (Request) obj;
         return Objects.equal(this.id, other.id)
-                && Objects.equal(this.toUserId, other.toUserId)
-                && Objects.equal(this.fromUserId, other.fromUserId)
+                && Objects.equal(this.receiverId, other.receiverId)
+                && Objects.equal(this.senderId, other.senderId)
                 && Objects.equal(this.status, other.status)
                 && Objects.equal(this.message, other.message)
                 && Objects.equal(this.timeStamp, other.timeStamp)
@@ -85,8 +85,8 @@ public class Request {
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("userId", id)
-                .add("toUserId", toUserId)
-                .add("fromUserId", fromUserId)
+                .add("receiverId", receiverId)
+                .add("senderId", senderId)
                 .add("status", status)
                 .add("message", message)
                 .add("timeStamp", timeStamp)
