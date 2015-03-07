@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.RoomSocket;
+import models.entities.AbstractRoom;
 import models.entities.Message;
 import models.entities.Room;
 import models.entities.User;
@@ -120,7 +121,7 @@ public class RoomsController extends BaseController {
             return badRequestJson(userIdKey + " must be a positive long");
         }
 
-        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
         if (roomOptional.isPresent()) {
 
             Message message = new Message(roomOptional.get(), userId, data.get(messageKey));
@@ -136,12 +137,12 @@ public class RoomsController extends BaseController {
 
     @Transactional
     public static Result getMessages(long roomId) {
-        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
 
         if (roomOptional.isPresent()) {
             return okJson(roomOptional.get().messages);
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
+            return badRequestJson(DbUtils.buildEntityNotFoundError(AbstractRoom.class.getSimpleName(), roomId));
         }
     }
 

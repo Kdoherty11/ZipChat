@@ -1,5 +1,6 @@
 package controllers;
 
+import models.ForeignEntity;
 import models.NoUpdate;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.validation.DataBinder;
@@ -18,10 +19,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static play.data.Form.form;
 import static play.libs.Json.toJson;
@@ -44,6 +42,71 @@ public class BaseController extends Controller {
             JPA.em().persist(entity);
             return okJson(entity);
         }
+    }
+
+    protected static <T> Result createWithForeignEntities(Class<T> clazz) {
+        Map<String, String> data = Form.form().bindFromRequest().data();
+
+        T createdObject;
+        try {
+            createdObject = clazz.newInstance();
+        } catch (InstantiationException e) {
+            String error = clazz.getSimpleName() + " must have a no-arg constructor " + e.getMessage();
+            Logger.error(error);
+            return internalServerError(error);
+        } catch (IllegalAccessException e) {
+            String error = clazz.getSimpleName() + " must have a public no-arg-constructor " + e.getMessage();
+            Logger.error(error);
+            return internalServerError(error);
+        }
+
+        List<String> foreignEntityFields = new ArrayList<>();
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            String key = entry.getKey();
+
+            Optional<Field> fieldOptional = Optional.empty();
+            try {
+                fieldOptional = Optional.ofNullable(clazz.getField(key));
+            } catch (NoSuchFieldException e) {
+                Logger.warn(e.toString());
+            }
+
+            if (fieldOptional.isPresent()) {
+                Field field = fieldOptional.get();
+
+                if (field.isAnnotationPresent(ForeignEntity.class)) {
+
+                    long id = checkId(entry.getValue());
+                    if (id == INVALID_ID) {
+                        return badRequestJson(key + " must be a positive long");
+                    }
+
+                    Class foreignClass = field.getType();
+                    Optional<?> entityOptional = DbUtils.findEntityById(foreignClass, id);
+                    if (entityOptional.isPresent()) {
+                        Object entity = entityOptional.get();
+                        try {
+                            field.set(createdObject, entity);
+                        } catch (IllegalAccessException e) {
+                            Logger.error("Not setting " + clazz.getSimpleName() + "." + key + " because it is not visible");
+                        }
+                    } else {
+                        return badRequestJson(DbUtils.buildEntityNotFoundString(foreignClass.getSimpleName(), id));
+                    }
+                } else {
+                    foreignEntityFields.add(key);
+                }
+            } else {
+                Logger.warn("Not setting " + clazz.getSimpleName() + "." + key + " because it doesn't exists");
+            }
+        }
+
+        DataBinder dataBinder = new DataBinder(createdObject);
+        dataBinder.setDisallowedFields(foreignEntityFields.toArray(new String[foreignEntityFields.size()]));
+        dataBinder.bind(new MutablePropertyValues(data));
+
+        JPA.em().persist(createdObject);
+        return okJson(createdObject);
     }
 
     protected static <T> Result read(Class<T> clazz) {
@@ -130,7 +193,7 @@ public class BaseController extends Controller {
                 return INVALID_ID;
             }
         } catch (NumberFormatException e) {
-           return INVALID_ID;
+            return INVALID_ID;
         }
     }
 
@@ -139,9 +202,10 @@ public class BaseController extends Controller {
         @SuppressWarnings("unchecked")
         Map<String, List<Object>> all = (Map<String, List<Object>>) Yaml.load("seed_data.yml");
         all.get("users").forEach(user -> JPA.em().persist(user));
-        all.get("messages").forEach(message -> JPA.em().persist(message));
         all.get("rooms").forEach(room -> JPA.em().persist(room));
         all.get("messages").forEach(message -> JPA.em().persist(message));
+        all.get("privateRooms").forEach(privateRoom -> JPA.em().persist(privateRoom));
+        all.get("requests").forEach(request -> JPA.em().persist(request));
         return OK_RESULT;
     }
 }
