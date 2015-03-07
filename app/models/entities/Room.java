@@ -45,14 +45,14 @@ public class Room extends AbstractRoom {
 
         int earthRadius = 6371; // in km
 
-        String firstCutSql = "select r2.userId" +
+        String firstCutSql = "select r2.roomId" +
                 " from Room r2" +
                 " where :lat >= r2.latitude - degrees((r2.radius * 1000) / :R) and :lat <= r2.latitude + degrees((r2.radius * 1000) / :R)" +
                 " and :lon >= r2.longitude - degrees((r2.radius * 1000) / :R) and :lon <= r2.longitude + degrees((r2.radius * 1000) / :R)";
 
         String sql = "select r" +
                 " from Room r" +
-                " where r.userId in (" + firstCutSql + ") and" +
+                " where r.roomId in (" + firstCutSql + ") and" +
                 " acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lon))) * :R * 1000 <= radius";
 
         TypedQuery<Room> query = JPA.em().createQuery(sql, Room.class)

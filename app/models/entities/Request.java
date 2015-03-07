@@ -77,7 +77,7 @@ public class Request {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, receiver.userId, sender.userId, status, message, timeStamp, respondedTimeStamp);
+        return Objects.hashCode(id, User.getId(receiver), User.getId(sender), status, message, timeStamp, respondedTimeStamp);
     }
 
     @Override
@@ -90,8 +90,8 @@ public class Request {
         }
         final Request other = (Request) obj;
         return Objects.equal(this.id, other.id)
-                && Objects.equal(this.receiver.userId, other.receiver.userId)
-                && Objects.equal(this.sender.userId, other.sender.userId)
+                && Objects.equal(User.getId(this.receiver), User.getId(other.receiver))
+                && Objects.equal(User.getId(this.sender), User.getId(other.sender))
                 && Objects.equal(this.status, other.status)
                 && Objects.equal(this.message, other.message)
                 && Objects.equal(this.timeStamp, other.timeStamp)

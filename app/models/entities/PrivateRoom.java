@@ -1,5 +1,6 @@
 package models.entities;
 
+import models.ForeignEntity;
 import models.NoUpdate;
 import play.data.validation.Constraints;
 
@@ -14,11 +15,13 @@ public class PrivateRoom extends AbstractRoom {
     @ManyToOne
     @JoinColumn(name="sender")
     @Constraints.Required
+    @ForeignEntity
     public User sender;
 
     @ManyToOne
     @JoinColumn(name="receiver")
     @Constraints.Required
+    @ForeignEntity
     public User receiver;
 
     public PrivateRoom(){}

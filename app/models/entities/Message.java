@@ -3,6 +3,7 @@ package models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import models.ForeignEntity;
 import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
@@ -38,6 +39,7 @@ public class Message {
     @ManyToOne
     @JoinColumn(name="userId")
     @Constraints.Required
+    @ForeignEntity
     public User sender;
 
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
@@ -103,7 +105,7 @@ public class Message {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("userId", id)
+                .add("id", id)
                 .add("message", message)
                 .add("roomId", AbstractRoom.getId(room))
                 .add("userId", User.getId(sender))

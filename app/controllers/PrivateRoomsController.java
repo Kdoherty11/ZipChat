@@ -8,7 +8,7 @@ public class PrivateRoomsController extends BaseController {
 
     @Transactional
     public static Result createRoom() {
-        return create(PrivateRoom.class);
+        return createWithForeignEntities(PrivateRoom.class);
     }
 
     @Transactional

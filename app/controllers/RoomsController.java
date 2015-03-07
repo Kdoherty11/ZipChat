@@ -7,7 +7,6 @@ import models.entities.Message;
 import models.entities.Room;
 import models.entities.User;
 import play.Logger;
-import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.WebSocket;
@@ -103,36 +102,37 @@ public class RoomsController extends BaseController {
 
     @Transactional
     public static Result createMessage(long roomId) {
-        Map<String, String> data = form().bindFromRequest().data();
-
-        String userIdKey = "userId";
-        String messageKey = "message";
-
-        if (!data.containsKey(userIdKey)) {
-            return badRequestJson(userIdKey + " is required");
-        }
-
-        if (!data.containsKey(messageKey)) {
-            return badRequestJson(messageKey + " is required");
-        }
-
-        long userId = checkId(data.get(userIdKey));
-        if (userId == INVALID_ID) {
-            return badRequestJson(userIdKey + " must be a positive long");
-        }
-
-        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
-        if (roomOptional.isPresent()) {
-
-            Message message = new Message(roomOptional.get(), userId, data.get(messageKey));
-            JPA.em().persist(message);
-
-            message.addToRoom();
-
-            return okJson(message);
-        } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
-        }
+        return createWithForeignEntities(Message.class);
+//        Map<String, String> data = form().bindFromRequest().data();
+//
+//        String userIdKey = "userId";
+//        String messageKey = "message";
+//
+//        if (!data.containsKey(userIdKey)) {
+//            return badRequestJson(userIdKey + " is required");
+//        }
+//
+//        if (!data.containsKey(messageKey)) {
+//            return badRequestJson(messageKey + " is required");
+//        }
+//
+//        long userId = checkId(data.get(userIdKey));
+//        if (userId == INVALID_ID) {
+//            return badRequestJson(userIdKey + " must be a positive long");
+//        }
+//
+//        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
+//        if (roomOptional.isPresent()) {
+//
+//            Message message = new Message(roomOptional.get(), userId, data.get(messageKey));
+//            JPA.em().persist(message);
+//
+//            message.addToRoom();
+//
+//            return okJson(message);
+//        } else {
+//            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
+//        }
     }
 
     @Transactional

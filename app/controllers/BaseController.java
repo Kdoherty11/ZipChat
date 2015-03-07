@@ -45,6 +45,7 @@ public class BaseController extends Controller {
     }
 
     protected static <T> Result createWithForeignEntities(Class<T> clazz) {
+        Logger.debug("Creating a " + clazz.getSimpleName() + " with foreign entities");
         Map<String, String> data = Form.form().bindFromRequest().data();
 
         T createdObject;
@@ -60,49 +61,42 @@ public class BaseController extends Controller {
             return internalServerError(error);
         }
 
-        List<String> foreignEntityFields = new ArrayList<>();
-        for (Map.Entry<String, String> entry : data.entrySet()) {
-            String key = entry.getKey();
+        Field[] foreignEntityFields = Arrays.asList(clazz.getFields())
+                .stream()
+                .filter(field -> field.isAnnotationPresent(ForeignEntity.class))
+                .toArray(Field[]::new);
 
-            Optional<Field> fieldOptional = Optional.empty();
-            try {
-                fieldOptional = Optional.ofNullable(clazz.getField(key));
-            } catch (NoSuchFieldException e) {
-                Logger.warn(e.toString());
-            }
+        List<String> foreignEntityFieldNames = new ArrayList<>();
 
-            if (fieldOptional.isPresent()) {
-                Field field = fieldOptional.get();
+        for (Field field : foreignEntityFields) {
+            String fieldName = field.getName();
+            foreignEntityFieldNames.add(fieldName);
 
-                if (field.isAnnotationPresent(ForeignEntity.class)) {
+            if (data.containsKey(fieldName)) {
+                long id = checkId(data.get(fieldName));
+                if (INVALID_ID == id) {
+                    return badRequestJson(fieldName + " must be a positive long");
+                }
 
-                    long id = checkId(entry.getValue());
-                    if (id == INVALID_ID) {
-                        return badRequestJson(key + " must be a positive long");
-                    }
-
-                    Class foreignClass = field.getType();
-                    Optional<?> entityOptional = DbUtils.findEntityById(foreignClass, id);
-                    if (entityOptional.isPresent()) {
-                        Object entity = entityOptional.get();
-                        try {
-                            field.set(createdObject, entity);
-                        } catch (IllegalAccessException e) {
-                            Logger.error("Not setting " + clazz.getSimpleName() + "." + key + " because it is not visible");
-                        }
-                    } else {
-                        return badRequestJson(DbUtils.buildEntityNotFoundString(foreignClass.getSimpleName(), id));
+                Optional<?> entityOptional = DbUtils.findEntityById(field.getType(), id);
+                if (entityOptional.isPresent()) {
+                    try {
+                        field.set(createdObject, entityOptional.get());
+                    } catch (IllegalAccessException e) {
+                        String error = "Not setting " + clazz.getSimpleName() + "." + fieldName + " because it is not visible";
+                        Logger.error(error);
+                        return internalServerError(error);
                     }
                 } else {
-                    foreignEntityFields.add(key);
+                    return badRequestJson(DbUtils.buildEntityNotFoundString(field.getType().getSimpleName(), id));
                 }
             } else {
-                Logger.warn("Not setting " + clazz.getSimpleName() + "." + key + " because it doesn't exists");
+                return badRequestJson(fieldName + " is required!");
             }
         }
 
         DataBinder dataBinder = new DataBinder(createdObject);
-        dataBinder.setDisallowedFields(foreignEntityFields.toArray(new String[foreignEntityFields.size()]));
+        dataBinder.setDisallowedFields(foreignEntityFieldNames.toArray(new String[foreignEntityFieldNames.size()]));
         dataBinder.bind(new MutablePropertyValues(data));
 
         JPA.em().persist(createdObject);
@@ -121,7 +115,7 @@ public class BaseController extends Controller {
     }
 
     protected static <T> Result update(Class<T> clazz, long id) {
-        Logger.debug("Updating " + clazz.getSimpleName() + " with userId " + id);
+        Logger.debug("Updating " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
 
@@ -141,7 +135,7 @@ public class BaseController extends Controller {
     }
 
     protected static <T> Result delete(Class<T> clazz, long id) {
-        Logger.debug("Deleting " + clazz.getSimpleName() + " with userId " + id);
+        Logger.debug("Deleting " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
         if (entityOptional.isPresent()) {
@@ -153,7 +147,7 @@ public class BaseController extends Controller {
     }
 
     protected static <T> Result show(Class<T> clazz, long id) {
-        Logger.debug("Showing " + clazz.getSimpleName() + " with userId " + id);
+        Logger.debug("Showing " + clazz.getSimpleName() + " with id " + id);
 
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
         if (entityOptional.isPresent()) {

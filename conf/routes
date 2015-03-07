@@ -14,7 +14,6 @@ PUT           /rooms/:id                             controllers.RoomsController
 DELETE        /rooms/:id                             controllers.RoomsController.deleteRoom(id: Long)
 POST          /rooms/:id/notify                      controllers.RoomsController.notifySubscribers(id: Long)
 GET           /rooms/:id/join                        controllers.RoomsController.joinRoom(id: Long, u: Long)
-
 POST          /rooms/:roomId/messages                controllers.RoomsController.createMessage(roomId: Long)
 GET           /rooms/:roomId/messages                controllers.RoomsController.getMessages(roomId: Long)
 
@@ -45,4 +44,4 @@ DELETE        /requests/:id                          controllers.RequestsControl
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                          controllers.Assets.at(path="/public", file)
 
-GET           /init                                  controllers.BaseController.init()
+POST          /init                                  controllers.BaseController.init()

@@ -35,6 +35,6 @@ public class DbUtils {
     }
 
     public static String buildEntityNotFoundString(String entityName, long id) {
-        return entityName + " with userId " + id + " was not found";
+        return entityName + " with id " + id + " was not found";
     }
 }
