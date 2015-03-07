@@ -34,6 +34,7 @@ public class Message {
     @ManyToOne
     @JoinColumn(name="roomId")
     @JsonIgnore
+    @ForeignEntity
     public AbstractRoom room;
 
     @ManyToOne
@@ -72,7 +73,6 @@ public class Message {
         }
     }
 
-    @Transactional
     public void addToRoom() {
         if (room != null) {
             room.addMessage(this);

@@ -66,7 +66,7 @@ public class User {
 
     public String sendNotification(Map<String, String> data) {
         if (Strings.isNullOrEmpty(registrationId)) {
-            String error = "No registrationId found for user: " + this;
+            String error = "No registrationId found for " + this;
             Logger.error(error);
             return error;
         }

@@ -45,8 +45,7 @@ public class BaseController extends Controller {
     }
 
     protected static <T> Result createWithForeignEntities(Class<T> clazz) {
-        Logger.debug("Creating a " + clazz.getSimpleName() + " with foreign entities");
-        Map<String, String> data = Form.form().bindFromRequest().data();
+        Map<String, String> data = form().bindFromRequest().data();
 
         T createdObject;
         try {
@@ -91,7 +90,7 @@ public class BaseController extends Controller {
                     return badRequestJson(DbUtils.buildEntityNotFoundString(field.getType().getSimpleName(), id));
                 }
             } else {
-                return badRequestJson(fieldName + " is required!");
+                return badRequestJson(clazz.getSimpleName() + "." + fieldName + " is required!");
             }
         }
 

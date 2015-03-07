@@ -4,8 +4,10 @@ import com.google.common.base.Objects;
 import models.ForeignEntity;
 import models.NoUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -55,24 +57,24 @@ public class Request {
 
     public Request() { }
 
-    public void setStatus(Status status) {
-        if (this.status == Status.pending) {
-            if (status == Status.accepted) {
-                //create the private chatroom here if one does not already exist
-            }
-        }
-        this.status = status;
-
-    }
-
-    public static List<Request> getPendingRequests(long userId) {
+    public static List<Request> getPendingRequests(long receiverId) {
         String queryString = "select r from Request r where r.receiver.id = :receiverId and r.status = :status";
 
         TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
-                .setParameter("receiverId", userId)
+                .setParameter("receiverId", receiverId)
                 .setParameter("status", Status.pending);
 
         return query.getResultList();
+    }
+
+    public static boolean doesExist(long senderId, long receiverId) {
+        String queryString = "select count(r) from Request r where r.sender.id = :senderId and r.receiver.id = :receiverId";
+
+        Query query = JPA.em().createQuery(queryString)
+                .setParameter("senderId", senderId)
+                .setParameter("receiverId", receiverId);
+
+        return (long) query.getSingleResult() > 0L;
     }
 
     @Override

@@ -13,8 +13,8 @@ public class RequestsController extends BaseController {
     }
 
     @Transactional
-    public static Result getRequests(long userId) {
-        return okJson(Request.getPendingRequests(userId));
+    public static Result getRequests(long receiverId) {
+        return okJson(Request.getPendingRequests(receiverId));
     }
 
     @Transactional
@@ -30,5 +30,10 @@ public class RequestsController extends BaseController {
     @Transactional
     public static Result deleteRequest(long requestId) {
         return delete(Request.class, requestId);
+    }
+
+    @Transactional
+    public static Result doesExist(long senderId, long receiverId) {
+        return okJson(Request.doesExist(senderId, receiverId));
     }
 }

@@ -90,6 +90,17 @@ public class RoomsController extends BaseController {
     }
 
     @Transactional
+    public static Result removeSubscription(long roomId, long userId) {
+        Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
+        if (roomOptional.isPresent()) {
+            roomOptional.get().removeSubscription(userId);
+            return OK_RESULT;
+        } else {
+            return badRequestJson(DbUtils.buildEntityNotFoundError(AbstractRoom.class.getSimpleName(), roomId));
+        }
+    }
+
+    @Transactional
     public static Result notifySubscribers(long roomId) {
         Optional<Room> roomOptional = DbUtils.findEntityById(Room.class, roomId);
         if (roomOptional.isPresent()) {
@@ -102,37 +113,34 @@ public class RoomsController extends BaseController {
 
     @Transactional
     public static Result createMessage(long roomId) {
-        return createWithForeignEntities(Message.class);
-//        Map<String, String> data = form().bindFromRequest().data();
-//
-//        String userIdKey = "userId";
-//        String messageKey = "message";
-//
-//        if (!data.containsKey(userIdKey)) {
-//            return badRequestJson(userIdKey + " is required");
-//        }
-//
-//        if (!data.containsKey(messageKey)) {
-//            return badRequestJson(messageKey + " is required");
-//        }
-//
-//        long userId = checkId(data.get(userIdKey));
-//        if (userId == INVALID_ID) {
-//            return badRequestJson(userIdKey + " must be a positive long");
-//        }
-//
-//        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
-//        if (roomOptional.isPresent()) {
-//
-//            Message message = new Message(roomOptional.get(), userId, data.get(messageKey));
-//            JPA.em().persist(message);
-//
-//            message.addToRoom();
-//
-//            return okJson(message);
-//        } else {
-//            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
-//        }
+        Map<String, String> data = form().bindFromRequest().data();
+
+        String senderIdKey = "sender";
+        String messageKey = "message";
+
+        if (!data.containsKey(senderIdKey)) {
+            return badRequestJson(senderIdKey + " is required");
+        }
+
+        if (!data.containsKey(messageKey)) {
+            return badRequestJson(messageKey + " is required");
+        }
+
+        long userId = checkId(data.get(senderIdKey));
+        if (userId == INVALID_ID) {
+            return badRequestJson(senderIdKey + " must be a positive long");
+        }
+
+        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
+        if (roomOptional.isPresent()) {
+
+            Message message = new Message(roomOptional.get(), userId, data.get(messageKey));
+            message.addToRoom();
+
+            return okJson(message);
+        } else {
+            return badRequestJson(DbUtils.buildEntityNotFoundError(Room.ENTITY_NAME, roomId));
+        }
     }
 
     @Transactional

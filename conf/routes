@@ -19,9 +19,10 @@ GET           /rooms/:roomId/messages                controllers.RoomsController
 
 POST          /rooms/:roomId/subscriptions           controllers.RoomsController.createSubscription(roomId: Long)
 GET           /rooms/:roomId/subscriptions           controllers.RoomsController.getSubscriptions(roomId: Long)
+DELETE        /rooms/:roomId/subscriptions/:userId   controllers.RoomsController.removeSubscription(roomId: Long, userId: Long)
 
 POST          /privateRooms                          controllers.PrivateRoomsController.createRoom()
-GET           /privateRooms                          controllers.PrivateRoomsController.getRooms()
+GET           /privateRooms                          controllers.PrivateRoomsController.getRoomsByUserId(u: Long)
 GET           /privateRooms/:id                      controllers.PrivateRoomsController.showRoom(id: Long)
 PUT           /privateRooms/:id                      controllers.PrivateRoomsController.updateRoom(id: Long)
 DELETE        /privateRooms/:id                      controllers.PrivateRoomsController.deleteRoom(id: Long)
@@ -37,6 +38,7 @@ POST          /users/:userId/sendNotification        controllers.UsersController
 
 POST          /requests                              controllers.RequestsController.createRequest()
 GET           /requests                              controllers.RequestsController.getRequests(u: Long)
+GET           /requests/exists                       controllers.RequestsController.doesExist(senderId: Long, receiverId: Long)
 GET           /requests/:id                          controllers.RequestsController.showRequest(id: Long)
 PUT           /requests/:id                          controllers.RequestsController.updateRequest(id: Long)
 DELETE        /requests/:id                          controllers.RequestsController.deleteRequest(id: Long)

@@ -1,17 +1,20 @@
 package models.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import models.NoUpdate;
+import models.Platform;
 import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
+import utils.NotificationUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import java.util.List;
+import java.util.*;
 
 
 @Entity
@@ -40,6 +43,11 @@ public class Room extends AbstractRoom {
 
     public int score;
 
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
+    public Set<User> subscribers = new LinkedHashSet<>();
+
     public static List<Room> allInGeoRange(double lat, double lon) {
         Logger.debug("Getting all rooms containing location " + lat + ", " + lon);
 
@@ -61,6 +69,37 @@ public class Room extends AbstractRoom {
                 .setParameter("R", earthRadius);
 
         return query.getResultList();
+    }
+
+    public void addSubscription(User user) {
+        subscribers.add(user);
+    }
+
+    public void removeSubscription(long userId) {
+        Optional<User> userOptional = subscribers.stream().filter(user -> user.userId == userId).findFirst();
+        if (userOptional.isPresent()) {
+            subscribers.remove(userOptional.get());
+        } else {
+            Logger.warn("Could not find a subscription with userId " + userId + " in " + this);
+        }
+    }
+
+    public void notifySubscribers(Map<String, String> data) {
+        new Thread(() -> {
+            List<String> androidRegIds = new ArrayList<>();
+            List<String> iosRegIds = new ArrayList<>();
+
+            subscribers.forEach(user -> {
+                if (user.platform == Platform.android) {
+                    androidRegIds.add(user.registrationId);
+                } else if (user.platform == Platform.ios) {
+                    iosRegIds.add(user.registrationId);
+                }
+            });
+
+            NotificationUtils.sendBatchAndroidNotifications(androidRegIds, data);
+            NotificationUtils.sendBatchAppleNotifications(iosRegIds, data);
+        }).start();
     }
 
     @Override
