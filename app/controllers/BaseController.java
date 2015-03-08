@@ -1,11 +1,13 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import models.ForeignEntity;
 import models.NoUpdate;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.validation.DataBinder;
 import play.Logger;
 import play.data.Form;
+import play.data.validation.Constraints;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Yaml;
@@ -45,61 +47,54 @@ public class BaseController extends Controller {
     }
 
     protected static <T> Result createWithForeignEntities(Class<T> clazz) {
+        Logger.debug("Creating a " + clazz.getSimpleName() + " with foreign entities");
+
         Map<String, String> data = form().bindFromRequest().data();
+        Map<String, String> validatedFormData = new HashMap<>();
 
-        T createdObject;
-        try {
-            createdObject = clazz.newInstance();
-        } catch (InstantiationException e) {
-            String error = clazz.getSimpleName() + " must have a no-arg constructor " + e.getMessage();
-            Logger.error(error);
-            return internalServerError(error);
-        } catch (IllegalAccessException e) {
-            String error = clazz.getSimpleName() + " must have a public no-arg-constructor " + e.getMessage();
-            Logger.error(error);
-            return internalServerError(error);
-        }
-
-        Field[] foreignEntityFields = Arrays.asList(clazz.getFields())
-                .stream()
-                .filter(field -> field.isAnnotationPresent(ForeignEntity.class))
-                .toArray(Field[]::new);
-
-        List<String> foreignEntityFieldNames = new ArrayList<>();
-
-        for (Field field : foreignEntityFields) {
+        for (Field field : clazz.getFields()) {
             String fieldName = field.getName();
-            foreignEntityFieldNames.add(fieldName);
 
-            if (data.containsKey(fieldName)) {
-                long id = checkId(data.get(fieldName));
-                if (INVALID_ID == id) {
-                    return badRequestJson(fieldName + " must be a positive long");
-                }
-
-                Optional<?> entityOptional = DbUtils.findEntityById(field.getType(), id);
-                if (entityOptional.isPresent()) {
-                    try {
-                        field.set(createdObject, entityOptional.get());
-                    } catch (IllegalAccessException e) {
-                        String error = "Not setting " + clazz.getSimpleName() + "." + fieldName + " because it is not visible";
-                        Logger.error(error);
-                        return internalServerError(error);
+            if (field.isAnnotationPresent(ForeignEntity.class)) {
+                if (data.containsKey(fieldName)) {
+                    long id = checkId(data.get(fieldName));
+                    if (INVALID_ID == id) {
+                        return badRequestJson(fieldName + " must be a positive long");
                     }
-                } else {
-                    return badRequestJson(DbUtils.buildEntityNotFoundString(field.getType().getSimpleName(), id));
+
+                    Optional<?> entityOptional = DbUtils.findEntityById(field.getType(), id);
+                    if (entityOptional.isPresent()) {
+                        JsonNode jsonNode = toJson(entityOptional.get());
+                        formatFormData(fieldName, jsonNode, validatedFormData);
+                    } else {
+                        return badRequestJson(DbUtils.buildEntityNotFoundString(field.getType().getSimpleName(), id));
+                    }
+                } else if (field.isAnnotationPresent(Constraints.Required.class)) {
+                    return badRequestJson(clazz.getSimpleName() + "." + fieldName + " is required!");
                 }
-            } else {
-                return badRequestJson(clazz.getSimpleName() + "." + fieldName + " is required!");
+            } else if (data.containsKey(fieldName)) {
+                validatedFormData.put(fieldName, data.get(fieldName));
             }
         }
 
-        DataBinder dataBinder = new DataBinder(createdObject);
-        dataBinder.setDisallowedFields(foreignEntityFieldNames.toArray(new String[foreignEntityFieldNames.size()]));
-        dataBinder.bind(new MutablePropertyValues(data));
+        Form<T> form = Form.form(clazz).bind(validatedFormData);
+        if (form.hasErrors()) {
+            return badRequest(form.errorsAsJson());
+        } else {
+            T entity = form.get();
+            JPA.em().persist(entity);
+            return okJson(entity);
+        }
+    }
 
-        JPA.em().persist(createdObject);
-        return okJson(createdObject);
+    private static void formatFormData(String nodeName, JsonNode node, Map<String, String> data) {
+        node.fields().forEachRemaining(jsonField -> {
+            if (jsonField.getValue().isValueNode()) {
+                data.put(nodeName + "." + jsonField.getKey(), jsonField.getValue().toString().replace("\"", ""));
+            } else {
+                formatFormData(nodeName + "." + jsonField.getKey(), jsonField.getValue(), data);
+            }
+        });
     }
 
     protected static <T> Result read(Class<T> clazz) {
