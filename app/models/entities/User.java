@@ -39,11 +39,9 @@ public class User {
     @Constraints.Required
     public String name;
 
-    @JsonIgnore
     public String registrationId;
 
     @Constraints.Required
-    @JsonIgnore
     public Platform platform;
 
     @NoUpdate

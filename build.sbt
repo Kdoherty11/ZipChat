@@ -30,3 +30,5 @@ libraryDependencies += "com.notnoop.apns" % "apns" % "0.1.6"
 
 libraryDependencies += "com.ganyo" % "gcm-server" % "1.0.2"
 
+jacoco.settings
+
