@@ -15,7 +15,9 @@ import static play.test.Helpers.callAction;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.fakeRequest;
 
-public class UsersControllerAdapter {
+public enum UsersControllerAdapter {
+
+    INSTANCE;
 
     public static final String ID_KEY = "userId";
     public static final String NAME_KEY = "name";
@@ -28,50 +30,49 @@ public class UsersControllerAdapter {
     public static final String REG_ID = "2222222222";
     public static final String PLATFORM = "android";
 
-    public static Result createUser(Optional<Map<String, String>> otherDataOptional, Optional<List<String>> removeFieldsOptional) {
+    public Result createUser(Optional<Map<String, String>> otherDataOptional, Optional<List<String>> removeFieldsOptional) {
         Map<String, String> formData = new HashMap<>();
         formData.put(NAME_KEY, NAME);
         formData.put(FB_KEY, FB_ID);
         formData.put(REG_KEY, REG_ID);
         formData.put(PLATFORM_KEY, PLATFORM);
 
-        if (otherDataOptional.isPresent()) {
-            otherDataOptional.get().forEach(formData::put);
-        }
-        if (removeFieldsOptional.isPresent()) {
-            removeFieldsOptional.get().forEach(formData::remove);
-        }
+        otherDataOptional.ifPresent(data -> data.forEach(formData::put));
+        removeFieldsOptional.ifPresent(removeFields -> removeFields.forEach(formData::remove));
 
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
         return callAction(routes.ref.UsersController.createUser(), request);
     }
 
-    public static long getCreateUserId(Optional<Map<String, String>> otherData, Optional<List<String>> removeFields) throws JSONException {
-        Result createResult = createUser(otherData, removeFields);
+    public long getCreateUserId(Optional<Map<String, String>> otherData, Optional<List<String>> removeFields) throws JSONException {
+        return getUserIdFromResult(createUser(otherData, removeFields));
+    }
+
+    public long getUserIdFromResult(Result createResult) throws JSONException {
         JSONObject createJson = new JSONObject(contentAsString(createResult));
         return createJson.getLong(ID_KEY);
     }
 
-    public static Result getUsers() {
+    public Result getUsers() {
         return callAction(routes.ref.UsersController.getUsers(), fakeRequest());
     }
 
-    public static Result showUser(long userId) {
+    public Result showUser(long userId) {
         return callAction(routes.ref.UsersController.showUser(userId), fakeRequest());
     }
 
-    public static Result updateUser(long userId, Map<String, String> formData) {
+    public Result updateUser(long userId, Map<String, String> formData) {
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
         return callAction(routes.ref.UsersController.updateUser(userId), request);
     }
 
-    public static Result deleteUser(long userId) {
+    public Result deleteUser(long userId) {
         return callAction(routes.ref.UsersController.deleteUser(userId), fakeRequest());
     }
 
-    public static Result sendNotification(long userId, Map<String, String> formData) {
+    public Result sendNotification(long userId, Map<String, String> formData) {
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
         return callAction(routes.ref.UsersController.sendNotification(userId), request);

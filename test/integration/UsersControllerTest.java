@@ -1,5 +1,6 @@
 package integration;
 
+import adapters.UsersControllerAdapter;
 import models.Platform;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,38 +18,40 @@ import static play.test.Helpers.*;
 
 public class UsersControllerTest extends AbstractControllerTest {
 
+    private UsersControllerAdapter adapter = UsersControllerAdapter.INSTANCE;
+
     @Test
     public void createUserSuccess() throws JSONException {
-        Result createResult = createUser(Optional.empty(), Optional.empty());
+        Result createResult = adapter.createUser(Optional.empty(), Optional.empty());
         assertThat(status(createResult)).isEqualTo(OK);
 
         JSONObject createJson = new JSONObject(contentAsString(createResult));
-        assertThat(createJson.getLong(ID_KEY)).isNotNull();
+        assertThat(createJson.getLong(ID_KEY)).isPositive();
         assertThat(createJson.getString(NAME_KEY)).isEqualTo(NAME);
         assertThat(createJson.getString(FB_KEY)).isEqualTo(FB_ID);
 
-        Result showResult = showUser(createJson.getLong(ID_KEY));
+        Result showResult = adapter.showUser(createJson.getLong(ID_KEY));
         assertThat(status(showResult)).isEqualTo(OK);
 
         JSONObject showJson = new JSONObject(contentAsString(showResult));
-        assertThat(showJson.getLong(ID_KEY)).isNotNull();
+        assertThat(showJson.getLong(ID_KEY)).isPositive();
     }
 
     @Test
     public void createUserNoName() {
-        Result noNameResult = createUser(Optional.empty(), Optional.of(Arrays.asList(NAME_KEY)));
+        Result noNameResult = adapter.createUser(Optional.empty(), Optional.of(Arrays.asList(NAME_KEY)));
         assertThat(status(noNameResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void createUserNoFbId() {
-        Result noFbIdResult = createUser(Optional.empty(), Optional.of(Arrays.asList(FB_KEY)));
+        Result noFbIdResult = adapter.createUser(Optional.empty(), Optional.of(Arrays.asList(FB_KEY)));
         assertThat(status(noFbIdResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void createUserNoPlatform() {
-        Result noPlatformResult = createUser(Optional.empty(), Optional.of(Arrays.asList(PLATFORM_KEY)));
+        Result noPlatformResult = adapter.createUser(Optional.empty(), Optional.of(Arrays.asList(PLATFORM_KEY)));
         assertThat(status(noPlatformResult)).isEqualTo(BAD_REQUEST);
     }
 
@@ -56,15 +59,15 @@ public class UsersControllerTest extends AbstractControllerTest {
     public void createUserBadPlatform() {
         Map<String, String> badPlatformMap = new HashMap<>();
         badPlatformMap.put(PLATFORM_KEY, "platform");
-        Result badPlatformResult = createUser(Optional.of(badPlatformMap), Optional.empty());
+        Result badPlatformResult = adapter.createUser(Optional.of(badPlatformMap), Optional.empty());
         assertThat(status(badPlatformResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void getUsersSuccess() throws JSONException {
-        createUser(Optional.empty(), Optional.empty());
+        adapter.createUser(Optional.empty(), Optional.empty());
 
-        Result allUsersResult = getUsers();
+        Result allUsersResult = adapter.getUsers();
         assertThat(status(allUsersResult)).isEqualTo(OK);
 
         JSONArray allUsersJson = new JSONArray(contentAsString(allUsersResult));
@@ -73,9 +76,9 @@ public class UsersControllerTest extends AbstractControllerTest {
 
     @Test
     public void showUserSuccess() throws JSONException {
-        long createdId = getCreateUserId(Optional.empty(), Optional.empty());
+        long createdId = adapter.getCreateUserId(Optional.empty(), Optional.empty());
 
-        Result showResult = showUser(createdId);
+        Result showResult = adapter.showUser(createdId);
         assertThat(status(showResult)).isEqualTo(OK);
 
         JSONObject showJsonResult = new JSONObject(contentAsString(showResult));
@@ -87,14 +90,14 @@ public class UsersControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void showUserFailure() throws JSONException {
-        Result showBadId = showUser(1);
+    public void showUserBadId() throws JSONException {
+        Result showBadId = adapter.showUser(1);
         assertThat(status(showBadId)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void updateUserSuccess() throws JSONException {
-        long createdId = getCreateUserId(Optional.empty(), Optional.empty());
+        long createdId = adapter.getCreateUserId(Optional.empty(), Optional.empty());
 
         String updateUserId = "-1";
         String updateName = "Updated Name";
@@ -109,7 +112,7 @@ public class UsersControllerTest extends AbstractControllerTest {
         updateFields.put(REG_KEY, updateRegId);
         updateFields.put(PLATFORM_KEY, updatePlatform);
 
-        Result updateResult = updateUser(createdId, updateFields);
+        Result updateResult = adapter.updateUser(createdId, updateFields);
         assertThat(status(updateResult)).isEqualTo(OK);
 
         JSONObject updateJson = new JSONObject(contentAsString(updateResult));
@@ -119,7 +122,7 @@ public class UsersControllerTest extends AbstractControllerTest {
         assertThat(updateJson.getString(REG_KEY)).isEqualTo(updateRegId);
         assertThat(updateJson.getString(PLATFORM_KEY)).isEqualTo(updatePlatform);
 
-        Result showResult = showUser(createdId);
+        Result showResult = adapter.showUser(createdId);
         assertThat(status(showResult)).isEqualTo(OK);
 
         JSONObject showJson = new JSONObject(contentAsString(showResult));
@@ -131,24 +134,24 @@ public class UsersControllerTest extends AbstractControllerTest {
 
     @Test
     public void updateUserBadId() {
-        Result updateBadId = updateUser(1, Collections.emptyMap());
+        Result updateBadId = adapter.updateUser(1, Collections.emptyMap());
         assertThat(status(updateBadId)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void deleteUserSuccess() throws JSONException {
-        long createId = getCreateUserId(Optional.empty(), Optional.empty());
+        long createId = adapter.getCreateUserId(Optional.empty(), Optional.empty());
 
-        Result deleteResult = deleteUser(createId);
+        Result deleteResult = adapter.deleteUser(createId);
         assertThat(status(deleteResult)).isEqualTo(OK);
 
-        Result showResult = showUser(createId);
+        Result showResult = adapter.showUser(createId);
         assertThat(status(showResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void deleteUserBadId() {
-        Result deleteBadId = deleteUser(1);
+        Result deleteBadId = adapter.deleteUser(1);
         assertThat(status(deleteBadId)).isEqualTo(BAD_REQUEST);
     }
 
@@ -167,15 +170,15 @@ public class UsersControllerTest extends AbstractControllerTest {
 
     @Test
     public void sendNotificationNoRegId() throws JSONException {
-        long createId = getCreateUserId(Optional.empty(), Optional.of(Arrays.asList(REG_KEY)));
+        long createId = adapter.getCreateUserId(Optional.empty(), Optional.of(Arrays.asList(REG_KEY)));
 
-        Result notifyResult = sendNotification(createId, Collections.emptyMap());
+        Result notifyResult = adapter.sendNotification(createId, Collections.emptyMap());
         assertThat(status(notifyResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void sendNotificationBadId() {
-        Result notifyBadId = sendNotification(1, Collections.emptyMap());
+        Result notifyBadId = adapter.sendNotification(1, Collections.emptyMap());
         assertThat(status(notifyBadId)).isEqualTo(BAD_REQUEST);
     }
 
@@ -202,9 +205,9 @@ public class UsersControllerTest extends AbstractControllerTest {
         Map<String, String> formData = new HashMap<>();
         formData.put(REG_KEY, regId);
         formData.put(PLATFORM, platform);
-        long createId = getCreateUserId(Optional.of(formData), Optional.empty());
+        long createId = adapter.getCreateUserId(Optional.of(formData), Optional.empty());
 
-        Result notifyResult = sendNotification(createId, Collections.emptyMap());
+        Result notifyResult = adapter.sendNotification(createId, Collections.emptyMap());
         assertThat(status(notifyResult)).isEqualTo(status);
     }
 }
