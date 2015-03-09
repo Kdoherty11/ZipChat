@@ -11,9 +11,6 @@ import play.db.jpa.JPA;
 import utils.NotificationUtils;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-
 import java.util.*;
 
 
@@ -30,18 +27,18 @@ public class Room extends AbstractRoom {
     @Constraints.Required
     @Column(columnDefinition = "NUMERIC")
     @NoUpdate
-    public double latitude;
+    public Double latitude;
 
     @Constraints.Required
     @Column(columnDefinition = "NUMERIC")
     @NoUpdate
-    public double longitude;
+    public Double longitude;
 
     @Constraints.Required
     @NoUpdate
-    public int radius;
+    public Integer radius;
 
-    public int score;
+    public Integer score = 0;
 
     @JsonIgnore
     @ManyToMany
