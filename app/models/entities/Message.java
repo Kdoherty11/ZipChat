@@ -7,7 +7,6 @@ import models.ForeignEntity;
 import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
-import play.db.jpa.Transactional;
 import utils.DbUtils;
 
 import javax.persistence.*;
@@ -65,6 +64,7 @@ public class Message {
     }
 
     private void setUserById(long userId) {
+        Logger.debug("" + userId);
         Optional<User> userOptional = DbUtils.findEntityById(User.class, Preconditions.checkNotNull(userId));
         if (userOptional.isPresent()) {
             this.sender = userOptional.get();

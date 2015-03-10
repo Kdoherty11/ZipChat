@@ -161,8 +161,13 @@ public class RoomSocket extends UntypedActor {
 
     @Transactional
     private void storeMessage(Talk talk) {
-        Message message = new Message(talk.getRoomId(), talk.getUsername(), talk.getText());
-        message.addToRoom();
+        JPA.withTransaction(() -> {
+            if (SocketKeepAlive.USER_ID != talk.getUsername()) {
+                Logger.debug(talk.toString());
+                Message message = new Message(talk.getRoomId(), talk.getUsername(), talk.getText());
+                message.addToRoom();
+            }
+        });
     }
 
     private void receiveJoin(Jedis j, Join join) {
