@@ -1,0 +1,1014 @@
+{
+	"version": 1,
+	"collections": [
+		{
+			"id": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+			"name": "Public Rooms",
+			"timestamp": 1425687741575,
+			"order": [
+				"00bd4282-2010-392c-a1ba-69a6f5d2294c",
+				"035b7988-695c-8ef7-151e-6e39f84ddd68",
+				"146c52be-8742-411f-9a88-a85a1d2f9283",
+				"70ed62d2-014d-b846-526f-f86429a5473c",
+				"7d6865e0-28c0-1e87-1338-9a76a7fd8734",
+				"965cf391-77ab-707c-5e34-d14a43b615c8",
+				"a5500776-a62f-443f-baca-9192ac1f975e",
+				"b4733be8-5f55-4501-06a8-df2ceebc3a2d",
+				"bda063c3-63f5-0cb8-e290-bd5f97268a6d",
+				"cde3ab46-f4b8-a62e-3f17-939a99870a9d",
+				"e0f195cc-638a-aa82-eb3e-378c66e08388",
+				"f440b400-9b32-8d01-0720-f68bf3afd305"
+			],
+			"owner": 0,
+			"sharedWithTeam": false,
+			"synced": false,
+			"subscribed": false,
+			"hasRequests": true,
+			"requests": [
+				{
+					"id": "00bd4282-2010-392c-a1ba-69a6f5d2294c",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms/1/subscriptions",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "userId",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955543972,
+					"name": "Create Subscription",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				},
+				{
+					"id": "035b7988-695c-8ef7-151e-6e39f84ddd68",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/test?lat=42.332062&lon=-71.107277",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "message",
+							"value": "PostTest",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "sender",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955547710,
+					"name": "All In Range",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf"
+				},
+				{
+					"id": "146c52be-8742-411f-9a88-a85a1d2f9283",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms/2/messages",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "message",
+							"value": "PostTest",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "sender",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955551140,
+					"name": "Create Message",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				},
+				{
+					"id": "70ed62d2-014d-b846-526f-f86429a5473c",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "message",
+							"value": "PostTest",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "sender",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955557040,
+					"name": "Get All",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				},
+				{
+					"id": "7d6865e0-28c0-1e87-1338-9a76a7fd8734",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms/1/subscriptions",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "message",
+							"value": "PostTest",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "sender",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955564639,
+					"name": "Get Subscriptions",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				},
+				{
+					"id": "965cf391-77ab-707c-5e34-d14a43b615c8",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms/1",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "DELETE",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955568850,
+					"name": "Delete",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				},
+				{
+					"id": "a5500776-a62f-443f-baca-9192ac1f975e",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms/1",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "PUT",
+					"data": [
+						{
+							"key": "score",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955573984,
+					"name": "Update",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				},
+				{
+					"id": "b4733be8-5f55-4501-06a8-df2ceebc3a2d",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms/1/subscriptions/2",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "DELETE",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955580440,
+					"name": "Delete Subscription",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				},
+				{
+					"id": "bda063c3-63f5-0cb8-e290-bd5f97268a6d",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms/2/messages",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955584675,
+					"name": "Get Messages",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				},
+				{
+					"id": "cde3ab46-f4b8-a62e-3f17-939a99870a9d",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms/1",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955589000,
+					"name": "Show",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				},
+				{
+					"id": "e0f195cc-638a-aa82-eb3e-378c66e08388",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "name",
+							"value": "Room Name",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "latitude",
+							"value": "22",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "longitude",
+							"value": "33",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "radius",
+							"value": "10",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955593029,
+					"name": "Create",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				},
+				{
+					"id": "f440b400-9b32-8d01-0720-f68bf3afd305",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/rooms/1/notify",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "Key",
+							"value": "Value",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955598139,
+					"name": "Notify",
+					"description": "",
+					"collectionId": "0f3d4dcf-0d23-4c72-0899-9cc683718baf",
+					"responses": []
+				}
+			]
+		},
+		{
+			"id": "c93bbecb-b496-d0f1-df3c-8d434234d135",
+			"name": "Private Rooms",
+			"timestamp": 1425691357720,
+			"order": [
+				"3a7aa6a7-55d8-20a9-563c-7ec427f1326e",
+				"539cbe69-9e1e-5946-ab94-4a27b5f6881a",
+				"68399223-79b6-3868-ce2c-ae6cb320e7bc",
+				"b04a0431-638e-9c2b-f7dd-19ecef99d0df",
+				"b93aa47a-3b61-36ee-be9a-114851603c01",
+				"fbbccc3e-fbe5-1296-45c1-c40b51ea647b"
+			],
+			"owner": 0,
+			"sharedWithTeam": false,
+			"synced": false,
+			"subscribed": false,
+			"hasRequests": true,
+			"requests": [
+				{
+					"id": "3a7aa6a7-55d8-20a9-563c-7ec427f1326e",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/privateRooms/65536/messages",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "message",
+							"value": "TEST MESSAGE",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "sender",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955519969,
+					"name": "Create Message",
+					"description": "",
+					"collectionId": "c93bbecb-b496-d0f1-df3c-8d434234d135",
+					"responses": []
+				},
+				{
+					"id": "539cbe69-9e1e-5946-ab94-4a27b5f6881a",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/privateRooms?u=2",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "message",
+							"value": "TEST MESSAGE",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "sender",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955523314,
+					"name": "Get By UserId",
+					"description": "",
+					"collectionId": "c93bbecb-b496-d0f1-df3c-8d434234d135"
+				},
+				{
+					"id": "68399223-79b6-3868-ce2c-ae6cb320e7bc",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/privateRooms/65536/messages",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "message",
+							"value": "TEST MESSAGE",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "sender",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955526689,
+					"name": "Get Messages",
+					"description": "",
+					"collectionId": "c93bbecb-b496-d0f1-df3c-8d434234d135",
+					"responses": []
+				},
+				{
+					"id": "b04a0431-638e-9c2b-f7dd-19ecef99d0df",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/privateRooms/65536",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "message",
+							"value": "TEST MESSAGE",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "sender",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955529523,
+					"name": "Show",
+					"description": "",
+					"collectionId": "c93bbecb-b496-d0f1-df3c-8d434234d135",
+					"responses": []
+				},
+				{
+					"id": "b93aa47a-3b61-36ee-be9a-114851603c01",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/privateRooms",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "sender",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "receiver",
+							"value": "2",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955533369,
+					"name": "Create",
+					"description": "",
+					"collectionId": "c93bbecb-b496-d0f1-df3c-8d434234d135",
+					"responses": []
+				},
+				{
+					"id": "fbbccc3e-fbe5-1296-45c1-c40b51ea647b",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/privateRooms/65536",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "DELETE",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955536952,
+					"name": "Delete",
+					"description": "",
+					"collectionId": "c93bbecb-b496-d0f1-df3c-8d434234d135",
+					"responses": []
+				}
+			]
+		},
+		{
+			"id": "d3e1ca90-a42a-3dc6-dc3e-a7a290331608",
+			"name": "Init",
+			"timestamp": 1425687483185,
+			"order": [
+				"73b843c7-a958-e675-32dc-41efbcb045c3"
+			],
+			"owner": 0,
+			"sharedWithTeam": false,
+			"synced": false,
+			"subscribed": false,
+			"hasRequests": true,
+			"requests": [
+				{
+					"id": "73b843c7-a958-e675-32dc-41efbcb045c3",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/init",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955516012,
+					"name": "Init",
+					"description": "",
+					"collectionId": "d3e1ca90-a42a-3dc6-dc3e-a7a290331608",
+					"responses": []
+				}
+			]
+		},
+		{
+			"id": "e31ac4ab-81f4-c4f3-362a-f83bda408bca",
+			"name": "Users",
+			"timestamp": 1425687505891,
+			"order": [
+				"064f63fc-e004-7539-321f-23924286435d",
+				"5be7c222-cfe4-e160-5071-b48fc59348d6",
+				"72437d52-64ab-25f4-228a-9dbd7eb66199",
+				"b14fe62e-ac8b-650d-290e-93d1b519cf68",
+				"cf1cac17-74dc-8de0-5666-2adcaa4d46e0",
+				"d6adc4ef-33c1-391c-4045-8b5c1b369b8b",
+				"df36d7fe-808c-bf94-ecf5-03fa529d6e8e"
+			],
+			"owner": 0,
+			"sharedWithTeam": false,
+			"synced": false,
+			"subscribed": false,
+			"hasRequests": true,
+			"requests": [
+				{
+					"id": "064f63fc-e004-7539-321f-23924286435d",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/users/1",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "DELETE",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955635039,
+					"name": "Delete",
+					"description": "",
+					"collectionId": "e31ac4ab-81f4-c4f3-362a-f83bda408bca",
+					"responses": []
+				},
+				{
+					"id": "5be7c222-cfe4-e160-5071-b48fc59348d6",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/users/1",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955640172,
+					"name": "Show",
+					"description": "",
+					"collectionId": "e31ac4ab-81f4-c4f3-362a-f83bda408bca",
+					"responses": []
+				},
+				{
+					"id": "72437d52-64ab-25f4-228a-9dbd7eb66199",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/users/1",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "PUT",
+					"data": [
+						{
+							"key": "name",
+							"value": "NewFirst NewLast",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955645880,
+					"name": "Update",
+					"description": "",
+					"collectionId": "e31ac4ab-81f4-c4f3-362a-f83bda408bca",
+					"responses": []
+				},
+				{
+					"id": "b14fe62e-ac8b-650d-290e-93d1b519cf68",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/users",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "name",
+							"value": "First Last",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "facebookId",
+							"value": "1234567890",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "registrationId",
+							"value": "5555555555",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "platform",
+							"value": "android",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955649813,
+					"name": "Create",
+					"description": "",
+					"collectionId": "e31ac4ab-81f4-c4f3-362a-f83bda408bca",
+					"responses": []
+				},
+				{
+					"id": "cf1cac17-74dc-8de0-5666-2adcaa4d46e0",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/users",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "name",
+							"value": "First Last",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "facebookId",
+							"value": "1234567890",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "registrationId",
+							"value": "5555555555",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "platform",
+							"value": "android",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955653641,
+					"name": "Get All",
+					"description": "",
+					"collectionId": "e31ac4ab-81f4-c4f3-362a-f83bda408bca",
+					"responses": []
+				},
+				{
+					"id": "d6adc4ef-33c1-391c-4045-8b5c1b369b8b",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/users/1/sendNotification",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "key",
+							"value": "value",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955657401,
+					"name": "Send Android Notification",
+					"description": "",
+					"collectionId": "e31ac4ab-81f4-c4f3-362a-f83bda408bca",
+					"responses": []
+				},
+				{
+					"id": "df36d7fe-808c-bf94-ecf5-03fa529d6e8e",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/users/2/sendNotification",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "key",
+							"value": "value",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955660851,
+					"name": "Send iOS Notification",
+					"description": "",
+					"collectionId": "e31ac4ab-81f4-c4f3-362a-f83bda408bca",
+					"responses": []
+				}
+			]
+		},
+		{
+			"id": "e91fccb6-fa56-4d45-5685-a068747d67d7",
+			"name": "Requests",
+			"timestamp": 1425688038068,
+			"order": [
+				"45551b09-26f1-a8fe-1bda-c22af1b58f30",
+				"7822f690-72ec-2d3d-3dd4-958a0e4ea2a8",
+				"a9855cf2-4a9f-a3e4-d87f-eda849bf2b74",
+				"d0c19a7f-5600-1e81-7917-5a460f640dce",
+				"d81f8411-a0c3-8a1f-ff8c-3c27c910d56c",
+				"fecc54da-57c5-abfe-7349-aeaf08e9ba2d"
+			],
+			"owner": 0,
+			"sharedWithTeam": false,
+			"synced": false,
+			"subscribed": false,
+			"hasRequests": true,
+			"requests": [
+				{
+					"id": "45551b09-26f1-a8fe-1bda-c22af1b58f30",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/requests?u=1",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "Key",
+							"value": "Value",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955603624,
+					"name": "Get By Receiver",
+					"description": "",
+					"collectionId": "e91fccb6-fa56-4d45-5685-a068747d67d7",
+					"responses": []
+				},
+				{
+					"id": "7822f690-72ec-2d3d-3dd4-958a0e4ea2a8",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/requests/33",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "Key",
+							"value": "Value",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955608031,
+					"name": "Show",
+					"description": "",
+					"collectionId": "e91fccb6-fa56-4d45-5685-a068747d67d7",
+					"responses": []
+				},
+				{
+					"id": "a9855cf2-4a9f-a3e4-d87f-eda849bf2b74",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/requests/33",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "PUT",
+					"data": [
+						{
+							"key": "status",
+							"value": "accepted",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955612806,
+					"name": "Update",
+					"description": "",
+					"collectionId": "e91fccb6-fa56-4d45-5685-a068747d67d7",
+					"responses": []
+				},
+				{
+					"id": "d0c19a7f-5600-1e81-7917-5a460f640dce",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/requests?u=1",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "sender",
+							"value": "2",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "receiver",
+							"value": "1",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955616898,
+					"name": "Create",
+					"description": "",
+					"collectionId": "e91fccb6-fa56-4d45-5685-a068747d67d7",
+					"responses": []
+				},
+				{
+					"id": "d81f8411-a0c3-8a1f-ff8c-3c27c910d56c",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/requests/33",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "DELETE",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955621684,
+					"name": "Delete",
+					"description": "",
+					"collectionId": "e91fccb6-fa56-4d45-5685-a068747d67d7",
+					"responses": []
+				},
+				{
+					"id": "fecc54da-57c5-abfe-7349-aeaf08e9ba2d",
+					"headers": "X-ATTENDWARE-KEY: abc\n",
+					"url": "{{url}}/requests/exists?senderId=1&receiverId=2",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1425955626397,
+					"name": "Exists",
+					"description": "",
+					"collectionId": "e91fccb6-fa56-4d45-5685-a068747d67d7"
+				}
+			]
+		}
+	],
+	"environments": [
+		{
+			"id": "1eaec414-c108-5761-46c9-78684029e8be",
+			"name": "Production",
+			"values": [
+				{
+					"key": "url",
+					"value": "zipchatapp.herokuapp.com",
+					"type": "text",
+					"name": "url",
+					"enabled": true
+				}
+			],
+			"timestamp": 1425955259370,
+			"synced": false
+		},
+		{
+			"id": "074a9dd4-cb19-4629-937e-e7718121c1da",
+			"name": "Local",
+			"values": [
+				{
+					"key": "url",
+					"value": "localhost:9000",
+					"type": "text",
+					"name": "url",
+					"enabled": true
+				}
+			],
+			"timestamp": 1425955302755,
+			"synced": false
+		}
+	],
+	"headerPresets": [],
+	"globals": []
+}
