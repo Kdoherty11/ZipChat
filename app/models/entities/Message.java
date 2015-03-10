@@ -71,6 +71,7 @@ public class Message {
     }
 
     private void setUserById(long userId) {
+        Logger.debug("" + userId);
         Optional<User> userOptional = DbUtils.findEntityById(User.class, Preconditions.checkNotNull(userId));
         if (userOptional.isPresent()) {
             this.sender = userOptional.get();
