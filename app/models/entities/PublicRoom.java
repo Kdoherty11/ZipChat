@@ -16,7 +16,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "rooms")
-public class Room extends AbstractRoom {
+public class PublicRoom extends AbstractRoom {
 
     public static final String ENTITY_NAME = "Room";
 
@@ -45,7 +45,7 @@ public class Room extends AbstractRoom {
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
 
-    public static List<Room> allInGeoRange(double lat, double lon) {
+    public static List<PublicRoom> allInGeoRange(double lat, double lon) {
         Logger.debug("Getting all rooms containing location " + lat + ", " + lon);
 
         int earthRadius = 6371; // in km
@@ -60,7 +60,7 @@ public class Room extends AbstractRoom {
                 " where r.roomId in (" + firstCutSql + ") and" +
                 " acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lon))) * :R * 1000 <= radius";
 
-        TypedQuery<Room> query = JPA.em().createQuery(sql, Room.class)
+        TypedQuery<PublicRoom> query = JPA.em().createQuery(sql, PublicRoom.class)
                 .setParameter("lat", lat)
                 .setParameter("lon", lon)
                 .setParameter("R", earthRadius);
@@ -112,7 +112,7 @@ public class Room extends AbstractRoom {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        final Room other = (Room) obj;
+        final PublicRoom other = (PublicRoom) obj;
         return Objects.equal(this.roomId, other.roomId)
                 && Objects.equal(this.name, other.name)
                 && Objects.equal(this.latitude, other.latitude)

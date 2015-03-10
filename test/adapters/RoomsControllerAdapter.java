@@ -38,16 +38,12 @@ public enum RoomsControllerAdapter {
         formData.put(LON_KEY, String.valueOf(LON));
         formData.put(RADIUS_KEY, String.valueOf(RADIUS));
 
-        if (otherDataOptional.isPresent()) {
-            otherDataOptional.get().forEach(formData::put);
-        }
-        if (removeFieldsOptional.isPresent()) {
-            removeFieldsOptional.get().forEach(formData::remove);
-        }
+        otherDataOptional.ifPresent(otherData -> otherData.forEach(formData::put));
+        removeFieldsOptional.ifPresent(removeFields -> removeFields.forEach(formData::remove));
 
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
-        return callAction(routes.ref.RoomsController.createRoom(), request);
+        return callAction(routes.ref.PublicRoomsController.createRoom(), request);
     }
 
     public static long getCreateRoomId(Optional<Map<String, String>> otherData, Optional<List<String>> removeFields) throws JSONException {
@@ -57,34 +53,34 @@ public enum RoomsControllerAdapter {
     }
 
     public static Result getRooms() {
-        return callAction(routes.ref.RoomsController.getRooms(), fakeRequest());
+        return callAction(routes.ref.PublicRoomsController.getRooms(), fakeRequest());
     }
 
     public static Result showRoom(long roomId) {
-        return callAction(routes.ref.RoomsController.showRoom(roomId), fakeRequest());
+        return callAction(routes.ref.PublicRoomsController.showRoom(roomId), fakeRequest());
     }
 
     public static Result updateRoom(long roomId, Map<String, String> formData) {
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
-        return callAction(routes.ref.RoomsController.updateRoom(roomId), request);
+        return callAction(routes.ref.PublicRoomsController.updateRoom(roomId), request);
     }
 
     public static Result deleteRoom(long roomId) {
-        return callAction(routes.ref.RoomsController.deleteRoom(roomId), fakeRequest());
+        return callAction(routes.ref.PublicRoomsController.deleteRoom(roomId), fakeRequest());
     }
 
     public static Result createSubscription(long roomId, long userId) {
 
         Map<String, String> formData = new HashMap<>();
-        formData.put("userId", String.valueOf(userId));
+        formData.put(UsersControllerAdapter.ID_KEY, String.valueOf(userId));
 
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
-        return callAction(routes.ref.RoomsController.createSubscription(roomId), request);
+        return callAction(routes.ref.PublicRoomsController.createSubscription(roomId), request);
     }
 
     public static Result getSubscriptions(long roomId) {
-        return callAction(routes.ref.RoomsController.getSubscriptions(roomId), fakeRequest());
+        return callAction(routes.ref.PublicRoomsController.getSubscriptions(roomId), fakeRequest());
     }
 }

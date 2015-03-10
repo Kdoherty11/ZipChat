@@ -18,7 +18,7 @@ import static play.test.Helpers.status;
 /**
  * Created by zacharywebert on 3/8/15.
  */
-public class RoomsControllerTest extends AbstractControllerTest {
+public class PublicRoomsControllerTest extends AbstractControllerTest {
 
     @Test
     public void createRoomSuccess() throws JSONException {

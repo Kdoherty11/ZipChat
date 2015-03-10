@@ -7,12 +7,13 @@ import models.ForeignEntity;
 import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
-import play.db.jpa.Transactional;
 import utils.DbUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Entity
@@ -43,7 +44,12 @@ public class Message {
     @ForeignEntity
     public User sender;
 
+    @OneToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List<User> favorites = new ArrayList<>();
+
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+
+    int score;
 
     public Message() { }
 
@@ -81,9 +87,22 @@ public class Message {
         }
     }
 
+    public void favorite(User user) {
+        favorites.add(user);
+        score++;
+    }
+
+    public void removeFavorite(User user) {
+        boolean deletedUser = favorites.remove(user);
+        if (!deletedUser) {
+            Logger.warn(user + " attempted to remove a favorite from " + this);
+            score--;
+        }
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, message, AbstractRoom.getId(room), User.getId(sender), timeStamp);
+        return Objects.hashCode(id, message, AbstractRoom.getId(room), User.getId(sender), timeStamp, score);
     }
 
     @Override
@@ -97,6 +116,7 @@ public class Message {
         final Message other = (Message) obj;
         return Objects.equal(this.id, other.id)
                 && Objects.equal(this.message, other.message)
+                && Objects.equal(this.score, other.score)
                 && Objects.equal(AbstractRoom.getId(this.room), AbstractRoom.getId(other.room))
                 && Objects.equal(User.getId(this.sender), User.getId(other.sender))
                 && Objects.equal(this.timeStamp, other.timeStamp);
@@ -109,6 +129,7 @@ public class Message {
                 .add("message", message)
                 .add("roomId", AbstractRoom.getId(room))
                 .add("userId", User.getId(sender))
+                .add("score", score)
                 .add("timeStamp", timeStamp)
                 .toString();
     }
