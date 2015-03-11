@@ -37,4 +37,14 @@ public class PrivateRoomsController extends BaseController {
         Logger.debug("Getting Private Rooms by userId: " + userId);
         return okJson(PrivateRoom.getRoomsByUserId(userId));
     }
+
+    @Transactional
+    public static Result leaveRoom(long roomId, long userId) {
+        String result = PrivateRoom.removeUser(roomId, userId);
+        if (OK_STRING.equals(result)) {
+            return OK_RESULT;
+        } else {
+            return badRequestJson(result);
+        }
+    }
 }

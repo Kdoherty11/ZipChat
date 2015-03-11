@@ -22,14 +22,14 @@ users:
           facebookId: 1078640151
           platform: ios
 
-rooms:
-   - &stockwell !!models.entities.Room
+publicRooms:
+   - &stockwell !!models.entities.PublicRoom
           name: 16 Stockwell
           latitude: 42.332061
           longitude: -71.107277
           radius: 700
 
-   - &marino !!models.entities.Room
+   - &marino !!models.entities.PublicRoom
           name: Marino Center
           latitude: 42.340333
           longitude: -71.090352

@@ -190,7 +190,7 @@ public class BaseController extends Controller {
         @SuppressWarnings("unchecked")
         Map<String, List<Object>> all = (Map<String, List<Object>>) Yaml.load("seed_data.yml");
         all.get("users").forEach(user -> JPA.em().persist(user));
-        all.get("rooms").forEach(room -> JPA.em().persist(room));
+        all.get("publicRooms").forEach(room -> JPA.em().persist(room));
         all.get("messages").forEach(message -> JPA.em().persist(message));
         all.get("privateRooms").forEach(privateRoom -> JPA.em().persist(privateRoom));
         all.get("requests").forEach(request -> JPA.em().persist(request));

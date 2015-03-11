@@ -2,6 +2,7 @@ package controllers;
 
 import models.entities.Message;
 import models.entities.User;
+import play.db.jpa.Transactional;
 import play.mvc.Result;
 import utils.DbUtils;
 
@@ -12,10 +13,12 @@ public class MessagesController extends BaseController {
     private static final boolean ADD_FAVORITE = true;
     private static final boolean REMOVE_FAVORITE = false;
 
+    @Transactional
     public static Result favorite(long messageId, long userId) {
         return favorite(messageId, userId, ADD_FAVORITE);
     }
 
+    @Transactional
     public static Result removeFavorite(long messageId, long userId) {
         return favorite(messageId, userId, REMOVE_FAVORITE);
     }

@@ -26,7 +26,6 @@ public class Message {
             @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
     })
     @GeneratedValue(generator = "messages_gen", strategy=GenerationType.SEQUENCE)
-    @JsonIgnore
     public long id;
 
     @Constraints.Required
