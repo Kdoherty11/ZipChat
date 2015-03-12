@@ -7,6 +7,7 @@ import models.ForeignEntity;
 import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
+import play.db.jpa.JPA;
 import utils.DbUtils;
 
 import javax.persistence.*;
@@ -98,6 +99,17 @@ public class Message {
             Logger.warn(user + " attempted to remove a favorite from " + this);
             score--;
         }
+    }
+
+    public static List<Message> getMessages(long roomId, int limit, int offset) {
+        String queryString = "select m from Message m where m.room.roomId = :roomId";
+
+        TypedQuery<Message> query = JPA.em().createQuery(queryString, Message.class)
+                .setParameter("roomId", roomId)
+                .setMaxResults(limit)
+                .setFirstResult(offset);
+
+        return query.getResultList();
     }
 
     @Override

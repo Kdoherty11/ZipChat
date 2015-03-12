@@ -14,6 +14,21 @@ public class MessagesController extends BaseController {
     private static final boolean REMOVE_FAVORITE = false;
 
     @Transactional
+    public static Result getMessages(long roomId, int limit, int offset) {
+        if (roomId < 1) {
+            return badRequestJson("roomId must be positive");
+        }
+        if (limit < 0) {
+            return badRequestJson("offset must be at least 0");
+        }
+        if (offset < 0) {
+            return badRequestJson("offset must be at least 0");
+        }
+
+        return okJson(Message.getMessages(roomId, limit, offset));
+    }
+
+    @Transactional
     public static Result favorite(long messageId, long userId) {
         return favorite(messageId, userId, ADD_FAVORITE);
     }

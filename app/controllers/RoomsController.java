@@ -50,16 +50,16 @@ public class RoomsController extends BaseController {
         }
     }
 
-    @Transactional
-    public static Result getMessages(long roomId) {
-        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
-
-        if (roomOptional.isPresent()) {
-            return okJson(roomOptional.get().messages);
-        } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError(AbstractRoom.class.getSimpleName(), roomId));
-        }
-    }
+  //  @Transactional
+ //   public static Result getMessages(long roomId, int limit, int offset) {
+//        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
+//
+//        if (roomOptional.isPresent()) {
+//            return okJson(roomOptional.get().messages);
+//        } else {
+//            return badRequestJson(DbUtils.buildEntityNotFoundError(AbstractRoom.class.getSimpleName(), roomId));
+//        }
+ //   }
 
     @Transactional
     public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId) {

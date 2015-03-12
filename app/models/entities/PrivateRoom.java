@@ -19,13 +19,11 @@ import java.util.Optional;
 public class PrivateRoom extends AbstractRoom {
     @ManyToOne
     @JoinColumn(name="sender")
-    @Constraints.Required
     @ForeignEntity
     public User sender;
 
     @ManyToOne
     @JoinColumn(name="receiver")
-    @Constraints.Required
     @ForeignEntity
     public User receiver;
 
@@ -45,12 +43,12 @@ public class PrivateRoom extends AbstractRoom {
         return query.getResultList();
     }
 
-    @Transactional
     public static String removeUser(long roomId, long userId) {
         Optional<PrivateRoom> roomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
 
         if (roomOptional.isPresent()) {
             PrivateRoom room = roomOptional.get();
+
             return room.removeUser(userId);
         } else {
             return DbUtils.buildEntityNotFoundString("PrivateRoom", roomId);
@@ -58,6 +56,7 @@ public class PrivateRoom extends AbstractRoom {
     }
 
     public String removeUser(long userId) {
+        Logger.debug("Here");
         if (User.getId(sender) == userId) {
             sender = null;
         } else if (User.getId(receiver) == userId) {
