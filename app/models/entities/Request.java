@@ -7,12 +7,14 @@ import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
-import play.db.jpa.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Entity
 @Table(name = "requests")
@@ -75,6 +77,24 @@ public class Request {
                 .setParameter("receiverId", receiverId);
 
         return (long) query.getSingleResult() > 0L;
+    }
+
+    public Optional<PrivateRoom> handleResponse(Status status) {
+        Map<String, String> data = new HashMap<>();
+        data.put("name", receiver.name);
+        data.put("response", status.toString());
+        sender.sendNotification(data);
+        switch (status) {
+            case accepted:
+                PrivateRoom room = new PrivateRoom(sender, receiver);
+                JPA.em().persist(room);
+                return Optional.of(room);
+            case denied:
+                return Optional.empty();
+            default:
+                Logger.warn(status.name() + " is not handled in handleResponse");
+                return Optional.empty();
+        }
     }
 
     @Override
