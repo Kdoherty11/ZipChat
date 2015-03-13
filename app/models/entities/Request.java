@@ -102,7 +102,7 @@ public class Request {
         sender.sendNotification(data);
 
         if (status == Status.accepted) {
-            PrivateRoom room = new PrivateRoom(sender, receiver, this);
+            PrivateRoom room = new PrivateRoom(this);
             JPA.em().persist(room);
         }
     }

@@ -40,10 +40,12 @@ public class PrivateRoom extends AbstractRoom {
 
     public PrivateRoom(){}
 
-    public PrivateRoom(User sender, User receiver, Request request) {
-        this.sender = sender;
-        this.receiver = receiver;
+    public PrivateRoom(Request request) {
         this.request = request;
+
+        // What wil happen if request is deleted?
+        this.sender = request.sender;
+        this.receiver = request.receiver;
 
         this.senderId = sender.userId;
         this.receiverId = receiver.userId;
@@ -84,7 +86,7 @@ public class PrivateRoom extends AbstractRoom {
         } else if (userId == receiverId) {
             if (senderId == REMOVED_USER_ID) {
                 // Sender left first. Either user can still request each other.
-                DbUtils.deleteEntityById(Request.class, request.id);
+                // Request is already deleted when the sender left
                 JPA.em().remove(this);
             } else {
                 // Receiver left first. The request is set to denied
@@ -105,7 +107,7 @@ public class PrivateRoom extends AbstractRoom {
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("sender", sender)
-                .add("receiver", receiver)
+                .add("receiver", Request.getId(receiver))
                 .add("senderId", senderId)
                 .add("receiverId", receiverId)
                 .add("request", request)
