@@ -1,41 +1,56 @@
 package models.entities;
 
+import com.google.common.base.Objects;
 import controllers.BaseController;
 import models.ForeignEntity;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
-import play.db.jpa.Transactional;
 import utils.DbUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.List;
 import java.util.Optional;
 
 @Entity
 public class PrivateRoom extends AbstractRoom {
+
+    public static final long REMOVED_USER_ID = -1L;
+
     @ManyToOne
     @JoinColumn(name="sender")
     @ForeignEntity
+    @Constraints.Required
     public User sender;
 
     @ManyToOne
     @JoinColumn(name="receiver")
     @ForeignEntity
+    @Constraints.Required
     public User receiver;
+
+    // These field will be set to REMOVED_USER_ID when removed removed.
+    public long senderId;
+    public long receiverId;
+
+    @OneToOne (cascade=CascadeType.ALL)
+    @JoinColumn(name="requestId")
+    public Request request;
 
     public PrivateRoom(){}
 
-    public PrivateRoom(User sender, User receiver) {
+    public PrivateRoom(User sender, User receiver, Request request) {
         this.sender = sender;
         this.receiver = receiver;
+        this.request = request;
+
+        this.senderId = sender.userId;
+        this.receiverId = receiver.userId;
     }
 
     public static List<PrivateRoom> getRoomsByUserId(long userId) {
-        String queryString = "select p from PrivateRoom p where p.sender.id = :userId or p.receiver.id = :userId";
+        String queryString = "select p from PrivateRoom p where p.senderId = :userId or p.receiverId = :userId";
 
         TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
                 .setParameter("userId", userId);
@@ -56,16 +71,44 @@ public class PrivateRoom extends AbstractRoom {
     }
 
     public String removeUser(long userId) {
-        Logger.debug("Here");
-        if (User.getId(sender) == userId) {
-            sender = null;
-        } else if (User.getId(receiver) == userId) {
-            receiver = null;
+        if (userId == senderId) {
+            if (receiverId == REMOVED_USER_ID) {
+                // Receiver left first. The request has already been set to to denied
+                // when the receiver left. This receiver can't be requested by this sender again.
+                JPA.em().remove(this);
+            } else {
+                // Sender left first. Either user can request each other.
+                DbUtils.deleteEntityById(Request.class, request.id);
+                senderId = REMOVED_USER_ID;
+            }
+        } else if (userId == receiverId) {
+            if (senderId == REMOVED_USER_ID) {
+                // Sender left first. Either user can still request each other.
+                DbUtils.deleteEntityById(Request.class, request.id);
+                JPA.em().remove(this);
+            } else {
+                // Receiver left first. The request is set to denied
+                // so this receiver can't be requested by this sender again.
+                request.status = Request.Status.denied;
+                receiverId = REMOVED_USER_ID;
+            }
         } else {
             String error = "User with id: " + userId + " is trying to leave " + this + " but is not in it.";
             Logger.error(error);
             return error;
         }
+
         return BaseController.OK_STRING;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("sender", sender)
+                .add("receiver", receiver)
+                .add("senderId", senderId)
+                .add("receiverId", receiverId)
+                .add("request", request)
+                .toString();
     }
 }

@@ -68,6 +68,9 @@ public class User {
             Logger.error(error);
             return error;
         }
+
+        Logger.debug("Sending a notification to " + this);
+
         switch (platform) {
             case android:
                 return NotificationUtils.sendAndroidNotification(registrationId, data);

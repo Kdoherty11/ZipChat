@@ -3,7 +3,6 @@ package utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import play.Logger;
 import play.db.jpa.JPA;
-import play.db.jpa.Transactional;
 
 import java.util.Optional;
 
@@ -16,10 +15,19 @@ public class DbUtils {
 
     private DbUtils() { }
 
-    @Transactional
     public static <T> Optional<T> findEntityById(Class<T> clazz, long id) {
         T entity = JPA.em().find(clazz, id);
         return Optional.ofNullable(entity);
+    }
+
+    public static <T> boolean deleteEntityById(Class<T> clazz, long id) {
+        Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
+        if (entityOptional.isPresent()) {
+            JPA.em().remove(entityOptional.get());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static JsonNode buildEntityNotFoundError(Class clazz, long id) {
@@ -27,14 +35,17 @@ public class DbUtils {
     }
 
     public static JsonNode buildEntityNotFoundError(String entityName, long id) {
-        String errorMessage = buildEntityNotFoundString(entityName, id);
+        return toJson(buildEntityNotFoundString(entityName, id));
+    }
 
-        Logger.warn(errorMessage);
-
-        return toJson(errorMessage);
+    public static String buildEntityNotFoundString(Class clazz, long id) {
+        return buildEntityNotFoundString(clazz.getSimpleName(), id);
     }
 
     public static String buildEntityNotFoundString(String entityName, long id) {
-        return entityName + " with id " + id + " was not found";
+        String errorMessage = entityName + " with id " + id + " was not found";
+        Logger.warn(errorMessage);
+
+        return errorMessage;
     }
 }

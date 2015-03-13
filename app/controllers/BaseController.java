@@ -46,7 +46,15 @@ public class BaseController extends Controller {
         }
     }
 
+    public static interface Callback<T> {
+        public void success(T createdEntity);
+    }
+
     protected static <T> Result createWithForeignEntities(Class<T> clazz) {
+        return createWithForeignEntities(clazz, null);
+    }
+
+    protected static <T> Result createWithForeignEntities(Class<T> clazz, Callback<T> callback) {
         Logger.debug("Creating a " + clazz.getSimpleName() + " with foreign entities");
 
         Map<String, String> data = form().bindFromRequest().data();
@@ -83,6 +91,9 @@ public class BaseController extends Controller {
         } else {
             T entity = form.get();
             JPA.em().persist(entity);
+
+            Optional.ofNullable(callback).ifPresent(cb -> cb.success(entity));
+
             return okJson(entity);
         }
     }
@@ -131,9 +142,8 @@ public class BaseController extends Controller {
     protected static <T> Result delete(Class<T> clazz, long id) {
         Logger.debug("Deleting " + clazz.getSimpleName() + " with id " + id);
 
-        Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
-        if (entityOptional.isPresent()) {
-            JPA.em().remove(entityOptional.get());
+        boolean deleted = DbUtils.deleteEntityById(clazz, id);
+        if (deleted) {
             return OK_RESULT;
         } else {
             return badRequest(DbUtils.buildEntityNotFoundError(clazz, id));

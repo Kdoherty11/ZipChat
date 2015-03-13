@@ -43,10 +43,8 @@ POST          /users/:userId/sendNotification                   controllers.User
 
 POST          /requests                                         controllers.RequestsController.createRequest()
 GET           /requests                                         controllers.RequestsController.getRequests(u: Long)
-GET           /requests/exists                                  controllers.RequestsController.doesExist(senderId: Long, receiverId: Long)
-GET           /requests/:requestId                              controllers.RequestsController.showRequest(requestId: Long)
-PUT           /requests/:requestId                              controllers.RequestsController.updateRequest(requestId: Long)
-DELETE        /requests/:requestId                              controllers.RequestsController.deleteRequest(requestId: Long)
+GET           /requests/canSend                                 controllers.RequestsController.canSendRequest(senderId: Long, receiverId: Long)
+PUT           /requests/:requestId                              controllers.RequestsController.handleResponse(requestId: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                     controllers.Assets.at(path="/public", file)

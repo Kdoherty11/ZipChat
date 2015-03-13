@@ -59,7 +59,11 @@ public class Request {
 
     public Request() { }
 
-    public static List<Request> getPendingRequests(long receiverId) {
+    public static long getId(Request request) {
+        return request == null ? -1 : request.id;
+    }
+
+    public static List<Request> getPendingRequestsByReceiver(long receiverId) {
         String queryString = "select r from Request r where r.receiver.id = :receiverId and r.status = :status";
 
         TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
@@ -69,31 +73,37 @@ public class Request {
         return query.getResultList();
     }
 
-    public static boolean doesExist(long senderId, long receiverId) {
-        String queryString = "select count(r) from Request r where r.sender.id = :senderId and r.receiver.id = :receiverId";
+    public static boolean canSendRequest(long senderId, long receiverId) {
+        String queryString = "select count(r) from Request r where r.sender.id = :senderId and r.receiver.id = :receiverId and r.status = :status";
 
         Query query = JPA.em().createQuery(queryString)
                 .setParameter("senderId", senderId)
-                .setParameter("receiverId", receiverId);
+                .setParameter("receiverId", receiverId)
+                .setParameter("status", Status.denied);
 
-        return (long) query.getSingleResult() > 0L;
+        return (int) query.getSingleResult() == 0;
     }
 
-    public Optional<PrivateRoom> handleResponse(Status status) {
+    public static Optional<Request> getRequest(long senderId, long receiverId) {
+        String queryString = "select r from Request r where r.sender.id = :senderId and r.receiver.id = :receiverId";
+
+        TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
+                .setParameter("senderId", senderId)
+                .setParameter("receiverId", receiverId);
+
+        return Optional.ofNullable(query.getSingleResult());
+    }
+
+    public void handleResponse(Status status) {
         Map<String, String> data = new HashMap<>();
+        data.put("event", "chat request response");
         data.put("name", receiver.name);
         data.put("response", status.toString());
         sender.sendNotification(data);
-        switch (status) {
-            case accepted:
-                PrivateRoom room = new PrivateRoom(sender, receiver);
-                JPA.em().persist(room);
-                return Optional.of(room);
-            case denied:
-                return Optional.empty();
-            default:
-                Logger.warn(status.name() + " is not handled in handleResponse");
-                return Optional.empty();
+
+        if (status == Status.accepted) {
+            PrivateRoom room = new PrivateRoom(sender, receiver, this);
+            JPA.em().persist(room);
         }
     }
 
