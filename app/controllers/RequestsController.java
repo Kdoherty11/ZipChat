@@ -1,7 +1,6 @@
 package controllers;
 
 import models.entities.Request;
-import play.data.Form;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import utils.DbUtils;
@@ -12,11 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static play.data.Form.form;
+
 
 public class RequestsController extends BaseController {
 
     @Transactional
     public static Result createRequest() {
+
         return createWithForeignEntities(Request.class, createdRequest -> {
             Map<String, String> notificationData = new HashMap<>();
             notificationData.put("event", "request");
@@ -28,7 +30,7 @@ public class RequestsController extends BaseController {
     }
 
     @Transactional
-    public static Result getRequests(long receiverId) {
+    public static Result getRequestsByReceiver(long receiverId) {
         return okJson(Request.getPendingRequestsByReceiver(receiverId));
     }
 
@@ -36,7 +38,7 @@ public class RequestsController extends BaseController {
     public static Result handleResponse(long requestId) {
         String responseKey = "status";
 
-        Map<String, String> formData = Form.form().bindFromRequest(responseKey).data();
+        Map<String, String> formData = form().bindFromRequest(responseKey).data();
         if (formData.containsKey(responseKey)) {
             Request.Status response;
             try {
@@ -67,7 +69,7 @@ public class RequestsController extends BaseController {
     }
 
     @Transactional
-    public static Result canSendRequest(long senderId, long receiverId) {
-        return okJson(Request.canSendRequest(senderId, receiverId));
+    public static Result getStatus(long senderId, long receiverId) {
+        return okJson(Request.getStatus(senderId, receiverId));
     }
 }

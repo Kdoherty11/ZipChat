@@ -9,10 +9,7 @@ public class PrivateRoomsController extends BaseController {
 
     @Transactional
     public static Result createRoom() {
-        return createWithForeignEntities(PrivateRoom.class, createdRoom -> {
-            createdRoom.senderId = createdRoom.sender.userId;
-            createdRoom.receiverId = createdRoom.receiver.userId;
-        });
+        return createWithForeignEntities(PrivateRoom.class);
     }
 
     @Transactional

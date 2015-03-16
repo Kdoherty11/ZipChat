@@ -31,8 +31,8 @@ public class PrivateRoom extends AbstractRoom {
     public User receiver;
 
     // These field will be set to REMOVED_USER_ID when removed removed.
-    public long senderId;
-    public long receiverId;
+    public boolean senderInRoom = true;
+    public boolean receiverInRoom = true;
 
     @OneToOne (cascade=CascadeType.ALL)
     @JoinColumn(name="requestId")
@@ -43,16 +43,13 @@ public class PrivateRoom extends AbstractRoom {
     public PrivateRoom(Request request) {
         this.request = request;
 
-        // What wil happen if request is deleted?
+        // Will this be ok if the request is deleted from the db?
         this.sender = request.sender;
         this.receiver = request.receiver;
-
-        this.senderId = sender.userId;
-        this.receiverId = receiver.userId;
     }
 
     public static List<PrivateRoom> getRoomsByUserId(long userId) {
-        String queryString = "select p from PrivateRoom p where p.senderId = :userId or p.receiverId = :userId";
+        String queryString = "select p from PrivateRoom p where (p.sender.userId = :userId and p.senderInRoom = true) or (p.receiver.userId = :userId and p.receiverInRoom = true)";
 
         TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
                 .setParameter("userId", userId);
@@ -73,26 +70,17 @@ public class PrivateRoom extends AbstractRoom {
     }
 
     public String removeUser(long userId) {
-        if (userId == senderId) {
-            if (receiverId == REMOVED_USER_ID) {
-                // Receiver left first. The request has already been set to to denied
-                // when the receiver left. This receiver can't be requested by this sender again.
+        if (userId == User.getId(sender)) {
+            if (!receiverInRoom) {
                 JPA.em().remove(this);
             } else {
-                // Sender left first. Either user can request each other.
-                DbUtils.deleteEntityById(Request.class, request.id);
-                senderId = REMOVED_USER_ID;
+                senderInRoom = false;
             }
-        } else if (userId == receiverId) {
-            if (senderId == REMOVED_USER_ID) {
-                // Sender left first. Either user can still request each other.
-                // Request is already deleted when the sender left
+        } else if (userId == User.getId(receiver)) {
+            if (!senderInRoom) {
                 JPA.em().remove(this);
             } else {
-                // Receiver left first. The request is set to denied
-                // so this receiver can't be requested by this sender again.
-                request.status = Request.Status.denied;
-                receiverId = REMOVED_USER_ID;
+                receiverInRoom = false;
             }
         } else {
             String error = "User with id: " + userId + " is trying to leave " + this + " but is not in it.";
@@ -100,17 +88,21 @@ public class PrivateRoom extends AbstractRoom {
             return error;
         }
 
+        // Both users can request each other again
+        JPA.em().remove(request);
+
         return BaseController.OK_STRING;
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("sender", sender)
-                .add("receiver", Request.getId(receiver))
-                .add("senderId", senderId)
-                .add("receiverId", receiverId)
-                .add("request", request)
+                .add("id", roomId)
+                .add("senderId", User.getId(sender))
+                .add("receiverId", User.getId(receiver))
+                .add("senderInRoom", senderInRoom)
+                .add("receiverInRoom", receiverInRoom)
+                .add("request", Request.getId(request))
                 .toString();
     }
 }

@@ -33,6 +33,10 @@ public class BaseController extends Controller {
 
     public static final long INVALID_ID = -1L;
 
+    public static interface Callback<T> {
+        public void success(T createdEntity);
+    }
+
     protected static <T> Result create(Class<T> clazz) {
         Logger.debug("Creating a " + clazz.getSimpleName());
 
@@ -44,10 +48,6 @@ public class BaseController extends Controller {
             JPA.em().persist(entity);
             return okJson(entity);
         }
-    }
-
-    public static interface Callback<T> {
-        public void success(T createdEntity);
     }
 
     protected static <T> Result createWithForeignEntities(Class<T> clazz) {
@@ -86,6 +86,7 @@ public class BaseController extends Controller {
         }
 
         Form<T> form = Form.form(clazz).bind(validatedFormData);
+
         if (form.hasErrors()) {
             return badRequest(form.errorsAsJson());
         } else {

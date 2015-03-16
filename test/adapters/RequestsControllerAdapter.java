@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static play.test.Helpers.*;
+import static play.test.Helpers.callAction;
+import static play.test.Helpers.contentAsString;
+import static play.test.Helpers.fakeRequest;
 
 public enum RequestsControllerAdapter {
 
@@ -68,25 +70,21 @@ public enum RequestsControllerAdapter {
         return createJson.getLong(ID_KEY);
     }
 
-    public Result getRequests(long receiverId) {
-        return callAction(routes.ref.RequestsController.getRequests(receiverId), fakeRequest());
+    public Result getRequestsByReceiver(long receiverId) {
+        return callAction(routes.ref.RequestsController.getRequestsByReceiver(receiverId), fakeRequest());
     }
 
-    public Result showRequest(long requestId) {
-        return callAction(routes.ref.RequestsController.showRequest(requestId), fakeRequest());
-    }
-
-    public Result updateRequest(long requestId, Map<String, String> formData) {
+    public Result handleResponse(long requestId, String response) {
         FakeRequest request = fakeRequest();
-        request.withFormUrlEncodedBody(formData);
-        return callAction(routes.ref.RequestsController.updateRequest(requestId), request);
+        Optional.ofNullable(response).ifPresent(st -> {
+            Map<String, String> formData = new HashMap<>();
+            formData.put("status", response.toString());
+            request.withFormUrlEncodedBody(formData);
+        });
+        return callAction(routes.ref.RequestsController.handleResponse(requestId), request);
     }
 
-    public Result deleteRequest(long requestId) {
-        return callAction(routes.ref.RequestsController.deleteRequest(requestId), fakeRequest());
-    }
-
-    public Result checkExists(long senderId, long receiverId) {
-        return callAction(routes.ref.RequestsController.doesExist(senderId, receiverId), fakeRequest());
+    public Result getStatus(long senderId, long receiverId) {
+        return callAction(routes.ref.RequestsController.getStatus(senderId, receiverId), fakeRequest());
     }
 }

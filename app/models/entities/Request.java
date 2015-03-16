@@ -6,15 +6,13 @@ import models.NoUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
+import play.data.validation.ValidationError;
 import play.db.jpa.JPA;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Entity
 @Table(name = "requests")
@@ -59,6 +57,15 @@ public class Request {
 
     public Request() { }
 
+    @SuppressWarnings("unused")
+    public String validate() {
+        if (Request.getRequest(User.getId(sender), User.getId(receiver)).isPresent()) {
+            return "A request with sender " + User.getId(sender) + " and receiver " + User.getId(receiver) + " already exists";
+        }
+
+        return null;
+    }
+
     public static long getId(Request request) {
         return request == null ? -1 : request.id;
     }
@@ -73,15 +80,19 @@ public class Request {
         return query.getResultList();
     }
 
-    public static boolean canSendRequest(long senderId, long receiverId) {
-        String queryString = "select count(r) from Request r where r.sender.id = :senderId and r.receiver.id = :receiverId and r.status = :status";
+    public static String getStatus(long senderId, long receiverId) {
+        String queryString = "select r.status from Request r where r.sender.id = :senderId and r.receiver.id = :receiverId";
 
         Query query = JPA.em().createQuery(queryString)
                 .setParameter("senderId", senderId)
-                .setParameter("receiverId", receiverId)
-                .setParameter("status", Status.denied);
+                .setParameter("receiverId", receiverId);
 
-        return (int) query.getSingleResult() == 0;
+        List<Request.Status> resultList = query.getResultList();
+        if (resultList.isEmpty()) {
+            return "none";
+        } else {
+            return resultList.get(0).toString();
+        }
     }
 
     public static Optional<Request> getRequest(long senderId, long receiverId) {
@@ -91,7 +102,12 @@ public class Request {
                 .setParameter("senderId", senderId)
                 .setParameter("receiverId", receiverId);
 
-        return Optional.ofNullable(query.getSingleResult());
+        List<Request> requests = query.getResultList();
+        if (requests.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(requests.get(0));
+        }
     }
 
     public void handleResponse(Status status) {

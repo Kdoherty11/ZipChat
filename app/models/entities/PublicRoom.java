@@ -113,6 +113,7 @@ public class PublicRoom extends AbstractRoom {
             return false;
         }
         final PublicRoom other = (PublicRoom) obj;
+
         return Objects.equal(this.roomId, other.roomId)
                 && Objects.equal(this.name, other.name)
                 && Objects.equal(this.latitude, other.latitude)
