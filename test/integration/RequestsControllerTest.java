@@ -22,8 +22,7 @@ import java.util.*;
 
 import static adapters.RequestsControllerAdapter.*;
 import static org.fest.assertions.Assertions.assertThat;
-import static play.mvc.Http.Status.BAD_REQUEST;
-import static play.mvc.Http.Status.OK;
+import static play.mvc.Http.Status.*;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.status;
 
@@ -45,7 +44,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
         long receiverId = receiverCreateJson.getLong(UsersControllerAdapter.ID_KEY);
 
         Result createResult = adapter.createRequest(Optional.of(senderId), Optional.of(receiverId), Optional.of(MESSAGE));
-        assertThat(status(createResult)).isEqualTo(OK);
+        assertThat(status(createResult)).isEqualTo(CREATED);
 
         JSONObject createJson = new JSONObject(contentAsString(createResult));
         assertThat(createJson.getLong(ID_KEY)).isPositive();
@@ -106,17 +105,16 @@ public class RequestsControllerTest extends AbstractControllerTest {
     public void createRequestBadSender() throws JSONException {
         long senderId = 500;
         Result badSenderResult = adapter.createRequest(Optional.of(senderId), Optional.empty(), Optional.of(MESSAGE));
-        assertThat(status(badSenderResult)).isEqualTo(BAD_REQUEST);
-        assertThat(contentAsString(badSenderResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.class, senderId)));
+        assertThat(status(badSenderResult)).isEqualTo(NOT_FOUND);
+        assertThat(contentAsString(badSenderResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, senderId)));
     }
 
     @Test
     public void createRequestBadReceiver() throws JSONException {
         long receiverId = 500;
         Result badReceiverResult = adapter.createRequest(Optional.empty(), Optional.of(receiverId), Optional.of(MESSAGE));
-        assertThat(status(badReceiverResult)).isEqualTo(BAD_REQUEST);
-        assertThat(contentAsString(badReceiverResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.class, receiverId)));
-
+        assertThat(status(badReceiverResult)).isEqualTo(NOT_FOUND);
+        assertThat(contentAsString(badReceiverResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, receiverId)));
     }
 
     @Test
@@ -223,8 +221,8 @@ public class RequestsControllerTest extends AbstractControllerTest {
     public void handleResponseBadRequestId() {
         int badId = 1;
         Result badIdResult = adapter.handleResponse(badId, Request.Status.accepted.toString());
-        assertThat(status(badIdResult)).isEqualTo(BAD_REQUEST);
-        assertThat(contentAsString(badIdResult).contains(DbUtils.buildEntityNotFoundString(Request.class, badId)));
+        assertThat(status(badIdResult)).isEqualTo(NOT_FOUND);
+        assertThat(contentAsString(badIdResult).contains(DbUtils.buildEntityNotFoundString(Request.ENTITY_NAME, badId)));
     }
 
     @Test
@@ -280,38 +278,4 @@ public class RequestsControllerTest extends AbstractControllerTest {
         RequestsController controller = new RequestsController();
         assertThat(controller).isNotNull();
     }
-//
-//    @Test
-//    public void requestDoesNotExistSuccess() throws JSONException {
-//        UsersControllerAdapter userAdapter = UsersControllerAdapter.INSTANCE;
-//        long user1 = userAdapter.getCreateUserId(Optional.empty(), Optional.empty());
-//        long user2 = userAdapter.getCreateUserId(Optional.empty(), Optional.empty());
-//        long user3 = userAdapter.getCreateUserId(Optional.empty(), Optional.empty());
-//
-//        Result checkExistsResult = adapter.checkExists(user1, user2);
-//        assertThat(status(checkExistsResult)).isEqualTo(OK);
-//        assertThat(contentAsString(checkExistsResult)).isEqualTo("false");
-//
-//        adapter.createRequest(Optional.of(user1), Optional.of(user3), Optional.empty());
-//        adapter.createRequest(Optional.of(user3), Optional.of(user2), Optional.empty());
-//
-//        checkExistsResult = adapter.checkExists(user1, user2);
-//        assertThat(status(checkExistsResult)).isEqualTo(OK);
-//        assertThat(contentAsString(checkExistsResult)).isEqualTo("false");
-//    }
-//
-//    @Test
-//    public void requestExistsSuccess() throws JSONException {
-//        UsersControllerAdapter userAdapter = UsersControllerAdapter.INSTANCE;
-//
-//        long user1 = userAdapter.getCreateUserId(Optional.empty(), Optional.empty());
-//        long user2 = userAdapter.getCreateUserId(Optional.empty(), Optional.empty());
-//
-//        adapter.createRequest(Optional.of(user1), Optional.of(user2), Optional.empty());
-//
-//        Result checkExistsResult = adapter.checkExists(user1, user2);
-//        assertThat(status(checkExistsResult)).isEqualTo(OK);
-//        assertThat(contentAsString(checkExistsResult)).isEqualTo("true");
-//    }
-
 }

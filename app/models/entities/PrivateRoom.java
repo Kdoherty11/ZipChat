@@ -65,7 +65,7 @@ public class PrivateRoom extends AbstractRoom {
 
             return room.removeUser(userId);
         } else {
-            return DbUtils.buildEntityNotFoundString("PrivateRoom", roomId);
+            return DbUtils.buildEntityNotFoundString(PrivateRoom.ENTITY_NAME, roomId);
         }
     }
 

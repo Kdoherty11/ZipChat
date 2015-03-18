@@ -1,8 +1,9 @@
 package utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import play.Logger;
 import play.db.jpa.JPA;
+import play.mvc.Controller;
+import play.mvc.Result;
 
 import java.util.Optional;
 
@@ -30,16 +31,12 @@ public class DbUtils {
         }
     }
 
-    public static JsonNode buildEntityNotFoundError(Class clazz, long id) {
-        return buildEntityNotFoundError(clazz.getSimpleName(), id);
+    public static Result getNotFoundResult(String entityName, long id) {
+        return Controller.notFound(toJson(buildEntityNotFoundString(entityName, id)));
     }
 
-    public static JsonNode buildEntityNotFoundError(String entityName, long id) {
-        return toJson(buildEntityNotFoundString(entityName, id));
-    }
-
-    public static String buildEntityNotFoundString(Class clazz, long id) {
-        return buildEntityNotFoundString(clazz.getSimpleName(), id);
+    public static Result getNotFoundResult(Class clazz, long id) {
+        return getNotFoundResult(clazz.getSimpleName(), id);
     }
 
     public static String buildEntityNotFoundString(String entityName, long id) {

@@ -4,10 +4,10 @@ import models.entities.Request;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import utils.DbUtils;
+import utils.NotificationUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,15 +18,8 @@ public class RequestsController extends BaseController {
 
     @Transactional
     public static Result createRequest() {
-
-        return createWithForeignEntities(Request.class, createdRequest -> {
-            Map<String, String> notificationData = new HashMap<>();
-            notificationData.put("event", "request");
-            notificationData.put("senderName", createdRequest.sender.name);
-            notificationData.put("senderFbId", String.valueOf(createdRequest.sender.userId));
-
-            createdRequest.receiver.sendNotification(notificationData);
-        });
+        return createWithForeignEntities(Request.class, createdRequest ->
+                NotificationUtils.sendChatRequest(createdRequest.sender, createdRequest.receiver));
     }
 
     @Transactional
@@ -61,7 +54,7 @@ public class RequestsController extends BaseController {
 
                 return OK_RESULT;
             } else {
-                return badRequestJson(DbUtils.buildEntityNotFoundError("Request", requestId));
+                return DbUtils.getNotFoundResult("Request", requestId);
             }
         } else {
             return badRequestJson(responseKey + " is required");

@@ -8,14 +8,12 @@ import models.Platform;
 import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
-import utils.DbUtils;
 import utils.NotificationUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
-import java.util.Optional;
 
 
 @Entity
@@ -50,16 +48,6 @@ public class User {
 
     public static long getId(User user) {
         return user == null ? -1 : user.userId;
-    }
-
-    public static String sendNotification(long id, Map<String, String> data) {
-        Optional<User> userOptional = DbUtils.findEntityById(User.class, id);
-
-        if (userOptional.isPresent()) {
-            return userOptional.get().sendNotification(data);
-        } else {
-            return DbUtils.buildEntityNotFoundString("User", id);
-        }
     }
 
     public String sendNotification(Map<String, String> data) {

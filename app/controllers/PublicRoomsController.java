@@ -1,6 +1,5 @@
 package controllers;
 
-import models.entities.AbstractRoom;
 import models.entities.PublicRoom;
 import models.entities.User;
 import play.db.jpa.Transactional;
@@ -66,10 +65,10 @@ public class PublicRoomsController extends BaseController {
                 roomOptional.get().addSubscription(userOptional.get());
                 return OK_RESULT;
             } else {
-                return badRequestJson(DbUtils.buildEntityNotFoundError(User.ENTITY_NAME, userId));
+                return DbUtils.getNotFoundResult(User.ENTITY_NAME, userId);
             }
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError(PublicRoom.ENTITY_NAME, roomId));
+            return DbUtils.getNotFoundResult(PublicRoom.ENTITY_NAME, roomId);
         }
     }
 
@@ -80,7 +79,7 @@ public class PublicRoomsController extends BaseController {
         if (roomOptional.isPresent()) {
             return okJson(roomOptional.get().subscribers);
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError(PublicRoom.ENTITY_NAME, roomId));
+            return DbUtils.getNotFoundResult(PublicRoom.ENTITY_NAME, roomId);
         }
     }
 
@@ -91,7 +90,7 @@ public class PublicRoomsController extends BaseController {
             roomOptional.get().removeSubscription(userId);
             return OK_RESULT;
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError(AbstractRoom.class.getSimpleName(), roomId));
+            return DbUtils.getNotFoundResult("Abstract Room", roomId);
         }
     }
 
@@ -102,7 +101,7 @@ public class PublicRoomsController extends BaseController {
             roomOptional.get().notifySubscribers(form().bindFromRequest().data());
             return OK_RESULT;
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError(PublicRoom.ENTITY_NAME, roomId));
+            return DbUtils.getNotFoundResult(PublicRoom.ENTITY_NAME, roomId);
         }
     }
 }

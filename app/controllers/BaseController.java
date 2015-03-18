@@ -46,7 +46,7 @@ public class BaseController extends Controller {
         } else {
             T entity = form.get();
             JPA.em().persist(entity);
-            return okJson(entity);
+            return created(toJson(entity));
         }
     }
 
@@ -75,7 +75,7 @@ public class BaseController extends Controller {
                         JsonNode jsonNode = toJson(entityOptional.get());
                         formatFormData(fieldName, jsonNode, validatedFormData);
                     } else {
-                        return badRequestJson(DbUtils.buildEntityNotFoundString(field.getType().getSimpleName(), id));
+                        return DbUtils.getNotFoundResult(field.getType().getSimpleName(), id);
                     }
                 } else if (field.isAnnotationPresent(Constraints.Required.class)) {
                     return badRequestJson(clazz.getSimpleName() + "." + fieldName + " is required!");
@@ -95,7 +95,7 @@ public class BaseController extends Controller {
 
             Optional.ofNullable(callback).ifPresent(cb -> cb.success(entity));
 
-            return okJson(entity);
+            return created(toJson(entity));
         }
     }
 
@@ -136,7 +136,7 @@ public class BaseController extends Controller {
 
             return okJson(entity);
         } else {
-            return badRequest(DbUtils.buildEntityNotFoundError(clazz, id));
+            return DbUtils.getNotFoundResult(clazz, id);
         }
     }
 
@@ -147,7 +147,7 @@ public class BaseController extends Controller {
         if (deleted) {
             return OK_RESULT;
         } else {
-            return badRequest(DbUtils.buildEntityNotFoundError(clazz, id));
+            return DbUtils.getNotFoundResult(clazz, id);
         }
     }
 
@@ -158,7 +158,7 @@ public class BaseController extends Controller {
         if (entityOptional.isPresent()) {
             return okJson(entityOptional.get());
         } else {
-            return badRequest(DbUtils.buildEntityNotFoundError(clazz, id));
+            return DbUtils.getNotFoundResult(clazz, id);
         }
     }
 

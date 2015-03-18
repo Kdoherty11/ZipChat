@@ -53,10 +53,10 @@ public class MessagesController extends BaseController {
                 }
                 return OK_RESULT;
             } else {
-                return badRequestJson(DbUtils.buildEntityNotFoundError("User", userId));
+                return DbUtils.getNotFoundResult("User", userId);
             }
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError("Message", messageId));
+            return DbUtils.getNotFoundResult("Message", messageId);
         }
     }
 }

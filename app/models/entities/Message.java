@@ -58,7 +58,7 @@ public class Message {
         if (roomOptional.isPresent()) {
             this.room = roomOptional.get();
         } else {
-           throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(AbstractRoom.class.getSimpleName(), roomId));
+           throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(AbstractRoom.ENTITY_NAME, roomId));
         }
         setUserById(userId);
         this.message = Preconditions.checkNotNull(message);

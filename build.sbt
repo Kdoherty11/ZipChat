@@ -32,3 +32,5 @@ libraryDependencies += "com.ganyo" % "gcm-server" % "1.0.2"
 
 jacoco.settings
 
+herokuAppName in Compile := "zipchatapp"
+

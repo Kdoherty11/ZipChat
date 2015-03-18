@@ -3,6 +3,9 @@ package controllers;
 import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
+import utils.DbUtils;
+
+import java.util.Optional;
 
 import static play.data.Form.form;
 
@@ -33,11 +36,17 @@ public class UsersController extends BaseController {
 
     @Transactional
     public static Result sendNotification(long userId) {
-        String result = User.sendNotification(userId, form().bindFromRequest().data());
-        if (OK_STRING.equals(result)) {
-            return OK_RESULT;
+        Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
+
+        if (userOptional.isPresent()) {
+            String result = userOptional.get().sendNotification(form().bindFromRequest().data());
+            if (OK_STRING.equals(result)) {
+                return OK_RESULT;
+            } else {
+                return badRequestJson(result);
+            }
         } else {
-            return badRequestJson(result);
+            return DbUtils.getNotFoundResult(User.ENTITY_NAME, userId);
         }
     }
 }

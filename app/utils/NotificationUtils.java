@@ -7,14 +7,31 @@ import com.notnoop.apns.ApnsService;
 import com.notnoop.apns.PayloadBuilder;
 import com.notnoop.exceptions.NetworkIOException;
 import controllers.BaseController;
+import models.entities.Request;
+import models.entities.User;
 import play.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
 public class NotificationUtils {
+
+    private static class Key {
+
+        private static final String EVENT = "event";
+        private static final String NAME = "name";
+        private static final String CHAT_REQUEST_RESPONSE = "response";
+        private static final String FACEBOOK_ID = "facebookId";
+    }
+
+    private static class Event {
+
+        private static final String CHAT_REQUEST = "Chat Request";
+        private static final String CHAT_REQUEST_RESPONSE = "Chat Request Response";
+    }
 
     public static final String GCM_API_KEY = "AIzaSyDp2t64B8FsJUAOszaFl14-uiDVoZRu4W4";
     private static final int GCM_RETRIES = 3;
@@ -27,6 +44,7 @@ public class NotificationUtils {
             .build();
 
     private NotificationUtils() {
+
     }
 
     private static String buildAppleMessage(Map<String, String> data) {
@@ -96,5 +114,22 @@ public class NotificationUtils {
             Logger.error(error);
             return error;
         }
+    }
+
+    public static void sendChatRequest(User sender, User receiver) {
+        Map<String, String> data = new HashMap<>();
+        data.put(Key.EVENT, Event.CHAT_REQUEST);
+        data.put(Key.NAME, sender.name);
+        data.put(Key.FACEBOOK_ID, String.valueOf(sender.facebookId));
+
+        receiver.sendNotification(data);
+    }
+
+    public static void sendChatResponse(User sender, User receiver, Request.Status response) {
+        Map<String, String> data = new HashMap<>();
+        data.put(Key.EVENT, Event.CHAT_REQUEST_RESPONSE);
+        data.put(Key.NAME, sender.name);
+        data.put(Key.CHAT_REQUEST_RESPONSE, response.toString());
+        receiver.sendNotification(data);
     }
 }

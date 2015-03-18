@@ -46,7 +46,7 @@ public class RoomsController extends BaseController {
 
             return okJson(message);
         } else {
-            return badRequestJson(DbUtils.buildEntityNotFoundError(PublicRoom.ENTITY_NAME, roomId));
+            return DbUtils.getNotFoundResult(PublicRoom.ENTITY_NAME, roomId);
         }
     }
 

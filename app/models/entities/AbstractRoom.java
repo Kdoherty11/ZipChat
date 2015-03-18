@@ -14,6 +14,8 @@ import java.util.List;
 @Inheritance(strategy= InheritanceType.TABLE_PER_CLASS)
 public class AbstractRoom {
 
+    public static final String ENTITY_NAME = "Abstract Room";
+
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     public long roomId;

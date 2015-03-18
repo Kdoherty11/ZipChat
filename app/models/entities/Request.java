@@ -8,6 +8,7 @@ import play.Logger;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import play.db.jpa.JPA;
+import utils.NotificationUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,6 +25,8 @@ public class Request {
         pending
     }
 
+    public static final String ENTITY_NAME = "Request";
+
     @Id
     @GenericGenerator(name = "requests_gen", strategy = "sequence", parameters = {
             @org.hibernate.annotations.Parameter(name = "sequenceName", value = "requests_gen"),
@@ -38,7 +41,6 @@ public class Request {
     @JoinColumn(name="sender")
     @Constraints.Required
     public User sender;
-
 
     @ManyToOne
     @ForeignEntity
@@ -56,6 +58,7 @@ public class Request {
     public long respondedTimeStamp;
 
     public Request() { }
+
 
     @SuppressWarnings("unused")
     public String validate() {
@@ -83,11 +86,11 @@ public class Request {
     public static String getStatus(long senderId, long receiverId) {
         String queryString = "select r.status from Request r where r.sender.id = :senderId and r.receiver.id = :receiverId";
 
-        Query query = JPA.em().createQuery(queryString)
+        TypedQuery<Status> query = JPA.em().createQuery(queryString, Status.class)
                 .setParameter("senderId", senderId)
                 .setParameter("receiverId", receiverId);
 
-        List<Request.Status> resultList = query.getResultList();
+        List<Status> resultList = query.getResultList();
         if (resultList.isEmpty()) {
             return "none";
         } else {
@@ -111,11 +114,7 @@ public class Request {
     }
 
     public void handleResponse(Status status) {
-        Map<String, String> data = new HashMap<>();
-        data.put("event", "chat request response");
-        data.put("name", receiver.name);
-        data.put("response", status.toString());
-        sender.sendNotification(data);
+        NotificationUtils.sendChatResponse(receiver, sender, status);
 
         if (status == Status.accepted) {
             PrivateRoom room = new PrivateRoom(this);

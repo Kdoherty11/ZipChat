@@ -10,8 +10,7 @@ import java.util.*;
 
 import static adapters.RoomsControllerAdapter.*;
 import static org.fest.assertions.Assertions.assertThat;
-import static play.mvc.Http.Status.BAD_REQUEST;
-import static play.mvc.Http.Status.OK;
+import static play.mvc.Http.Status.*;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.status;
 
@@ -23,7 +22,7 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
     @Test
     public void createRoomSuccess() throws JSONException {
         Result createResult = createRoom(Optional.empty(), Optional.empty());
-        assertThat(status(createResult)).isEqualTo(OK);
+        assertThat(status(createResult)).isEqualTo(CREATED);
 
         JSONObject createJson = new JSONObject(contentAsString(createResult));
         assertThat(createJson.getLong(ID_KEY)).isNotNull();
@@ -92,7 +91,7 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
     @Test
     public void showRoomBadId() throws JSONException {
         Result showBadId = showRoom(1);
-        assertThat(status(showBadId)).isEqualTo(BAD_REQUEST);
+        assertThat(status(showBadId)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -138,7 +137,7 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
     @Test
     public void updateRoomBadId() {
         Result updateBadId = updateRoom(1, Collections.emptyMap());
-        assertThat(status(updateBadId)).isEqualTo(BAD_REQUEST);
+        assertThat(status(updateBadId)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -149,12 +148,12 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
         assertThat(status(deleteResult)).isEqualTo(OK);
 
         Result showResult = showRoom(createId);
-        assertThat(status(showResult)).isEqualTo(BAD_REQUEST);
+        assertThat(status(showResult)).isEqualTo(NOT_FOUND);
     }
 
     @Test
     public void deleteRoomBadId() {
         Result deleteBadId = deleteRoom(1);
-        assertThat(status(deleteBadId)).isEqualTo(BAD_REQUEST);
+        assertThat(status(deleteBadId)).isEqualTo(NOT_FOUND);
     }
 }

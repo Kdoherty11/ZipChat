@@ -23,7 +23,7 @@ public class UsersControllerTest extends AbstractControllerTest {
     @Test
     public void createUserSuccess() throws JSONException {
         Result createResult = adapter.createUser(Optional.empty(), Optional.empty());
-        assertThat(status(createResult)).isEqualTo(OK);
+        assertThat(status(createResult)).isEqualTo(CREATED);
 
         JSONObject createJson = new JSONObject(contentAsString(createResult));
         assertThat(createJson.getLong(ID_KEY)).isPositive();
@@ -92,7 +92,7 @@ public class UsersControllerTest extends AbstractControllerTest {
     @Test
     public void showUserBadId() throws JSONException {
         Result showBadId = adapter.showUser(1);
-        assertThat(status(showBadId)).isEqualTo(BAD_REQUEST);
+        assertThat(status(showBadId)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -135,7 +135,7 @@ public class UsersControllerTest extends AbstractControllerTest {
     @Test
     public void updateUserBadId() {
         Result updateBadId = adapter.updateUser(1, Collections.emptyMap());
-        assertThat(status(updateBadId)).isEqualTo(BAD_REQUEST);
+        assertThat(status(updateBadId)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -146,13 +146,13 @@ public class UsersControllerTest extends AbstractControllerTest {
         assertThat(status(deleteResult)).isEqualTo(OK);
 
         Result showResult = adapter.showUser(createId);
-        assertThat(status(showResult)).isEqualTo(BAD_REQUEST);
+        assertThat(status(showResult)).isEqualTo(NOT_FOUND);
     }
 
     @Test
     public void deleteUserBadId() {
         Result deleteBadId = adapter.deleteUser(1);
-        assertThat(status(deleteBadId)).isEqualTo(BAD_REQUEST);
+        assertThat(status(deleteBadId)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -179,7 +179,7 @@ public class UsersControllerTest extends AbstractControllerTest {
     @Test
     public void sendNotificationBadId() {
         Result notifyBadId = adapter.sendNotification(1, Collections.emptyMap());
-        assertThat(status(notifyBadId)).isEqualTo(BAD_REQUEST);
+        assertThat(status(notifyBadId)).isEqualTo(NOT_FOUND);
     }
 
     @Test

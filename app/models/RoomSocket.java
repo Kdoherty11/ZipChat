@@ -6,7 +6,9 @@ import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
+import models.entities.AbstractRoom;
 import models.entities.Message;
+import models.entities.PublicRoom;
 import models.entities.User;
 import play.Logger;
 import play.db.jpa.JPA;
@@ -150,6 +152,21 @@ public class RoomSocket extends UntypedActor {
                 Logger.debug("onReceive: " + talk);
                 notifyRoom(talk.roomId, "talk", talk.username, talk.text);
                 storeMessage(talk);
+
+                // TODO: Do this so we don't have to query every time
+                Optional<AbstractRoom> abstractRoomOptional = DbUtils.findEntityById(AbstractRoom.class, talk.roomId);
+                if (abstractRoomOptional.isPresent()) {
+                    AbstractRoom room = abstractRoomOptional.get();
+
+                    if (room instanceof PublicRoom) {
+                        Map<String, String> data = new HashMap<>();
+                        // TODO Add room name and other data and try to put it in NotificationUtils
+                        ((PublicRoom) room).notifySubscribers(data);
+                    }
+                } else {
+                    Logger.error("Room socket contains room id " + talk.roomId + " but it doesn't exist");
+                }
+
             } else {
                 unhandled(message);
             }
@@ -260,7 +277,7 @@ public class RoomSocket extends UntypedActor {
                         users.put(userId, user);
                         userJson = toJson(user);
                     } else {
-                        Logger.error("Not notifying room because " + DbUtils.buildEntityNotFoundString("User", userId));
+                        Logger.error("Not notifying room because " + DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, userId));
                         return;
                     }
                 }
