@@ -14,14 +14,11 @@ import static play.mvc.Http.Status.*;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.status;
 
-/**
- * Created by zacharywebert on 3/8/15.
- */
 public class PublicRoomsControllerTest extends AbstractControllerTest {
 
     @Test
     public void createRoomSuccess() throws JSONException {
-        Result createResult = createRoom(Optional.empty(), Optional.empty());
+        Result createResult = createRoom();
         assertThat(status(createResult)).isEqualTo(CREATED);
 
         JSONObject createJson = new JSONObject(contentAsString(createResult));
@@ -39,32 +36,32 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
 
     @Test
     public void createRoomNoName() {
-        Result noNameResult = createRoom(Optional.empty(), Optional.of(Arrays.asList(NAME_KEY)));
+        Result noNameResult = createRoom(null, NAME_KEY);
         assertThat(status(noNameResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void createRoomNoLatitude() {
 
-        Result noLatResult = createRoom(Optional.empty(), Optional.of(Arrays.asList(LAT_KEY)));
+        Result noLatResult = createRoom(null, LAT_KEY);
         assertThat(status(noLatResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void createRoomNoLongitude() {
-        Result noLonResult = createRoom(Optional.empty(), Optional.of(Arrays.asList(LON_KEY)));
+        Result noLonResult = createRoom(null, LON_KEY);
         assertThat(status(noLonResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void createRoomNoRadius() {
-        Result noRadiusResult = createRoom(Optional.empty(), Optional.of(Arrays.asList(RADIUS_KEY)));
+        Result noRadiusResult = createRoom(null, RADIUS_KEY);
         assertThat(status(noRadiusResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void getRoomsSuccess() throws JSONException {
-        createRoom(Optional.empty(), Optional.empty());
+        createRoom();
 
         Result allRoomssResult = getRooms();
         assertThat(status(allRoomssResult)).isEqualTo(OK);
@@ -75,7 +72,7 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
 
     @Test
     public void showRoomSuccess() throws JSONException {
-        long createdId = getCreateRoomId(Optional.empty(), Optional.empty());
+        long createdId = getCreateRoomId();
 
         Result showResult = showRoom(createdId);
         assertThat(status(showResult)).isEqualTo(OK);
@@ -96,7 +93,7 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
 
     @Test
     public void updateRoomSuccess() throws JSONException {
-        long createdId = getCreateRoomId(Optional.empty(), Optional.empty());
+        long createdId = getCreateRoomId();
 
         String updateRoomId = "-1";
         String updateName = "NEW NAME";
@@ -123,7 +120,6 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
         assertThat(updateJson.getLong(LON_KEY)).isEqualTo(LON); //check that this was not updated
         assertThat(updateJson.getString(NAME_KEY)).isEqualTo(NAME); //check that this was not updated
 
-
         Result showResult = showRoom(createdId);
         assertThat(status(showResult)).isEqualTo(OK);
 
@@ -142,7 +138,7 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
 
     @Test
     public void deleteRoomSuccess() throws JSONException {
-        long createId = getCreateRoomId(Optional.empty(), Optional.empty());
+        long createId = getCreateRoomId();
 
         Result deleteResult = deleteRoom(createId);
         assertThat(status(deleteResult)).isEqualTo(OK);

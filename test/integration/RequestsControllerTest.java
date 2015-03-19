@@ -34,16 +34,16 @@ public class RequestsControllerTest extends AbstractControllerTest {
     @Test
     public void createRequestSuccess() throws JSONException {
         UsersControllerAdapter userAdapter = UsersControllerAdapter.INSTANCE;
-        Result senderCreateResult = userAdapter.createUser(Optional.empty(), Optional.empty());
+        Result senderCreateResult = userAdapter.createUser();
         JSONObject senderCreateJson = new JSONObject(contentAsString(senderCreateResult));
 
-        Result receiverCreateResult = userAdapter.createUser(Optional.empty(), Optional.empty());
+        Result receiverCreateResult = userAdapter.createUser();
         JSONObject receiverCreateJson = new JSONObject(contentAsString(receiverCreateResult));
 
         long senderId = senderCreateJson.getLong(UsersControllerAdapter.ID_KEY);
         long receiverId = receiverCreateJson.getLong(UsersControllerAdapter.ID_KEY);
 
-        Result createResult = adapter.createRequest(Optional.of(senderId), Optional.of(receiverId), Optional.of(MESSAGE));
+        Result createResult = adapter.createRequest(senderId, receiverId, MESSAGE);
         assertThat(status(createResult)).isEqualTo(CREATED);
 
         JSONObject createJson = new JSONObject(contentAsString(createResult));
@@ -75,12 +75,12 @@ public class RequestsControllerTest extends AbstractControllerTest {
     @Test
     public void createDuplicateRequest() throws JSONException {
         UsersControllerAdapter userAdapter = UsersControllerAdapter.INSTANCE;
-        long senderId = userAdapter.getCreateUserId(Optional.empty(), Optional.empty());
-        long receiverId = userAdapter.getCreateUserId(Optional.empty(), Optional.empty());
+        long senderId = userAdapter.getCreateUserId();
+        long receiverId = userAdapter.getCreateUserId();
 
-        adapter.createRequest(Optional.of(senderId), Optional.of(receiverId), Optional.empty());
+        adapter.createRequest(senderId, receiverId, null);
 
-        Result duplicateResult = adapter.createRequest(Optional.of(senderId), Optional.of(receiverId), Optional.empty());
+        Result duplicateResult = adapter.createRequest(senderId, receiverId, null);
         assertThat(status(duplicateResult)).isEqualTo(BAD_REQUEST);
 
         String expectedMessage = "A request with sender " + senderId + " and receiver " + receiverId + " already exists";
@@ -89,14 +89,14 @@ public class RequestsControllerTest extends AbstractControllerTest {
 
     @Test
     public void createRequestNoSender() throws JSONException {
-        Result noSenderResult = adapter.createRequest(Optional.empty(), Optional.of(Arrays.asList(SENDER_KEY)));
+        Result noSenderResult = adapter.createRequest(null, SENDER_KEY);
         assertThat(status(noSenderResult)).isEqualTo(BAD_REQUEST);
         assertThat(contentAsString(noSenderResult)).isEqualTo(TestUtils.withQuotes("Request.sender is required!"));
     }
 
     @Test
     public void createRequestNoReceiver() throws JSONException {
-        Result noReceiverResult = adapter.createRequest(Optional.empty(), Optional.of(Arrays.asList(RECEIVER_KEY)));
+        Result noReceiverResult = adapter.createRequest(null, RECEIVER_KEY);
         assertThat(status(noReceiverResult)).isEqualTo(BAD_REQUEST);
         assertThat(contentAsString(noReceiverResult)).isEqualTo(TestUtils.withQuotes("Request.receiver is required!"));
     }
@@ -104,7 +104,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
     @Test
     public void createRequestBadSender() throws JSONException {
         long senderId = 500;
-        Result badSenderResult = adapter.createRequest(Optional.of(senderId), Optional.empty(), Optional.of(MESSAGE));
+        Result badSenderResult = adapter.createRequest(senderId, null, MESSAGE);
         assertThat(status(badSenderResult)).isEqualTo(NOT_FOUND);
         assertThat(contentAsString(badSenderResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, senderId)));
     }
@@ -112,14 +112,14 @@ public class RequestsControllerTest extends AbstractControllerTest {
     @Test
     public void createRequestBadReceiver() throws JSONException {
         long receiverId = 500;
-        Result badReceiverResult = adapter.createRequest(Optional.empty(), Optional.of(receiverId), Optional.of(MESSAGE));
+        Result badReceiverResult = adapter.createRequest(null, receiverId, MESSAGE);
         assertThat(status(badReceiverResult)).isEqualTo(NOT_FOUND);
         assertThat(contentAsString(badReceiverResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, receiverId)));
     }
 
     @Test
     public void createRequestNegativeId() throws JSONException {
-        Result negativeIdResult = adapter.createRequest(Optional.empty(), Optional.of(-1L), Optional.of(MESSAGE));
+        Result negativeIdResult = adapter.createRequest(null, -1L, MESSAGE);
         assertThat(status(negativeIdResult)).isEqualTo(BAD_REQUEST);
         assertThat(contentAsString(negativeIdResult)).isEqualTo(TestUtils.withQuotes("receiver must be a positive long"));
 
@@ -129,14 +129,14 @@ public class RequestsControllerTest extends AbstractControllerTest {
     public void createRequestNotNumericId() throws JSONException {
         Map<String, String> formData = new HashMap<>();
         formData.put(SENDER_KEY, "NotALong");
-        Result notNumericIdResult = adapter.createRequest(Optional.of(formData), Optional.empty());
+        Result notNumericIdResult = adapter.createRequest(formData);
         assertThat(status(notNumericIdResult)).isEqualTo(BAD_REQUEST);
         assertThat(contentAsString(notNumericIdResult)).isEqualTo(TestUtils.withQuotes("sender must be a positive long"));
     }
 
     @Test
     public void getRequestsByReceiver() throws JSONException {
-        Result createResult = adapter.createRequest(Optional.empty(), Optional.empty());
+        Result createResult = adapter.createRequest();
         JSONObject receiverJson = new JSONObject(contentAsString(createResult)).getJSONObject(RECEIVER_KEY);
         long receiverId = receiverJson.getLong(UsersControllerAdapter.ID_KEY);
 
@@ -149,7 +149,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
 
     @Test
     public void respondToRequestAcceptedSuccess() throws JSONException {
-        long createdResultId = adapter.getCreateRequestId(Optional.empty(), Optional.empty());
+        long createdResultId = adapter.getCreateRequestId();
 
         Result handleResponseResult = adapter.handleResponse(createdResultId, Request.Status.accepted.toString());
         assertThat(status(handleResponseResult)).isEqualTo(OK);
@@ -189,7 +189,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
 
     @Test
     public void respondToRequestDeniedSuccess() throws JSONException {
-        long createdResultId = adapter.getCreateRequestId(Optional.empty(), Optional.empty());
+        long createdResultId = adapter.getCreateRequestId();
 
         Result handleResponseResult = adapter.handleResponse(createdResultId, Request.Status.denied.toString());
         assertThat(status(handleResponseResult)).isEqualTo(OK);
@@ -227,7 +227,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
 
     @Test
     public void handleResponseNoStatus() throws JSONException {
-        long createdRequestId = adapter.getCreateRequestId(Optional.empty(), Optional.empty());
+        long createdRequestId = adapter.getCreateRequestId();
 
         Result noStatusResult = adapter.handleResponse(createdRequestId, null);
         assertThat(status(noStatusResult)).isEqualTo(BAD_REQUEST);
@@ -236,7 +236,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
 
     @Test
     public void handleResponsePending() throws JSONException {
-        long createdRequestId = adapter.getCreateRequestId(Optional.empty(), Optional.empty());
+        long createdRequestId = adapter.getCreateRequestId();
 
         Result noStatusResult = adapter.handleResponse(createdRequestId, Request.Status.pending.toString());
         assertThat(status(noStatusResult)).isEqualTo(BAD_REQUEST);
@@ -245,7 +245,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
 
     @Test
     public void handleBadResponse() throws JSONException {
-        long createdRequestId = adapter.getCreateRequestId(Optional.empty(), Optional.empty());
+        long createdRequestId = adapter.getCreateRequestId();
 
         Result noStatusResult = adapter.handleResponse(createdRequestId, "mayonnaise");
         assertThat(status(noStatusResult)).isEqualTo(BAD_REQUEST);
@@ -256,10 +256,10 @@ public class RequestsControllerTest extends AbstractControllerTest {
     public void getStatus() throws JSONException {
 
         UsersControllerAdapter userAdapter = UsersControllerAdapter.INSTANCE;
-        long senderId = userAdapter.getCreateUserId(Optional.empty(), Optional.empty());
-        long receiverId = userAdapter.getCreateUserId(Optional.empty(), Optional.empty());
+        long senderId = userAdapter.getCreateUserId();
+        long receiverId = userAdapter.getCreateUserId();
 
-        adapter.createRequest(Optional.of(senderId), Optional.of(receiverId), Optional.empty());
+        adapter.createRequest(senderId, receiverId, null);
 
         Result getStatusResult = adapter.getStatus(senderId, receiverId);
         assertThat(status(getStatusResult)).isEqualTo(OK);

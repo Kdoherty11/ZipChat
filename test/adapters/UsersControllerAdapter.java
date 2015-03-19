@@ -1,6 +1,7 @@
 package adapters;
 
 import controllers.routes;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import play.mvc.Result;
@@ -30,23 +31,35 @@ public enum UsersControllerAdapter {
     public static final String REG_ID = "2222222222";
     public static final String PLATFORM = "android";
 
-    public Result createUser(Optional<Map<String, String>> otherDataOptional, Optional<List<String>> removeFieldsOptional) {
+    public Result createUser() {
+        return createUser(null, null);
+    }
+
+    public Result createUser(@Nullable Map<String, String> data, @Nullable List<String> removeFields) {
         Map<String, String> formData = new HashMap<>();
         formData.put(NAME_KEY, NAME);
         formData.put(FB_KEY, FB_ID);
         formData.put(REG_KEY, REG_ID);
         formData.put(PLATFORM_KEY, PLATFORM);
 
-        otherDataOptional.ifPresent(data -> data.forEach(formData::put));
-        removeFieldsOptional.ifPresent(removeFields -> removeFields.forEach(formData::remove));
+        if (data != null) {
+            data.forEach(formData::put);
+        }
+        if (removeFields != null) {
+            removeFields.forEach(formData::remove);
+        }
 
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
         return callAction(routes.ref.UsersController.createUser(), request);
     }
 
-    public long getCreateUserId(Optional<Map<String, String>> otherData, Optional<List<String>> removeFields) throws JSONException {
-        return getUserIdFromResult(createUser(otherData, removeFields));
+    public long getCreateUserId() throws JSONException {
+        return getCreateUserId(null, null);
+    }
+
+    public long getCreateUserId(@Nullable Map<String, String> data, @Nullable List<String> removeFields) throws JSONException {
+        return getUserIdFromResult(createUser(data, removeFields));
     }
 
     public long getUserIdFromResult(Result createResult) throws JSONException {

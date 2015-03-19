@@ -30,6 +30,8 @@ libraryDependencies += "com.notnoop.apns" % "apns" % "0.1.6"
 
 libraryDependencies += "com.ganyo" % "gcm-server" % "1.0.2"
 
+libraryDependencies += "com.intellij" % "annotations" % "9.0.4"
+
 jacoco.settings
 
 herokuAppName in Compile := "zipchatapp"

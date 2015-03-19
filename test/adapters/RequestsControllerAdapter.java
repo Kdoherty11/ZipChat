@@ -3,15 +3,14 @@ package adapters;
 
 import controllers.routes;
 import models.entities.Request;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import play.mvc.Result;
 import play.test.FakeRequest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static play.test.Helpers.callAction;
 import static play.test.Helpers.contentAsString;
@@ -32,39 +31,58 @@ public enum RequestsControllerAdapter {
     public static final String MESSAGE = "Hey, whats up?";
     public static final String STATUS = Request.Status.pending.toString();
 
-    public Result createRequest(Optional<Long> senderIdOptional, Optional<Long> receiverIdOptional, Optional<String> messageOptional) throws JSONException {
-        Map<String, String> formData = new HashMap<>();
-
-        senderIdOptional.ifPresent(senderId -> formData.put(SENDER_KEY, String.valueOf(senderId)));
-        receiverIdOptional.ifPresent(receiverId -> formData.put(RECEIVER_KEY, String.valueOf(receiverId)));
-        messageOptional.ifPresent(message -> formData.put(MESSAGE_KEY, message));
-
-        return createRequest(Optional.of(formData), Optional.empty());
+    public Result createRequest() throws JSONException {
+        return createRequest(null);
     }
 
-    public Result createRequest(Optional<Map<String, String>> otherDataOptional, Optional<List<String>> removeFieldsOptional) throws JSONException {
+    public Result createRequest(@Nullable Long senderId, @Nullable Long receiverId, @Nullable String message) throws JSONException {
         Map<String, String> formData = new HashMap<>();
-        formData.put(MESSAGE_KEY, MESSAGE);
 
-        otherDataOptional.ifPresent(data -> data.forEach(formData::put));
-
-        if (!formData.containsKey(SENDER_KEY)) {
-            long senderId = UsersControllerAdapter.INSTANCE.getCreateUserId(Optional.empty(), Optional.empty());
+        if (senderId != null) {
             formData.put(SENDER_KEY, String.valueOf(senderId));
         }
-        if (!formData.containsKey(RECEIVER_KEY)) {
-            long receiverId = UsersControllerAdapter.INSTANCE.getCreateUserId(Optional.empty(), Optional.empty());
+
+        if (receiverId != null) {
             formData.put(RECEIVER_KEY, String.valueOf(receiverId));
         }
 
-        removeFieldsOptional.ifPresent(removeFields -> removeFields.forEach(formData::remove));
+        if (message != null) {
+            formData.put(MESSAGE_KEY, message);
+        }
+
+        return createRequest(formData);
+    }
+
+    public Result createRequest(@Nullable Map<String, String> otherData, String... removeFields) throws JSONException {
+        Map<String, String> formData = new HashMap<>();
+        formData.put(MESSAGE_KEY, MESSAGE);
+
+        if (otherData != null) {
+            otherData.forEach(formData::put);
+        }
+
+        if (!formData.containsKey(SENDER_KEY)) {
+            long senderId = UsersControllerAdapter.INSTANCE.getCreateUserId();
+            formData.put(SENDER_KEY, String.valueOf(senderId));
+        }
+
+        if (!formData.containsKey(RECEIVER_KEY)) {
+            long receiverId = UsersControllerAdapter.INSTANCE.getCreateUserId();
+            formData.put(RECEIVER_KEY, String.valueOf(receiverId));
+        }
+
+        Arrays.asList(removeFields).forEach(formData::remove);
 
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
         return callAction(routes.ref.RequestsController.createRequest(), request);
     }
 
-    public long getCreateRequestId(Optional<Map<String, String>> otherData, Optional<List<String>> removeFields) throws JSONException {
+    public long getCreateRequestId() throws JSONException {
+        return getCreateRequestId(null);
+    }
+
+    public long getCreateRequestId(@Nullable Map<String, String> otherData, String... removeFields) throws JSONException {
         Result createResult = createRequest(otherData, removeFields);
         JSONObject createJson = new JSONObject(contentAsString(createResult));
         return createJson.getLong(ID_KEY);
@@ -78,7 +96,7 @@ public enum RequestsControllerAdapter {
         FakeRequest request = fakeRequest();
         Optional.ofNullable(response).ifPresent(st -> {
             Map<String, String> formData = new HashMap<>();
-            formData.put("status", response.toString());
+            formData.put(STATUS_KEY, response);
             request.withFormUrlEncodedBody(formData);
         });
         return callAction(routes.ref.RequestsController.handleResponse(requestId), request);

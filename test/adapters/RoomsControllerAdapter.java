@@ -1,17 +1,21 @@
 package adapters;
 
 import controllers.routes;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import play.mvc.Result;
 import play.test.FakeRequest;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import static play.test.Helpers.*;
+import static play.test.Helpers.callAction;
+import static play.test.Helpers.contentAsString;
+import static play.test.Helpers.fakeRequest;
+
 /**
  * Created by zacharywebert on 3/8/15.
  */
@@ -31,22 +35,34 @@ public enum RoomsControllerAdapter {
     public static final long LON = 1;
     public static final long RADIUS = 100;
 
-    public static Result createRoom(Optional<Map<String, String>> otherDataOptional, Optional<List<String>> removeFieldsOptional) {
+    public static Result createRoom() {
+        return createRoom(null);
+    }
+
+    public static Result createRoom(@Nullable Map<String, String> otherData, String... removeFields) {
         Map<String, String> formData = new HashMap<>();
         formData.put(NAME_KEY, NAME);
         formData.put(LAT_KEY, String.valueOf(LAT));
         formData.put(LON_KEY, String.valueOf(LON));
         formData.put(RADIUS_KEY, String.valueOf(RADIUS));
 
-        otherDataOptional.ifPresent(otherData -> otherData.forEach(formData::put));
-        removeFieldsOptional.ifPresent(removeFields -> removeFields.forEach(formData::remove));
+        if (otherData != null) {
+            otherData.forEach(formData::put);
+        }
+
+        Arrays.asList(removeFields).forEach(formData::remove);
 
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
         return callAction(routes.ref.PublicRoomsController.createRoom(), request);
     }
 
-    public static long getCreateRoomId(Optional<Map<String, String>> otherData, Optional<List<String>> removeFields) throws JSONException {
+    public static long getCreateRoomId() throws JSONException {
+        return getCreateRoomId(null);
+    }
+
+
+    public static long getCreateRoomId(@Nullable Map<String, String> otherData, String... removeFields) throws JSONException {
         Result createResult = createRoom(otherData, removeFields);
         JSONObject createJson = new JSONObject(contentAsString(createResult));
         return createJson.getLong(ID_KEY);
