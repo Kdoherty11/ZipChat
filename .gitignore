@@ -4,6 +4,7 @@ project/target
 target
 tmp
 .history
+.DS_STORE
 dist
 /out
 /.idea_modules
@@ -16,3 +17,5 @@ dist
 /.settings
 /.project
 /.classpath
+
+
