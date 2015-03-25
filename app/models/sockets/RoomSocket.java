@@ -1,4 +1,4 @@
-package models;
+package models.sockets;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -10,11 +10,14 @@ import models.entities.AbstractRoom;
 import models.entities.Message;
 import models.entities.PublicRoom;
 import models.entities.User;
+import models.sockets.messages.Join;
+import models.sockets.messages.Quit;
+import models.sockets.messages.RosterNotification;
+import models.sockets.messages.Talk;
 import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Akka;
-import play.libs.F;
 import play.libs.Json;
 import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
@@ -38,37 +41,35 @@ public class RoomSocket extends UntypedActor {
     private static final String CHANNEL = "messages";
     // Default room.
     static ActorRef defaultRoom = Akka.system().actorOf(Props.create(RoomSocket.class));
+
     // Key is roomId, value is the users connected to that room
-    Map<Long, Map<String, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
+    Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
+
+    // TODO: Could use a cache instead
+    // Map of userIds to Users
     Map<Long, User> users = new HashMap<>();
 
-    Map<String, SocketKeepAlive> keepalives = new HashMap<>();
+    Map<Long, SocketKeepAlive> clientHeartbeats = new HashMap<>();
 
     static {
 
         //subscribe to the message channel
         Akka.system().scheduler().scheduleOnce(
                 Duration.create(10, TimeUnit.MILLISECONDS),
-                new Runnable() {
-                    public void run() {
-                        Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                        Logger.debug("Get resource A");
-                        try {
-                            j.subscribe(new MyListener(), CHANNEL);
-                        } finally {
-                            Logger.debug("Returning resource A");
-                            play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
-                        }
+                () -> {
+                    Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                    Logger.debug("Get resource A");
+                    try {
+                        j.subscribe(new MessageListener(), CHANNEL);
+                    } finally {
+                        Logger.debug("Returning resource A");
+                        play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                     }
                 },
                 Akka.system().dispatcher()
         );
     }
 
-
-    /**
-     * Join the default room.
-     */
     public static void join(final long roomId, final long userId, WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) throws Exception {
 
         Logger.debug("User " + userId + " is joining " + roomId);
@@ -79,42 +80,36 @@ public class RoomSocket extends UntypedActor {
         if ("OK".equals(result)) {
 
             // For each event received on the socket,
-            in.onMessage(new F.Callback<JsonNode>() {
-                public void invoke(JsonNode event) {
-                    Logger.debug("Event:" + event);
-                    Talk talk = new Talk(roomId, userId, event.get("message").asText());
+            in.onMessage(event -> {
+                Logger.debug("Event:" + event);
+                Talk talk = new Talk(roomId, userId, event.get("message").asText());
 
-                    Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                    Logger.debug("Get resource B");
-                    try {
-                        //All messages are pushed through the pub/sub channel
-                        j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(talk)));
-                    } finally {
-                        play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
-                        Logger.debug("Return resource B");
-                    }
-
+                Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                Logger.debug("Get resource B");
+                try {
+                    //All messages are pushed through the pub/sub channel
+                    j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(talk)));
+                } finally {
+                    play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+                    Logger.debug("Return resource B");
                 }
+
             });
 
             // When the socket is closed.
-            in.onClose(new F.Callback0() {
-                public void invoke() {
-                    // Send a Quit message to the room.
-                    defaultRoom.tell(new Quit(roomId, userId), null);
+            in.onClose(() -> {
+                // Send a Quit message to the room.
+                defaultRoom.tell(new Quit(roomId, userId), null);
 
-                }
             });
 
         } else {
-
             // Cannot connect, create a Json error.
             ObjectNode error = Json.newObject();
             error.put("error", result);
 
             // Send the error to the socket.
             out.write(error);
-
         }
 
     }
@@ -150,22 +145,25 @@ public class RoomSocket extends UntypedActor {
                 // Received a Talk message
                 Talk talk = (Talk) message;
                 Logger.debug("onReceive: " + talk);
-                notifyRoom(talk.roomId, "talk", talk.username, talk.text);
+                notifyRoom(talk.getRoomId(), "talk", talk.getUserId(), talk.getText());
                 storeMessage(talk);
 
-                // TODO: Do this so we don't have to query every time
-                Optional<AbstractRoom> abstractRoomOptional = DbUtils.findEntityById(AbstractRoom.class, talk.roomId);
-                if (abstractRoomOptional.isPresent()) {
-                    AbstractRoom room = abstractRoomOptional.get();
+                JPA.withTransaction(() -> {
+                    // TODO: Do this so we don't have to query every time
+                    Optional<AbstractRoom> abstractRoomOptional = DbUtils.findEntityById(AbstractRoom.class, talk.getRoomId());
+                    if (abstractRoomOptional.isPresent()) {
+                        AbstractRoom room = abstractRoomOptional.get();
 
-                    if (room instanceof PublicRoom) {
-                        Map<String, String> data = new HashMap<>();
-                        // TODO Add room name and other data and try to put it in NotificationUtils
-                        ((PublicRoom) room).notifySubscribers(data);
+                        if (room instanceof PublicRoom) {
+                            Map<String, String> data = new HashMap<>();
+                            // TODO Add room name and other data and try to put it in NotificationUtils
+                            ((PublicRoom) room).notifySubscribers(data);
+                        }
+                    } else {
+                        Logger.error("Room socket contains room id " + talk.getRoomId() + " but it doesn't exist");
                     }
-                } else {
-                    Logger.error("Room socket contains room id " + talk.roomId + " but it doesn't exist");
-                }
+                });
+
 
             } else {
                 unhandled(message);
@@ -179,33 +177,35 @@ public class RoomSocket extends UntypedActor {
     @Transactional
     private void storeMessage(Talk talk) {
         JPA.withTransaction(() -> {
-            if (SocketKeepAlive.USER_ID != talk.getUsername()) {
+            if (SocketKeepAlive.USER_ID != talk.getUserId()) {
                 Logger.debug(talk.toString());
-                Message message = new Message(talk.getRoomId(), talk.getUsername(), talk.getText());
+                Message message = new Message(talk.getRoomId(), talk.getUserId(), talk.getText());
                 message.addToRoom();
             }
         });
     }
 
     private void receiveJoin(Jedis j, Join join) {
-        if (j.sismember(String.valueOf(join.roomId), String.valueOf(join.username))) {
-            getSender().tell("This username is already used", getSelf());
+        long roomId = join.getRoomId();
+        long userId = join.getUsername();
+        if (j.sismember(String.valueOf(roomId), String.valueOf(userId))) {
+            getSender().tell("This userId is already used", getSelf());
         } else {
-            if (!rooms.containsKey(join.roomId)) {
+            if (!rooms.containsKey(roomId)) {
                 // Creating a new room
-                Logger.debug("Adding new room and keep alive: " + join.roomId);
+                Logger.debug("Adding new room and keep alive: " + roomId);
 
-                rooms.put(join.roomId, new HashMap<>());
+                rooms.put(roomId, new HashMap<>());
 
-                SocketKeepAlive socketKeepAlive = new SocketKeepAlive(join.roomId, defaultRoom);
-                keepalives.put(String.valueOf(join.roomId), socketKeepAlive);
+                SocketKeepAlive socketKeepAlive = new SocketKeepAlive(roomId, defaultRoom);
+                clientHeartbeats.put(roomId, socketKeepAlive);
             }
             //Add the member to this node and the global roster
-            rooms.get(join.roomId).put(String.valueOf(join.username), join.channel);
-            j.sadd(String.valueOf(join.roomId), String.valueOf(join.username));
+            rooms.get(roomId).put(userId, join.getChannel());
+            j.sadd(String.valueOf(roomId), String.valueOf(userId));
 
             //Publish the join notification to all nodes
-            RosterNotification rosterNotify = new RosterNotification(join.roomId, join.username, "join");
+            RosterNotification rosterNotify = new RosterNotification(roomId, userId, "join");
             j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
 
             getSender().tell("OK", getSelf());
@@ -213,43 +213,44 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void receiveQuit(Jedis j, Quit quit) {
-        Map<String, WebSocket.Out<JsonNode>> members = rooms.get(quit.roomId);
+        long roomId = quit.getRoomId();
+        Map<Long, WebSocket.Out<JsonNode>> members = rooms.get(roomId);
 
         if (members != null) {
-            members.remove(quit.username);
+            members.remove(quit.getUserId());
         }
 
-        j.srem(String.valueOf(quit.roomId), String.valueOf(quit.username));
+        j.srem(String.valueOf(roomId), String.valueOf(quit.getUserId()));
 
-        Set<String> roomMembers = j.smembers(String.valueOf(quit.roomId));
+        Set<String> roomMembers = j.smembers(String.valueOf(roomId));
 
         // For the robot
         if (roomMembers.size() == 1) {
 
-            Logger.debug("Removing robot from room: " + quit.roomId);
+            Logger.debug("Removing robot from room: " + roomId);
 
-            rooms.remove(quit.roomId);
+            rooms.remove(quit.getRoomId());
 
             // Remove robot
-            if (keepalives.containsKey(quit.roomId)) {
-                keepalives.get(quit.roomId).stop();
+            if (clientHeartbeats.containsKey(roomId)) {
+                clientHeartbeats.get(roomId).stop();
             }
 
         } else {
 
-            Logger.debug("There are still members in room " + quit.roomId + "\n" + roomMembers);
+            Logger.debug("There are still members in room " + roomId + "\n" + roomMembers);
 
             //Publish the quit notification to all nodes
-            RosterNotification rosterNotify = new RosterNotification(quit.roomId, quit.username, "quit");
+            RosterNotification rosterNotify = new RosterNotification(roomId, roomId, "quit");
             j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
         }
     }
 
     private void receiveRosterNotification(RosterNotification rosterNotification) {
-        if ("join".equals(rosterNotification.direction)) {
-            notifyRoom(rosterNotification.roomId, "join", rosterNotification.username, "has entered the room");
-        } else if ("quit".equals(rosterNotification.direction)) {
-            notifyRoom(rosterNotification.roomId, "quit", rosterNotification.username, "has left the room");
+        if ("join".equals(rosterNotification.getDirection())) {
+            notifyRoom(rosterNotification.getRoomId(), "join", rosterNotification.getUserId(), "has entered the room");
+        } else if ("quit".equals(rosterNotification.getDirection())) {
+            notifyRoom(rosterNotification.getRoomId(), "quit", rosterNotification.getUserId(), "has left the room");
         }
     }
 
@@ -294,135 +295,8 @@ public class RoomSocket extends UntypedActor {
 
     // -- Messages
 
-    public static class Join {
+    public static class MessageListener extends JedisPubSub {
 
-        final long roomId;
-        final long username;
-        final WebSocket.Out<JsonNode> channel;
-
-        public Join(long roomId, long username, WebSocket.Out<JsonNode> channel) {
-            this.roomId = roomId;
-            this.username = username;
-            this.channel = channel;
-        }
-
-        public long getRoomId() {
-            return roomId;
-        }
-
-        public long getUsername() {
-            return username;
-        }
-
-        public String getType() {
-            return "join";
-        }
-
-        @Override
-        public String toString() {
-            return "Join (" + roomId + ") from " + username;
-        }
-    }
-
-    public static class RosterNotification {
-
-        final long roomId;
-        final long username;
-        final String direction;
-
-        public RosterNotification(long roomId, long username, String direction) {
-            this.roomId = roomId;
-            this.username = username;
-            this.direction = direction;
-        }
-
-        public long getUsername() {
-            return username;
-        }
-
-        public String getDirection() {
-            return direction;
-        }
-
-        public String getType() {
-            return "rosterNotify";
-        }
-
-        public long getRoomId() {
-            return roomId;
-        }
-
-        @Override
-        public String toString() {
-            return "RosterNotification (" + roomId + ") " + username + " is " + direction + "ing";
-        }
-    }
-
-    public static class Talk {
-
-        final long roomId;
-        final long username;
-        final String text;
-
-        public Talk(long roomId, long username, String text) {
-            this.roomId = roomId;
-            this.username = username;
-            this.text = text;
-        }
-
-        public long getUsername() {
-            return username;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public String getType() {
-            return "talk";
-        }
-
-        public long getRoomId() {
-            return roomId;
-        }
-
-        @Override
-        public String toString() {
-            return "Talk (" + roomId + ") " + username + " - " + text;
-        }
-
-    }
-
-    public static class Quit {
-
-        final long roomId;
-        final long username;
-
-        public Quit(long roomId, long username) {
-            this.roomId = roomId;
-            this.username = username;
-        }
-
-        public long getUsername() {
-            return username;
-        }
-
-        public String getType() {
-            return "quit";
-        }
-
-        public long getRoomId() {
-            return roomId;
-        }
-
-        @Override
-        public String toString() {
-            return "Quit (" + roomId + ") " + username;
-        }
-
-    }
-
-    public static class MyListener extends JedisPubSub {
         @Override
         public void onMessage(String channel, String messageBody) {
             //Process messages from the pub/sub channel
@@ -431,22 +305,22 @@ public class RoomSocket extends UntypedActor {
             Logger.debug("myListener onMessage: " + parsedMessage);
             Object message = null;
             String messageType = parsedMessage.get("type").asText();
-            if ("talk".equals(messageType)) {
+            if (Talk.TYPE.equals(messageType)) {
                 message = new Talk(
                         parsedMessage.get("roomId").asLong(),
-                        parsedMessage.get("username").asLong(),
+                        parsedMessage.get("userId").asLong(),
                         parsedMessage.get("text").asText()
                 );
-            } else if ("rosterNotify".equals(messageType)) {
+            } else if (RosterNotification.TYPE.equals(messageType)) {
                 message = new RosterNotification(
                         parsedMessage.get("roomId").asLong(),
-                        parsedMessage.get("username").asLong(),
+                        parsedMessage.get("userId").asLong(),
                         parsedMessage.get("direction").asText()
                 );
-            } else if ("quit".equals(messageType)) {
+            } else if (Quit.TYPE.equals(messageType)) {
                 message = new Quit(
                         parsedMessage.get("roomId").asLong(),
-                        parsedMessage.get("username").asLong()
+                        parsedMessage.get("userId").asLong()
                 );
             }
             RoomSocket.remoteMessage(message);

@@ -41,7 +41,7 @@ public class PublicRoom extends AbstractRoom {
     public Integer score = 0;
 
     @JsonIgnore
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
 
@@ -94,8 +94,13 @@ public class PublicRoom extends AbstractRoom {
                 }
             });
 
-            NotificationUtils.sendBatchAndroidNotifications(androidRegIds, data);
-            NotificationUtils.sendBatchAppleNotifications(iosRegIds, data);
+            if (!androidRegIds.isEmpty()) {
+                NotificationUtils.sendBatchAndroidNotifications(androidRegIds, data);
+            }
+
+            if (!iosRegIds.isEmpty()) {
+                NotificationUtils.sendBatchAppleNotifications(iosRegIds, data);
+            }
         }).start();
     }
 

@@ -1,8 +1,10 @@
-package models;
+package models.sockets;
 
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import com.fasterxml.jackson.databind.JsonNode;
+import models.sockets.messages.Join;
+import models.sockets.messages.Talk;
 import play.Logger;
 import play.libs.Akka;
 import play.libs.Json;
@@ -34,7 +36,7 @@ public class SocketKeepAlive {
         };
 
         // Join the room
-        chatRoom.tell(new RoomSocket.Join(roomId, USER_ID, robotChannel), null);
+        chatRoom.tell(new Join(roomId, USER_ID, robotChannel), null);
 
         this.roomId = roomId;
 
@@ -43,7 +45,7 @@ public class SocketKeepAlive {
                 Duration.create(30, SECONDS),
                 Duration.create(30, SECONDS),
                 chatRoom,
-                new RoomSocket.Talk(roomId, USER_ID, HEARTBEAT_MESSAGE),
+                new Talk(roomId, USER_ID, HEARTBEAT_MESSAGE),
                 Akka.system().dispatcher(),
                 /** sender **/ null
         );

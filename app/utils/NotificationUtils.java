@@ -91,8 +91,6 @@ public class NotificationUtils {
     public static String sendAndroidNotification(String regId, Map<String, String> data) {
         Message message = buildGcmMessage(data);
 
-        Logger.debug("Sending android notification to regId " + regId);
-
         try {
             GCM_SENDER.send(message, regId, GCM_RETRIES);
             return BaseController.OK_STRING;

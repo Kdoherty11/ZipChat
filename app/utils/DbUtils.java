@@ -9,9 +9,6 @@ import java.util.Optional;
 
 import static play.libs.Json.toJson;
 
-/**
- * Created by kevindoherty on 2/24/15.
- */
 public class DbUtils {
 
     private DbUtils() { }

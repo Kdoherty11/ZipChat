@@ -1,7 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import models.RoomSocket;
+import models.sockets.RoomSocket;
 import models.entities.AbstractRoom;
 import models.entities.Message;
 import models.entities.PublicRoom;
@@ -50,17 +50,6 @@ public class RoomsController extends BaseController {
         }
     }
 
-  //  @Transactional
- //   public static Result getMessages(long roomId, int limit, int offset) {
-//        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
-//
-//        if (roomOptional.isPresent()) {
-//            return okJson(roomOptional.get().messages);
-//        } else {
-//            return badRequestJson(DbUtils.buildEntityNotFoundError(AbstractRoom.class.getSimpleName(), roomId));
-//        }
- //   }
-
     @Transactional
     public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId) {
 
@@ -76,9 +65,5 @@ public class RoomsController extends BaseController {
                 }
             }
         };
-    }
-
-    public static Result favorite(long messageId) {
-        return play.mvc.Results.TODO;
     }
 }
