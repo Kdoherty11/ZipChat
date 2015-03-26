@@ -5,6 +5,9 @@ import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import utils.DbUtils;
+import validators.DataValidator;
+import validators.FieldValidator;
+import validators.Validators;
 
 import java.util.Optional;
 
@@ -15,14 +18,14 @@ public class MessagesController extends BaseController {
 
     @Transactional
     public static Result getMessages(long roomId, int limit, int offset) {
-        if (roomId < 1) {
-            return badRequestJson("roomId must be positive");
-        }
-        if (limit < 0) {
-            return badRequestJson("offset must be at least 0");
-        }
-        if (offset < 0) {
-            return badRequestJson("offset must be at least 0");
+
+        DataValidator validator = new DataValidator(
+                new FieldValidator("roomId", roomId, Validators.min(1)),
+                new FieldValidator("limit", limit, Validators.min(0)),
+                new FieldValidator("offset", offset, Validators.min(0)));
+
+        if (validator.hasErrors()) {
+            return badRequestJson(validator.errorsAsJson());
         }
 
         return okJson(Message.getMessages(roomId, limit, offset));
