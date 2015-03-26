@@ -27,6 +27,7 @@ public class DataValidator {
     }
 
     private void validate() {
+        // TODO: don't overwrite keys
         Arrays.asList(validators).forEach(validator -> errors.putAll(validator.getErrors()));
         validated = true;
     }

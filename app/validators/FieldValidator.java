@@ -19,9 +19,8 @@ public class FieldValidator {
         Map<String, List<String>> errors = new HashMap<>();
 
         Arrays.asList(validators).forEach(validator -> {
-            Class<?> supportedClass = validator.getSupportedClass();
 
-            if (supportedClass.isInstance(value) && !validator.isValid(value)) {
+            if (validator.isSupported(value) && !validator.isValid(value)) {
                 List<String> validationErrors = errors.get(fieldName);
 
                 if (validationErrors == null) {
