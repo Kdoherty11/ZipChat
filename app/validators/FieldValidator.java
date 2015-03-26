@@ -20,7 +20,7 @@ public class FieldValidator {
 
         Arrays.asList(validators).forEach(validator -> {
 
-            if (validator.isSupported(value) && !validator.isValid(value)) {
+            if (validator.accepts(value) && !validator.isValid(value)) {
                 List<String> validationErrors = errors.get(fieldName);
 
                 if (validationErrors == null) {

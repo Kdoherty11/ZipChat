@@ -9,7 +9,7 @@ class MinValidator implements Validator<Number> {
     }
 
     @Override
-    public boolean isSupported(Object obj) {
+    public boolean accepts(Object obj) {
         return Number.class.isInstance(obj);
     }
 
