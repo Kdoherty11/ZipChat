@@ -1,11 +1,10 @@
 package validators;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static play.libs.Json.toJson;
 
@@ -13,7 +12,7 @@ public class DataValidator {
 
     private FieldValidator[] validators;
     private boolean validated = false;
-    private Map<String, List<String>> errors = new HashMap<>();
+    private Multimap<String, String> errors = HashMultimap.create();
 
     public DataValidator(FieldValidator... validators) {
         this.validators = validators;
@@ -27,7 +26,6 @@ public class DataValidator {
     }
 
     private void validate() {
-        // TODO: don't overwrite keys
         Arrays.asList(validators).forEach(validator -> errors.putAll(validator.getErrors()));
         validated = true;
     }
@@ -36,6 +34,6 @@ public class DataValidator {
         if (!validated) {
             throw new IllegalStateException("hasErrors must be called before getting the errors");
         }
-        return toJson(errors);
+        return toJson(errors.asMap());
     }
 }

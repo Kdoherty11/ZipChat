@@ -1,6 +1,9 @@
 package validators;
 
-import java.util.*;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
+import java.util.Arrays;
 
 public class FieldValidator {
 
@@ -15,22 +18,12 @@ public class FieldValidator {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, List<String>> getErrors() {
-        Map<String, List<String>> errors = new HashMap<>();
+    public Multimap<String, String> getErrors() {
+        Multimap<String, String> errors = HashMultimap.create();
 
-        Arrays.asList(validators).forEach(validator -> {
-
-            if (validator.accepts(value) && !validator.isValid(value)) {
-                List<String> validationErrors = errors.get(fieldName);
-
-                if (validationErrors == null) {
-                    validationErrors = new ArrayList<>();
-                    errors.put(fieldName, validationErrors);
-                }
-
-                validationErrors.add(validator.getErrorMessage());
-            }
-        });
+        Arrays.asList(validators).stream()
+                .filter(validator -> validator.accepts(value) && !validator.isValid(value))
+                .forEach(validator -> errors.put(fieldName, validator.getErrorMessage()));
 
         return errors;
     }
