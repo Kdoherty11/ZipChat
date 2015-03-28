@@ -1,6 +1,8 @@
-package validators;
+package validation.validators;
 
-class MinValidator implements Validator<Number> {
+import validation.Validator;
+
+public class MinValidator implements Validator<Number> {
 
     private long min;
 

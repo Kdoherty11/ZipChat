@@ -1,4 +1,4 @@
-package validators;
+package validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.HashMultimap;

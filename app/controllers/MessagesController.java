@@ -5,9 +5,9 @@ import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import utils.DbUtils;
-import validators.DataValidator;
-import validators.FieldValidator;
-import validators.Validators;
+import validation.DataValidator;
+import validation.FieldValidator;
+import validation.Validators;
 
 import java.util.Optional;
 

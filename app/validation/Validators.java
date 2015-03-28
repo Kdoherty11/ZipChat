@@ -1,4 +1,6 @@
-package validators;
+package validation;
+
+import validation.validators.MinValidator;
 
 /**
  * Factory methods for Validators
