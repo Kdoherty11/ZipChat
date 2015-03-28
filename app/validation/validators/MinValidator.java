@@ -22,6 +22,6 @@ public class MinValidator implements Validator<Number> {
 
     @Override
     public String getErrorMessage() {
-        return "must be at least " + min;
+        return "This field's value must be at least " + min;
     }
 }

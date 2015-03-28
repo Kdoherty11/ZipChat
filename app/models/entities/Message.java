@@ -21,6 +21,8 @@ import java.util.Optional;
 @Table(name = "messages")
 public class Message {
 
+    public static final String ENTITY_NAME = "Message";
+
     @Id
     @GenericGenerator(name = "messages_gen", strategy = "sequence", parameters = {
             @org.hibernate.annotations.Parameter(name = "sequenceName", value = "messages_gen"),
@@ -71,7 +73,6 @@ public class Message {
     }
 
     private void setUserById(long userId) {
-        Logger.debug("" + userId);
         Optional<User> userOptional = DbUtils.findEntityById(User.class, Preconditions.checkNotNull(userId));
         if (userOptional.isPresent()) {
             this.sender = userOptional.get();

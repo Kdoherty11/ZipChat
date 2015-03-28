@@ -1,15 +1,18 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import models.sockets.RoomSocket;
 import models.entities.AbstractRoom;
 import models.entities.Message;
 import models.entities.PublicRoom;
+import models.sockets.RoomSocket;
 import play.Logger;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 import utils.DbUtils;
+import validation.DataValidator;
+import validation.FieldValidator;
+import validation.Validators;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,23 +28,19 @@ public class RoomsController extends BaseController {
         String senderIdKey = "sender";
         String messageKey = "message";
 
-        if (!data.containsKey(senderIdKey)) {
-            return badRequestJson(senderIdKey + " is required");
-        }
+        DataValidator validator = new DataValidator(
+                new FieldValidator(senderIdKey, data.get(senderIdKey), Validators.required(), Validators.positive()),
+                new FieldValidator(messageKey, data.get(messageKey), Validators.required())
+        );
 
-        if (!data.containsKey(messageKey)) {
-            return badRequestJson(messageKey + " is required");
-        }
-
-        long userId = checkId(data.get(senderIdKey));
-        if (userId == INVALID_ID) {
-            return badRequestJson(senderIdKey + " must be a positive long");
+        if (validator.hasErrors()) {
+            return badRequest(validator.errorsAsJson());
         }
 
         Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
         if (roomOptional.isPresent()) {
 
-            Message message = new Message(roomOptional.get(), userId, data.get(messageKey));
+            Message message = new Message(roomOptional.get(), Long.valueOf(data.get(senderIdKey)), data.get(messageKey));
             message.addToRoom();
 
             return okJson(message);

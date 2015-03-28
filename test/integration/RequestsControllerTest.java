@@ -231,7 +231,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
 
         Result noStatusResult = adapter.handleResponse(createdRequestId, null);
         assertThat(status(noStatusResult)).isEqualTo(BAD_REQUEST);
-        assertThat(contentAsString(noStatusResult)).isEqualTo(TestUtils.withQuotes("status is required"));
+        assertThat(contentAsString(noStatusResult)).contains("This field is required");
     }
 
     @Test
@@ -240,7 +240,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
 
         Result noStatusResult = adapter.handleResponse(createdRequestId, Request.Status.pending.toString());
         assertThat(status(noStatusResult)).isEqualTo(BAD_REQUEST);
-        assertThat(contentAsString(noStatusResult)).isEqualTo(TestUtils.withQuotes("Can't respond to a request with pending"));
+        assertThat(contentAsString(noStatusResult)).contains("Invalid value");
     }
 
     @Test
@@ -249,7 +249,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
 
         Result noStatusResult = adapter.handleResponse(createdRequestId, "mayonnaise");
         assertThat(status(noStatusResult)).isEqualTo(BAD_REQUEST);
-        assertThat(contentAsString(noStatusResult)).isEqualTo(TestUtils.withQuotes("mayonnaise is not a valid response"));
+        assertThat(contentAsString(noStatusResult)).contains("Invalid value");
     }
 
     @Test

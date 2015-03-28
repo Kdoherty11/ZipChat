@@ -22,7 +22,7 @@ public class FieldValidator {
         Multimap<String, String> errors = HashMultimap.create();
 
         Arrays.asList(validators).stream()
-                .filter(validator -> validator.accepts(value) && !validator.isValid(value))
+                .filter(validator -> !validator.accepts(value) || !validator.isValid(value))
                 .forEach(validator -> errors.put(fieldName, validator.getErrorMessage()));
 
         return errors;

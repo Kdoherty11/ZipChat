@@ -57,19 +57,7 @@ public class PrivateRoom extends AbstractRoom {
         return query.getResultList();
     }
 
-    public static String removeUser(long roomId, long userId) {
-        Optional<PrivateRoom> roomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
-
-        if (roomOptional.isPresent()) {
-            PrivateRoom room = roomOptional.get();
-
-            return room.removeUser(userId);
-        } else {
-            return DbUtils.buildEntityNotFoundString(PrivateRoom.ENTITY_NAME, roomId);
-        }
-    }
-
-    public String removeUser(long userId) {
+    public void removeUser(long userId) {
         if (userId == User.getId(sender)) {
             if (!receiverInRoom) {
                 JPA.em().remove(this);
@@ -82,16 +70,10 @@ public class PrivateRoom extends AbstractRoom {
             } else {
                 receiverInRoom = false;
             }
-        } else {
-            String error = "User with id: " + userId + " is trying to leave " + this + " but is not in it.";
-            Logger.error(error);
-            return error;
         }
 
         // Both users can request each other again
         JPA.em().remove(request);
-
-        return BaseController.OK_STRING;
     }
 
     @Override

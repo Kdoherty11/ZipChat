@@ -1,9 +1,13 @@
 package controllers;
 
 import models.entities.PrivateRoom;
+import models.entities.User;
 import play.Logger;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
+import utils.DbUtils;
+
+import java.util.Optional;
 
 public class PrivateRoomsController extends BaseController {
 
@@ -35,11 +39,20 @@ public class PrivateRoomsController extends BaseController {
 
     @Transactional
     public static Result leaveRoom(long roomId, long userId) {
-        String result = PrivateRoom.removeUser(roomId, userId);
-        if (OK_STRING.equals(result)) {
-            return OK_RESULT;
+        Optional<PrivateRoom> roomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
+
+        if (roomOptional.isPresent()) {
+            PrivateRoom room = roomOptional.get();
+
+            if (userId == User.getId(room.sender) || userId == User.getId(room.receiver)) {
+                room.removeUser(userId);
+                return OK_RESULT;
+            } else {
+                return badRequestJson("Unable to remove user with ID" + userId + " from the room because they are not in it");
+            }
+
         } else {
-            return badRequestJson(result);
+            return DbUtils.getNotFoundResult(PrivateRoom.ENTITY_NAME, roomId);
         }
     }
 }

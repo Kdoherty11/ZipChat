@@ -114,6 +114,9 @@ public class Request {
     }
 
     public void handleResponse(Status status) {
+        this.status = status;
+        this.respondedTimeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+
         NotificationUtils.sendChatResponse(receiver, sender, status);
 
         if (status == Status.accepted) {

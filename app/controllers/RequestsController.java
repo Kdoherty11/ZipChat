@@ -5,9 +5,10 @@ import play.db.jpa.Transactional;
 import play.mvc.Result;
 import utils.DbUtils;
 import utils.NotificationUtils;
+import validation.DataValidator;
+import validation.FieldValidator;
+import validation.Validators;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,32 +33,25 @@ public class RequestsController extends BaseController {
         String responseKey = "status";
 
         Map<String, String> formData = form().bindFromRequest(responseKey).data();
-        if (formData.containsKey(responseKey)) {
-            Request.Status response;
-            try {
-                response = Request.Status.valueOf(formData.get(responseKey));
-            } catch (IllegalArgumentException e) {
-                return badRequestJson(formData.get(responseKey) + " is not a valid response");
-            }
 
-            if (Request.Status.pending == response) {
-                return badRequestJson("Can't respond to a request with pending");
-            }
+        DataValidator validator = new DataValidator(
+                new FieldValidator(responseKey, formData.get(responseKey), Validators.required(),
+                        Validators.whiteList(Request.Status.accepted.name(), Request.Status.denied.name()))
+        );
 
-            Optional<Request> requestOptional = DbUtils.findEntityById(Request.class, requestId);
-            if (requestOptional.isPresent()) {
-                Request request = requestOptional.get();
-                request.status = response;
-                request.respondedTimeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        if (validator.hasErrors()) {
+            return badRequest(validator.errorsAsJson());
+        }
 
-                request.handleResponse(response);
+        Optional<Request> requestOptional = DbUtils.findEntityById(Request.class, requestId);
+        if (requestOptional.isPresent()) {
 
-                return OK_RESULT;
-            } else {
-                return DbUtils.getNotFoundResult("Request", requestId);
-            }
+            Request request = requestOptional.get();
+            request.handleResponse(Request.Status.valueOf(formData.get(responseKey)));
+
+            return OK_RESULT;
         } else {
-            return badRequestJson(responseKey + " is required");
+            return DbUtils.getNotFoundResult(Request.ENTITY_NAME, requestId);
         }
     }
 

@@ -1,10 +1,14 @@
 package controllers;
 
+import models.entities.AbstractRoom;
 import models.entities.PublicRoom;
 import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import utils.DbUtils;
+import validation.DataValidator;
+import validation.FieldValidator;
+import validation.Validators;
 
 import java.util.Map;
 import java.util.Optional;
@@ -48,17 +52,18 @@ public class PublicRoomsController extends BaseController {
         Map<String, String> data = form().bindFromRequest().data();
 
         String userIdKey = "userId";
-        if (!data.containsKey(userIdKey)) {
-            return badRequestJson(userIdKey + " is required");
-        }
 
-        long userId = checkId(data.get(userIdKey));
-        if (userId == INVALID_ID) {
-            return badRequestJson(userIdKey + " must be a positive long");
+        DataValidator validator = new DataValidator(
+                new FieldValidator(userIdKey, data.get(userIdKey), Validators.required(), Validators.positive()));
+
+        if (validator.hasErrors()) {
+            return badRequest(validator.errorsAsJson());
         }
 
         Optional<PublicRoom> roomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
         if (roomOptional.isPresent()) {
+
+            long userId = Long.valueOf(data.get(userIdKey));
 
             Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
             if (userOptional.isPresent()) {
@@ -75,7 +80,6 @@ public class PublicRoomsController extends BaseController {
     @Transactional
     public static Result getSubscriptions(long roomId) {
         Optional<PublicRoom> roomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
-
         if (roomOptional.isPresent()) {
             return okJson(roomOptional.get().subscribers);
         } else {
@@ -90,7 +94,7 @@ public class PublicRoomsController extends BaseController {
             roomOptional.get().removeSubscription(userId);
             return OK_RESULT;
         } else {
-            return DbUtils.getNotFoundResult("Abstract Room", roomId);
+            return DbUtils.getNotFoundResult(AbstractRoom.ENTITY_NAME, roomId);
         }
     }
 
