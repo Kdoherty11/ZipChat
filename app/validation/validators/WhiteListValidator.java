@@ -2,13 +2,13 @@ package validation.validators;
 
 import validation.Validator;
 
-import java.util.Collection;
+import java.util.Set;
 
 public class WhiteListValidator implements Validator<String> {
 
-    private Collection<String> whiteList;
+    private Set<String> whiteList;
 
-    public WhiteListValidator(Collection<String> whiteList) {
+    public WhiteListValidator(Set<String> whiteList) {
         this.whiteList = whiteList;
     }
 

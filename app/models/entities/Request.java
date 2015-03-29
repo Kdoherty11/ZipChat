@@ -19,7 +19,7 @@ import java.util.*;
 @Table(name = "requests")
 public class Request {
 
-    public static enum Status {
+    public enum Status {
         accepted,
         denied,
         pending

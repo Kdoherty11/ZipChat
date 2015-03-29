@@ -105,4 +105,15 @@ public enum RequestsControllerAdapter {
     public Result getStatus(long senderId, long receiverId) {
         return callAction(routes.ref.RequestsController.getStatus(senderId, receiverId), fakeRequest());
     }
+
+    public Request makeRequest() throws JSONException {
+        UsersControllerAdapter userAdapter = UsersControllerAdapter.INSTANCE;
+        Request request = new Request();
+        request.id = getCreateRequestId();
+        request.sender = userAdapter.makeUser();
+        request.receiver = userAdapter.makeUser();
+        request.message = MESSAGE;
+
+        return request;
+    }
 }

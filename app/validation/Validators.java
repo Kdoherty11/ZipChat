@@ -5,7 +5,8 @@ import validation.validators.RequiredValidator;
 import validation.validators.WhiteListValidator;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -31,14 +32,14 @@ public class Validators {
     public static Validator<String> whiteList(Class<? extends Enum> enumClass) {
         return whiteList(Arrays.asList(enumClass.getEnumConstants()).stream()
                 .map(Enum::name)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toSet()));
     }
 
     public static Validator<String> whiteList(String... whiteList) {
-        return new WhiteListValidator(Arrays.asList(whiteList));
+        return new WhiteListValidator(new HashSet<>(Arrays.asList(whiteList)));
     }
 
-    public static Validator<String> whiteList(Collection<String> whiteList) {
+    public static Validator<String> whiteList(Set<String> whiteList) {
         return new WhiteListValidator(whiteList);
     }
 

@@ -1,17 +1,22 @@
 package adapters;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import controllers.routes;
+import models.Platform;
+import models.entities.User;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
+import play.Logger;
 import play.mvc.Result;
 import play.test.FakeRequest;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import static play.libs.Json.fromJson;
+import static play.libs.Json.toJson;
 import static play.test.Helpers.callAction;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.fakeRequest;
@@ -89,5 +94,15 @@ public enum UsersControllerAdapter {
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
         return callAction(routes.ref.UsersController.sendNotification(userId), request);
+    }
+
+    public User makeUser() throws JSONException {
+        User user = new User();
+        user.userId = getCreateUserId();
+        user.facebookId = FB_ID;
+        user.platform = Platform.valueOf(PLATFORM);
+        user.registrationId = REG_ID;
+
+        return user;
     }
 }
