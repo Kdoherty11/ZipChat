@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import play.Logger;
+import play.db.jpa.JPA;
 import play.mvc.Result;
 import play.test.FakeRequest;
 

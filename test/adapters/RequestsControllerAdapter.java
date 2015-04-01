@@ -3,16 +3,19 @@ package adapters;
 
 import controllers.routes;
 import models.entities.Request;
-import org.jetbrains.annotations.NotNull;
+import models.entities.User;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
+import play.db.jpa.JPA;
 import play.mvc.Result;
 import play.test.FakeRequest;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-import static play.test.Helpers.callAction;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.fakeRequest;
 
@@ -75,7 +78,7 @@ public enum RequestsControllerAdapter {
 
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
-        return callAction(routes.ref.RequestsController.createRequest(), request);
+        return play.test.Helpers.callAction(routes.ref.RequestsController.createRequest(), request);
     }
 
     public long getCreateRequestId() throws JSONException {
@@ -89,7 +92,7 @@ public enum RequestsControllerAdapter {
     }
 
     public Result getRequestsByReceiver(long receiverId) {
-        return callAction(routes.ref.RequestsController.getRequestsByReceiver(receiverId), fakeRequest());
+        return play.test.Helpers.callAction(routes.ref.RequestsController.getRequestsByReceiver(receiverId), fakeRequest());
     }
 
     public Result handleResponse(long requestId, String response) {
@@ -99,20 +102,30 @@ public enum RequestsControllerAdapter {
             formData.put(STATUS_KEY, response);
             request.withFormUrlEncodedBody(formData);
         });
-        return callAction(routes.ref.RequestsController.handleResponse(requestId), request);
+        return play.test.Helpers.callAction(routes.ref.RequestsController.handleResponse(requestId), request);
     }
 
     public Result getStatus(long senderId, long receiverId) {
-        return callAction(routes.ref.RequestsController.getStatus(senderId, receiverId), fakeRequest());
+        return play.test.Helpers.callAction(routes.ref.RequestsController.getStatus(senderId, receiverId), fakeRequest());
     }
 
-    public Request makeRequest() throws JSONException {
+    public Request makeRequest(User sender, User receiver) throws JSONException {
         UsersControllerAdapter userAdapter = UsersControllerAdapter.INSTANCE;
         Request request = new Request();
         request.id = getCreateRequestId();
-        request.sender = userAdapter.makeUser();
-        request.receiver = userAdapter.makeUser();
         request.message = MESSAGE;
+
+        if (sender == null) {
+            request.sender = userAdapter.makeUser();
+        } else {
+            request.sender = sender;
+        }
+
+        if (receiver == null) {
+            request.receiver = userAdapter.makeUser();
+        } else {
+            request.receiver = receiver;
+        }
 
         return request;
     }

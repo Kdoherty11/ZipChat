@@ -48,7 +48,7 @@ public class PrivateRoomsController extends BaseController {
                 room.removeUser(userId);
                 return OK_RESULT;
             } else {
-                return badRequestJson("Unable to remove user with ID" + userId + " from the room because they are not in it");
+                return badRequestJson("Unable to remove user with ID " + userId + " from the room because they are not in it");
             }
 
         } else {
