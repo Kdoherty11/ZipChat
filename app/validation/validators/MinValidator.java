@@ -12,12 +12,12 @@ public class MinValidator implements Validator<Number> {
 
     @Override
     public boolean accepts(Object obj) {
-        return Number.class.isInstance(obj);
+        return obj instanceof Number;
     }
 
     @Override
     public boolean isValid(Number object) {
-        return object == null || object.longValue() >= min;
+        return object.longValue() >= min;
     }
 
     @Override

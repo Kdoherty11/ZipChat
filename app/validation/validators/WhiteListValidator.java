@@ -14,7 +14,7 @@ public class WhiteListValidator implements Validator<String> {
 
     @Override
     public boolean accepts(Object obj) {
-        return String.class.isInstance(obj);
+        return obj instanceof String;
     }
 
     @Override

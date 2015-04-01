@@ -1,7 +1,12 @@
 package adapters;
 
+import controllers.routes;
 import models.entities.PrivateRoom;
 import org.json.JSONException;
+import play.mvc.Result;
+
+import static play.test.Helpers.callAction;
+import static play.test.Helpers.fakeRequest;
 
 public enum PrivateRoomsControllerAdapter {
 
@@ -18,7 +23,11 @@ public enum PrivateRoomsControllerAdapter {
         return new PrivateRoom(RequestsControllerAdapter.INSTANCE.makeRequest());
     }
 
+    public Result getRoomsByUserId(long userId) {
+        return callAction(routes.ref.PrivateRoomsController.getRoomsByUserId(userId), fakeRequest());
+    }
 
-
-
+    public Result leaveRoom(long roomId, long userId) {
+        return callAction(routes.ref.PrivateRoomsController.leaveRoom(roomId, userId), fakeRequest());
+    }
 }
