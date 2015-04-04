@@ -6,8 +6,6 @@ import validation.validators.WhiteListValidator;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Factory methods for Validators
@@ -29,18 +27,9 @@ public class Validators {
         return new RequiredValidator();
     }
 
-    public static Validator<String> whiteList(Class<? extends Enum> enumClass) {
-        return whiteList(Arrays.asList(enumClass.getEnumConstants()).stream()
-                .map(Enum::name)
-                .collect(Collectors.toSet()));
-    }
-
-    public static Validator<String> whiteList(String... whiteList) {
+    @SafeVarargs
+    public static <T> WhiteListValidator whiteList(T... whiteList) {
         return new WhiteListValidator(new HashSet<>(Arrays.asList(whiteList)));
-    }
-
-    public static Validator<String> whiteList(Set<String> whiteList) {
-        return new WhiteListValidator(whiteList);
     }
 
 }

@@ -1,5 +1,6 @@
 package controllers;
 
+import com.google.common.primitives.Longs;
 import models.entities.AbstractRoom;
 import models.entities.PublicRoom;
 import models.entities.User;
@@ -53,8 +54,14 @@ public class PublicRoomsController extends BaseController {
 
         String userIdKey = "userId";
 
+        Long userId = Longs.tryParse(data.get(userIdKey));
+
+        if (userId == null) {
+            return FieldValidator.typeError(userIdKey, Long.class);
+        }
+
         DataValidator validator = new DataValidator(
-                new FieldValidator(userIdKey, data.get(userIdKey), Validators.required(), Validators.positive()));
+                new FieldValidator<>(userIdKey, userId, Validators.required(), Validators.positive()));
 
         if (validator.hasErrors()) {
             return badRequest(validator.errorsAsJson());
@@ -62,8 +69,6 @@ public class PublicRoomsController extends BaseController {
 
         Optional<PublicRoom> roomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
         if (roomOptional.isPresent()) {
-
-            long userId = Long.valueOf(data.get(userIdKey));
 
             Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
             if (userOptional.isPresent()) {

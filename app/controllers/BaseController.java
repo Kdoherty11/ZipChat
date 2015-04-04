@@ -162,11 +162,11 @@ public class BaseController extends Controller {
         }
     }
 
-    protected static Result okJson(Object obj) {
+    public static Result okJson(Object obj) {
         return ok(toJson(obj));
     }
 
-    protected static Result badRequestJson(Object obj) {
+    public static Result badRequestJson(Object obj) {
         return badRequest(toJson(obj));
     }
 

@@ -1,17 +1,21 @@
 package validation;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
+import controllers.BaseController;
+import play.mvc.Result;
 
-import java.util.Arrays;
+import java.util.Optional;
 
-public class FieldValidator {
+public class FieldValidator<T> {
 
     private String fieldName;
-    private Validator[] validators;
-    private Object value;
+    private Validator<? super T>[] validators;
+    private T value;
 
-    public FieldValidator(String fieldName, Object value, Validator... validators) {
+    @SafeVarargs
+    public FieldValidator(String fieldName, T value, Validator<? super T>... validators) {
         this.fieldName = fieldName;
         this.validators = validators;
         this.value = value;
@@ -21,10 +25,16 @@ public class FieldValidator {
     public Multimap<String, String> getErrors() {
         Multimap<String, String> errors = HashMultimap.create();
 
-        Arrays.asList(validators).stream()
-                .filter(validator -> !validator.accepts(value) || !validator.isValid(value))
-                .forEach(validator -> errors.put(fieldName, validator.getErrorMessage()));
+        for (Validator v : validators) {
+            if (!v.isValid(Optional.ofNullable(value))) {
+                errors.put(fieldName, v.getErrorMessage());
+            }
+        }
 
         return errors;
+    }
+
+    public static Result typeError(String fieldName, Class<?> expectedType) {
+        return BaseController.badRequestJson(ImmutableMap.of(fieldName, "Expected type " + expectedType.getSimpleName()));
     }
 }

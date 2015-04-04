@@ -2,16 +2,18 @@ package validation.validators;
 
 import validation.Validator;
 
+import java.util.Optional;
+
 public class RequiredValidator implements Validator<Object> {
 
     @Override
-    public boolean accepts(Object obj) {
-        return true;
+    public Class getAcceptedClass() {
+        return Object.class;
     }
 
     @Override
-    public boolean isValid(Object value) {
-        return value != null;
+    public boolean isValid(Optional<Object> valueOptional) {
+        return valueOptional.isPresent();
     }
 
     @Override

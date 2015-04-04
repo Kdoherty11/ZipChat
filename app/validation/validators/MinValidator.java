@@ -2,6 +2,8 @@ package validation.validators;
 
 import validation.Validator;
 
+import java.util.Optional;
+
 public class MinValidator implements Validator<Number> {
 
     private long min;
@@ -11,13 +13,13 @@ public class MinValidator implements Validator<Number> {
     }
 
     @Override
-    public boolean accepts(Object obj) {
-        return obj instanceof Number;
+    public Class getAcceptedClass() {
+        return Number.class;
     }
 
     @Override
-    public boolean isValid(Number object) {
-        return object.longValue() >= min;
+    public boolean isValid(Optional<Number> numOptional) {
+        return !numOptional.isPresent() || numOptional.get().longValue() >= min;
     }
 
     @Override

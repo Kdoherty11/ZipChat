@@ -1,8 +1,10 @@
 package validation;
 
+import java.util.Optional;
+
 public interface Validator<T> {
 
-    boolean accepts(Object obj);
-    boolean isValid(T value);
+    Class getAcceptedClass();
+    boolean isValid(Optional<T> valueOptional);
     String getErrorMessage();
 }

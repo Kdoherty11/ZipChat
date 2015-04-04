@@ -10,11 +10,11 @@ import static play.libs.Json.toJson;
 
 public class DataValidator {
 
-    private FieldValidator[] validators;
+    private FieldValidator<?>[] validators;
     private boolean validated = false;
     private Multimap<String, String> errors = HashMultimap.create();
 
-    public DataValidator(FieldValidator... validators) {
+    public DataValidator(FieldValidator<?>... validators) {
         this.validators = validators;
     }
 

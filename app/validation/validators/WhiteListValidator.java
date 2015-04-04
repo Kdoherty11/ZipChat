@@ -2,24 +2,25 @@ package validation.validators;
 
 import validation.Validator;
 
+import java.util.Optional;
 import java.util.Set;
 
-public class WhiteListValidator implements Validator<String> {
+public class WhiteListValidator implements Validator<Object> {
 
-    private Set<String> whiteList;
+    private Set<Object> whiteList;
 
-    public WhiteListValidator(Set<String> whiteList) {
+    public WhiteListValidator(Set<Object> whiteList) {
         this.whiteList = whiteList;
     }
 
     @Override
-    public boolean accepts(Object obj) {
-        return obj instanceof String;
+    public Class getAcceptedClass() {
+        return Object.class;
     }
 
     @Override
-    public boolean isValid(String value) {
-        return whiteList.contains(value);
+    public boolean isValid(Optional<Object> valueOptional) {
+        return !valueOptional.isPresent() || whiteList.contains(valueOptional.get());
     }
 
     @Override

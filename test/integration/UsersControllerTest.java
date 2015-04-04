@@ -162,6 +162,7 @@ public class UsersControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @Ignore
     public void sendIosNotification() throws JSONException {
         String iosRegId = "a1559c63af6a6da908667946561be8795fae109e49ac7ec2e8b27e629b004aa4";
         testSendNotificationByRegId(iosRegId, Platform.ios.toString(), OK);

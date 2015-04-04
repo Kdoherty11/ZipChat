@@ -35,7 +35,7 @@ public class RequestsController extends BaseController {
         Map<String, String> formData = form().bindFromRequest(responseKey).data();
 
         DataValidator validator = new DataValidator(
-                new FieldValidator(responseKey, formData.get(responseKey), Validators.required(),
+                new FieldValidator<>(responseKey, formData.get(responseKey), Validators.required(),
                         Validators.whiteList(Request.Status.accepted.name(), Request.Status.denied.name()))
         );
 

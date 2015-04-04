@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.primitives.Longs;
 import models.entities.AbstractRoom;
 import models.entities.Message;
 import models.entities.PublicRoom;
@@ -28,9 +29,15 @@ public class RoomsController extends BaseController {
         String senderIdKey = "sender";
         String messageKey = "message";
 
+        Long senderId = Longs.tryParse(data.get(senderIdKey));
+
+        if (senderId == null) {
+            return FieldValidator.typeError(senderIdKey, Long.class);
+        }
+
         DataValidator validator = new DataValidator(
-                new FieldValidator(senderIdKey, data.get(senderIdKey), Validators.required(), Validators.positive()),
-                new FieldValidator(messageKey, data.get(messageKey), Validators.required())
+                new FieldValidator<>(senderIdKey, senderId, Validators.required(), Validators.positive()),
+                new FieldValidator<>(messageKey, data.get(messageKey), Validators.required())
         );
 
         if (validator.hasErrors()) {

@@ -20,9 +20,9 @@ public class MessagesController extends BaseController {
     public static Result getMessages(long roomId, int limit, int offset) {
 
         DataValidator validator = new DataValidator(
-                new FieldValidator("roomId", roomId, Validators.min(1)),
-                new FieldValidator("limit", limit, Validators.min(0)),
-                new FieldValidator("offset", offset, Validators.min(0)));
+                new FieldValidator<>("roomId", roomId, Validators.min(1)),
+                new FieldValidator<>("limit", limit, Validators.min(0)),
+                new FieldValidator<>("offset", offset, Validators.min(0)));
 
         if (validator.hasErrors()) {
             return badRequestJson(validator.errorsAsJson());
