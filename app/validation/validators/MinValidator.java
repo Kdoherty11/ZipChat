@@ -13,11 +13,6 @@ public class MinValidator implements Validator<Number> {
     }
 
     @Override
-    public Class getAcceptedClass() {
-        return Number.class;
-    }
-
-    @Override
     public boolean isValid(Optional<Number> numOptional) {
         return !numOptional.isPresent() || numOptional.get().longValue() >= min;
     }

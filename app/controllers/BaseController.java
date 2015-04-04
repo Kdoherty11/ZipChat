@@ -33,8 +33,8 @@ public class BaseController extends Controller {
 
     public static final long INVALID_ID = -1L;
 
-    public static interface Callback<T> {
-        public void success(T createdEntity);
+    public interface Callback<T> {
+        void success(T createdEntity);
     }
 
     protected static <T> Result create(Class<T> clazz) {
