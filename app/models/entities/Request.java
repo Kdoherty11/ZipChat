@@ -19,13 +19,13 @@ import java.util.*;
 @Table(name = "requests")
 public class Request {
 
+    public static final String ENTITY_NAME = "Request";
+
     public enum Status {
         accepted,
         denied,
         pending
     }
-
-    public static final String ENTITY_NAME = "Request";
 
     @Id
     @GenericGenerator(name = "requests_gen", strategy = "sequence", parameters = {
@@ -62,7 +62,8 @@ public class Request {
 
     @SuppressWarnings("unused")
     public String validate() {
-        if (Request.getRequest(User.getId(sender), User.getId(receiver)).isPresent()) {
+        // Prevents duplicate requests between 2 users
+        if (getRequest(User.getId(sender), User.getId(receiver)).isPresent()) {
             return "A request with sender " + User.getId(sender) + " and receiver " + User.getId(receiver) + " already exists";
         }
 
@@ -84,17 +85,11 @@ public class Request {
     }
 
     public static String getStatus(long senderId, long receiverId) {
-        String queryString = "select r.status from Request r where r.sender.id = :senderId and r.receiver.id = :receiverId";
-
-        TypedQuery<Status> query = JPA.em().createQuery(queryString, Status.class)
-                .setParameter("senderId", senderId)
-                .setParameter("receiverId", receiverId);
-
-        List<Status> resultList = query.getResultList();
-        if (resultList.isEmpty()) {
-            return "none";
+        Optional<Request> requestOptional = getRequest(senderId, receiverId);
+        if (requestOptional.isPresent()) {
+            return requestOptional.get().status.name();
         } else {
-            return resultList.get(0).toString();
+            return "none";
         }
     }
 
@@ -151,7 +146,7 @@ public class Request {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("userId", id)
+                .add("id", id)
                 .add("receiverId", receiver.userId)
                 .add("senderId", sender.userId)
                 .add("status", status)

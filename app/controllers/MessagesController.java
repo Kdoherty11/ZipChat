@@ -25,7 +25,7 @@ public class MessagesController extends BaseController {
                 new FieldValidator<>("offset", offset, Validators.min(0)));
 
         if (validator.hasErrors()) {
-            return badRequestJson(validator.errorsAsJson());
+            return badRequest(validator.errorsAsJson());
         }
 
         return okJson(Message.getMessages(roomId, limit, offset));

@@ -32,7 +32,7 @@ public class DataValidator {
 
     public JsonNode errorsAsJson() {
         if (!validated) {
-            throw new IllegalStateException("hasErrors must be called before getting the errors");
+            throw new IllegalStateException("hasErrors() must be checked before calling errorsAsJson()");
         }
         return toJson(errors.asMap());
     }

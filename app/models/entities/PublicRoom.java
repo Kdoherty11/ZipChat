@@ -77,7 +77,7 @@ public class PublicRoom extends AbstractRoom {
         if (userOptional.isPresent()) {
             subscribers.remove(userOptional.get());
         } else {
-            Logger.warn("Could not find a subscription with userId " + userId + " in " + this);
+            Logger.warn("Could not find a subscription with userId " + userId + " in " + this.name);
         }
     }
 

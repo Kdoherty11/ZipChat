@@ -7,6 +7,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 import utils.DbUtils;
 
 import javax.persistence.*;
@@ -15,8 +16,6 @@ import java.util.Optional;
 
 @Entity
 public class PrivateRoom extends AbstractRoom {
-
-    public static final long REMOVED_USER_ID = -1L;
 
     @ManyToOne
     @JoinColumn(name="sender")
@@ -30,7 +29,6 @@ public class PrivateRoom extends AbstractRoom {
     @Constraints.Required
     public User receiver;
 
-    // These field will be set to REMOVED_USER_ID when removed removed.
     public boolean senderInRoom = true;
     public boolean receiverInRoom = true;
 
@@ -42,8 +40,6 @@ public class PrivateRoom extends AbstractRoom {
 
     public PrivateRoom(Request request) {
         this.request = request;
-
-        // Will this be ok if the request is deleted from the db?
         this.sender = request.sender;
         this.receiver = request.receiver;
     }
@@ -58,22 +54,22 @@ public class PrivateRoom extends AbstractRoom {
     }
 
     public void removeUser(long userId) {
-        if (userId == User.getId(sender)) {
-            if (!receiverInRoom) {
-                JPA.em().remove(this);
-            } else {
-                senderInRoom = false;
+            if (userId == User.getId(sender)) {
+                if (!receiverInRoom) {
+                    JPA.em().remove(this);
+                } else {
+                    senderInRoom = false;
+                }
+            } else if (userId == User.getId(receiver)) {
+                if (!senderInRoom) {
+                    JPA.em().remove(this);
+                } else {
+                    receiverInRoom = false;
+                }
             }
-        } else if (userId == User.getId(receiver)) {
-            if (!senderInRoom) {
-                JPA.em().remove(this);
-            } else {
-                receiverInRoom = false;
-            }
-        }
 
-        // Both users can request each other again
-        JPA.em().remove(request);
+            // Allow both users to request each other again
+            JPA.em().remove(request);
     }
 
     @Override

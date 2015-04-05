@@ -21,13 +21,12 @@ public class FieldValidator<T> {
         this.value = value;
     }
 
-    @SuppressWarnings("unchecked")
     public Multimap<String, String> getErrors() {
         Multimap<String, String> errors = HashMultimap.create();
 
-        for (Validator v : validators) {
-            if (!v.isValid(Optional.ofNullable(value))) {
-                errors.put(fieldName, v.getErrorMessage());
+        for (Validator<? super T> validator : validators) {
+            if (!validator.isValid(Optional.ofNullable(value))) {
+                errors.put(fieldName, validator.getErrorMessage());
             }
         }
 

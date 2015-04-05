@@ -56,16 +56,14 @@ public class User {
             Logger.error(error);
             return error;
         }
-
-        Logger.debug("Sending a notification to " + this);
-
+        
         switch (platform) {
             case android:
                 return NotificationUtils.sendAndroidNotification(registrationId, data);
             case ios:
                 return NotificationUtils.sendAppleNotification(registrationId, data);
             default:
-                String error = "Attempted to send a notification to an " + platform + " device";
+                String error = "Failed to send a notification to an " + platform + " device";
                 Logger.error(error);
                 return error;
         }

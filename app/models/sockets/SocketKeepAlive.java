@@ -23,7 +23,7 @@ public class SocketKeepAlive {
 
     public SocketKeepAlive(long roomId, ActorRef chatRoom) {
 
-        // Create a Fake socket out for the robot that log events to the console.
+        // Create a Fake socket out for the keep alive that log events to the console.
         WebSocket.Out<JsonNode> robotChannel = new WebSocket.Out<JsonNode>() {
 
             public void write(JsonNode frame) {
