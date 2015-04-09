@@ -5,16 +5,16 @@ import validation.Validator;
 import java.util.Optional;
 import java.util.Set;
 
-public class WhiteListValidator implements Validator<Object> {
+public class WhiteListValidator<T> implements Validator<T> {
 
-    private Set<Object> whiteList;
+    private Set<T> whiteList;
 
-    public WhiteListValidator(Set<Object> whiteList) {
+    public WhiteListValidator(Set<T> whiteList) {
         this.whiteList = whiteList;
     }
 
     @Override
-    public boolean isValid(Optional<Object> valueOptional) {
+    public boolean isValid(Optional<T> valueOptional) {
         return !valueOptional.isPresent() || whiteList.contains(valueOptional.get());
     }
 

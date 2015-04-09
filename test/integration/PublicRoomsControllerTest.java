@@ -1,69 +1,74 @@
 package integration;
 
+import adapters.RoomsControllerAdapter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import play.mvc.Result;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import static adapters.RoomsControllerAdapter.*;
 import static org.fest.assertions.Assertions.assertThat;
 import static play.mvc.Http.Status.*;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.status;
 
+
 public class PublicRoomsControllerTest extends AbstractControllerTest {
+
+    private static final RoomsControllerAdapter adapter = RoomsControllerAdapter.INSTANCE;
 
     @Test
     public void createRoomSuccess() throws JSONException {
-        Result createResult = createRoom();
+        Result createResult = adapter.createRoom();
         assertThat(status(createResult)).isEqualTo(CREATED);
 
         JSONObject createJson = new JSONObject(contentAsString(createResult));
-        assertThat(createJson.getLong(ID_KEY)).isNotNull();
-        assertThat(createJson.getString(NAME_KEY)).isEqualTo(NAME);
-        assertThat(createJson.getLong(LAT_KEY)).isEqualTo(LAT);
-        assertThat(createJson.getLong(LON_KEY)).isEqualTo(LON);
+        assertThat(createJson.getLong(RoomsControllerAdapter.ID_KEY)).isNotNull();
+        assertThat(createJson.getString(RoomsControllerAdapter.NAME_KEY)).isEqualTo(RoomsControllerAdapter.NAME);
+        assertThat(createJson.getLong(RoomsControllerAdapter.LAT_KEY)).isEqualTo(RoomsControllerAdapter.LAT);
+        assertThat(createJson.getLong(RoomsControllerAdapter.LON_KEY)).isEqualTo(RoomsControllerAdapter.LON);
 
-        Result showResult = showRoom(createJson.getLong(ID_KEY));
+        Result showResult = adapter.showRoom(createJson.getLong(RoomsControllerAdapter.ID_KEY));
         assertThat(status(showResult)).isEqualTo(OK);
 
         JSONObject showJson = new JSONObject(contentAsString(showResult));
-        assertThat(showJson.getLong(ID_KEY)).isNotNull();
+        assertThat(showJson.getLong(RoomsControllerAdapter.ID_KEY)).isNotNull();
     }
 
     @Test
     public void createRoomNoName() {
-        Result noNameResult = createRoom(null, NAME_KEY);
+        Result noNameResult = adapter.createRoom(null, RoomsControllerAdapter.NAME_KEY);
         assertThat(status(noNameResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void createRoomNoLatitude() {
 
-        Result noLatResult = createRoom(null, LAT_KEY);
+        Result noLatResult = adapter.createRoom(null, RoomsControllerAdapter.LAT_KEY);
         assertThat(status(noLatResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void createRoomNoLongitude() {
-        Result noLonResult = createRoom(null, LON_KEY);
+        Result noLonResult = adapter.createRoom(null, RoomsControllerAdapter.LON_KEY);
         assertThat(status(noLonResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void createRoomNoRadius() {
-        Result noRadiusResult = createRoom(null, RADIUS_KEY);
+        Result noRadiusResult = adapter.createRoom(null, RoomsControllerAdapter.RADIUS_KEY);
         assertThat(status(noRadiusResult)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     public void getRoomsSuccess() throws JSONException {
-        createRoom();
+        adapter.createRoom();
 
-        Result allRoomssResult = getRooms();
+        Result allRoomssResult = adapter.getRooms();
         assertThat(status(allRoomssResult)).isEqualTo(OK);
 
         JSONArray allRoomsJson = new JSONArray(contentAsString(allRoomssResult));
@@ -72,28 +77,28 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
 
     @Test
     public void showRoomSuccess() throws JSONException {
-        long createdId = getCreateRoomId();
+        long createdId = adapter.getCreateRoomId();
 
-        Result showResult = showRoom(createdId);
+        Result showResult = adapter.showRoom(createdId);
         assertThat(status(showResult)).isEqualTo(OK);
 
         JSONObject showJsonResult = new JSONObject(contentAsString(showResult));
-        assertThat(showJsonResult.getLong(ID_KEY)).isEqualTo(createdId);
-        assertThat(showJsonResult.getString(NAME_KEY)).isEqualTo(NAME);
-        assertThat(showJsonResult.getLong(LAT_KEY) == LAT);
-        assertThat(showJsonResult.getLong(LON_KEY) == LON);
-        assertThat(showJsonResult.getInt(RADIUS_KEY) == RADIUS);
+        assertThat(showJsonResult.getLong(RoomsControllerAdapter.ID_KEY)).isEqualTo(createdId);
+        assertThat(showJsonResult.getString(RoomsControllerAdapter.NAME_KEY)).isEqualTo(RoomsControllerAdapter.NAME);
+        assertThat(showJsonResult.getLong(RoomsControllerAdapter.LAT_KEY) == RoomsControllerAdapter.LAT);
+        assertThat(showJsonResult.getLong(RoomsControllerAdapter.LON_KEY) == RoomsControllerAdapter.LON);
+        assertThat(showJsonResult.getInt(RoomsControllerAdapter.RADIUS_KEY) == RoomsControllerAdapter.RADIUS);
     }
 
     @Test
     public void showRoomBadId() throws JSONException {
-        Result showBadId = showRoom(1);
+        Result showBadId = adapter.showRoom(1);
         assertThat(status(showBadId)).isEqualTo(NOT_FOUND);
     }
 
     @Test
     public void updateRoomSuccess() throws JSONException {
-        long createdId = getCreateRoomId();
+        long createdId = adapter.getCreateRoomId();
 
         String updateRoomId = "-1";
         String updateName = "NEW NAME";
@@ -103,53 +108,53 @@ public class PublicRoomsControllerTest extends AbstractControllerTest {
         Integer updateScore = 5;
 
         Map<String, String> updateFields = new HashMap<>();
-        updateFields.put(ID_KEY, updateRoomId);
-        updateFields.put(SCORE_KEY, String.valueOf(updateScore));
-        updateFields.put(LAT_KEY, String.valueOf(updateLat));
-        updateFields.put(LON_KEY, String.valueOf(updateLon));
-        updateFields.put(RADIUS_KEY, String.valueOf(updateRadius));
-        updateFields.put(NAME_KEY, updateName);
+        updateFields.put(RoomsControllerAdapter.ID_KEY, updateRoomId);
+        updateFields.put(RoomsControllerAdapter.SCORE_KEY, String.valueOf(updateScore));
+        updateFields.put(RoomsControllerAdapter.LAT_KEY, String.valueOf(updateLat));
+        updateFields.put(RoomsControllerAdapter.LON_KEY, String.valueOf(updateLon));
+        updateFields.put(RoomsControllerAdapter.RADIUS_KEY, String.valueOf(updateRadius));
+        updateFields.put(RoomsControllerAdapter.NAME_KEY, updateName);
 
-        Result updateResult = updateRoom(createdId, updateFields);
+        Result updateResult = adapter.updateRoom(createdId, updateFields);
         assertThat(status(updateResult)).isEqualTo(OK);
 
         JSONObject updateJson = new JSONObject(contentAsString(updateResult));
-        assertThat(updateJson.getLong(ID_KEY)).isEqualTo(createdId);
-        assertThat(updateJson.getInt(SCORE_KEY)).isEqualTo(updateScore);
-        assertThat(updateJson.getLong(LAT_KEY)).isEqualTo(LAT); //check that this was not updated
-        assertThat(updateJson.getLong(LON_KEY)).isEqualTo(LON); //check that this was not updated
-        assertThat(updateJson.getString(NAME_KEY)).isEqualTo(NAME); //check that this was not updated
+        assertThat(updateJson.getLong(RoomsControllerAdapter.ID_KEY)).isEqualTo(createdId);
+        assertThat(updateJson.getInt(RoomsControllerAdapter.SCORE_KEY)).isEqualTo(updateScore);
+        assertThat(updateJson.getLong(RoomsControllerAdapter.LAT_KEY)).isEqualTo(RoomsControllerAdapter.LAT); //check that this was not updated
+        assertThat(updateJson.getLong(RoomsControllerAdapter.LON_KEY)).isEqualTo(RoomsControllerAdapter.LON); //check that this was not updated
+        assertThat(updateJson.getString(RoomsControllerAdapter.NAME_KEY)).isEqualTo(RoomsControllerAdapter.NAME); //check that this was not updated
 
-        Result showResult = showRoom(createdId);
+        Result showResult = adapter.showRoom(createdId);
         assertThat(status(showResult)).isEqualTo(OK);
 
         JSONObject showJson = new JSONObject(contentAsString(showResult));
-        assertThat(showJson.getInt(SCORE_KEY)).isEqualTo(updateScore);
-        assertThat(showJson.getString(NAME_KEY)).isEqualTo(NAME);
-        assertThat(showJson.getLong(LAT_KEY)).isEqualTo(LAT);
-        assertThat(showJson.getLong(LON_KEY)).isEqualTo(LON);
+        assertThat(showJson.getInt(RoomsControllerAdapter.SCORE_KEY)).isEqualTo(updateScore);
+        assertThat(showJson.getString(RoomsControllerAdapter.NAME_KEY)).isEqualTo(RoomsControllerAdapter.NAME);
+        assertThat(showJson.getLong(RoomsControllerAdapter.LAT_KEY)).isEqualTo(RoomsControllerAdapter.LAT);
+        assertThat(showJson.getLong(RoomsControllerAdapter.LON_KEY)).isEqualTo(RoomsControllerAdapter.LON);
     }
 
     @Test
     public void updateRoomBadId() {
-        Result updateBadId = updateRoom(1, Collections.emptyMap());
+        Result updateBadId = adapter.updateRoom(1, Collections.emptyMap());
         assertThat(status(updateBadId)).isEqualTo(NOT_FOUND);
     }
 
     @Test
     public void deleteRoomSuccess() throws JSONException {
-        long createId = getCreateRoomId();
+        long createId = adapter.getCreateRoomId();
 
-        Result deleteResult = deleteRoom(createId);
+        Result deleteResult = adapter.deleteRoom(createId);
         assertThat(status(deleteResult)).isEqualTo(OK);
 
-        Result showResult = showRoom(createId);
+        Result showResult = adapter.showRoom(createId);
         assertThat(status(showResult)).isEqualTo(NOT_FOUND);
     }
 
     @Test
     public void deleteRoomBadId() {
-        Result deleteBadId = deleteRoom(1);
+        Result deleteBadId = adapter.deleteRoom(1);
         assertThat(status(deleteBadId)).isEqualTo(NOT_FOUND);
     }
 }

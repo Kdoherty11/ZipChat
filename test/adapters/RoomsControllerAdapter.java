@@ -35,11 +35,11 @@ public enum RoomsControllerAdapter {
     public static final long LON = 1;
     public static final long RADIUS = 100;
 
-    public static Result createRoom() {
+    public Result createRoom() {
         return createRoom(null);
     }
 
-    public static Result createRoom(@Nullable Map<String, String> otherData, String... removeFields) {
+    public Result createRoom(@Nullable Map<String, String> otherData, String... removeFields) {
         Map<String, String> formData = new HashMap<>();
         formData.put(NAME_KEY, NAME);
         formData.put(LAT_KEY, String.valueOf(LAT));
@@ -57,36 +57,36 @@ public enum RoomsControllerAdapter {
         return callAction(routes.ref.PublicRoomsController.createRoom(), request);
     }
 
-    public static long getCreateRoomId() throws JSONException {
+    public long getCreateRoomId() throws JSONException {
         return getCreateRoomId(null);
     }
 
 
-    public static long getCreateRoomId(@Nullable Map<String, String> otherData, String... removeFields) throws JSONException {
+    public long getCreateRoomId(@Nullable Map<String, String> otherData, String... removeFields) throws JSONException {
         Result createResult = createRoom(otherData, removeFields);
         JSONObject createJson = new JSONObject(contentAsString(createResult));
         return createJson.getLong(ID_KEY);
     }
 
-    public static Result getRooms() {
+    public Result getRooms() {
         return callAction(routes.ref.PublicRoomsController.getRooms(), fakeRequest());
     }
 
-    public static Result showRoom(long roomId) {
+    public Result showRoom(long roomId) {
         return callAction(routes.ref.PublicRoomsController.showRoom(roomId), fakeRequest());
     }
 
-    public static Result updateRoom(long roomId, Map<String, String> formData) {
+    public Result updateRoom(long roomId, Map<String, String> formData) {
         FakeRequest request = fakeRequest();
         request.withFormUrlEncodedBody(formData);
         return callAction(routes.ref.PublicRoomsController.updateRoom(roomId), request);
     }
 
-    public static Result deleteRoom(long roomId) {
+    public Result deleteRoom(long roomId) {
         return callAction(routes.ref.PublicRoomsController.deleteRoom(roomId), fakeRequest());
     }
 
-    public static Result createSubscription(long roomId, long userId) {
+    public Result createSubscription(long roomId, long userId) {
 
         Map<String, String> formData = new HashMap<>();
         formData.put(UsersControllerAdapter.ID_KEY, String.valueOf(userId));
@@ -96,7 +96,7 @@ public enum RoomsControllerAdapter {
         return callAction(routes.ref.PublicRoomsController.createSubscription(roomId), request);
     }
 
-    public static Result getSubscriptions(long roomId) {
+    public Result getSubscriptions(long roomId) {
         return callAction(routes.ref.PublicRoomsController.getSubscriptions(roomId), fakeRequest());
     }
 }

@@ -28,8 +28,8 @@ public class Validators {
     }
 
     @SafeVarargs
-    public static <T> WhiteListValidator whiteList(T... whiteList) {
-        return new WhiteListValidator(new HashSet<>(Arrays.asList(whiteList)));
+    public static <T> Validator<T> whiteList(T... whiteList) {
+        return new WhiteListValidator<T>(new HashSet<>(Arrays.asList(whiteList)));
     }
 
 }

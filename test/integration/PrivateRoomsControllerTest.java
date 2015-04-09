@@ -48,13 +48,12 @@ public class PrivateRoomsControllerTest extends AbstractControllerTest {
 
         adapter.makePrivateRoom(privateRoom -> {
             long senderId = privateRoom.sender.userId;
-            Result senderLeavingResult = adapter.leaveRoom(privateRoom.roomId, senderId);
+//            Result senderLeavingResult = adapter.leaveRoom(privateRoom.roomId, senderId);
 //              assertThat(status(senderLeavingResult)).isEqualTo(OK);
 //              assertThat(contentAsString(senderLeavingResult)).isEqualTo(
 //              TestUtils.withQuotes(BaseController.OK_STRING));
 
         });
-
     }
 
     @Test
