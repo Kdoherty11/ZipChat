@@ -1,7 +1,6 @@
 package controllers;
 
 import models.entities.PrivateRoom;
-import models.entities.User;
 import play.Logger;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
@@ -43,9 +42,9 @@ public class PrivateRoomsController extends BaseController {
 
         if (roomOptional.isPresent()) {
             PrivateRoom room = roomOptional.get();
+            boolean removed = room.removeUser(userId);
 
-            if (userId == User.getId(room.sender) || userId == User.getId(room.receiver)) {
-                room.removeUser(userId);
+            if (removed) {
                 return OK_RESULT;
             } else {
                 return badRequestJson("Unable to remove user with ID " + userId + " from the room because they are not in it");
