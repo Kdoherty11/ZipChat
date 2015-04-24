@@ -23,7 +23,7 @@ public enum RequestsControllerAdapter {
 
     INSTANCE;
 
-    public static final String ID_KEY = "id";
+    public static final String ID_KEY = "requestId";
     public static final String SENDER_KEY = "sender";
     public static final String RECEIVER_KEY = "receiver";
     public static final String MESSAGE_KEY = "message";
@@ -112,7 +112,7 @@ public enum RequestsControllerAdapter {
     public Request makeRequest(User sender, User receiver) throws JSONException {
         UsersControllerAdapter userAdapter = UsersControllerAdapter.INSTANCE;
         Request request = new Request();
-        request.id = getCreateRequestId();
+        request.requestId = getCreateRequestId();
         request.message = MESSAGE;
 
         if (sender == null) {

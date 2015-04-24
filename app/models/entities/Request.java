@@ -33,7 +33,7 @@ public class Request {
             @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
     })
     @GeneratedValue(generator = "requests_gen", strategy=GenerationType.SEQUENCE)
-    public long id;
+    public long requestId;
 
     @ManyToOne
     @NoUpdate
@@ -71,11 +71,11 @@ public class Request {
     }
 
     public static long getId(Request request) {
-        return request == null ? -1 : request.id;
+        return request == null ? -1 : request.requestId;
     }
 
     public static List<Request> getPendingRequestsByReceiver(long receiverId) {
-        String queryString = "select r from Request r where r.receiver.id = :receiverId and r.status = :status";
+        String queryString = "select r from Request r where r.receiver.userId = :receiverId and r.status = :status";
 
         TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
                 .setParameter("receiverId", receiverId)
@@ -94,7 +94,7 @@ public class Request {
     }
 
     public static Optional<Request> getRequest(long senderId, long receiverId) {
-        String queryString = "select r from Request r where r.sender.id = :senderId and r.receiver.id = :receiverId";
+        String queryString = "select r from Request r where r.sender.userId = :senderId and r.receiver.userId = :receiverId";
 
         TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
                 .setParameter("senderId", senderId)
@@ -122,7 +122,7 @@ public class Request {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, User.getId(receiver), User.getId(sender), status, message, timeStamp, respondedTimeStamp);
+        return Objects.hashCode(requestId, User.getId(receiver), User.getId(sender), status, message, timeStamp, respondedTimeStamp);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class Request {
             return false;
         }
         final Request other = (Request) obj;
-        return Objects.equal(this.id, other.id)
+        return Objects.equal(this.requestId, other.requestId)
                 && Objects.equal(User.getId(this.receiver), User.getId(other.receiver))
                 && Objects.equal(User.getId(this.sender), User.getId(other.sender))
                 && Objects.equal(this.status, other.status)
@@ -146,7 +146,7 @@ public class Request {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("id", id)
+                .add("requestId", requestId)
                 .add("receiverId", receiver.userId)
                 .add("senderId", sender.userId)
                 .add("status", status)

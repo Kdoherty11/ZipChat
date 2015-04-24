@@ -29,7 +29,7 @@ public class Message {
             @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
     })
     @GeneratedValue(generator = "messages_gen", strategy=GenerationType.SEQUENCE)
-    public long id;
+    public long messageId;
 
     @Constraints.Required
     public String message;
@@ -115,7 +115,7 @@ public class Message {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, message, AbstractRoom.getId(room), User.getId(sender), timeStamp, score);
+        return Objects.hashCode(messageId, message, AbstractRoom.getId(room), User.getId(sender), timeStamp, score);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class Message {
             return false;
         }
         final Message other = (Message) obj;
-        return Objects.equal(this.id, other.id)
+        return Objects.equal(this.messageId, other.messageId)
                 && Objects.equal(this.message, other.message)
                 && Objects.equal(this.score, other.score)
                 && Objects.equal(AbstractRoom.getId(this.room), AbstractRoom.getId(other.room))
@@ -138,7 +138,7 @@ public class Message {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("id", id)
+                .add("messageId", messageId)
                 .add("message", message)
                 .add("roomId", AbstractRoom.getId(room))
                 .add("userId", User.getId(sender))
