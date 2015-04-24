@@ -1,30 +1,24 @@
 package models.entities;
 
 import com.google.common.base.Objects;
-import controllers.BaseController;
 import models.ForeignEntity;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
-import play.db.jpa.Transactional;
-import utils.DbUtils;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 public class PrivateRoom extends AbstractRoom {
 
     @ManyToOne
-    @JoinColumn(name="sender")
+    @JoinColumn(name = "sender")
     @ForeignEntity
     @Constraints.Required
     public User sender;
 
     @ManyToOne
-    @JoinColumn(name="receiver")
+    @JoinColumn(name = "receiver")
     @ForeignEntity
     @Constraints.Required
     public User receiver;
@@ -32,11 +26,12 @@ public class PrivateRoom extends AbstractRoom {
     public boolean senderInRoom = true;
     public boolean receiverInRoom = true;
 
-    @OneToOne (cascade=CascadeType.ALL)
-    @JoinColumn(name="requestId")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "requestId")
     public Request request;
 
-    public PrivateRoom(){}
+    public PrivateRoom() {
+    }
 
     public PrivateRoom(Request request) {
         this.request = request;
@@ -53,23 +48,26 @@ public class PrivateRoom extends AbstractRoom {
         return query.getResultList();
     }
 
-    public void removeUser(long userId) {
-            if (userId == User.getId(sender)) {
-                if (!receiverInRoom) {
-                    JPA.em().remove(this);
-                } else {
-                    senderInRoom = false;
-                }
-            } else if (userId == User.getId(receiver)) {
-                if (!senderInRoom) {
-                    JPA.em().remove(this);
-                } else {
-                    receiverInRoom = false;
-                }
+    public boolean removeUser(long userId) {
+        if (userId == User.getId(sender)) {
+            if (!receiverInRoom) {
+                JPA.em().remove(this);
+            } else {
+                senderInRoom = false;
             }
+        } else if (userId == User.getId(receiver)) {
+            if (!senderInRoom) {
+                JPA.em().remove(this);
+            } else {
+                receiverInRoom = false;
+            }
+        } else {
+            return false;
+        }
 
-            // Allow both users to request each other again
-            JPA.em().remove(request);
+        // Allow both users to request each other again
+        JPA.em().remove(request);
+        return true;
     }
 
     @Override
