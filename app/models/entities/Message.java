@@ -24,11 +24,6 @@ public class Message {
     public static final String ENTITY_NAME = "Message";
 
     @Id
-    @GenericGenerator(name = "messages_gen", strategy = "sequence", parameters = {
-            @org.hibernate.annotations.Parameter(name = "sequenceName", value = "messages_gen"),
-            @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
-    })
-    @GeneratedValue(generator = "messages_gen", strategy=GenerationType.SEQUENCE)
     public long messageId;
 
     @Constraints.Required

@@ -5,12 +5,14 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import models.NoUpdate;
 import models.Platform;
-import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
 import utils.NotificationUtils;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
@@ -24,11 +26,6 @@ public class User {
     public static final String ENTITY_NAME = "User";
 
     @Id
-    @GenericGenerator(name = "users_gen", strategy = "sequence", parameters = {
-            @org.hibernate.annotations.Parameter(name = "sequenceName", value = "users_gen"),
-            @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
-    })
-    @GeneratedValue(generator = "users_gen", strategy=GenerationType.SEQUENCE)
     public long userId;
 
     @Constraints.Required
