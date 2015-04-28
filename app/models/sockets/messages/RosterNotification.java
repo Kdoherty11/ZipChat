@@ -1,5 +1,7 @@
 package models.sockets.messages;
 
+import com.google.common.base.Objects;
+
 public class RosterNotification {
 
     public static final String TYPE = "rosterNotify";
@@ -35,6 +37,10 @@ public class RosterNotification {
 
     @Override
     public String toString() {
-        return "RosterNotification (" + roomId + ") " + userId + " is " + direction + "ing";
+        return Objects.toStringHelper(this)
+                .add("roomId", roomId)
+                .add("userId", userId)
+                .add("direction", direction)
+                .toString();
     }
 }

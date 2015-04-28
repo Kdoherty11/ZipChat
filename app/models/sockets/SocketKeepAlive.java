@@ -27,7 +27,6 @@ public class SocketKeepAlive {
         WebSocket.Out<JsonNode> robotChannel = new WebSocket.Out<JsonNode>() {
 
             public void write(JsonNode frame) {
-                Logger.debug("heartbeat write");
                 Logger.of("heartbeat").info(Json.stringify(frame));
             }
 

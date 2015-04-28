@@ -15,7 +15,7 @@ import java.util.*;
 
 
 @Entity
-@Table(name = "rooms")
+@Table(name = "public_rooms")
 public class PublicRoom extends AbstractRoom {
 
     public static final String ENTITY_NAME = "Public Room";

@@ -1,5 +1,7 @@
 package models.sockets.messages;
 
+import com.google.common.base.Objects;
+
 public class Quit {
 
     public static final String TYPE = "quit";
@@ -29,7 +31,10 @@ public class Quit {
 
     @Override
     public String toString() {
-        return "Quit (" + roomId + ") " + userId;
+        return Objects.toStringHelper(this)
+                .add("roomId", roomId)
+                .add("userId", userId)
+                .toString();
     }
 
 }

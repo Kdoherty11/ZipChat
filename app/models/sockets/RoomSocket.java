@@ -5,6 +5,8 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.typesafe.plugin.RedisPlugin;
 import models.entities.AbstractRoom;
 import models.entities.Message;
@@ -39,17 +41,16 @@ import static play.libs.Json.toJson;
 public class RoomSocket extends UntypedActor {
 
     private static final String CHANNEL = "messages";
-    // Default room.
-    static ActorRef defaultRoom = Akka.system().actorOf(Props.create(RoomSocket.class));
+
+    static final ActorRef defaultRoom = Akka.system().actorOf(Props.create(RoomSocket.class));
 
     // Key is roomId, value is the users connected to that room
-    Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
+    static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
 
-    // TODO: Could use a cache instead
     // Map of userIds to Users
-    Map<Long, User> users = new HashMap<>();
+    static final Cache<Long, User> users = CacheBuilder.newBuilder().maximumSize(1000).build();
 
-    Map<Long, SocketKeepAlive> clientHeartbeats = new HashMap<>();
+    static final Map<Long, SocketKeepAlive> clientHeartbeats = new HashMap<>();
 
     static {
 
@@ -58,11 +59,9 @@ public class RoomSocket extends UntypedActor {
                 Duration.create(10, TimeUnit.MILLISECONDS),
                 () -> {
                     Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                    Logger.debug("Get resource A");
                     try {
                         j.subscribe(new MessageListener(), CHANNEL);
                     } finally {
-                        Logger.debug("Returning resource A");
                         play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                     }
                 },
@@ -75,23 +74,19 @@ public class RoomSocket extends UntypedActor {
         Logger.debug("User " + userId + " is joining " + roomId);
         // Join the default room. Timeout should be longer than the Redis connect timeout (2 seconds)
         String result = (String) Await.result(ask(defaultRoom, new Join(roomId, userId, out), 3000), Duration.create(3, SECONDS));
-        Logger.debug("Got result in static join");
 
         if ("OK".equals(result)) {
 
             // For each event received on the socket,
             in.onMessage(event -> {
-                Logger.debug("Event:" + event);
                 Talk talk = new Talk(roomId, userId, event.get("message").asText());
 
                 Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                Logger.debug("Get resource B");
                 try {
                     //All messages are pushed through the pub/sub channel
                     j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(talk)));
                 } finally {
                     play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
-                    Logger.debug("Return resource B");
                 }
 
             });
@@ -123,7 +118,6 @@ public class RoomSocket extends UntypedActor {
     public void onReceive(Object message) throws Exception {
 
         Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-        Logger.debug("Get resource C");
 
         try {
             if (message instanceof Join) {
@@ -157,6 +151,7 @@ public class RoomSocket extends UntypedActor {
                         if (room instanceof PublicRoom) {
                             Map<String, String> data = new HashMap<>();
                             // TODO Add room name and other data and try to put it in NotificationUtils
+                            // Also don't send notifications to people in the room
                             ((PublicRoom) room).notifySubscribers(data);
                         }
                     } else {
@@ -170,7 +165,6 @@ public class RoomSocket extends UntypedActor {
             }
         } finally {
             play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
-            Logger.debug("Return resource C");
         }
     }
 
@@ -187,9 +181,10 @@ public class RoomSocket extends UntypedActor {
 
     private void receiveJoin(Jedis j, Join join) {
         long roomId = join.getRoomId();
-        long userId = join.getUsername();
+        long userId = join.getUserId();
         if (j.sismember(String.valueOf(roomId), String.valueOf(userId))) {
             getSender().tell("This userId is already used", getSelf());
+            Logger.error("user: " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
         } else {
             if (!rooms.containsKey(roomId)) {
                 // Creating a new room
@@ -226,7 +221,6 @@ public class RoomSocket extends UntypedActor {
 
         // For the robot
         if (roomMembers.size() == 1) {
-
             Logger.debug("Removing robot from room: " + roomId);
 
             rooms.remove(quit.getRoomId());
@@ -237,7 +231,6 @@ public class RoomSocket extends UntypedActor {
             }
 
         } else {
-
             Logger.debug("There are still members in room " + roomId + "\n" + roomMembers);
 
             //Publish the quit notification to all nodes
@@ -267,19 +260,22 @@ public class RoomSocket extends UntypedActor {
 
             JPA.withTransaction(() -> {
                 JsonNode userJson;
-                if (SocketKeepAlive.USER_ID == userId) {
+                if (userId == SocketKeepAlive.USER_ID) {
                     userJson = toJson("Heartbeat");
-                } else if (users.containsKey(userId)) {
-                    userJson = toJson(users.get(userId));
                 } else {
-                    Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
-                    if (userOptional.isPresent()) {
-                        User user = userOptional.get();
-                        users.put(userId, user);
+                    User user = users.getIfPresent(userId);
+                    if (user != null) {
                         userJson = toJson(user);
                     } else {
-                        Logger.error("Not notifying room because " + DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, userId));
-                        return;
+                        Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
+                        if (userOptional.isPresent()) {
+                            user = userOptional.get();
+                            users.put(userId, user);
+                            userJson = toJson(user);
+                        } else {
+                            Logger.error("Not notifying room because " + DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, userId));
+                            return;
+                        }
                     }
                 }
 

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "abstract_rooms")
 @Inheritance(strategy= InheritanceType.TABLE_PER_CLASS)
 public class AbstractRoom {
 

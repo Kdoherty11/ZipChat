@@ -1,5 +1,7 @@
 package models.sockets.messages;
 
+import com.google.common.base.Objects;
+
 public class Talk {
 
     public static final String TYPE = "talk";
@@ -35,6 +37,10 @@ public class Talk {
 
     @Override
     public String toString() {
-        return "Talk (" + roomId + ") " + userId + " - " + text;
+        return Objects.toStringHelper(this)
+                .add("roomId", roomId)
+                .add("userId", userId)
+                .add("text", text)
+                .toString();
     }
 }

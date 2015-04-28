@@ -1,6 +1,7 @@
 package models.sockets.messages;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Objects;
 import play.mvc.WebSocket;
 
 public class Join {
@@ -8,15 +9,15 @@ public class Join {
     public static final String TYPE = "join";
 
     private final long roomId;
-    private final long username;
+    private final long userId;
     private final WebSocket.Out<JsonNode> channel;
 
     // For JSON serialization
     final String type = TYPE;
 
-    public Join(long roomId, long username, WebSocket.Out<JsonNode> channel) {
+    public Join(long roomId, long userId, WebSocket.Out<JsonNode> channel) {
         this.roomId = roomId;
-        this.username = username;
+        this.userId = userId;
         this.channel = channel;
     }
 
@@ -24,8 +25,8 @@ public class Join {
         return roomId;
     }
 
-    public long getUsername() {
-        return username;
+    public long getUserId() {
+        return userId;
     }
 
     public String getType() {
@@ -38,6 +39,9 @@ public class Join {
 
     @Override
     public String toString() {
-        return "Join (" + roomId + ") from " + username;
+        return Objects.toStringHelper(this)
+                .add("roomId", roomId)
+                .add("userId", userId)
+                .toString();
     }
 }
