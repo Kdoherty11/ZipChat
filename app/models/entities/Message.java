@@ -24,6 +24,7 @@ public class Message {
     public static final String ENTITY_NAME = "Message";
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long messageId;
 
     @Constraints.Required

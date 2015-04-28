@@ -9,10 +9,7 @@ import play.Logger;
 import play.data.validation.Constraints;
 import utils.NotificationUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
@@ -26,6 +23,7 @@ public class User {
     public static final String ENTITY_NAME = "User";
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long userId;
 
     @Constraints.Required

@@ -28,6 +28,7 @@ public class Request {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long requestId;
 
     @ManyToOne
