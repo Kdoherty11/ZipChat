@@ -26,6 +26,7 @@ public class NotificationUtils {
         private static final String NAME = "name";
         private static final String CHAT_REQUEST_RESPONSE = "response";
         private static final String FACEBOOK_ID = "facebookId";
+        private static final String REQUEST_ID = "requestId";
     }
 
     private static class Event {
@@ -115,11 +116,12 @@ public class NotificationUtils {
         }
     }
 
-    public static void sendChatRequest(User sender, User receiver) {
+    public static void sendChatRequest(long requestId, User sender, User receiver) {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.CHAT_REQUEST);
+        data.put(Key.REQUEST_ID, String.valueOf(requestId));
         data.put(Key.NAME, sender.name);
-        data.put(Key.FACEBOOK_ID, String.valueOf(sender.facebookId));
+        data.put(Key.FACEBOOK_ID, sender.facebookId);
         receiver.sendNotification(data);
     }
 
