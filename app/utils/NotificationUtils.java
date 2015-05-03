@@ -7,6 +7,7 @@ import com.notnoop.apns.ApnsService;
 import com.notnoop.apns.PayloadBuilder;
 import com.notnoop.exceptions.NetworkIOException;
 import controllers.BaseController;
+import models.entities.PublicRoom;
 import models.entities.Request;
 import models.entities.User;
 import play.Logger;
@@ -119,7 +120,6 @@ public class NotificationUtils {
         data.put(Key.EVENT, Event.CHAT_REQUEST);
         data.put(Key.NAME, sender.name);
         data.put(Key.FACEBOOK_ID, String.valueOf(sender.facebookId));
-
         receiver.sendNotification(data);
     }
 
@@ -129,5 +129,11 @@ public class NotificationUtils {
         data.put(Key.NAME, sender.name);
         data.put(Key.CHAT_REQUEST_RESPONSE, response.toString());
         receiver.sendNotification(data);
+    }
+
+    public static void sendChatMessage(PublicRoom room) {
+        Map<String, String> data = new HashMap<>();
+        
+        room.notifySubscribers(data);
     }
 }

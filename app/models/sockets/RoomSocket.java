@@ -47,8 +47,8 @@ public class RoomSocket extends UntypedActor {
     // Key is roomId, value is the users connected to that room
     static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
 
-    // Map of userIds to Users
-    static final Cache<Long, User> users = CacheBuilder.newBuilder().maximumSize(1000).build();
+    static final Cache<Long, User> usersCache = CacheBuilder.newBuilder().maximumSize(1000).build();
+    static final Cache<Long, PublicRoom> publicRoomsCache = CacheBuilder.newBuilder().maximumSize(1000).build();
 
     static final Map<Long, SocketKeepAlive> clientHeartbeats = new HashMap<>();
 
@@ -139,32 +139,43 @@ public class RoomSocket extends UntypedActor {
                 // Received a Talk message
                 Talk talk = (Talk) message;
                 Logger.debug("onReceive: " + talk);
-                notifyRoom(talk.getRoomId(), "talk", talk.getUserId(), talk.getText());
-                storeMessage(talk);
-
-                JPA.withTransaction(() -> {
-                    // TODO: Do this so we don't have to query every time
-                    Optional<AbstractRoom> abstractRoomOptional = DbUtils.findEntityById(AbstractRoom.class, talk.getRoomId());
-                    if (abstractRoomOptional.isPresent()) {
-                        AbstractRoom room = abstractRoomOptional.get();
-
-                        if (room instanceof PublicRoom) {
-                            Map<String, String> data = new HashMap<>();
-                            // TODO Add room name and other data and try to put it in NotificationUtils
-                            // Also don't send notifications to people in the room
-                            ((PublicRoom) room).notifySubscribers(data);
-                        }
-                    } else {
-                        Logger.error("Room socket contains room id " + talk.getRoomId() + " but it doesn't exist");
-                    }
-                });
-
-
+                receiveTalk(talk);
             } else {
                 unhandled(message);
             }
         } finally {
             play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+        }
+    }
+
+    private void receiveTalk(Talk talk) {
+        notifyRoom(talk.getRoomId(), "talk", talk.getUserId(), talk.getText());
+        storeMessage(talk);
+
+        PublicRoom cachedRoom = publicRoomsCache.getIfPresent(talk.getRoomId());
+
+        if (cachedRoom != null) {
+            Map<String, String> data = new HashMap<>();
+            // TODO Add room name and other data and try to put it in NotificationUtils
+            // Also don't send notifications to people in the room
+            cachedRoom.notifySubscribers(data);
+        } else {
+            JPA.withTransaction(() -> {
+                Optional<AbstractRoom> abstractRoomOptional = DbUtils.findEntityById(AbstractRoom.class, talk.getRoomId());
+                if (abstractRoomOptional.isPresent()) {
+                    AbstractRoom room = abstractRoomOptional.get();
+
+                    if (room instanceof PublicRoom) {
+                        Map<String, String> data = new HashMap<>();
+                        // TODO Add room name and other data and try to put it in NotificationUtils
+                        // Also don't send notifications to people in the room
+                        ((PublicRoom) room).notifySubscribers(data);
+                        publicRoomsCache.put(talk.getRoomId(), (PublicRoom) room);
+                    }
+                } else {
+                    Logger.error("Room socket contains room id " + talk.getRoomId() + " but it doesn't exist");
+                }
+            });
         }
     }
 
@@ -261,16 +272,16 @@ public class RoomSocket extends UntypedActor {
             JPA.withTransaction(() -> {
                 JsonNode userJson;
                 if (userId == SocketKeepAlive.USER_ID) {
-                    userJson = toJson("Heartbeat");
+                    userJson = toJson(userId);
                 } else {
-                    User user = users.getIfPresent(userId);
+                    User user = usersCache.getIfPresent(userId);
                     if (user != null) {
                         userJson = toJson(user);
                     } else {
                         Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
                         if (userOptional.isPresent()) {
                             user = userOptional.get();
-                            users.put(userId, user);
+                            usersCache.put(userId, user);
                             userJson = toJson(user);
                         } else {
                             Logger.error("Not notifying room because " + DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, userId));
