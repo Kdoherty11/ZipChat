@@ -16,12 +16,11 @@ POST          /publicRooms/:roomId/notify                       controllers.Publ
 POST          /publicRooms/:roomId/subscriptions                controllers.PublicRoomsController.createSubscription(roomId: Long)
 GET           /publicRooms/:roomId/subscriptions                controllers.PublicRoomsController.getSubscriptions(roomId: Long)
 DELETE        /publicRooms/:roomId/subscriptions/:userId        controllers.PublicRoomsController.removeSubscription(roomId: Long, userId: Long)
-GET           /publicRooms/:roomId/join                         controllers.RoomsController.joinRoom(roomId: Long, u: Long)
 POST          /publicRooms/:roomId/messages                     controllers.RoomsController.createMessage(roomId: Long)
 GET           /publicRooms/:roomId/messages                     controllers.MessagesController.getMessages(roomId: Long, limit: Int, offset: Int)
 
 POST          /privateRooms                                     controllers.PrivateRoomsController.createRoom()
-GET           /privateRooms                                     controllers.PrivateRoomsController.getRoomsByUserId(u: Long)
+GET           /privateRooms                                     controllers.PrivateRoomsController.getRoomsByUserId(userId: Long)
 GET           /privateRooms/:roomId                             controllers.PrivateRoomsController.showRoom(roomId: Long)
 PUT           /privateRooms/:roomId                             controllers.PrivateRoomsController.updateRoom(roomId: Long)
 DELETE        /privateRooms/:roomId                             controllers.PrivateRoomsController.deleteRoom(roomId: Long)
@@ -29,7 +28,7 @@ PUT           /privateRooms/:roomId/leave                       controllers.Priv
 POST          /privateRooms/:roomId/messages                    controllers.RoomsController.createMessage(roomId: Long)
 GET           /privateRooms/:roomId/messages                    controllers.MessagesController.getMessages(roomId: Long, limit: Int, offset: Int)
 
-GET           /privateRooms/:roomId/join                        controllers.RoomsController.joinRoom(roomId: Long, u: Long)
+GET           /chatSockets                                      controllers.RoomsController.joinRoom(roomId: Long, userId: Long)
 
 PUT           /messages/:messageId/favorite                     controllers.MessagesController.favorite(messageId: Long, userId: Long)
 DELETE        /messages/:messageId/favorite                     controllers.MessagesController.removeFavorite(messageId: Long, userId: Long)
@@ -42,7 +41,7 @@ DELETE        /users/:userId                                    controllers.User
 POST          /users/:userId/sendNotification                   controllers.UsersController.sendNotification(userId: Long)
 
 POST          /requests                                         controllers.RequestsController.createRequest()
-GET           /requests                                         controllers.RequestsController.getRequestsByReceiver(u: Long)
+GET           /requests                                         controllers.RequestsController.getRequestsByReceiver(userId: Long)
 GET           /requests/status                                  controllers.RequestsController.getStatus(senderId: Long, receiverId: Long)
 PUT           /requests/:requestId                              controllers.RequestsController.handleResponse(requestId: Long)
 
