@@ -272,7 +272,7 @@ public class RoomSocket extends UntypedActor {
             JPA.withTransaction(() -> {
                 JsonNode userJson;
                 if (userId == SocketKeepAlive.USER_ID) {
-                    userJson = toJson(userId);
+                    userJson = null;
                 } else {
                     User user = usersCache.getIfPresent(userId);
                     if (user != null) {
