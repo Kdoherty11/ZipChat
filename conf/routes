@@ -15,7 +15,7 @@ DELETE        /publicRooms/:roomId                              controllers.Publ
 POST          /publicRooms/:roomId/notify                       controllers.PublicRoomsController.notifySubscribers(roomId: Long)
 POST          /publicRooms/:roomId/subscriptions                controllers.PublicRoomsController.createSubscription(roomId: Long)
 GET           /publicRooms/:roomId/subscriptions                controllers.PublicRoomsController.getSubscriptions(roomId: Long)
-DELETE        /publicRooms/:roomId/subscriptions/:userId        controllers.PublicRoomsController.removeSubscription(roomId: Long, userId: Long)
+DELETE        /publicRooms/:roomId/subscriptions                controllers.PublicRoomsController.removeSubscription(roomId: Long, userId: Long)
 POST          /publicRooms/:roomId/messages                     controllers.RoomsController.createMessage(roomId: Long)
 GET           /publicRooms/:roomId/messages                     controllers.MessagesController.getMessages(roomId: Long, limit: Int, offset: Int)
 
