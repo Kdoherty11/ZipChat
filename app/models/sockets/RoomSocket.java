@@ -27,6 +27,7 @@ import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 import utils.DbUtils;
+import utils.NotificationUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -149,31 +150,48 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void receiveTalk(Talk talk) {
-        notifyRoom(talk.getRoomId(), "talk", talk.getUserId(), talk.getText());
+        long roomId = talk.getRoomId();
+        long userId = talk.getUserId();
+        String message = talk.getText();
+        notifyRoom(roomId, "talk", userId, message);
         storeMessage(talk);
 
-        PublicRoom cachedRoom = publicRoomsCache.getIfPresent(talk.getRoomId());
+        PublicRoom cachedRoom = publicRoomsCache.getIfPresent(roomId);
+        User cachedUser = usersCache.getIfPresent(userId);
 
-        if (cachedRoom != null) {
-            Map<String, String> data = new HashMap<>();
-            // TODO Add room name and other data and try to put it in NotificationUtils
-            // Also don't send notifications to people in the room
-            cachedRoom.notifySubscribers(data);
+        if (cachedRoom != null && cachedUser != null) {
+            NotificationUtils.messageSubscribers(cachedRoom, cachedUser, message);
         } else {
             JPA.withTransaction(() -> {
-                Optional<AbstractRoom> abstractRoomOptional = DbUtils.findEntityById(AbstractRoom.class, talk.getRoomId());
-                if (abstractRoomOptional.isPresent()) {
-                    AbstractRoom room = abstractRoomOptional.get();
+                PublicRoom room = null;
+                User user = null;
+                if (cachedRoom == null) {
+                    Optional<AbstractRoom> abstractRoomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
 
-                    if (room instanceof PublicRoom) {
-                        Map<String, String> data = new HashMap<>();
-                        // TODO Add room name and other data and try to put it in NotificationUtils
-                        // Also don't send notifications to people in the room
-                        ((PublicRoom) room).notifySubscribers(data);
-                        publicRoomsCache.put(talk.getRoomId(), (PublicRoom) room);
+                    if (abstractRoomOptional.isPresent()) {
+                        AbstractRoom abstractRoom = abstractRoomOptional.get();
+
+                        if (abstractRoom instanceof PublicRoom) {
+                            room = (PublicRoom) abstractRoom;
+                            publicRoomsCache.put(roomId, room);
+                        }
+                    } else {
+                        Logger.error("Room socket contains room id " + roomId + " but it doesn't exist");
                     }
-                } else {
-                    Logger.error("Room socket contains room id " + talk.getRoomId() + " but it doesn't exist");
+                }
+                if (cachedUser == null) {
+                    Optional<User> abstractUser = DbUtils.findEntityById(User.class, userId);
+
+                    if (abstractUser.isPresent()) {
+                        user = abstractUser.get();
+                        usersCache.put(userId, user);
+                    } else {
+                        Logger.error("Room socket contains user id " + userId + " but it doesn't exist");
+                    }
+                }
+
+                if (room != null && user != null) {
+                    NotificationUtils.messageSubscribers(room, user, message);
                 }
             });
         }

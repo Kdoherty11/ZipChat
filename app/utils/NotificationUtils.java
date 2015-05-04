@@ -23,16 +23,17 @@ public class NotificationUtils {
     private static class Key {
 
         private static final String EVENT = "event";
-        private static final String NAME = "name";
+        private static final String FACEBOOK_NAME = "name";
         private static final String CHAT_REQUEST_RESPONSE = "response";
         private static final String FACEBOOK_ID = "facebookId";
         private static final String REQUEST_ID = "requestId";
+        private static final String MESSAGE = "message";
     }
 
     private static class Event {
-
         private static final String CHAT_REQUEST = "Chat Request";
         private static final String CHAT_REQUEST_RESPONSE = "Chat Request Response";
+        private static final String CHAT_MESSAGE = "Chat Message";
     }
 
     public static final String GCM_API_KEY = "AIzaSyDp2t64B8FsJUAOszaFl14-uiDVoZRu4W4";
@@ -120,7 +121,7 @@ public class NotificationUtils {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.CHAT_REQUEST);
         data.put(Key.REQUEST_ID, String.valueOf(requestId));
-        data.put(Key.NAME, sender.name);
+        data.put(Key.FACEBOOK_NAME, sender.name);
         data.put(Key.FACEBOOK_ID, sender.facebookId);
         receiver.sendNotification(data);
     }
@@ -128,14 +129,17 @@ public class NotificationUtils {
     public static void sendChatResponse(User sender, User receiver, Request.Status response) {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.CHAT_REQUEST_RESPONSE);
-        data.put(Key.NAME, sender.name);
+        data.put(Key.FACEBOOK_NAME, sender.name);
         data.put(Key.CHAT_REQUEST_RESPONSE, response.toString());
         receiver.sendNotification(data);
     }
 
-    public static void sendChatMessage(PublicRoom room) {
+    public static void messageSubscribers(PublicRoom publicRoom, User user, String message) {
         Map<String, String> data = new HashMap<>();
-        
-        room.notifySubscribers(data);
+        data.put(Key.EVENT, Event.CHAT_MESSAGE);
+        data.put(Key.FACEBOOK_NAME, user.name);
+        data.put(Key.FACEBOOK_ID, user.facebookId);
+        data.put(Key.MESSAGE, message);
+        publicRoom.notifySubscribers(data);
     }
 }
