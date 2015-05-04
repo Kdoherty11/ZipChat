@@ -78,25 +78,31 @@ public class RoomSocket extends UntypedActor {
 
         if ("OK".equals(result)) {
 
+            Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+            try {
+                Set<String> roomMembers = j.smembers(String.valueOf(roomId));
+                out.write(toJson(roomMembers));
+            } finally {
+                play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+            }
+
             // For each event received on the socket,
             in.onMessage(event -> {
                 Talk talk = new Talk(roomId, userId, event.get("message").asText());
 
-                Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                Jedis jedis = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
                 try {
                     //All messages are pushed through the pub/sub channel
-                    j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(talk)));
+                    jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(talk)));
                 } finally {
                     play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                 }
-
             });
 
             // When the socket is closed.
             in.onClose(() -> {
                 // Send a Quit message to the room.
                 defaultRoom.tell(new Quit(roomId, userId), null);
-
             });
 
         } else {
@@ -144,67 +150,48 @@ public class RoomSocket extends UntypedActor {
             } else {
                 unhandled(message);
             }
+        } catch (Throwable throwable) {
+            Logger.error("Problem receiving message: " + throwable.getMessage());
         } finally {
             play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
         }
     }
 
-    private void receiveTalk(Talk talk) {
+    private void receiveTalk(Talk talk) throws Throwable {
         long roomId = talk.getRoomId();
         long userId = talk.getUserId();
-        String message = talk.getText();
-        notifyRoom(roomId, "talk", userId, message);
-        storeMessage(talk);
+        String messageText = talk.getText();
 
-        PublicRoom cachedRoom = publicRoomsCache.getIfPresent(roomId);
-        User cachedUser = usersCache.getIfPresent(userId);
+        notifyRoom(roomId, "talk", userId, messageText);
 
-        if (cachedRoom != null && cachedUser != null) {
-            NotificationUtils.messageSubscribers(cachedRoom, cachedUser, message);
-        } else {
-            JPA.withTransaction(() -> {
-                PublicRoom room = null;
-                User user = null;
-                if (cachedRoom == null) {
-                    Optional<AbstractRoom> abstractRoomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
+        if (userId == SocketKeepAlive.USER_ID) {
+            return;
+        }
 
-                    if (abstractRoomOptional.isPresent()) {
-                        AbstractRoom abstractRoom = abstractRoomOptional.get();
+        Message message = storeMessage(talk);
 
-                        if (abstractRoom instanceof PublicRoom) {
-                            room = (PublicRoom) abstractRoom;
-                            publicRoomsCache.put(roomId, room);
-                        }
-                    } else {
-                        Logger.error("Room socket contains room id " + roomId + " but it doesn't exist");
-                    }
-                }
-                if (cachedUser == null) {
-                    Optional<User> abstractUser = DbUtils.findEntityById(User.class, userId);
+        User sender = message.sender;
+        usersCache.put(userId, sender);
 
-                    if (abstractUser.isPresent()) {
-                        user = abstractUser.get();
-                        usersCache.put(userId, user);
-                    } else {
-                        Logger.error("Room socket contains user id " + userId + " but it doesn't exist");
-                    }
-                }
-
-                if (room != null && user != null) {
-                    NotificationUtils.messageSubscribers(room, user, message);
-                }
-            });
+        AbstractRoom abstractRoom = message.room;
+        if (abstractRoom instanceof PublicRoom) {
+            PublicRoom publicRoom = (PublicRoom) abstractRoom;
+            publicRoomsCache.put(roomId, publicRoom);
+            NotificationUtils.messageSubscribers(publicRoom, sender, messageText);
         }
     }
 
     @Transactional
-    private void storeMessage(Talk talk) {
-        JPA.withTransaction(() -> {
-            if (SocketKeepAlive.USER_ID != talk.getUserId()) {
-                Logger.debug(talk.toString());
-                Message message = new Message(talk.getRoomId(), talk.getUserId(), talk.getText());
-                message.addToRoom();
-            }
+    private Message storeMessage(Talk talk) throws Throwable {
+
+        if (SocketKeepAlive.USER_ID == talk.getUserId()) {
+            throw new IllegalArgumentException("Trying to store a keep alive message");
+        }
+
+        return JPA.withTransaction(() -> {
+            Message message = new Message(talk.getRoomId(), talk.getUserId(), talk.getText());
+            message.addToRoom();
+            return message;
         });
     }
 
