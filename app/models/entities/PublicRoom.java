@@ -1,7 +1,6 @@
 package models.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import models.NoUpdate;
 import models.Platform;
@@ -40,7 +39,6 @@ public class PublicRoom extends AbstractRoom {
 
     public Integer score = 0;
 
-    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
