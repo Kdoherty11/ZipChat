@@ -21,13 +21,14 @@ import java.util.Map;
 public class NotificationUtils {
 
     private static class Key {
-
         private static final String EVENT = "event";
         private static final String FACEBOOK_NAME = "name";
         private static final String CHAT_REQUEST_RESPONSE = "response";
         private static final String FACEBOOK_ID = "facebookId";
         private static final String REQUEST_ID = "requestId";
         private static final String MESSAGE = "message";
+        private static final String ROOM_NAME = "roomName";
+        private static final String ROOM_ID = "roomId";
     }
 
     private static class Event {
@@ -140,6 +141,8 @@ public class NotificationUtils {
         data.put(Key.FACEBOOK_NAME, user.name);
         data.put(Key.FACEBOOK_ID, user.facebookId);
         data.put(Key.MESSAGE, message);
+        data.put(Key.ROOM_NAME, publicRoom.name);
+        data.put(Key.ROOM_ID, String.valueOf(publicRoom.roomId));
         publicRoom.notifySubscribers(data);
     }
 }
