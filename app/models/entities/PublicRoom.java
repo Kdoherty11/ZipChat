@@ -1,6 +1,7 @@
 package models.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import models.NoUpdate;
 import models.Platform;
@@ -39,6 +40,7 @@ public class PublicRoom extends AbstractRoom {
 
     public Integer score = 0;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
@@ -77,6 +79,10 @@ public class PublicRoom extends AbstractRoom {
         } else {
             Logger.warn("Could not find a subscription with userId " + userId + " in " + this.name);
         }
+    }
+
+    public boolean isSubscribed(long userId) {
+        return subscribers.stream().anyMatch(user -> user.userId == userId);
     }
 
     public void notifySubscribers(Map<String, String> data) {

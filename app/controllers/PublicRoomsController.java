@@ -1,7 +1,6 @@
 package controllers;
 
 import com.google.common.primitives.Longs;
-import models.entities.AbstractRoom;
 import models.entities.PublicRoom;
 import models.entities.User;
 import play.db.jpa.Transactional;
@@ -98,6 +97,16 @@ public class PublicRoomsController extends BaseController {
         if (roomOptional.isPresent()) {
             roomOptional.get().removeSubscription(userId);
             return OK_RESULT;
+        } else {
+            return DbUtils.getNotFoundResult(PublicRoom.ENTITY_NAME, roomId);
+        }
+    }
+
+    @Transactional
+    public static Result isSubscribed(long roomId, long userId) {
+        Optional<PublicRoom> roomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
+        if (roomOptional.isPresent()) {
+            return okJson(roomOptional.get().isSubscribed(userId));
         } else {
             return DbUtils.getNotFoundResult(PublicRoom.ENTITY_NAME, roomId);
         }

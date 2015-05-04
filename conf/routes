@@ -18,6 +18,7 @@ GET           /publicRooms/:roomId/subscriptions                controllers.Publ
 DELETE        /publicRooms/:roomId/subscriptions/:userId        controllers.PublicRoomsController.removeSubscription(roomId: Long, userId: Long)
 POST          /publicRooms/:roomId/messages                     controllers.RoomsController.createMessage(roomId: Long)
 GET           /publicRooms/:roomId/messages                     controllers.MessagesController.getMessages(roomId: Long, limit: Int, offset: Int)
+GET           /publicRooms/:roomId/subscriptions/exists         controllers.PublicRoomsController.isSubscribed(roomId: Long, userId: Long)
 
 POST          /privateRooms                                     controllers.PrivateRoomsController.createRoom()
 GET           /privateRooms                                     controllers.PrivateRoomsController.getRoomsByUserId(userId: Long)
