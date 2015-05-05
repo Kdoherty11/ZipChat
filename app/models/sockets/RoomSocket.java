@@ -267,7 +267,7 @@ public class RoomSocket extends UntypedActor {
             Logger.debug("There are still members in room " + roomId + "\n" + roomMembers);
 
             //Publish the quit notification to all nodes
-            RosterNotification rosterNotify = new RosterNotification(roomId, roomId, "quit");
+            RosterNotification rosterNotify = new RosterNotification(roomId, quit.getUserId(), "quit");
             j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
         }
     }
