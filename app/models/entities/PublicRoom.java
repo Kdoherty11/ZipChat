@@ -94,7 +94,7 @@ public class PublicRoom extends AbstractRoom {
     }
 
     public void notifySubscribers(Map<String, String> data, Set<Long> userIdsInRoom) {
-        if (hasSubscribers()) {
+        if (!hasSubscribers()) {
             return;
         }
         new Thread(() -> {
