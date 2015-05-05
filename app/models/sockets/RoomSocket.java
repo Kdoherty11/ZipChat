@@ -26,7 +26,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
-import utils.DbUtils;
 import utils.NotificationUtils;
 
 import java.util.HashMap;
@@ -38,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 import static akka.pattern.Patterns.ask;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static play.libs.Json.toJson;
+import static utils.DbUtils.buildEntityNotFoundString;
+import static utils.DbUtils.findEntityById;
 
 public class RoomSocket extends UntypedActor {
 
@@ -80,8 +81,24 @@ public class RoomSocket extends UntypedActor {
 
             Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
             try {
-                Set<String> roomMembers = j.smembers(String.valueOf(roomId));
-                out.write(toJson(roomMembers));
+                JPA.withTransaction(() -> {
+
+                    Object[] roomMembers = j.smembers(String.valueOf(roomId))
+                            .stream()
+                            .mapToLong(Long::parseLong)
+                            .filter(id -> id != userId && id != SocketKeepAlive.USER_ID)
+                            .mapToObj(id -> findEntityById(User.class, id).orElseThrow(RuntimeException::new))
+                            .toArray();
+
+                    ObjectNode event = Json.newObject();
+                    event.put("event", "room members");
+                    event.put("members", toJson(roomMembers));
+
+                    out.write(event);
+                });
+
+
+               // out.write(toJson(roomMemberIds));
             } finally {
                 play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
             }
@@ -283,13 +300,13 @@ public class RoomSocket extends UntypedActor {
                     if (user != null) {
                         userJson = toJson(user);
                     } else {
-                        Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
+                        Optional<User> userOptional = findEntityById(User.class, userId);
                         if (userOptional.isPresent()) {
                             user = userOptional.get();
                             usersCache.put(userId, user);
                             userJson = toJson(user);
                         } else {
-                            Logger.error("Not notifying room because " + DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, userId));
+                            Logger.error("Not notifying room because " + buildEntityNotFoundString(User.ENTITY_NAME, userId));
                             return;
                         }
                     }
