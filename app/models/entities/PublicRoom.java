@@ -90,7 +90,7 @@ public class PublicRoom extends AbstractRoom {
     }
 
     public boolean hasSubscribers() {
-        return subscribers.isEmpty();
+        return !subscribers.isEmpty();
     }
 
     public void notifySubscribers(Map<String, String> data, Set<Long> userIdsInRoom) {
