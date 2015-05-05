@@ -5,6 +5,7 @@ import play.db.jpa.JPA;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static play.libs.Json.toJson;
@@ -16,6 +17,16 @@ public class DbUtils {
     public static <T> Optional<T> findEntityById(Class<T> clazz, long id) {
         T entity = JPA.em().find(clazz, id);
         return Optional.ofNullable(entity);
+    }
+
+    public static <T> T findExistingEntityById(Class<T> clazz, long id) {
+        T entity = JPA.em().find(clazz, id);
+
+        if (entity == null) {
+            throw new EntityNotFoundException(buildEntityNotFoundString(clazz.getSimpleName(), id));
+        }
+
+        return entity;
     }
 
     public static <T> boolean deleteEntityById(Class<T> clazz, long id) {

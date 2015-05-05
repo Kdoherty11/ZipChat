@@ -39,6 +39,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static play.libs.Json.toJson;
 import static utils.DbUtils.buildEntityNotFoundString;
 import static utils.DbUtils.findEntityById;
+import static utils.DbUtils.findExistingEntityById;
 
 public class RoomSocket extends UntypedActor {
 
@@ -87,12 +88,12 @@ public class RoomSocket extends UntypedActor {
                             .stream()
                             .mapToLong(Long::parseLong)
                             .filter(id -> id != userId && id != SocketKeepAlive.USER_ID)
-                            .mapToObj(id -> findEntityById(User.class, id).orElseThrow(RuntimeException::new))
+                            .mapToObj(id -> findExistingEntityById(User.class, id))
                             .toArray();
 
                     ObjectNode event = Json.newObject();
                     event.put("event", "room members");
-                    event.put("members", toJson(roomMembers));
+                    event.put("message", toJson(roomMembers));
 
                     out.write(event);
                 });
