@@ -136,7 +136,7 @@ public class NotificationUtils {
         receiver.sendNotification(data);
     }
 
-    public static void messageSubscribers(PublicRoom publicRoom, User user, String message, Set<Long> userIdsInRoom) {
+    public static void messageSubscribers(PublicRoom publicRoom, User user, String message, Set<Long> userIdsBlacklist) {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.CHAT_MESSAGE);
         data.put(Key.FACEBOOK_NAME, user.name);
@@ -144,6 +144,6 @@ public class NotificationUtils {
         data.put(Key.MESSAGE, message);
         data.put(Key.ROOM_NAME, publicRoom.name);
         data.put(Key.ROOM_ID, String.valueOf(publicRoom.roomId));
-        publicRoom.notifySubscribers(data, userIdsInRoom);
+        publicRoom.notifySubscribers(data, userIdsBlacklist);
     }
 }

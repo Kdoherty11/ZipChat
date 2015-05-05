@@ -194,18 +194,22 @@ public class RoomSocket extends UntypedActor {
             PublicRoom publicRoom = (PublicRoom) abstractRoom;
             publicRoomsCache.put(roomId, publicRoom);
 
-            Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+            if (publicRoom.hasSubscribers()) {
+                Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
 
-            try {
-                Set<Long> userIdsInRoom = j.smembers(String.valueOf(roomId))
-                        .stream()
-                        .map(Long::parseLong)
-                        .collect(Collectors.toSet());
-                NotificationUtils.messageSubscribers(publicRoom, sender, messageText, userIdsInRoom);
-            } finally {
-                play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+                try {
+                    Set<Long> userIdsInRoom = j.smembers(String.valueOf(roomId))
+                            .stream()
+                            .map(Long::parseLong)
+                            .collect(Collectors.toSet());
+
+                    Logger.debug("Received talk and got userIdsInRoom: " + userIdsInRoom);
+
+                    NotificationUtils.messageSubscribers(publicRoom, sender, messageText, userIdsInRoom);
+                } finally {
+                    play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+                }
             }
-
         }
     }
 

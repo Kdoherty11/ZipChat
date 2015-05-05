@@ -89,10 +89,19 @@ public class PublicRoom extends AbstractRoom {
         notifySubscribers(data, Collections.emptySet());
     }
 
+    public boolean hasSubscribers() {
+        return subscribers.isEmpty();
+    }
+
     public void notifySubscribers(Map<String, String> data, Set<Long> userIdsInRoom) {
+        if (hasSubscribers()) {
+            return;
+        }
         new Thread(() -> {
             List<String> androidRegIds = new ArrayList<>();
             List<String> iosRegIds = new ArrayList<>();
+
+            Logger.debug("Not notifying users: " + userIdsInRoom);
 
             subscribers.forEach(user -> {
                 if (!userIdsInRoom.contains(user.userId)) {
