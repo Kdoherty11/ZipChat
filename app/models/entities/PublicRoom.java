@@ -85,6 +85,10 @@ public class PublicRoom extends AbstractRoom {
         return subscribers.stream().anyMatch(user -> user.userId == userId);
     }
 
+    public void notifySubscribers(Map<String, String> data) {
+        notifySubscribers(data, Collections.emptySet());
+    }
+
     public void notifySubscribers(Map<String, String> data, Set<Long> userIdsInRoom) {
         new Thread(() -> {
             List<String> androidRegIds = new ArrayList<>();
