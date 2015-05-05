@@ -92,12 +92,11 @@ public class RoomSocket extends UntypedActor {
                             .toArray();
 
                     ObjectNode event = Json.newObject();
-                    event.put("event", "room members");
+                    event.put("event", "roomMembers");
                     event.put("message", toJson(roomMembers));
 
                     out.write(event);
                 });
-
 
                // out.write(toJson(roomMemberIds));
             } finally {
