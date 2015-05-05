@@ -33,13 +33,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static akka.pattern.Patterns.ask;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static play.libs.Json.toJson;
-import static utils.DbUtils.buildEntityNotFoundString;
-import static utils.DbUtils.findEntityById;
-import static utils.DbUtils.findExistingEntityById;
+import static utils.DbUtils.*;
 
 public class RoomSocket extends UntypedActor {
 
@@ -194,7 +193,19 @@ public class RoomSocket extends UntypedActor {
         if (abstractRoom instanceof PublicRoom) {
             PublicRoom publicRoom = (PublicRoom) abstractRoom;
             publicRoomsCache.put(roomId, publicRoom);
-            NotificationUtils.messageSubscribers(publicRoom, sender, messageText);
+
+            Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+
+            try {
+                Set<Long> userIdsInRoom = j.smembers(String.valueOf(roomId))
+                        .stream()
+                        .map(Long::parseLong)
+                        .collect(Collectors.toSet());
+                NotificationUtils.messageSubscribers(publicRoom, sender, messageText, userIdsInRoom);
+            } finally {
+                play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+            }
+
         }
     }
 
@@ -251,6 +262,8 @@ public class RoomSocket extends UntypedActor {
         j.srem(String.valueOf(roomId), String.valueOf(quit.getUserId()));
 
         Set<String> roomMembers = j.smembers(String.valueOf(roomId));
+
+        Logger.debug("After quit room members are: " + roomMembers);
 
         // For the robot
         if (roomMembers.size() == 1) {

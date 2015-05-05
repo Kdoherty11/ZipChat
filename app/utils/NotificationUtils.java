@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public class NotificationUtils {
@@ -135,7 +136,7 @@ public class NotificationUtils {
         receiver.sendNotification(data);
     }
 
-    public static void messageSubscribers(PublicRoom publicRoom, User user, String message) {
+    public static void messageSubscribers(PublicRoom publicRoom, User user, String message, Set<Long> userIdsInRoom) {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.CHAT_MESSAGE);
         data.put(Key.FACEBOOK_NAME, user.name);
@@ -143,6 +144,6 @@ public class NotificationUtils {
         data.put(Key.MESSAGE, message);
         data.put(Key.ROOM_NAME, publicRoom.name);
         data.put(Key.ROOM_ID, String.valueOf(publicRoom.roomId));
-        publicRoom.notifySubscribers(data);
+        publicRoom.notifySubscribers(data, userIdsInRoom);
     }
 }

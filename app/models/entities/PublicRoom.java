@@ -85,16 +85,18 @@ public class PublicRoom extends AbstractRoom {
         return subscribers.stream().anyMatch(user -> user.userId == userId);
     }
 
-    public void notifySubscribers(Map<String, String> data) {
+    public void notifySubscribers(Map<String, String> data, Set<Long> userIdsInRoom) {
         new Thread(() -> {
             List<String> androidRegIds = new ArrayList<>();
             List<String> iosRegIds = new ArrayList<>();
 
             subscribers.forEach(user -> {
-                if (user.platform == Platform.android) {
-                    androidRegIds.add(user.registrationId);
-                } else if (user.platform == Platform.ios) {
-                    iosRegIds.add(user.registrationId);
+                if (!userIdsInRoom.contains(user.userId)) {
+                    if (user.platform == Platform.android) {
+                        androidRegIds.add(user.registrationId);
+                    } else if (user.platform == Platform.ios) {
+                        iosRegIds.add(user.registrationId);
+                    }
                 }
             });
 
