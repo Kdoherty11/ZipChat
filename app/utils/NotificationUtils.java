@@ -28,6 +28,9 @@ public class NotificationUtils {
         private static final String ROOM_NAME = "roomName";
         private static final String ROOM_ID = "roomId";
         private static final String ROOM_TYPE = "roomType";
+        private static final String ROOM_RADIUS = "roomRadius";
+        private static final String ROOM_LATITUDE = "roomLatitude";
+        private static final String ROOM_LONGITUDE = "roomLongitude";
     }
 
     private static class Event {
@@ -146,14 +149,18 @@ public class NotificationUtils {
     private static Map<String, String> getRoomMessageData(AbstractRoom room, User user, String message) {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.CHAT_MESSAGE);
+        data.put(Key.ROOM_TYPE, room.getClass().getSimpleName());
+        data.put(Key.ROOM_ID, String.valueOf(room.roomId));
         data.put(Key.FACEBOOK_NAME, user.name);
         data.put(Key.FACEBOOK_ID, user.facebookId);
         data.put(Key.MESSAGE, message);
-        data.put(Key.ROOM_ID, String.valueOf(room.roomId));
-        data.put(Key.ROOM_TYPE, room.getClass().getSimpleName());
 
         if (room instanceof PublicRoom) {
-            data.put(Key.ROOM_NAME, ((PublicRoom) room).name);
+            PublicRoom publicRoom = ((PublicRoom) room);
+            data.put(Key.ROOM_NAME, publicRoom.name);
+            data.put(Key.ROOM_RADIUS, String.valueOf(publicRoom.radius));
+            data.put(Key.ROOM_LATITUDE, String.valueOf(publicRoom.latitude));
+            data.put(Key.ROOM_LONGITUDE, String.valueOf(publicRoom.longitude));
         }
 
         return data;
