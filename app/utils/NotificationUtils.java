@@ -24,10 +24,10 @@ public class NotificationUtils {
         private static final String FACEBOOK_NAME = "name";
         private static final String CHAT_REQUEST_RESPONSE = "response";
         private static final String FACEBOOK_ID = "facebookId";
-        private static final String REQUEST_ID = "requestId";
         private static final String MESSAGE = "message";
         private static final String ROOM_NAME = "roomName";
         private static final String ROOM_ID = "roomId";
+        private static final String ROOM_TYPE = "roomType";
     }
 
     private static class Event {
@@ -117,10 +117,9 @@ public class NotificationUtils {
         }
     }
 
-    public static void sendChatRequest(long requestId, User sender, User receiver) {
+    public static void sendChatRequest(User sender, User receiver) {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.CHAT_REQUEST);
-        data.put(Key.REQUEST_ID, String.valueOf(requestId));
         data.put(Key.FACEBOOK_NAME, sender.name);
         data.put(Key.FACEBOOK_ID, sender.facebookId);
         receiver.sendNotification(data);
@@ -151,6 +150,7 @@ public class NotificationUtils {
         data.put(Key.FACEBOOK_ID, user.facebookId);
         data.put(Key.MESSAGE, message);
         data.put(Key.ROOM_ID, String.valueOf(room.roomId));
+        data.put(Key.ROOM_TYPE, room.getClass().getSimpleName());
 
         if (room instanceof PublicRoom) {
             data.put(Key.ROOM_NAME, ((PublicRoom) room).name);

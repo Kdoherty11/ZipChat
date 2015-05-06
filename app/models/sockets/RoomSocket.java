@@ -235,7 +235,7 @@ public class RoomSocket extends UntypedActor {
         } else {
             if (!rooms.containsKey(roomId)) {
                 // Creating a new room
-                Logger.debug("Adding new room and keep alive: " + roomId);
+                Logger.debug("Adding new room with id: " + roomId + " and adding a keep alive");
 
                 rooms.put(roomId, new HashMap<>());
 
@@ -270,18 +270,21 @@ public class RoomSocket extends UntypedActor {
 
         // For the robot
         if (roomMembers.size() == 1) {
-            Logger.debug("Removing robot from room: " + roomId);
 
-            rooms.remove(quit.getRoomId());
+            if (roomMembers.contains(String.valueOf(SocketKeepAlive.USER_ID))) {
+                Logger.debug("Removing robot from room: " + roomId);
 
-            // Remove robot
-            if (clientHeartbeats.containsKey(roomId)) {
-                clientHeartbeats.get(roomId).stop();
+                rooms.remove(quit.getRoomId());
+
+                // Remove robot
+                if (clientHeartbeats.containsKey(roomId)) {
+                    clientHeartbeats.get(roomId).stop();
+                }
+            } else {
+                // Don't remove the room because there is still a user in it
+                Logger.error("No robot in room: " + roomId + " but there is a user in it");
             }
-
         } else {
-            Logger.debug("There are still members in room " + roomId + "\n" + roomMembers);
-
             //Publish the quit notification to all nodes
             RosterNotification rosterNotify = new RosterNotification(roomId, quit.getUserId(), "quit");
             j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));

@@ -20,7 +20,7 @@ public class RequestsController extends BaseController {
     @Transactional
     public static Result createRequest() {
         return createWithForeignEntities(Request.class, createdRequest ->
-                NotificationUtils.sendChatRequest(createdRequest.requestId, createdRequest.sender, createdRequest.receiver));
+                NotificationUtils.sendChatRequest(createdRequest.sender, createdRequest.receiver));
     }
 
     @Transactional
