@@ -230,10 +230,10 @@ public class RoomSocket extends UntypedActor {
         long roomId = join.getRoomId();
         long userId = join.getUserId();
         // TODO
-//        if (j.sismember(String.valueOf(roomId), String.valueOf(userId))) {
-//            getSender().tell("This userId is already used", getSelf());
-//            Logger.error("user: " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
-//        } else {
+        if (j.sismember(String.valueOf(roomId), String.valueOf(userId))) {
+            getSender().tell("This userId is already used", getSelf());
+            Logger.error("user: " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
+        } else {
             if (!rooms.containsKey(roomId)) {
                 // Creating a new room
                 Logger.debug("Adding new room with id: " + roomId + " and adding a keep alive");
@@ -252,7 +252,7 @@ public class RoomSocket extends UntypedActor {
             j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
 
             getSender().tell("OK", getSelf());
-        //}
+        }
     }
 
     private void receiveQuit(Jedis j, Quit quit) {
