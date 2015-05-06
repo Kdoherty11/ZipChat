@@ -7,9 +7,7 @@ import com.notnoop.apns.ApnsService;
 import com.notnoop.apns.PayloadBuilder;
 import com.notnoop.exceptions.NetworkIOException;
 import controllers.BaseController;
-import models.entities.PublicRoom;
-import models.entities.Request;
-import models.entities.User;
+import models.entities.*;
 import play.Logger;
 
 import java.io.IOException;
@@ -137,13 +135,27 @@ public class NotificationUtils {
     }
 
     public static void messageSubscribers(PublicRoom publicRoom, User user, String message, Set<Long> userIdsBlacklist) {
+        Map<String, String> data = getRoomMessageData(publicRoom, user, message);
+        publicRoom.notifySubscribers(data, userIdsBlacklist);
+    }
+
+    public static void messageUser(PrivateRoom privateRoom, User sender, User receiver, String message) {
+        Map<String, String> data = getRoomMessageData(privateRoom, sender, message);
+        receiver.sendNotification(data);
+    }
+
+    private static Map<String, String> getRoomMessageData(AbstractRoom room, User user, String message) {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.CHAT_MESSAGE);
         data.put(Key.FACEBOOK_NAME, user.name);
         data.put(Key.FACEBOOK_ID, user.facebookId);
         data.put(Key.MESSAGE, message);
-        data.put(Key.ROOM_NAME, publicRoom.name);
-        data.put(Key.ROOM_ID, String.valueOf(publicRoom.roomId));
-        publicRoom.notifySubscribers(data, userIdsBlacklist);
+        data.put(Key.ROOM_ID, String.valueOf(room.roomId));
+
+        if (room instanceof PublicRoom) {
+            data.put(Key.ROOM_NAME, ((PublicRoom) room).name);
+        }
+
+        return data;
     }
 }

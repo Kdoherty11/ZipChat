@@ -8,10 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.typesafe.plugin.RedisPlugin;
-import models.entities.AbstractRoom;
-import models.entities.Message;
-import models.entities.PublicRoom;
-import models.entities.User;
+import models.entities.*;
 import models.sockets.messages.Join;
 import models.sockets.messages.Quit;
 import models.sockets.messages.RosterNotification;
@@ -203,13 +200,15 @@ public class RoomSocket extends UntypedActor {
                             .map(Long::parseLong)
                             .collect(Collectors.toSet());
 
-                    Logger.debug("Received talk and got userIdsInRoom: " + userIdsInRoom);
-
                     NotificationUtils.messageSubscribers(publicRoom, sender, messageText, userIdsInRoom);
                 } finally {
                     play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                 }
             }
+        } else {
+            PrivateRoom privateRoom = (PrivateRoom) abstractRoom;
+            User receiver = privateRoom.sender.userId == sender.userId ? privateRoom.receiver : privateRoom.sender;
+            NotificationUtils.messageUser(privateRoom, sender, receiver, messageText);
         }
     }
 

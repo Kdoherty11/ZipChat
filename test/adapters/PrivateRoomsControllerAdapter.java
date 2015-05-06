@@ -36,11 +36,11 @@ public enum PrivateRoomsControllerAdapter {
     private RequestsControllerAdapter requestAdapter = RequestsControllerAdapter.INSTANCE;
 
 
-    public void makePrivateRoom(BaseController.Callback<PrivateRoom> entityCallback) throws JSONException {
+    public PrivateRoom makePrivateRoom() throws Throwable {
         long createdResultId = requestAdapter.getCreateRequestId();
         requestAdapter.handleResponse(createdResultId, Request.Status.accepted.toString());
 
-        JPA.withTransaction(() -> {
+        return JPA.withTransaction(() -> {
             Optional<Request> requestOptional = DbUtils.findEntityById(Request.class, createdResultId);
             Request request = requestOptional.get();
             final long senderId = request.sender.userId;
@@ -53,7 +53,7 @@ public enum PrivateRoomsControllerAdapter {
                     .setParameter("receiverId", receiverId);
 
             List<PrivateRoom> privateRoomList = query.getResultList();
-            entityCallback.success(privateRoomList.get(0));
+            return privateRoomList.get(0);
         });
     }
 

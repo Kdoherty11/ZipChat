@@ -7,6 +7,7 @@ import models.entities.PrivateRoom;
 import models.entities.Request;
 import org.json.JSONException;
 import org.junit.Test;
+import play.Logger;
 import play.db.jpa.JPA;
 import play.mvc.Result;
 import utils.DbUtils;
@@ -44,16 +45,12 @@ public class PrivateRoomsControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testLeaveRoomSuccess() throws JSONException {
-
-        adapter.makePrivateRoom(privateRoom -> {
-            long senderId = privateRoom.sender.userId;
-//            Result senderLeavingResult = adapter.leaveRoom(privateRoom.roomId, senderId);
-//              assertThat(status(senderLeavingResult)).isEqualTo(OK);
-//              assertThat(contentAsString(senderLeavingResult)).isEqualTo(
-//              TestUtils.withQuotes(BaseController.OK_STRING));
-
-        });
+    public void testLeaveRoomSuccess() throws Throwable {
+        PrivateRoom room = adapter.makePrivateRoom();
+        Logger.debug("HERE: " + room);
+        //Result leaveRoomSuccess = adapter.leaveRoom(room.roomId, room.sender.userId);
+        //assertThat(status(leaveRoomSuccess)).isEqualTo(OK);
+        //assertThat(contentAsString(leaveRoomSuccess)).isEqualTo(BaseController.OK_STRING);
     }
 
     @Test
@@ -65,17 +62,16 @@ public class PrivateRoomsControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testLeaveRoomUserNotInRoom() throws JSONException {
-        adapter.makePrivateRoom(privateRoom -> {
-            long senderId = privateRoom.sender.userId;
-            long receiverId = privateRoom.receiver.userId;
+    public void testLeaveRoomUserNotInRoom() throws Throwable {
+        PrivateRoom privateRoom = adapter.makePrivateRoom();
+        long senderId = privateRoom.sender.userId;
+        long receiverId = privateRoom.receiver.userId;
 
-            long otherId = findUnusedId(senderId, receiverId);
-            Result userNotInRoomResult = adapter.leaveRoom(privateRoom.roomId, otherId);
-            assertThat(status(userNotInRoomResult)).isEqualTo(BAD_REQUEST);
-            assertThat(contentAsString(userNotInRoomResult)).isEqualTo(
-                    TestUtils.withQuotes("Unable to remove user with ID " + otherId + " from the room because they are not in it"));
-        });
+        long otherId = findUnusedId(senderId, receiverId);
+        Result userNotInRoomResult = adapter.leaveRoom(privateRoom.roomId, otherId);
+        assertThat(status(userNotInRoomResult)).isEqualTo(BAD_REQUEST);
+        assertThat(contentAsString(userNotInRoomResult)).isEqualTo(
+                TestUtils.withQuotes("Unable to remove user with ID " + otherId + " from the room because they are not in it"));
     }
 
     public static long findUnusedId(long senderId, long receiverId) {
