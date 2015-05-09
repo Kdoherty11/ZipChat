@@ -103,7 +103,7 @@ public class Message {
     }
 
     public static List<Message> getMessages(long roomId, int limit, int offset) {
-        String queryString = "select m from Message m where m.room.roomId = :roomId";
+        String queryString = "select m from Message m where m.room.roomId = :roomId order by m.timeStamp";
 
         TypedQuery<Message> query = JPA.em().createQuery(queryString, Message.class)
                 .setParameter("roomId", roomId)

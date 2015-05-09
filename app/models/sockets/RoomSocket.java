@@ -175,13 +175,14 @@ public class RoomSocket extends UntypedActor {
         long userId = talk.getUserId();
         String messageText = talk.getText();
 
-        notifyRoom(roomId, "talk", userId, messageText);
-
         if (userId == SocketKeepAlive.USER_ID) {
+            notifyRoom(roomId, "talk", userId, messageText);
             return;
         }
 
         Message message = storeMessage(talk);
+
+        notifyRoom(roomId, "talk", userId, Json.stringify(toJson(message));
 
         User sender = message.sender;
         usersCache.put(userId, sender);
