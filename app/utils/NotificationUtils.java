@@ -40,6 +40,11 @@ public class NotificationUtils {
         private static final String MESSAGE_FAVORITED = "Message Favorited";
     }
 
+    private static class Value {
+        private static final String PRIVATE_ROOM_TYPE = "PrivateRoom";
+        private static final String PUBLIC_ROOM_TYPE = "PublicRoom";
+    }
+
     public static final String GCM_API_KEY = "AIzaSyDp2t64B8FsJUAOszaFl14-uiDVoZRu4W4";
     private static final int GCM_RETRIES = 3;
 
@@ -126,9 +131,8 @@ public class NotificationUtils {
         data.put(Key.EVENT, Event.MESSAGE_FAVORITED);
         data.put(Key.FACEBOOK_NAME, messageFavoritor.name);
         data.put(Key.FACEBOOK_ID, messageFavoritor.facebookId);
-        data.put(Key.ROOM_ID, String.valueOf(room.roomId));
         data.put(Key.MESSAGE, message);
-        data.put(Key.ROOM_TYPE, room.getClass().getSimpleName());
+        data.putAll(getRoomData(room));
         messageSender.sendNotification(data);
     }
 
@@ -159,22 +163,40 @@ public class NotificationUtils {
         receiver.sendNotification(data);
     }
 
+    private static Map<String, String> getRoomData(AbstractRoom room) {
+        if (room instanceof PublicRoom) {
+            return getRoomData((PublicRoom) room);
+        } else {
+            return getRoomData((PrivateRoom) room);
+        }
+    }
+
+    private static Map<String, String> getRoomData(PublicRoom publicRoom) {
+        Map<String, String> data = new HashMap<>();
+        data.put(Key.ROOM_TYPE, Value.PUBLIC_ROOM_TYPE);
+        data.put(Key.ROOM_ID, String.valueOf(publicRoom.roomId));
+        data.put(Key.ROOM_NAME, publicRoom.name);
+        data.put(Key.ROOM_RADIUS, String.valueOf(publicRoom.radius));
+        data.put(Key.ROOM_LATITUDE, String.valueOf(publicRoom.latitude));
+        data.put(Key.ROOM_LONGITUDE, String.valueOf(publicRoom.longitude));
+        return data;
+    }
+
+    private static Map<String, String> getRoomData(PrivateRoom privateRoom) {
+        Map<String, String> data = new HashMap<>();
+        data.put(Key.ROOM_TYPE, Value.PRIVATE_ROOM_TYPE);
+        data.put(Key.ROOM_ID, String.valueOf(privateRoom.roomId));
+        return data;
+    }
+
     private static Map<String, String> getRoomMessageData(AbstractRoom room, User user, String message) {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.CHAT_MESSAGE);
-        data.put(Key.ROOM_TYPE, room.getClass().getSimpleName());
-        data.put(Key.ROOM_ID, String.valueOf(room.roomId));
         data.put(Key.FACEBOOK_NAME, user.name);
         data.put(Key.FACEBOOK_ID, user.facebookId);
         data.put(Key.MESSAGE, message);
 
-        if (room instanceof PublicRoom) {
-            PublicRoom publicRoom = ((PublicRoom) room);
-            data.put(Key.ROOM_NAME, publicRoom.name);
-            data.put(Key.ROOM_RADIUS, String.valueOf(publicRoom.radius));
-            data.put(Key.ROOM_LATITUDE, String.valueOf(publicRoom.latitude));
-            data.put(Key.ROOM_LONGITUDE, String.valueOf(publicRoom.longitude));
-        }
+        data.putAll(getRoomData(room));
 
         return data;
     }
