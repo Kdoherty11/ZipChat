@@ -46,7 +46,7 @@ public class Message {
     @ForeignEntity
     public User sender;
 
-    @OneToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<User> favorites = new ArrayList<>();
 
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
