@@ -41,6 +41,7 @@ public class MessagesController extends BaseController {
         return favorite(messageId, userId, REMOVE_FAVORITE);
     }
 
+    @Transactional
     public static Result favorite(long messageId, long userId, boolean isAddFavorite) {
         Optional<Message> messageOptional = DbUtils.findEntityById(Message.class, messageId);
 
