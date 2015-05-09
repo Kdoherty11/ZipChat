@@ -251,13 +251,21 @@ public class RoomSocket extends UntypedActor {
 
     private void receiveQuit(Jedis j, Quit quit) {
         long roomId = quit.getRoomId();
+        long userId = quit.getUserId();
         Map<Long, WebSocket.Out<JsonNode>> members = rooms.get(roomId);
 
         if (members != null) {
-            members.remove(quit.getUserId());
+            members.remove(userId);
         }
 
-        j.srem(String.valueOf(roomId), String.valueOf(quit.getUserId()));
+        long removed = j.srem(String.valueOf(roomId), String.valueOf(userId));
+
+        if (removed == 1) {
+            Logger.debug("Successfully removed user with id " + userId + " from room " + roomId);
+        } else {
+            Logger.debug("Tried to remove user with id " + userId +
+                    " from room " + roomId + " but they were not in the room. Removed: " + removed);
+        }
 
         Set<String> roomMembers = j.smembers(String.valueOf(roomId));
 
@@ -269,7 +277,7 @@ public class RoomSocket extends UntypedActor {
             if (roomMembers.contains(String.valueOf(SocketKeepAlive.USER_ID))) {
                 Logger.debug("Removing robot from room: " + roomId);
 
-                rooms.remove(quit.getRoomId());
+                rooms.remove(roomId);
 
                 // Remove robot
                 if (clientHeartbeats.containsKey(roomId)) {
@@ -281,7 +289,7 @@ public class RoomSocket extends UntypedActor {
             }
         } else {
             //Publish the quit notification to all nodes
-            RosterNotification rosterNotify = new RosterNotification(roomId, quit.getUserId(), "quit");
+            RosterNotification rosterNotify = new RosterNotification(roomId, userId, "quit");
             j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
         }
     }
