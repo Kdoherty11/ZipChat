@@ -241,7 +241,12 @@ public class RoomSocket extends UntypedActor {
             members.remove(userId);
         }
 
-        j.srem(String.valueOf(roomId), String.valueOf(userId));
+        long userRemoved = j.srem(String.valueOf(roomId), String.valueOf(userId));
+        if (userRemoved == 1) {
+            Logger.debug("User remove success");
+        } else {
+            Logger.debug("User remove failed");
+        }
 
         Set<String> roomMembers = j.smembers(String.valueOf(roomId));
 
@@ -253,7 +258,12 @@ public class RoomSocket extends UntypedActor {
             if (roomMembers.contains(String.valueOf(SocketKeepAlive.USER_ID))) {
                 Logger.debug("Removing robot from room " + roomId);
 
-                j.srem(String.valueOf(roomId), String.valueOf(SocketKeepAlive.USER_ID));
+                long robotRemoved = j.srem(String.valueOf(roomId), String.valueOf(SocketKeepAlive.USER_ID));
+                if (robotRemoved == 1) {
+                    Logger.debug("Robot remove success");
+                } else {
+                    Logger.debug("Robot remove failed");
+                }
 
                 rooms.remove(roomId);
 
