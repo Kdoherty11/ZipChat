@@ -182,7 +182,7 @@ public class RoomSocket extends UntypedActor {
 
         Message message = storeMessage(talk);
 
-        notifyRoom(roomId, "talk", userId, Json.stringify(toJson(message));
+        notifyRoom(roomId, "talk", userId, Json.stringify(toJson(message)));
 
         User sender = message.sender;
         usersCache.put(userId, sender);
