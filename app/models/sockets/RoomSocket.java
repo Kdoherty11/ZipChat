@@ -158,7 +158,7 @@ public class RoomSocket extends UntypedActor {
                 // Received a Talk message
                 Talk talk = (Talk) message;
                 Logger.debug("onReceive: " + talk);
-                receiveTalk(talk);
+                receiveTalk(j, talk);
             } else {
                 unhandled(message);
             }
@@ -169,7 +169,7 @@ public class RoomSocket extends UntypedActor {
         }
     }
 
-    private void receiveTalk(Talk talk) throws Throwable {
+    private void receiveTalk(Jedis j, Talk talk) throws Throwable {
         long roomId = talk.getRoomId();
         long userId = talk.getUserId();
         String messageText = talk.getText();
@@ -192,18 +192,12 @@ public class RoomSocket extends UntypedActor {
             publicRoomsCache.put(roomId, publicRoom);
 
             if (publicRoom.hasSubscribers()) {
-                Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
+                Set<Long> userIdsInRoom = j.smembers(String.valueOf(roomId))
+                        .stream()
+                        .map(Long::parseLong)
+                        .collect(Collectors.toSet());
 
-                try {
-                    Set<Long> userIdsInRoom = j.smembers(String.valueOf(roomId))
-                            .stream()
-                            .map(Long::parseLong)
-                            .collect(Collectors.toSet());
-
-                    NotificationUtils.messageSubscribers(publicRoom, sender, messageText, userIdsInRoom);
-                } finally {
-                    play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
-                }
+                NotificationUtils.messageSubscribers(publicRoom, sender, messageText, userIdsInRoom);
             }
         } else {
             PrivateRoom privateRoom = (PrivateRoom) abstractRoom;
