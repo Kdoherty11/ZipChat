@@ -39,22 +39,19 @@ public enum PrivateRoomsControllerAdapter {
     public PrivateRoom makePrivateRoom() throws Throwable {
         long createdResultId = requestAdapter.getCreateRequestId();
         requestAdapter.handleResponse(createdResultId, Request.Status.accepted.toString());
+        Optional<Request> requestOptional = DbUtils.findEntityById(Request.class, createdResultId);
+        Request request = requestOptional.get();
+        final long senderId = request.sender.userId;
+        final long receiverId = request.receiver.userId;
 
-        return JPA.withTransaction(() -> {
-            Optional<Request> requestOptional = DbUtils.findEntityById(Request.class, createdResultId);
-            Request request = requestOptional.get();
-            final long senderId = request.sender.userId;
-            final long receiverId = request.receiver.userId;
+        String queryString = "select p from PrivateRoom p where (p.sender.userId = :senderId and p.senderInRoom = true) and (p.receiver.userId = :receiverId and p.receiverInRoom = true)";
 
-            String queryString = "select p from PrivateRoom p where (p.sender.userId = :senderId and p.senderInRoom = true) and (p.receiver.userId = :receiverId and p.receiverInRoom = true)";
+        TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
+                .setParameter("senderId", senderId)
+                .setParameter("receiverId", receiverId);
 
-            TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
-                    .setParameter("senderId", senderId)
-                    .setParameter("receiverId", receiverId);
-
-            List<PrivateRoom> privateRoomList = query.getResultList();
-            return privateRoomList.get(0);
-        });
+        List<PrivateRoom> privateRoomList = query.getResultList();
+        return privateRoomList.get(0);
     }
 
     public Result getRoomsByUserId(long userId) {

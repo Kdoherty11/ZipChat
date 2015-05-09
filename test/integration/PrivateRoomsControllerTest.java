@@ -3,6 +3,7 @@ package integration;
 import adapters.PrivateRoomsControllerAdapter;
 import adapters.RequestsControllerAdapter;
 import adapters.UsersControllerAdapter;
+import controllers.BaseController;
 import models.entities.PrivateRoom;
 import models.entities.Request;
 import org.json.JSONException;
@@ -16,8 +17,7 @@ import utils.TestUtils;
 import java.util.Optional;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static play.mvc.Http.Status.BAD_REQUEST;
-import static play.mvc.Http.Status.NOT_FOUND;
+import static play.mvc.Http.Status.*;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.status;
 
@@ -46,11 +46,17 @@ public class PrivateRoomsControllerTest extends AbstractControllerTest {
 
     @Test
     public void testLeaveRoomSuccess() throws Throwable {
-        PrivateRoom room = adapter.makePrivateRoom();
-        Logger.debug("HERE: " + room);
-        //Result leaveRoomSuccess = adapter.leaveRoom(room.roomId, room.sender.userId);
-        //assertThat(status(leaveRoomSuccess)).isEqualTo(OK);
-        //assertThat(contentAsString(leaveRoomSuccess)).isEqualTo(BaseController.OK_STRING);
+        JPA.withTransaction(() -> {
+            PrivateRoom room = adapter.makePrivateRoom();
+            Logger.debug("HERE: " + room);
+
+            Result leaveRoomSuccess = adapter.leaveRoom(room.roomId, room.sender.userId);
+            assertThat(status(leaveRoomSuccess)).isEqualTo(OK);
+            assertThat(contentAsString(leaveRoomSuccess)).isEqualTo(BaseController.OK_STRING);
+            Logger.debug("PASSED!!!!");
+        });
+
+
     }
 
     @Test
