@@ -5,6 +5,7 @@ import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import utils.DbUtils;
+import utils.NotificationUtils;
 import validation.DataValidator;
 import validation.FieldValidator;
 import validation.Validators;
@@ -51,7 +52,9 @@ public class MessagesController extends BaseController {
             Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
             if (userOptional.isPresent()) {
                 if (isAddFavorite) {
-                    message.favorite(userOptional.get());
+                    User favoritor = userOptional.get();
+                    message.favorite(favoritor);
+                    NotificationUtils.sendMessageFavorited(favoritor, message.sender, message.message, message.room);
                 } else {
                     message.removeFavorite(userOptional.get());
                 }

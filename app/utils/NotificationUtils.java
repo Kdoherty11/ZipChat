@@ -37,6 +37,7 @@ public class NotificationUtils {
         private static final String CHAT_REQUEST = "Chat Request";
         private static final String CHAT_REQUEST_RESPONSE = "Chat Request Response";
         private static final String CHAT_MESSAGE = "Chat Message";
+        private static final String MESSAGE_FAVORITED = "Message Favorited";
     }
 
     public static final String GCM_API_KEY = "AIzaSyDp2t64B8FsJUAOszaFl14-uiDVoZRu4W4";
@@ -120,6 +121,18 @@ public class NotificationUtils {
         }
     }
 
+    public static void sendMessageFavorited(User messageFavoritor, User messageSender, String message, AbstractRoom room) {
+        Map<String, String> data = new HashMap<>();
+        data.put(Key.EVENT, Event.MESSAGE_FAVORITED);
+        data.put(Key.FACEBOOK_NAME, messageFavoritor.name);
+        data.put(Key.FACEBOOK_ID, messageFavoritor.facebookId);
+        data.put(Key.ROOM_ID, String.valueOf(room.roomId));
+        data.put(Key.MESSAGE, message);
+        data.put(Key.ROOM_TYPE, room.getClass().getSimpleName());
+        messageSender.sendNotification(data);
+    }
+
+
     public static void sendChatRequest(User sender, User receiver) {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.CHAT_REQUEST);
@@ -165,4 +178,5 @@ public class NotificationUtils {
 
         return data;
     }
+
 }
