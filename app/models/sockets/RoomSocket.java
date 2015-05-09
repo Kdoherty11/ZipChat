@@ -299,7 +299,7 @@ public class RoomSocket extends UntypedActor {
         event.put("event", kind);
         event.put("message", text);
 
-        if (!Talk.TYPE.equals(kind)) {
+        if (!Talk.TYPE.equals(kind) && userId != SocketKeepAlive.USER_ID) {
             User user = JPA.withTransaction(() -> usersCache.get(userId, () -> findExistingEntityById(User.class, userId)));
             event.put("user", toJson(user));
         }
