@@ -27,7 +27,6 @@ import utils.NotificationUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 import static akka.pattern.Patterns.ask;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static play.libs.Json.toJson;
-import static utils.DbUtils.*;
+import static utils.DbUtils.findExistingEntityById;
 
 public class RoomSocket extends UntypedActor {
 
@@ -94,7 +93,7 @@ public class RoomSocket extends UntypedActor {
                     out.write(event);
                 });
 
-               // out.write(toJson(roomMemberIds));
+                // out.write(toJson(roomMemberIds));
             } finally {
                 play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
             }
@@ -293,7 +292,7 @@ public class RoomSocket extends UntypedActor {
         }
     }
 
-    private void receiveRosterNotification(RosterNotification rosterNotification) {
+    private void receiveRosterNotification(RosterNotification rosterNotification) throws Throwable {
         if ("join".equals(rosterNotification.getDirection())) {
             notifyRoom(rosterNotification.getRoomId(), "join", rosterNotification.getUserId(), "has entered the room");
         } else if ("quit".equals(rosterNotification.getDirection())) {
@@ -302,7 +301,7 @@ public class RoomSocket extends UntypedActor {
     }
 
     // Send a Json event to all members connected to this node
-    public void notifyRoom(long roomId, String kind, long userId, String text) {
+    public void notifyRoom(long roomId, String kind, long userId, String text) throws Throwable {
         Logger.debug("NotifyAll called with roomId: " + roomId);
 
         if (!rooms.containsKey(roomId)) {
@@ -310,36 +309,17 @@ public class RoomSocket extends UntypedActor {
             return;
         }
 
+        final ObjectNode event = Json.newObject();
+        event.put("event", kind);
+        event.put("message", text);
+
+        if (!Talk.TYPE.equals(kind)) {
+            User user = JPA.withTransaction(() -> usersCache.get(userId, () -> findExistingEntityById(User.class, userId)));
+            event.put("user", toJson(user));
+        }
+
         for (WebSocket.Out<JsonNode> channel : rooms.get(roomId).values()) {
-
-            JPA.withTransaction(() -> {
-                JsonNode userJson;
-                if (userId == SocketKeepAlive.USER_ID) {
-                    userJson = null;
-                } else {
-                    User user = usersCache.getIfPresent(userId);
-                    if (user != null) {
-                        userJson = toJson(user);
-                    } else {
-                        Optional<User> userOptional = findEntityById(User.class, userId);
-                        if (userOptional.isPresent()) {
-                            user = userOptional.get();
-                            usersCache.put(userId, user);
-                            userJson = toJson(user);
-                        } else {
-                            Logger.error("Not notifying room because " + buildEntityNotFoundString(User.ENTITY_NAME, userId));
-                            return;
-                        }
-                    }
-                }
-
-                ObjectNode event = Json.newObject();
-                event.put("event", kind);
-                event.put("user", userJson);
-                event.put("message", text);
-
-                channel.write(event);
-            });
+            channel.write(event);
         }
     }
 
