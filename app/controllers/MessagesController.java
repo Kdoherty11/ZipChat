@@ -54,7 +54,9 @@ public class MessagesController extends BaseController {
                 if (isAddFavorite) {
                     User favoritor = userOptional.get();
                     message.favorite(favoritor);
-                    NotificationUtils.sendMessageFavorited(favoritor, message.sender, message.message, message.room);
+                    if (favoritor.userId != message.sender.userId) {
+                        NotificationUtils.sendMessageFavorited(favoritor, message.sender, message.message, message.room);
+                    }
                 } else {
                     message.removeFavorite(userOptional.get());
                 }
