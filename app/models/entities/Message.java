@@ -14,6 +14,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,14 +111,19 @@ public class Message {
     }
 
     public static List<Message> getMessages(long roomId, int limit, int offset) {
-        String queryString = "select m from Message m where m.room.roomId = :roomId order by m.timeStamp";
 
-        TypedQuery<Message> query = JPA.em().createQuery(queryString, Message.class)
+        String queryString = "select m from Message m where m.room.roomId = :roomId order by m.timeStamp DESC";
+
+        TypedQuery<Message> limitOffsetQuery = JPA.em().createQuery(queryString, Message.class)
                 .setParameter("roomId", roomId)
                 .setMaxResults(limit)
                 .setFirstResult(offset);
 
-        return query.getResultList();
+        List<Message> messages = limitOffsetQuery.getResultList();
+
+        Collections.reverse(messages);
+
+        return messages;
     }
 
     @Override
