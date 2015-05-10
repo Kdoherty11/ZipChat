@@ -99,13 +99,14 @@ public class Message {
         return true;
     }
 
-    public void removeFavorite(User user) {
+    public boolean removeFavorite(User user) {
         boolean deletedUser = favorites.remove(user);
         if (deletedUser) {
             score--;
         } else {
             Logger.warn(user + " attempted to remove favorite from " + this + " but has not favorited it");
         }
+        return deletedUser;
     }
 
     public static List<Message> getMessages(long roomId, int limit, int offset) {

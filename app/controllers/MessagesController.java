@@ -53,12 +53,18 @@ public class MessagesController extends BaseController {
             if (userOptional.isPresent()) {
                 if (isAddFavorite) {
                     User favoritor = userOptional.get();
-                    boolean result = message.favorite(favoritor);
-                    if (result && favoritor.userId != message.sender.userId) {
+                    boolean success = message.favorite(favoritor);
+                    if (!success) {
+                        return badRequestJson("User " + userId + " has already favorited this message");
+                    }
+                    if (favoritor.userId != message.sender.userId) {
                         NotificationUtils.sendMessageFavorited(favoritor, message.sender, message.message, message.room);
                     }
                 } else {
-                    message.removeFavorite(userOptional.get());
+                    boolean success = message.removeFavorite(userOptional.get());
+                    if (!success) {
+                       return badRequestJson("User " + userId + " has not favorited this message");
+                    }
                 }
                 return OK_RESULT;
             } else {

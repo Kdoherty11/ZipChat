@@ -40,7 +40,11 @@ public class RoomSocket extends UntypedActor {
 
     private static final String CHANNEL = "messages";
 
-    public static final String OK_JOIN_RESULT = "OK";
+    private static final String OK_JOIN_RESULT = "OK";
+
+    private static final String EVENT_KEY = "event";
+    private static final String MESSAGE_KEY = "message";
+    private static final String USER_KEY = "user";
 
     static final ActorRef defaultRoom = Akka.system().actorOf(Props.create(RoomSocket.class));
 
@@ -88,8 +92,8 @@ public class RoomSocket extends UntypedActor {
                             .toArray();
 
                     ObjectNode event = Json.newObject();
-                    event.put("event", "roomMembers");
-                    event.put("message", toJson(roomMembers));
+                    event.put(EVENT_KEY, "roomMembers");
+                    event.put(MESSAGE_KEY, toJson(roomMembers));
 
                     out.write(event);
                 });
@@ -114,8 +118,8 @@ public class RoomSocket extends UntypedActor {
         } else {
             // Cannot connect, create a Json error.
             ObjectNode error = Json.newObject();
-            error.put("event", "error");
-            error.put("message", result);
+            error.put(EVENT_KEY, "error");
+            error.put(MESSAGE_KEY, result);
 
             // Send the error to the socket.
             out.write(error);
@@ -292,12 +296,12 @@ public class RoomSocket extends UntypedActor {
         }
 
         final ObjectNode event = Json.newObject();
-        event.put("event", kind);
-        event.put("message", text);
+        event.put(EVENT_KEY, kind);
+        event.put(MESSAGE_KEY, text);
 
         if (!Talk.TYPE.equals(kind) && userId != SocketKeepAlive.USER_ID) {
             User user = JPA.withTransaction(() -> usersCache.get(userId, () -> findExistingEntityById(User.class, userId)));
-            event.put("user", toJson(user));
+            event.put(USER_KEY, toJson(user));
         }
 
         for (WebSocket.Out<JsonNode> channel : rooms.get(roomId).values()) {
