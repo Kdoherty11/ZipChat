@@ -89,16 +89,22 @@ public class Message {
         }
     }
 
-    public void favorite(User user) {
+    public boolean favorite(User user) {
+        if (favorites.contains(user)) {
+            Logger.error(user + " is attempting to favorite " + this + " but has already favorited it");
+            return false;
+        }
         favorites.add(user);
         score++;
+        return true;
     }
 
     public void removeFavorite(User user) {
         boolean deletedUser = favorites.remove(user);
-        if (!deletedUser) {
-            Logger.warn(user + " attempted to remove a favorite from " + this);
+        if (deletedUser) {
             score--;
+        } else {
+            Logger.warn(user + " attempted to remove favorite from " + this + " but has not favorited it");
         }
     }
 
