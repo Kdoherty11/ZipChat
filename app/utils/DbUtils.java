@@ -29,6 +29,26 @@ public class DbUtils {
         return entity;
     }
 
+    public static <T> T findEntityByIdWithTransaction(Class<T> clazz, long id) {
+        T result;
+        try {
+            result = JPA.withTransaction(() -> {
+                T entity = JPA.em().find(clazz, id);
+
+                if (entity == null) {
+                    throw new EntityNotFoundException(buildEntityNotFoundString(clazz.getSimpleName(), id));
+                }
+
+                return entity;
+            });
+        } catch (Throwable t) {
+            throw new RuntimeException(t.getMessage());
+        }
+
+        return result;
+    }
+
+
     public static <T> boolean deleteEntityById(Class<T> clazz, long id) {
         Optional<T> entityOptional = DbUtils.findEntityById(clazz, id);
         if (entityOptional.isPresent()) {

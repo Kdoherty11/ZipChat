@@ -9,10 +9,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.typesafe.plugin.RedisPlugin;
 import models.entities.*;
-import models.sockets.messages.Join;
-import models.sockets.messages.Quit;
-import models.sockets.messages.RosterNotification;
-import models.sockets.messages.Talk;
+import models.sockets.messages.*;
 import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
@@ -34,6 +31,7 @@ import java.util.stream.Collectors;
 import static akka.pattern.Patterns.ask;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static play.libs.Json.toJson;
+import static utils.DbUtils.findEntityByIdWithTransaction;
 import static utils.DbUtils.findExistingEntityById;
 
 public class RoomSocket extends UntypedActor {
@@ -91,9 +89,20 @@ public class RoomSocket extends UntypedActor {
                             .mapToObj(id -> findExistingEntityById(User.class, id))
                             .toArray();
 
+
                     ObjectNode event = Json.newObject();
-                    event.put(EVENT_KEY, "roomMembers");
-                    event.put(MESSAGE_KEY, toJson(roomMembers));
+                    event.put(EVENT_KEY, "joinSuccess");
+
+                    ObjectNode message = Json.newObject();
+                    message.put("roomMembers", toJson(roomMembers));
+
+                    AbstractRoom room = findExistingEntityById(AbstractRoom.class, roomId);
+                    if (room instanceof PublicRoom) {
+                        boolean isSubscribed = ((PublicRoom) room).isSubscribed(userId);
+                        message.put("isSubscribed", isSubscribed);
+                    }
+
+                    event.put(MESSAGE_KEY, message);
 
                     out.write(event);
                 });
@@ -145,6 +154,8 @@ public class RoomSocket extends UntypedActor {
                 receiveRosterNotification((RosterNotification) message);
             } else if (message instanceof Talk) {
                 receiveTalk(j, (Talk) message);
+            } else if (message instanceof FavoriteNotification) {
+                receiveFavoriteNotification((FavoriteNotification) message);
             } else {
                 unhandled(message);
             }
@@ -154,6 +165,34 @@ public class RoomSocket extends UntypedActor {
             play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
         }
     }
+
+    private void receiveFavoriteNotification(FavoriteNotification favoriteNotification) throws Throwable {
+        Logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
+        long messageId = favoriteNotification.getMessageId();
+        Message message = JPA.withTransaction(() -> findExistingEntityById(Message.class, messageId));
+
+        long userId = favoriteNotification.getUserId();
+
+        User user = usersCache.get(userId, () -> findEntityByIdWithTransaction(User.class, userId));
+
+        boolean success;
+        if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
+            success = message.favorite(user);
+        } else {
+            success = message.removeFavorite(user);
+        }
+
+        if (success) {
+            notifyRoom(message.room.roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
+        } else {
+            ObjectNode error = Json.newObject();
+            error.put(EVENT_KEY, "error");
+            error.put(MESSAGE_KEY, "Problem " + favoriteNotification.getAction() + "ing a favorite");
+
+            notifyUser(message.room.roomId, userId, error);
+        }
+    }
+
 
     private void receiveTalk(Jedis j, Talk talk) throws Throwable {
         Logger.debug("receiveTalk: " + talk);
@@ -194,6 +233,21 @@ public class RoomSocket extends UntypedActor {
         }
     }
 
+    private void notifyUser(long roomId, long userId, JsonNode message) {
+        Map<Long, WebSocket.Out<JsonNode>> room = rooms.get(roomId);
+        if (room == null) {
+            throw new RuntimeException("Can't notify user because room " + roomId + " does not exist in rooms");
+        }
+
+        WebSocket.Out<JsonNode> nodeOut = room.get(userId);
+
+        if (nodeOut == null) {
+            throw new RuntimeException("Can't notify user " + userId + " because they are not in room " + roomId);
+        }
+
+        nodeOut.write(message);
+    }
+
     private Message storeMessage(Talk talk) throws Throwable {
         if (SocketKeepAlive.USER_ID == talk.getUserId()) {
             throw new IllegalArgumentException("Trying to store a keep alive message");
@@ -210,7 +264,6 @@ public class RoomSocket extends UntypedActor {
         Logger.debug("receiveJoin: " + join);
         long roomId = join.getRoomId();
         long userId = join.getUserId();
-        // TODO
         if (j.sismember(String.valueOf(roomId), String.valueOf(userId))) {
             getSender().tell("This userId is already used", getSelf());
             Logger.error("User " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
@@ -295,18 +348,16 @@ public class RoomSocket extends UntypedActor {
             return;
         }
 
-        final ObjectNode event = Json.newObject();
-        event.put(EVENT_KEY, kind);
-        event.put(MESSAGE_KEY, text);
+        final ObjectNode message = Json.newObject();
+        message.put(EVENT_KEY, kind);
+        message.put(MESSAGE_KEY, text);
 
         if (!Talk.TYPE.equals(kind) && userId != SocketKeepAlive.USER_ID) {
             User user = JPA.withTransaction(() -> usersCache.get(userId, () -> findExistingEntityById(User.class, userId)));
-            event.put(USER_KEY, toJson(user));
+            message.put(USER_KEY, toJson(user));
         }
 
-        for (WebSocket.Out<JsonNode> channel : rooms.get(roomId).values()) {
-            channel.write(event);
-        }
+        rooms.get(roomId).values().stream().forEach(channel -> channel.write(message));
     }
 
     // -- Messages
@@ -337,6 +388,12 @@ public class RoomSocket extends UntypedActor {
                 message = new Quit(
                         parsedMessage.get("roomId").asLong(),
                         parsedMessage.get("userId").asLong()
+                );
+            } else if (FavoriteNotification.TYPE.equals(messageType)) {
+                message = new FavoriteNotification(
+                        parsedMessage.get("messageId").asLong(),
+                        parsedMessage.get("userId").asLong(),
+                        parsedMessage.get("action").asText()
                 );
             }
             RoomSocket.remoteMessage(message);
