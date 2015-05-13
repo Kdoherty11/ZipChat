@@ -44,7 +44,7 @@ public class FavoriteNotification {
     }
 
     public FavoriteNotification(long userId, long messageId, String actionString) {
-        this(userId, messageId, Action.valueOf(actionString));
+        this(userId, messageId, Action.valueOf(actionString.toUpperCase()));
     }
 
     public long getMessageId() {
