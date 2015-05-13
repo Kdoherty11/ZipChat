@@ -191,38 +191,39 @@ public class RoomSocket extends UntypedActor {
     private void receiveFavoriteNotification(FavoriteNotification favoriteNotification) throws Throwable {
         Logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
 
-        long messageId = favoriteNotification.getMessageId();
-        Message message = JPA.withTransaction(() -> findExistingEntityById(Message.class, messageId));
+        JPA.withTransaction(() -> {
+            long messageId = favoriteNotification.getMessageId();
+            Message message = findExistingEntityById(Message.class, messageId);
 
-        Logger.debug("*** Success getting message: " + message);
+            Logger.debug("*** Success getting message: " + message);
 
-        long userId = favoriteNotification.getUserId();
-        final User user = JPA.withTransaction(() -> findExistingEntityById(User.class, userId));
+            long userId = favoriteNotification.getUserId();
+            final User user = findExistingEntityById(User.class, userId);
 
-        Logger.debug("*** Success getting user: " + user);
+            Logger.debug("*** Success getting user: " + user);
 
-        boolean success;
+            boolean success;
 
-        if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
-            success = JPA.withTransaction(() -> message.favorite(user));
-        } else {
-            success = JPA.withTransaction(() -> message.removeFavorite(user));
-        }
+            if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
+                success = message.favorite(user);
+            } else {
+                success = message.removeFavorite(user);
+            }
 
-        Logger.debug("*** Success favoriting message: " + success);
+            Logger.debug("*** Success favoriting message: " + success);
 
-        if (success) {
-            notifyRoom(message.room.roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
-        } else {
-            ObjectNode error = Json.newObject();
-            error.put(EVENT_KEY, "error");
-            error.put(MESSAGE_KEY, "Problem " + favoriteNotification.getAction() + "ing a favorite");
+            if (success) {
+                notifyRoom(message.room.roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
+            } else {
+                ObjectNode error = Json.newObject();
+                error.put(EVENT_KEY, "error");
+                error.put(MESSAGE_KEY, "Problem " + favoriteNotification.getAction() + "ing a favorite");
 
-            notifyUser(message.room.roomId, userId, error);
-        }
+                notifyUser(message.room.roomId, userId, error);
+            }
 
-        Logger.debug("*** Success notifying room / user");
-
+            Logger.debug("*** Success notifying room / user");
+        });
     }
 
 
