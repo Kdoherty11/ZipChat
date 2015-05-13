@@ -118,18 +118,15 @@ public class RoomSocket extends UntypedActor {
                 Object messageObject;
                 switch (event) {
                     case Talk.TYPE:
-                        Logger.debug("***************** TALK");
                         messageObject = new Talk(roomId, userId, message.get("message").asText());
                         break;
                     case FavoriteNotification.TYPE:
-                        Logger.debug("***************** FAVORITE EVENT: " + message.toString());
                         try {
                             messageObject = new FavoriteNotification(userId, Long.parseLong(message.get("messageId").asText()), message.get("action").asText());
                         } catch (Exception e) {
                             Logger.error("Problem creating a message object: " +  e.getMessage());
                             throw new RuntimeException(e);
                         }
-                        Logger.debug("********** Success creating favorite notification object");
                         break;
                     default:
                         throw new RuntimeException("Event: " + event + " is not supported");
@@ -138,7 +135,6 @@ public class RoomSocket extends UntypedActor {
                 Jedis jedis = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
                 try {
                     jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(messageObject)));
-                    Logger.debug("Success publishing " + event + " through redis channel");
                 } finally {
                     play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                 }
@@ -195,22 +191,15 @@ public class RoomSocket extends UntypedActor {
             long messageId = favoriteNotification.getMessageId();
             Message message = findExistingEntityById(Message.class, messageId);
 
-            Logger.debug("*** Success getting message: " + message);
-
             long userId = favoriteNotification.getUserId();
             final User user = findExistingEntityById(User.class, userId);
 
-            Logger.debug("*** Success getting user: " + user);
-
             boolean success;
-
             if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
                 success = message.favorite(user);
             } else {
                 success = message.removeFavorite(user);
             }
-
-            Logger.debug("*** Success favoriting message: " + success);
 
             if (success) {
                 notifyRoom(message.room.roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
@@ -221,8 +210,6 @@ public class RoomSocket extends UntypedActor {
 
                 notifyUser(message.room.roomId, userId, error);
             }
-
-            Logger.debug("*** Success notifying room / user");
         });
     }
 
