@@ -124,7 +124,12 @@ public class RoomSocket extends UntypedActor {
                         break;
                     case FavoriteNotification.TYPE:
                         Logger.debug("***************** FAVORITE EVENT: " + message.toString());
-                        messageObject = new FavoriteNotification(userId, message.get("messageId").asLong(), message.get("action").asText());
+                        try {
+                            messageObject = new FavoriteNotification(userId, Long.parseLong(message.get("messageId").asText()), message.get("action").asText());
+                        } catch (Exception e) {
+                            Logger.error("Problem creating a message object: " +  e.getMessage());
+                            throw new RuntimeException(e);
+                        }
                         Logger.debug("********** Success creating favorite notification object");
                         break;
                     default:
