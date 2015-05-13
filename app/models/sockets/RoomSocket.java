@@ -195,8 +195,12 @@ public class RoomSocket extends UntypedActor {
         long messageId = favoriteNotification.getMessageId();
         Message message = JPA.withTransaction(() -> findExistingEntityById(Message.class, messageId));
 
+        Logger.debug("*** Success getting message: " + message);
+
         long userId = favoriteNotification.getUserId();
         User user = usersCache.get(userId, () -> findEntityByIdWithTransaction(User.class, userId));
+
+        Logger.debug("*** Success getting user: " + user);
 
         boolean success;
 
@@ -205,6 +209,8 @@ public class RoomSocket extends UntypedActor {
         } else {
             success = JPA.withTransaction(() -> message.removeFavorite(user));
         }
+
+        Logger.debug("*** Success favoriting message: " + success);
 
         if (success) {
             notifyRoom(message.room.roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
@@ -215,6 +221,9 @@ public class RoomSocket extends UntypedActor {
 
             notifyUser(message.room.roomId, userId, error);
         }
+
+        Logger.debug("*** Success notifying room / user");
+
     }
 
 
