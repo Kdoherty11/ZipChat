@@ -111,12 +111,26 @@ public class RoomSocket extends UntypedActor {
             }
 
             // For each event received on the socket,
-            in.onMessage(event -> {
-                Talk talk = new Talk(roomId, userId, event.get("message").asText());
+            in.onMessage(message -> {
+
+                final String event = message.get("event").asText();
+
+                // TODO AbstractSocketMessage class
+                Object messageObject;
+                switch (event) {
+                    case Talk.TYPE:
+                        messageObject = new Talk(roomId, userId, message.get("message").asText());
+                        break;
+                    case FavoriteNotification.TYPE:
+                        messageObject = new FavoriteNotification(userId, message.get("messageId").asLong(), message.get("action").asText());
+                        break;
+                    default:
+                        throw new RuntimeException("Event: " + event + " is not supported");
+                }
 
                 Jedis jedis = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
                 try {
-                    jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(talk)));
+                    jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(messageObject)));
                 } finally {
                     play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                 }

@@ -11,8 +11,8 @@ public class FavoriteNotification {
 
     public enum Action {
 
-        ADD("addFavorite"),
-        REMOVE("removeFavorite");
+        ADD("favorite"),
+        REMOVE("remove");
 
         private String type;
 
