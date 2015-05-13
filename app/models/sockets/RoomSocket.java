@@ -119,10 +119,13 @@ public class RoomSocket extends UntypedActor {
                 Object messageObject;
                 switch (event) {
                     case Talk.TYPE:
+                        Logger.debug("***************** TALK");
                         messageObject = new Talk(roomId, userId, message.get("message").asText());
                         break;
                     case FavoriteNotification.TYPE:
+                        Logger.debug("***************** FAVORITE EVENT");
                         messageObject = new FavoriteNotification(userId, message.get("messageId").asLong(), message.get("action").asText());
+                        Logger.debug("********** Success creating favorite notification object");
                         break;
                     default:
                         throw new RuntimeException("Event: " + event + " is not supported");
@@ -131,6 +134,7 @@ public class RoomSocket extends UntypedActor {
                 Jedis jedis = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
                 try {
                     jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(messageObject)));
+                    Logger.debug("Success publishing " + event + " through redis channel");
                 } finally {
                     play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
                 }
@@ -384,31 +388,35 @@ public class RoomSocket extends UntypedActor {
             JsonNode parsedMessage = Json.parse(messageBody);
 
             Logger.debug("onMessage: " + parsedMessage);
-            Object message = null;
+            Object message;
             String messageType = parsedMessage.get("type").asText();
-            if (Talk.TYPE.equals(messageType)) {
-                message = new Talk(
-                        parsedMessage.get("roomId").asLong(),
-                        parsedMessage.get("userId").asLong(),
-                        parsedMessage.get("text").asText()
-                );
-            } else if (RosterNotification.TYPE.equals(messageType)) {
-                message = new RosterNotification(
-                        parsedMessage.get("roomId").asLong(),
-                        parsedMessage.get("userId").asLong(),
-                        parsedMessage.get("direction").asText()
-                );
-            } else if (Quit.TYPE.equals(messageType)) {
-                message = new Quit(
-                        parsedMessage.get("roomId").asLong(),
-                        parsedMessage.get("userId").asLong()
-                );
-            } else if (FavoriteNotification.TYPE.equals(messageType)) {
-                message = new FavoriteNotification(
-                        parsedMessage.get("messageId").asLong(),
-                        parsedMessage.get("userId").asLong(),
-                        parsedMessage.get("action").asText()
-                );
+
+            switch (messageType) {
+                case Talk.TYPE:
+                    message = new Talk(
+                            parsedMessage.get("roomId").asLong(),
+                            parsedMessage.get("userId").asLong(),
+                            parsedMessage.get("text").asText());
+                    break;
+                case RosterNotification.TYPE:
+                    message = new RosterNotification(
+                            parsedMessage.get("roomId").asLong(),
+                            parsedMessage.get("userId").asLong(),
+                            parsedMessage.get("direction").asText());
+                    break;
+                case Quit.TYPE:
+                    message = new Quit(
+                            parsedMessage.get("roomId").asLong(),
+                            parsedMessage.get("userId").asLong());
+                    break;
+                case FavoriteNotification.TYPE:
+                    message = new FavoriteNotification(
+                            parsedMessage.get("messageId").asLong(),
+                            parsedMessage.get("userId").asLong(),
+                            parsedMessage.get("action").asText());
+                    break;
+                default:
+                    throw new RuntimeException("Message type " + messageType + " is not supported");
             }
             RoomSocket.remoteMessage(message);
         }
