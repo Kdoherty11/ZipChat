@@ -12,7 +12,7 @@ public class FavoriteNotification {
     public enum Action {
 
         ADD("favorite"),
-        REMOVE("remove");
+        REMOVE("removeFavorite");
 
         private String type;
 
