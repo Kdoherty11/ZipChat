@@ -191,11 +191,11 @@ public class RoomSocket extends UntypedActor {
 
     private void receiveFavoriteNotification(FavoriteNotification favoriteNotification) throws Throwable {
         Logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
+
         long messageId = favoriteNotification.getMessageId();
         Message message = JPA.withTransaction(() -> findExistingEntityById(Message.class, messageId));
 
         long userId = favoriteNotification.getUserId();
-
         User user = usersCache.get(userId, () -> findEntityByIdWithTransaction(User.class, userId));
 
         boolean success;
@@ -416,8 +416,8 @@ public class RoomSocket extends UntypedActor {
                     break;
                 case FavoriteNotification.TYPE:
                     message = new FavoriteNotification(
-                            parsedMessage.get("messageId").asLong(),
                             parsedMessage.get("userId").asLong(),
+                            parsedMessage.get("messageId").asLong(),
                             parsedMessage.get("action").asText());
                     break;
                 default:
