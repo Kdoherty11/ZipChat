@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import static akka.pattern.Patterns.ask;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static play.libs.Json.toJson;
-import static utils.DbUtils.findEntityByIdWithTransaction;
 import static utils.DbUtils.findExistingEntityById;
 
 public class RoomSocket extends UntypedActor {
@@ -198,7 +197,11 @@ public class RoomSocket extends UntypedActor {
         Logger.debug("*** Success getting message: " + message);
 
         long userId = favoriteNotification.getUserId();
-        User user = usersCache.get(userId, () -> findEntityByIdWithTransaction(User.class, userId));
+        User user = usersCache.getIfPresent(userId);
+        Logger.debug("** Got user from cache: " + user);
+        if (user == null) {
+            user = JPA.withTransaction(() -> findExistingEntityById(User.class, userId));
+        }
 
         Logger.debug("*** Success getting user: " + user);
 
