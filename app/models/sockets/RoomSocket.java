@@ -199,10 +199,11 @@ public class RoomSocket extends UntypedActor {
         User user = usersCache.get(userId, () -> findEntityByIdWithTransaction(User.class, userId));
 
         boolean success;
+
         if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
-            success = message.favorite(user);
+            success = JPA.withTransaction(() -> message.favorite(user));
         } else {
-            success = message.removeFavorite(user);
+            success = JPA.withTransaction(() -> message.removeFavorite(user));
         }
 
         if (success) {
