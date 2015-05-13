@@ -123,7 +123,7 @@ public class RoomSocket extends UntypedActor {
                         messageObject = new Talk(roomId, userId, message.get("message").asText());
                         break;
                     case FavoriteNotification.TYPE:
-                        Logger.debug("***************** FAVORITE EVENT");
+                        Logger.debug("***************** FAVORITE EVENT: " + message.toString());
                         messageObject = new FavoriteNotification(userId, message.get("messageId").asLong(), message.get("action").asText());
                         Logger.debug("********** Success creating favorite notification object");
                         break;
