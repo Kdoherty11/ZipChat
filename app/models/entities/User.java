@@ -63,9 +63,8 @@ public class User {
             case ios:
                 return NotificationUtils.sendAppleNotification(registrationId, data);
             default:
-                String error = "Failed to send a notification to an " + platform + " device";
-                Logger.error(error);
-                return error;
+                throw new UnsupportedOperationException("Sending notifications to " + platform +
+                        "devices is not supported");
         }
     }
 

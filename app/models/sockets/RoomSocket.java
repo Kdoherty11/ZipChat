@@ -173,7 +173,7 @@ public class RoomSocket extends UntypedActor {
             } else if (message instanceof Talk) {
                 receiveTalk(j, (Talk) message);
             } else if (message instanceof FavoriteNotification) {
-                receiveFavoriteNotification((FavoriteNotification) message);
+                receiveFavoriteNotification(j, (FavoriteNotification) message);
             } else {
                 unhandled(message);
             }
@@ -184,7 +184,7 @@ public class RoomSocket extends UntypedActor {
         }
     }
 
-    private void receiveFavoriteNotification(FavoriteNotification favoriteNotification) throws Throwable {
+    private void receiveFavoriteNotification(Jedis j, FavoriteNotification favoriteNotification) throws Throwable {
         Logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
 
         JPA.withTransaction(() -> {
@@ -197,12 +197,23 @@ public class RoomSocket extends UntypedActor {
             boolean success;
             if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
                 success = message.favorite(user);
+
             } else {
                 success = message.removeFavorite(user);
             }
 
             if (success) {
-                notifyRoom(message.room.roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
+                long roomId = message.room.roomId;
+                notifyRoom(roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
+
+                Set<Long> userIdsInRoom = j.smembers(String.valueOf(roomId))
+                        .stream()
+                        .map(Long::parseLong)
+                        .collect(Collectors.toSet());
+
+                if (!userIdsInRoom.contains(message.sender.userId)) {
+                    NotificationUtils.sendMessageFavorited(user, message.sender, message.message, message.room);
+                }
             } else {
                 ObjectNode error = Json.newObject();
                 error.put(EVENT_KEY, "error");
