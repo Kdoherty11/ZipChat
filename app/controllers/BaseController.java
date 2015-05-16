@@ -102,7 +102,10 @@ public class BaseController extends Controller {
     private static void formatFormData(String nodeName, JsonNode node, Map<String, String> data) {
         node.fields().forEachRemaining(jsonField -> {
             if (jsonField.getValue().isValueNode()) {
-                data.put(nodeName + "." + jsonField.getKey(), jsonField.getValue().toString().replace("\"", ""));
+                JsonNode nodeValue = jsonField.getValue();
+                if (!nodeValue.isNull()) {
+                    data.put(nodeName + "." + jsonField.getKey(), jsonField.getValue().toString().replace("\"", ""));
+                }
             } else {
                 formatFormData(nodeName + "." + jsonField.getKey(), jsonField.getValue(), data);
             }
