@@ -15,7 +15,8 @@ libraryDependencies ++= Seq(
   javaWs,
   javaJpa,
   "org.hibernate" % "hibernate-entitymanager" % "3.6.9.Final",
-  "redis.clients" % "jedis" % "2.6.0"
+  "redis.clients" % "jedis" % "2.6.0",
+  "com.amazonaws" % "aws-java-sdk" % "1.3.11"
 )
 
 resolvers ++= Seq(

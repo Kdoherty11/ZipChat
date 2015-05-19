@@ -45,3 +45,7 @@ GET           /assets/*file                                     controllers.Asse
 
 POST          /init                                             controllers.BaseController.init()
 GET           /test                                             controllers.PublicRoomsController.getRooms()
+
+GET           /uploads                                          controllers.FilesController.index()
+GET           /uploads/:fileId                                  controllers.FilesController.show(fileId: Long)
+POST          /uploads                                          controllers.FilesController.upload()
