@@ -85,6 +85,13 @@ public class Request {
     }
 
     public static String getStatus(long senderId, long receiverId) {
+
+        Optional<PrivateRoom> privateRoomOptional = PrivateRoom.getRoom(senderId, receiverId);
+
+        if (privateRoomOptional.isPresent()) {
+            return Long.toString(privateRoomOptional.get().roomId);
+        }
+
         Optional<Request> requestOptional = getRequest(senderId, receiverId);
         if (requestOptional.isPresent()) {
             return requestOptional.get().status.name();

@@ -101,13 +101,13 @@ public class BaseController extends Controller {
 
     private static void formatFormData(String nodeName, JsonNode node, Map<String, String> data) {
         node.fields().forEachRemaining(jsonField -> {
-            if (jsonField.getValue().isValueNode()) {
-                JsonNode nodeValue = jsonField.getValue();
+            JsonNode nodeValue = jsonField.getValue();
+            if (nodeValue.isValueNode()) {
                 if (!nodeValue.isNull()) {
-                    data.put(nodeName + "." + jsonField.getKey(), jsonField.getValue().toString().replace("\"", ""));
+                    data.put(nodeName + "." + jsonField.getKey(), nodeValue.toString().replace("\"", ""));
                 }
             } else {
-                formatFormData(nodeName + "." + jsonField.getKey(), jsonField.getValue(), data);
+                formatFormData(nodeName + "." + jsonField.getKey(), nodeValue, data);
             }
         });
     }

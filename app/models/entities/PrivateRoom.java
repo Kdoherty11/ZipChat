@@ -7,6 +7,7 @@ import play.db.jpa.JPA;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "private_rooms")
@@ -83,5 +84,25 @@ public class PrivateRoom extends AbstractRoom {
                 .add("receiverInRoom", receiverInRoom)
                 .add("request", Request.getId(request))
                 .toString();
+    }
+
+    public static Optional<PrivateRoom> getRoom(long senderId, long receiverId) {
+
+        String queryString = "select p from PrivateRoom p where " +
+                "(p.sender.userId = :senderId and p.receiver.userId = :receiverId)" +
+                " or (p.receiver.userId = :senderId and p.sender.userId = :receiverId)" +
+                " and p.senderInRoom = true and p.receiverInRoom = true";
+
+        TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
+                .setParameter("senderId", senderId)
+                .setParameter("receiverId", senderId);
+
+        List<PrivateRoom> rooms = query.getResultList();
+
+        if (rooms.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(rooms.get(0));
     }
 }
