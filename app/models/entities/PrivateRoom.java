@@ -89,8 +89,8 @@ public class PrivateRoom extends AbstractRoom {
     public static Optional<PrivateRoom> getRoom(long senderId, long receiverId) {
 
         String queryString = "select p from PrivateRoom p where " +
-                "(p.sender.userId = :senderId and p.receiver.userId = :receiverId)" +
-                " or (p.receiver.userId = :senderId and p.sender.userId = :receiverId)" +
+                "((p.sender.userId = :senderId and p.receiver.userId = :receiverId)" +
+                " or (p.receiver.userId = :senderId and p.sender.userId = :receiverId))" +
                 " and p.senderInRoom = true and p.receiverInRoom = true";
 
         TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
