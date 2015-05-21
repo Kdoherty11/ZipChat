@@ -95,7 +95,7 @@ public class PrivateRoom extends AbstractRoom {
 
         TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
                 .setParameter("senderId", senderId)
-                .setParameter("receiverId", senderId);
+                .setParameter("receiverId", receiverId);
 
         List<PrivateRoom> rooms = query.getResultList();
 
