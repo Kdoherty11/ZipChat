@@ -57,6 +57,6 @@ public class RequestsController extends BaseController {
 
     @Transactional
     public static Result getStatus(long senderId, long receiverId) {
-        return okJson(Request.getStatus(senderId, receiverId));
+        return ok(Request.getStatus(senderId, receiverId));
     }
 }
