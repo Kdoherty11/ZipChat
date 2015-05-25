@@ -116,11 +116,13 @@ public class RoomSocket extends UntypedActor {
                 Object messageObject;
                 switch (event) {
                     case Talk.TYPE:
+                        Logger.debug("onMessage message " + message);
                         if (message.has("isAnon") && message.get("isAnon").asBoolean()) {
                             messageObject = new Talk(roomId, userId, message.get("message").asText(), message.get("isAnon").asBoolean());
                         } else {
                             messageObject = new Talk(roomId, userId, message.get("message").asText());
                         }
+                        Logger.debug("onMessage messageObject" + messageObject);
                         break;
                     case FavoriteNotification.TYPE:
                         messageObject = new FavoriteNotification(userId, Long.parseLong(message.get("messageId").asText()), message.get("action").asText());
