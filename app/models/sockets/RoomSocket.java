@@ -399,7 +399,7 @@ public class RoomSocket extends UntypedActor {
             //Process messages from the pub/sub channel
             JsonNode parsedMessage = Json.parse(messageBody);
 
-            Logger.debug("onMessage: " + parsedMessage);
+            Logger.debug("MessageListener.onMessage: " + parsedMessage);
             Object message;
             String messageType = parsedMessage.get("type").asText();
 
@@ -409,7 +409,7 @@ public class RoomSocket extends UntypedActor {
                             parsedMessage.get("roomId").asLong(),
                             parsedMessage.get("userId").asLong(),
                             parsedMessage.get("text").asText(),
-                            parsedMessage.get("isAnon").asBoolean());
+                            parsedMessage.get("anon").asBoolean());
                     break;
                 case RosterNotification.TYPE:
                     message = new RosterNotification(

@@ -51,6 +51,7 @@ public class Talk {
                 .add("roomId", roomId)
                 .add("userId", userId)
                 .add("text", text)
+                .add("isAnon", isAnon)
                 .toString();
     }
 }
