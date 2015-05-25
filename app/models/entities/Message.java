@@ -50,6 +50,8 @@ public class Message {
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<User> favorites = new ArrayList<>();
 
+    public boolean isAnon;
+
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     int score;
@@ -57,20 +59,25 @@ public class Message {
     public Message() { }
 
     public Message(long roomId, long userId, String message) {
-        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
-        if (roomOptional.isPresent()) {
-            this.room = roomOptional.get();
-        } else {
-           throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(AbstractRoom.ENTITY_NAME, roomId));
-        }
-        setUserById(userId);
-        this.message = Preconditions.checkNotNull(message);
+        this(roomId, userId, message, false);
     }
 
     public Message(AbstractRoom room, long userId, String message) {
         this.room = Preconditions.checkNotNull(room);
         setUserById(userId);
         this.message = Preconditions.checkNotNull(message);
+    }
+
+    public Message(long roomId, long userId, String message, boolean isAnon) {
+        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
+        if (roomOptional.isPresent()) {
+            this.room = roomOptional.get();
+        } else {
+            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(AbstractRoom.ENTITY_NAME, roomId));
+        }
+        setUserById(userId);
+        this.message = Preconditions.checkNotNull(message);
+        this.isAnon = isAnon;
     }
 
     private void setUserById(long userId) {

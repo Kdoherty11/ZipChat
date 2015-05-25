@@ -88,7 +88,6 @@ public class RoomSocket extends UntypedActor {
                             .mapToObj(id -> findExistingEntityById(User.class, id))
                             .toArray();
 
-
                     ObjectNode event = Json.newObject();
                     event.put(EVENT_KEY, "joinSuccess");
 
@@ -114,19 +113,17 @@ public class RoomSocket extends UntypedActor {
 
                 final String event = message.get("event").asText();
 
-                // TODO AbstractSocketMessage class
                 Object messageObject;
                 switch (event) {
                     case Talk.TYPE:
-                        messageObject = new Talk(roomId, userId, message.get("message").asText());
+                        if (message.has("isAnon") && message.get("isAnon").asBoolean()) {
+                            messageObject = new Talk(roomId, userId, message.get("message").asText(), message.get("isAnon").asBoolean());
+                        } else {
+                            messageObject = new Talk(roomId, userId, message.get("message").asText());
+                        }
                         break;
                     case FavoriteNotification.TYPE:
-                        try {
-                            messageObject = new FavoriteNotification(userId, Long.parseLong(message.get("messageId").asText()), message.get("action").asText());
-                        } catch (Exception e) {
-                            Logger.error("Problem creating a message object: " +  e.getMessage());
-                            throw new RuntimeException(e);
-                        }
+                        messageObject = new FavoriteNotification(userId, Long.parseLong(message.get("messageId").asText()), message.get("action").asText());
                         break;
                     default:
                         throw new RuntimeException("Event: " + event + " is not supported");
@@ -285,7 +282,7 @@ public class RoomSocket extends UntypedActor {
         }
 
         return JPA.withTransaction(() -> {
-            Message message = new Message(talk.getRoomId(), talk.getUserId(), talk.getText());
+            Message message = new Message(talk.getRoomId(), talk.getUserId(), talk.getText(), talk.isAnon());
             message.addToRoom();
             return message;
         });
@@ -409,7 +406,8 @@ public class RoomSocket extends UntypedActor {
                     message = new Talk(
                             parsedMessage.get("roomId").asLong(),
                             parsedMessage.get("userId").asLong(),
-                            parsedMessage.get("text").asText());
+                            parsedMessage.get("text").asText(),
+                            parsedMessage.get("isAnon").asBoolean());
                     break;
                 case RosterNotification.TYPE:
                     message = new RosterNotification(

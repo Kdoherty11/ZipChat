@@ -9,14 +9,20 @@ public class Talk {
     final long roomId;
     final long userId;
     final String text;
+    final boolean isAnon;
 
     // For JSON serialization
     final String type = TYPE;
 
-    public Talk(long roomId, long userId, String text) {
+    public Talk(long roomId, long userId, String text, boolean isAnon) {
         this.roomId = roomId;
         this.userId = userId;
         this.text = text;
+        this.isAnon = isAnon;
+    }
+
+    public Talk(long roomId, long userId, String text) {
+        this(roomId, userId, text, false);
     }
 
     public long getUserId() {
@@ -33,6 +39,10 @@ public class Talk {
 
     public String getType() {
         return type;
+    }
+
+    public boolean isAnon() {
+        return isAnon;
     }
 
     @Override
