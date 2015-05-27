@@ -81,6 +81,7 @@ public class Message {
 
         if (isAnon) {
             this.sender.name = UserAlias.getOrCreateAlias(userId, roomId);
+            this.sender.facebookId = null;
         }
     }
 
