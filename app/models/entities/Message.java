@@ -78,6 +78,10 @@ public class Message {
         setUserById(userId);
         this.message = Preconditions.checkNotNull(message);
         this.isAnon = isAnon;
+
+        if (isAnon) {
+            this.sender.name = UserAlias.getOrCreateAlias(userId, roomId);
+        }
     }
 
     private void setUserById(long userId) {

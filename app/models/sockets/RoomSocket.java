@@ -284,6 +284,7 @@ public class RoomSocket extends UntypedActor {
         }
 
         return JPA.withTransaction(() -> {
+
             Message message = new Message(talk.getRoomId(), talk.getUserId(), talk.getText(), talk.isAnon());
             message.addToRoom();
             return message;
@@ -382,6 +383,7 @@ public class RoomSocket extends UntypedActor {
         message.put(EVENT_KEY, kind);
         message.put(MESSAGE_KEY, text);
 
+        // If its not a talk or keepalive add the user to the message
         if (!Talk.TYPE.equals(kind) && userId != SocketKeepAlive.USER_ID) {
             User user = JPA.withTransaction(() -> usersCache.get(userId, () -> findExistingEntityById(User.class, userId)));
             message.put(USER_KEY, toJson(user));
