@@ -38,7 +38,7 @@ public class UserAlias {
     static {
         for (String firstName : FIRST_NAMES) {
             for (String lastName : LAST_NAMES) {
-                FULL_NAMES.add(firstName + lastName);
+                FULL_NAMES.add(firstName + " " + lastName);
             }
         }
     }
