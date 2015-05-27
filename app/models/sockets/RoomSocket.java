@@ -5,8 +5,6 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.typesafe.plugin.RedisPlugin;
 import models.entities.*;
 import models.sockets.messages.*;
@@ -20,6 +18,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
+import utils.DbUtils;
 import utils.NotificationUtils;
 
 import java.util.HashMap;
@@ -47,9 +46,6 @@ public class RoomSocket extends UntypedActor {
 
     // Key is roomId, value is the users connected to that room
     static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
-
-    static final Cache<Long, User> usersCache = CacheBuilder.newBuilder().maximumSize(1000).build();
-    static final Cache<Long, PublicRoom> publicRoomsCache = CacheBuilder.newBuilder().maximumSize(1000).build();
 
     static final Map<Long, SocketKeepAlive> clientHeartbeats = new HashMap<>();
 
@@ -210,8 +206,8 @@ public class RoomSocket extends UntypedActor {
                         .map(Long::parseLong)
                         .collect(Collectors.toSet());
 
-                if (!userIdsInRoom.contains(message.sender.userId)) {
-                    NotificationUtils.sendMessageFavorited(user, message.sender, message.message, message.room);
+                if (!userIdsInRoom.contains(message.senderId)) {
+                    NotificationUtils.sendMessageFavorited(user, message);
                 }
             } else {
                 ObjectNode error = Json.newObject();
@@ -240,13 +236,11 @@ public class RoomSocket extends UntypedActor {
 
         notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
 
-        User sender = message.sender;
-        usersCache.put(userId, sender);
+        User messageSender = DbUtils.findEntityByIdWithTransaction(User.class, message.senderId);
 
         AbstractRoom abstractRoom = message.room;
         if (abstractRoom instanceof PublicRoom) {
             PublicRoom publicRoom = (PublicRoom) abstractRoom;
-            publicRoomsCache.put(roomId, publicRoom);
 
             if (publicRoom.hasSubscribers()) {
                 Set<Long> userIdsInRoom = j.smembers(String.valueOf(roomId))
@@ -254,12 +248,13 @@ public class RoomSocket extends UntypedActor {
                         .map(Long::parseLong)
                         .collect(Collectors.toSet());
 
-                NotificationUtils.messageSubscribers(publicRoom, sender, messageText, userIdsInRoom);
+                NotificationUtils.messageSubscribers(publicRoom, messageSender, messageText, userIdsInRoom);
             }
         } else {
             PrivateRoom privateRoom = (PrivateRoom) abstractRoom;
-            User receiver = privateRoom.sender.userId == sender.userId ? privateRoom.receiver : privateRoom.sender;
-            NotificationUtils.messageUser(privateRoom, sender, receiver, messageText);
+            long recipientId = privateRoom.sender.userId == message.senderId ?
+                    privateRoom.receiver.userId : privateRoom.sender.userId;
+            NotificationUtils.messageUser(privateRoom, messageSender, recipientId, messageText);
         }
     }
 
@@ -279,23 +274,19 @@ public class RoomSocket extends UntypedActor {
     }
 
     private Message storeMessage(Talk talk) throws Throwable {
-        if (SocketKeepAlive.USER_ID == talk.getUserId()) {
-            throw new IllegalArgumentException("Trying to store a keep alive message");
-        }
+        final long senderId = talk.getUserId();
+        final long roomId = talk.getRoomId();
+        final boolean isAnon = talk.isAnon();
 
-        Message storedMessage = JPA.withTransaction(() -> {
+        return JPA.withTransaction(() -> {
+            User sender = DbUtils.findExistingEntityById(User.class, senderId);
+            String senderName = isAnon ? UserAlias.getOrCreateAlias(senderId, roomId) : sender.name;
+            String facebookId = isAnon ? null : sender.facebookId;
 
-            Message message = new Message(talk.getRoomId(), talk.getUserId(), talk.getText(), talk.isAnon());
+            Message message = new Message(roomId, senderId, senderName, facebookId, talk.getText(), isAnon);
             message.addToRoom();
             return message;
         });
-
-        if (storedMessage.isAnon) {
-            storedMessage.sender.name = UserAlias.getOrCreateAlias(storedMessage.sender.userId, storedMessage.room.roomId);
-            storedMessage.sender.facebookId = null;
-        }
-
-        return storedMessage;
     }
 
     private void receiveJoin(Jedis j, Join join) {
@@ -392,12 +383,8 @@ public class RoomSocket extends UntypedActor {
 
         // If its not a talk or keepalive add the user to the message
         if (!Talk.TYPE.equals(kind) && userId != SocketKeepAlive.USER_ID) {
-            User user = JPA.withTransaction(() -> usersCache.get(userId, () -> findExistingEntityById(User.class, userId)));
+            User user = JPA.withTransaction(() -> findExistingEntityById(User.class, userId));
             message.put(USER_KEY, toJson(user));
-        }
-
-        if (Talk.TYPE.equals(kind)) {
-            Logger.info("Sending out message: " + message);
         }
 
         rooms.get(roomId).values().stream().forEach(channel -> channel.write(message));

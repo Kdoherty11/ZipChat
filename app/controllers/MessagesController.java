@@ -57,8 +57,8 @@ public class MessagesController extends BaseController {
                     if (!success) {
                         return badRequestJson("User " + userId + " has already favorited this message");
                     }
-                    if (favoritor.userId != message.sender.userId) {
-                        NotificationUtils.sendMessageFavorited(favoritor, message.sender, message.message, message.room);
+                    if (favoritor.userId != message.senderId) {
+                        NotificationUtils.sendMessageFavorited(favoritor, message);
                     }
                 } else {
                     boolean success = message.removeFavorite(userOptional.get());

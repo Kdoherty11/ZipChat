@@ -41,52 +41,37 @@ public class Message {
     @ForeignEntity
     public AbstractRoom room;
 
-    @ManyToOne
-    @JoinColumn(name="userId")
     @Constraints.Required
-    @ForeignEntity
-    public User sender;
+    public long senderId;
+
+    @Constraints.Required
+    public String senderName;
+
+    public String senderFbId;
+
+    public boolean isAnon;
 
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<User> favorites = new ArrayList<>();
 
-    public boolean isAnon;
+    public int score;
 
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
-    int score;
-
     public Message() { }
 
-    public Message(long roomId, long userId, String message) {
-        this(roomId, userId, message, false);
-    }
-
-    public Message(AbstractRoom room, long userId, String message) {
-        this.room = Preconditions.checkNotNull(room);
-        setUserById(userId);
-        this.message = Preconditions.checkNotNull(message);
-    }
-
-    public Message(long roomId, long userId, String message, boolean isAnon) {
+    public Message(long roomId, long senderId, String senderName, String senderFbId, String message, boolean isAnon) {
         Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
         if (roomOptional.isPresent()) {
             this.room = roomOptional.get();
         } else {
             throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(AbstractRoom.ENTITY_NAME, roomId));
         }
-        setUserById(userId);
         this.message = Preconditions.checkNotNull(message);
+        this.senderId = senderId;
+        this.senderName = senderName;
+        this.senderFbId = senderFbId;
         this.isAnon = isAnon;
-    }
-
-    private void setUserById(long userId) {
-        Optional<User> userOptional = DbUtils.findEntityById(User.class, Preconditions.checkNotNull(userId));
-        if (userOptional.isPresent()) {
-            this.sender = userOptional.get();
-        } else {
-            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, userId));
-        }
     }
 
     public void addToRoom() {
@@ -134,25 +119,25 @@ public class Message {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(messageId, message, AbstractRoom.getId(room), User.getId(sender), timeStamp, score);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message message1 = (Message) o;
+        return Objects.equal(messageId, message1.messageId) &&
+                Objects.equal(senderId, message1.senderId) &&
+                Objects.equal(isAnon, message1.isAnon) &&
+                Objects.equal(score, message1.score) &&
+                Objects.equal(timeStamp, message1.timeStamp) &&
+                Objects.equal(message, message1.message) &&
+                Objects.equal(room, message1.room) &&
+                Objects.equal(senderName, message1.senderName) &&
+                Objects.equal(senderFbId, message1.senderFbId) &&
+                Objects.equal(favorites, message1.favorites);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final Message other = (Message) obj;
-        return Objects.equal(this.messageId, other.messageId)
-                && Objects.equal(this.message, other.message)
-                && Objects.equal(this.score, other.score)
-                && Objects.equal(AbstractRoom.getId(this.room), AbstractRoom.getId(other.room))
-                && Objects.equal(User.getId(this.sender), User.getId(other.sender))
-                && Objects.equal(this.timeStamp, other.timeStamp);
+    public int hashCode() {
+        return Objects.hashCode(messageId, message, room, senderId, senderName, senderFbId, isAnon, favorites, score, timeStamp);
     }
 
     @Override
@@ -160,8 +145,12 @@ public class Message {
         return Objects.toStringHelper(this)
                 .add("messageId", messageId)
                 .add("message", message)
-                .add("roomId", AbstractRoom.getId(room))
-                .add("userId", User.getId(sender))
+                .add("room", room)
+                .add("senderId", senderId)
+                .add("senderName", senderName)
+                .add("senderFbId", senderFbId)
+                .add("isAnon", isAnon)
+                .add("favorites", favorites)
                 .add("score", score)
                 .add("timeStamp", timeStamp)
                 .toString();

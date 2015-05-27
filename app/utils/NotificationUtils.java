@@ -126,14 +126,14 @@ public class NotificationUtils {
         }
     }
 
-    public static void sendMessageFavorited(User messageFavoritor, User messageSender, String message, AbstractRoom room) {
+    public static void sendMessageFavorited(User messageFavoritor, models.entities.Message message) {
         Map<String, String> data = new HashMap<>();
         data.put(Key.EVENT, Event.MESSAGE_FAVORITED);
         data.put(Key.FACEBOOK_NAME, messageFavoritor.name);
         data.put(Key.FACEBOOK_ID, messageFavoritor.facebookId);
-        data.put(Key.MESSAGE, message);
-        data.putAll(getRoomData(room));
-        messageSender.sendNotification(data);
+        data.put(Key.MESSAGE, message.message);
+        data.putAll(getRoomData(message.room));
+        User.sendNotification(message.senderId, data);
     }
 
 
@@ -158,9 +158,9 @@ public class NotificationUtils {
         publicRoom.notifySubscribers(data, userIdsBlacklist);
     }
 
-    public static void messageUser(PrivateRoom privateRoom, User sender, User receiver, String message) {
+    public static void messageUser(PrivateRoom privateRoom, User sender, long receiverId, String message) {
         Map<String, String> data = getRoomMessageData(privateRoom, sender, message);
-        receiver.sendNotification(data);
+        User.sendNotification(receiverId, data);
     }
 
     private static Map<String, String> getRoomData(AbstractRoom room) {

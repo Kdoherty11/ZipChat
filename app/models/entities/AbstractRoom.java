@@ -31,10 +31,6 @@ public class AbstractRoom {
     @OneToMany(targetEntity = Message.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Message> messages = new ArrayList<>();
 
-    public static long getId(AbstractRoom room) {
-        return room == null ? -1 : room.roomId;
-    }
-
     public void addMessage(Message message) {
         messages.add(message);
         lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);

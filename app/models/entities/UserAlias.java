@@ -46,8 +46,6 @@ public class UserAlias {
     public UserAlias(long userId, long roomId) {
         this.userId = userId;
         this.roomId = roomId;
-
-        Random random = new Random();
         this.alias = getAvailableAlias(roomId);
     }
 
@@ -113,16 +111,6 @@ public class UserAlias {
     }
 
     @Override
-    public String toString() {
-        return Objects.toStringHelper(this)
-                .add("userAliasId", userAliasId)
-                .add("userId", userId)
-                .add("roomId", roomId)
-                .add("alias", alias)
-                .toString();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -136,5 +124,15 @@ public class UserAlias {
     @Override
     public int hashCode() {
         return Objects.hashCode(userAliasId, userId, roomId, alias);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("userAliasId", userAliasId)
+                .add("userId", userId)
+                .add("roomId", roomId)
+                .add("alias", alias)
+                .toString();
     }
 }
