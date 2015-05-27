@@ -372,7 +372,7 @@ public class RoomSocket extends UntypedActor {
 
     // Send a Json event to all members connected to this node
     public void notifyRoom(long roomId, String kind, long userId, String text) throws Throwable {
-        Logger.debug("NotifyAll called with roomId: " + roomId);
+        Logger.debug("NotifyAll called with roomId: " + roomId + " and message: " + text);
 
         if (!rooms.containsKey(roomId)) {
             Logger.error("Not notifying rooms because rooms map does not contain room " + roomId);
@@ -387,6 +387,10 @@ public class RoomSocket extends UntypedActor {
         if (!Talk.TYPE.equals(kind) && userId != SocketKeepAlive.USER_ID) {
             User user = JPA.withTransaction(() -> usersCache.get(userId, () -> findExistingEntityById(User.class, userId)));
             message.put(USER_KEY, toJson(user));
+        }
+
+        if (Talk.TYPE.equals(kind)) {
+            Logger.info("Sending out message: " + message);
         }
 
         rooms.get(roomId).values().stream().forEach(channel -> channel.write(message));
