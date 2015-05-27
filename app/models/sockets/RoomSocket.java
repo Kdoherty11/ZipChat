@@ -283,12 +283,19 @@ public class RoomSocket extends UntypedActor {
             throw new IllegalArgumentException("Trying to store a keep alive message");
         }
 
-        return JPA.withTransaction(() -> {
+        Message storedMessage = JPA.withTransaction(() -> {
 
             Message message = new Message(talk.getRoomId(), talk.getUserId(), talk.getText(), talk.isAnon());
             message.addToRoom();
             return message;
         });
+
+        if (storedMessage.isAnon) {
+            storedMessage.sender.name = UserAlias.getOrCreateAlias(storedMessage.sender.userId, storedMessage.room.roomId);
+            storedMessage.sender.facebookId = null;
+        }
+
+        return storedMessage;
     }
 
     private void receiveJoin(Jedis j, Join join) {
