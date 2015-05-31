@@ -296,7 +296,6 @@ public class RoomSocket extends UntypedActor {
                     privateRoom.receiver.userId : privateRoom.sender.userId;
             NotificationUtils.messageUser(privateRoom, messageSender, recipientId, message.message);
         }
-
     }
 
     private void receiveJoin(Jedis j, Join join) {
@@ -361,6 +360,9 @@ public class RoomSocket extends UntypedActor {
             } else {
                 // Don't remove the room because there is still a user in it
                 Logger.error("No robot in room " + roomId + " but there is a user in it");
+
+                SocketKeepAlive socketKeepAlive = new SocketKeepAlive(roomId, defaultRoom);
+                clientHeartbeats.put(roomId, socketKeepAlive);
             }
         } else {
             //Publish the quit notification to all nodes
