@@ -15,7 +15,6 @@ public class RoomsController extends BaseController {
 
             // Called when the Websocket Handshake is done.
             public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-                Logger.debug("joining " + roomId + " " + userId);
                 try {
                     RoomSocket.join(roomId, userId, in, out);
                 } catch (Exception ex) {
