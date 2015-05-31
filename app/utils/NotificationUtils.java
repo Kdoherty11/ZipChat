@@ -9,6 +9,7 @@ import com.notnoop.exceptions.NetworkIOException;
 import controllers.BaseController;
 import models.entities.*;
 import play.Logger;
+import play.db.jpa.JPA;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -155,12 +156,12 @@ public class NotificationUtils {
 
     public static void messageSubscribers(PublicRoom publicRoom, User user, String message, Set<Long> userIdsBlacklist) {
         Map<String, String> data = getRoomMessageData(publicRoom, user, message);
-        publicRoom.notifySubscribers(data, userIdsBlacklist);
+        JPA.withTransaction(() -> publicRoom.notifySubscribers(data, userIdsBlacklist));
     }
 
-    public static void messageUser(PrivateRoom privateRoom, User sender, long receiverId, String message) {
+    public static void messageUser(PrivateRoom privateRoom, User sender, long receiverId, String message) throws Throwable {
         Map<String, String> data = getRoomMessageData(privateRoom, sender, message);
-        User.sendNotification(receiverId, data);
+        JPA.withTransaction(() -> User.sendNotification(receiverId, data));
     }
 
     private static Map<String, String> getRoomData(AbstractRoom room) {
