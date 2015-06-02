@@ -52,9 +52,15 @@ public class Message {
     public boolean isAnon;
 
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "message_favorites", joinColumns = @JoinColumn(name = "userId"),
+            inverseJoinColumns = @JoinColumn(name = "messageId"))
     public List<User> favorites = new ArrayList<>();
 
+
+
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "message_flags", joinColumns = @JoinColumn(name = "userId"),
+            inverseJoinColumns = @JoinColumn(name = "messageId"))
     public List<User> flags = new ArrayList<>();
 
     public int score;
