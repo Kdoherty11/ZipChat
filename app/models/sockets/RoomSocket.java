@@ -294,7 +294,11 @@ public class RoomSocket extends UntypedActor {
             PrivateRoom privateRoom = (PrivateRoom) room;
             long recipientId = privateRoom.sender.userId == message.senderId ?
                     privateRoom.receiver.userId : privateRoom.sender.userId;
-            NotificationUtils.messageUser(privateRoom, messageSender, recipientId, message.message);
+
+            Set<String> roomMembers = j.smembers(String.valueOf(room.roomId));
+            if (!roomMembers.contains(String.valueOf(recipientId))) {
+                NotificationUtils.messageUser(privateRoom, messageSender, recipientId, message.message);
+            }
         }
     }
 
@@ -312,8 +316,7 @@ public class RoomSocket extends UntypedActor {
 
                 rooms.put(roomId, new HashMap<>());
 
-                SocketKeepAlive socketKeepAlive = new SocketKeepAlive(roomId, defaultRoom);
-                clientHeartbeats.put(roomId, socketKeepAlive);
+                addKeepAlive(roomId);
             }
             //Add the member to this node and the global roster
             rooms.get(roomId).put(userId, join.getChannel());
@@ -325,6 +328,11 @@ public class RoomSocket extends UntypedActor {
 
             getSender().tell(OK_JOIN_RESULT, getSelf());
         }
+    }
+
+    private void addKeepAlive(long roomId) {
+        SocketKeepAlive socketKeepAlive = new SocketKeepAlive(roomId, defaultRoom);
+        clientHeartbeats.put(roomId, socketKeepAlive);
     }
 
     private void receiveQuit(Jedis j, Quit quit) {
@@ -361,8 +369,12 @@ public class RoomSocket extends UntypedActor {
                 // Don't remove the room because there is still a user in it
                 Logger.error("No robot in room " + roomId + " but there is a user in it");
 
-                SocketKeepAlive socketKeepAlive = new SocketKeepAlive(roomId, defaultRoom);
-                clientHeartbeats.put(roomId, socketKeepAlive);
+                if (!rooms.containsKey(roomId)) {
+                    Logger.error("Room " + roomId + " was never created");
+                    rooms.put(roomId, new HashMap<>());
+                }
+
+                addKeepAlive(roomId);
             }
         } else {
             //Publish the quit notification to all nodes
