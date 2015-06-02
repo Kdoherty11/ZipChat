@@ -27,6 +27,8 @@ GET           /rooms/:roomId/join                               controllers.Room
 
 PUT           /messages/:messageId/favorite                     controllers.MessagesController.favorite(messageId: Long, userId: Long)
 DELETE        /messages/:messageId/favorite                     controllers.MessagesController.removeFavorite(messageId: Long, userId: Long)
+PUT           /messages/:messageId/flag                         controllers.MessagesController.flag(messageId: Long, userId: Long)
+DELETE        /messages/:messageId/flag                         controllers.MessagesController.removeFlag(messageId: Long, userId: Long)
 
 POST          /users                                            controllers.UsersController.createUser()
 GET           /users                                            controllers.UsersController.getUsers()

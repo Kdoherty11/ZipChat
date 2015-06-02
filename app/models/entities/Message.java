@@ -29,14 +29,14 @@ public class Message {
             @org.hibernate.annotations.Parameter(name = "sequenceName", value = "messages_gen"),
             @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
     })
-    @GeneratedValue(generator = "messages_gen", strategy=GenerationType.SEQUENCE)
+    @GeneratedValue(generator = "messages_gen", strategy = GenerationType.SEQUENCE)
     public long messageId;
 
     @Constraints.Required
     public String message;
 
     @ManyToOne
-    @JoinColumn(name="roomId")
+    @JoinColumn(name = "roomId")
     @JsonIgnore
     @ForeignEntity
     public AbstractRoom room;
@@ -54,11 +54,15 @@ public class Message {
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<User> favorites = new ArrayList<>();
 
+    @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List<User> flags = new ArrayList<>();
+
     public int score;
 
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
-    public Message() { }
+    public Message() {
+    }
 
     public Message(long roomId, long senderId, String senderName, String senderFbId, String message, boolean isAnon) {
         Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
@@ -93,13 +97,13 @@ public class Message {
     }
 
     public boolean removeFavorite(User user) {
-        boolean deletedUser = favorites.remove(user);
-        if (deletedUser) {
+        boolean didDeleteUser = favorites.remove(user);
+        if (didDeleteUser) {
             score--;
         } else {
             Logger.warn(user + " attempted to remove favorite from " + this + " but has not favorited it");
         }
-        return deletedUser;
+        return didDeleteUser;
     }
 
     public static List<Message> getMessages(long roomId, int limit, int offset) {
@@ -118,6 +122,24 @@ public class Message {
         return messages;
     }
 
+    public boolean flag(User user) {
+        if (flags.contains(user)) {
+            Logger.error(user + " is attempting to flag " + this + " but has already flagged it");
+            return false;
+        }
+
+        flags.add(user);
+        return true;
+    }
+
+    public boolean removeFlag(User user) {
+        boolean didDeleteUser = flags.remove(user);
+        if (!didDeleteUser) {
+            Logger.warn(user + " attempted to remove a flag from " + this + " but has not flagged it");
+        }
+        return didDeleteUser;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -132,12 +154,13 @@ public class Message {
                 Objects.equal(room, message1.room) &&
                 Objects.equal(senderName, message1.senderName) &&
                 Objects.equal(senderFbId, message1.senderFbId) &&
+                Objects.equal(flags, message1.flags) &&
                 Objects.equal(favorites, message1.favorites);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(messageId, message, room, senderId, senderName, senderFbId, isAnon, favorites, score, timeStamp);
+        return Objects.hashCode(messageId, message, room, senderId, senderName, senderFbId, isAnon, favorites, flags, score, timeStamp);
     }
 
     @Override
@@ -150,6 +173,7 @@ public class Message {
                 .add("senderName", senderName)
                 .add("senderFbId", senderFbId)
                 .add("isAnon", isAnon)
+                .add("flags", flags)
                 .add("favorites", favorites)
                 .add("score", score)
                 .add("timeStamp", timeStamp)
