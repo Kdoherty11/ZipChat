@@ -1,5 +1,6 @@
 package controllers;
 
+import com.google.common.primitives.Longs;
 import models.entities.Request;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
@@ -19,12 +20,19 @@ public class RequestsController extends BaseController {
 
     @Transactional
     public static Result createRequest() {
+        long senderId = Longs.tryParse(form().bindFromRequest().data().get("sender"));
+        if (isUnauthorized(senderId)) {
+            return forbidden();
+        }
         return createWithForeignEntities(Request.class, createdRequest ->
                 NotificationUtils.sendChatRequest(createdRequest.sender, createdRequest.receiver));
     }
 
     @Transactional
     public static Result getRequestsByReceiver(long receiverId) {
+        if (isUnauthorized(receiverId)) {
+            return forbidden();
+        }
         return okJson(Request.getPendingRequestsByReceiver(receiverId));
     }
 
@@ -47,6 +55,10 @@ public class RequestsController extends BaseController {
         if (requestOptional.isPresent()) {
 
             Request request = requestOptional.get();
+            if (isUnauthorized(request.receiver.userId)) {
+                return forbidden();
+            }
+
             request.handleResponse(Request.Status.valueOf(formData.get(responseKey)));
 
             return OK_RESULT;

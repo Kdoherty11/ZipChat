@@ -59,8 +59,12 @@ public class PublicRoomsController extends BaseController {
             return FieldValidator.typeError(userIdKey, Long.class);
         }
 
+        if (isUnauthorized(userId)) {
+            return forbidden();
+        }
+
         DataValidator validator = new DataValidator(
-                new FieldValidator<>(userIdKey, userId, Validators.required(), Validators.positive()));
+                new FieldValidator<>(userIdKey, userId, Validators.positive()));
 
         if (validator.hasErrors()) {
             return badRequest(validator.errorsAsJson());
@@ -93,6 +97,10 @@ public class PublicRoomsController extends BaseController {
 
     @Transactional
     public static Result removeSubscription(long roomId, long userId) {
+        if (isUnauthorized(userId)) {
+            return forbidden();
+        }
+
         Optional<PublicRoom> roomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
         if (roomOptional.isPresent()) {
             roomOptional.get().removeSubscription(userId);

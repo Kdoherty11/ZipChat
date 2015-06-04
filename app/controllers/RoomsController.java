@@ -10,6 +10,9 @@ public class RoomsController extends BaseController {
 
     @Transactional
     public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId) {
+        if (isUnauthorized(userId)) {
+            return WebSocket.reject(forbidden());
+        }
 
         return new WebSocket<JsonNode>() {
 

@@ -74,6 +74,11 @@ public class PrivateRoom extends AbstractRoom {
         return true;
     }
 
+    public boolean isUserInRoom(long userId) {
+        return (User.getId(sender) == userId && senderInRoom) ||
+                (User.getId(receiver) == userId && receiverInRoom);
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)

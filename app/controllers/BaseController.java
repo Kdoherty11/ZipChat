@@ -12,7 +12,10 @@ import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Yaml;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.Secured;
 import utils.DbUtils;
 
 import javax.persistence.Id;
@@ -26,6 +29,7 @@ import java.util.*;
 import static play.data.Form.form;
 import static play.libs.Json.toJson;
 
+@Security.Authenticated(Secured.class)
 public class BaseController extends Controller {
 
     public static final String OK_STRING = "OK";
@@ -35,6 +39,14 @@ public class BaseController extends Controller {
 
     public interface Callback<T> {
         void success(T createdEntity);
+    }
+
+    public static long getTokenUserId() {
+        return (long) Http.Context.current().args.get(Secured.USER_ID_KEY);
+    }
+
+    public static boolean isUnauthorized(long userId) {
+        return userId != getTokenUserId();
     }
 
     protected static <T> Result create(Class<T> clazz) {

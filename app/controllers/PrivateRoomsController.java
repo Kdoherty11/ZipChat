@@ -32,12 +32,19 @@ public class PrivateRoomsController extends BaseController {
 
     @Transactional
     public static Result getRoomsByUserId(long userId) {
+        if (isUnauthorized(userId)) {
+            return forbidden();
+        }
         Logger.debug("Getting Private Rooms by userId: " + userId);
         return okJson(PrivateRoom.getRoomsByUserId(userId));
     }
 
     @Transactional
     public static Result leaveRoom(long roomId, long userId) {
+        if (isUnauthorized(userId)) {
+            return forbidden();
+        }
+
         Optional<PrivateRoom> roomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
 
         if (roomOptional.isPresent()) {
