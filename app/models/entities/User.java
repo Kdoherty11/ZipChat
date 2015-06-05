@@ -1,6 +1,7 @@
 package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import models.NoUpdate;
@@ -8,14 +9,18 @@ import models.Platform;
 import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
+import play.db.jpa.JPA;
+import play.libs.ws.WS;
 import utils.DbUtils;
 import utils.NotificationUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 
 @Entity
@@ -33,8 +38,11 @@ public class User {
     @GeneratedValue(generator = "users_gen", strategy=GenerationType.SEQUENCE)
     public long userId;
 
+    @Column(unique = true)
     @Constraints.Required
     public String facebookId;
+
+    public String gender;
 
     @Constraints.Required
     public String name;
@@ -47,6 +55,25 @@ public class User {
     @NoUpdate
     @JsonIgnore
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+
+    public static Optional<User> byFacebookId(String facebookId) {
+        String queryString = "select u from User u where u.facebookId = :facebookId";
+
+        TypedQuery<User> query = JPA.em().createQuery(queryString, User.class)
+                .setParameter("facebookId", facebookId);
+
+        List<User> users = query.getResultList();
+        if (users.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(users.get(0));
+        }
+    }
+
+    // TODO Return a Promise / Future JsonNode
+    public static JsonNode getFacebookInformation(String fbAccessToken) {
+        return WS.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(2, TimeUnit.SECONDS).asJson();
+    }
 
     public static long getId(User user) {
         return user == null ? -1 : user.userId;

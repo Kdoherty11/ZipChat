@@ -4,18 +4,20 @@ import com.google.common.primitives.Longs;
 import models.entities.Request;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.Secured;
 import utils.DbUtils;
 import utils.NotificationUtils;
 import validation.DataValidator;
 import validation.FieldValidator;
-import validation.Validators;
+import validation.validators.Validators;
 
 import java.util.Map;
 import java.util.Optional;
 
 import static play.data.Form.form;
 
-
+@Security.Authenticated(Secured.class)
 public class RequestsController extends BaseController {
 
     @Transactional

@@ -30,7 +30,7 @@ DELETE        /messages/:messageId/favorite                     controllers.Mess
 PUT           /messages/:messageId/flag                         controllers.MessagesController.flag(messageId: Long, userId: Long)
 DELETE        /messages/:messageId/flag                         controllers.MessagesController.removeFlag(messageId: Long, userId: Long)
 
-POST          /users                                            controllers.UsersController.createUser()
+PUT           /users                                            controllers.UsersController.createUser()
 GET           /users                                            controllers.UsersController.getUsers()
 GET           /users/:userId                                    controllers.UsersController.showUser(userId: Long)
 PUT           /users/:userId                                    controllers.UsersController.updateUser(userId: Long)
@@ -41,6 +41,8 @@ POST          /requests                                         controllers.Requ
 GET           /requests                                         controllers.RequestsController.getRequestsByReceiver(userId: Long)
 GET           /requests/status                                  controllers.RequestsController.getStatus(senderId: Long, receiverId: Long)
 PUT           /requests/:requestId                              controllers.RequestsController.handleResponse(requestId: Long)
+
+GET           /auth                                             controllers.UsersController.auth(fbAccessToken: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                     controllers.Assets.at(path="/public", file)

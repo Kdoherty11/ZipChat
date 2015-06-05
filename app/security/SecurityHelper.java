@@ -13,11 +13,11 @@ import java.util.Optional;
  */
 public class SecurityHelper {
 
-    private static final Logger.ALogger logger = Logger.of(SecurityHelper.class);
-
     // TODO Read from ENV?
     private static final String SIGNING_KEY = "myKey";
     private static final String ISSUER = "ZipChat";
+
+    private SecurityHelper() { }
 
     // 1 day in millis
     private static final long EXPIRATION_TIME_MILLIS = 1000L * 60L * 60L * 24L;

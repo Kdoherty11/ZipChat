@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import models.sockets.RoomSocket;
 import play.Logger;
 import play.db.jpa.Transactional;
+import play.mvc.Security;
 import play.mvc.WebSocket;
+import security.Secured;
 
+@Security.Authenticated(Secured.class)
 public class RoomsController extends BaseController {
 
     @Transactional

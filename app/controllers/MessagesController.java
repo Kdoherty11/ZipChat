@@ -7,13 +7,16 @@ import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Results;
+import play.mvc.Security;
+import security.Secured;
 import utils.DbUtils;
 import validation.DataValidator;
 import validation.FieldValidator;
-import validation.Validators;
+import validation.validators.Validators;
 
 import java.util.Optional;
 
+@Security.Authenticated(Secured.class)
 public class MessagesController extends BaseController {
 
     private interface UserMessageAction {

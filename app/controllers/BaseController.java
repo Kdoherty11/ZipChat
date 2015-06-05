@@ -14,7 +14,6 @@ import play.libs.Yaml;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Security;
 import security.Secured;
 import utils.DbUtils;
 
@@ -29,7 +28,6 @@ import java.util.*;
 import static play.data.Form.form;
 import static play.libs.Json.toJson;
 
-@Security.Authenticated(Secured.class)
 public class BaseController extends Controller {
 
     public static final String OK_STRING = "OK";

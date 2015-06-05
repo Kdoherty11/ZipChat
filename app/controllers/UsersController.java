@@ -1,57 +1,109 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.primitives.Longs;
+import models.Platform;
 import models.entities.User;
-import play.data.Form;
+import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Json;
-import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.Secured;
 import security.SecurityHelper;
 import utils.DbUtils;
 import validation.DataValidator;
 import validation.FieldValidator;
-import validation.Validators;
+import validation.validators.Validators;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static play.data.Form.form;
 
-public class UsersController extends Controller {
+public class UsersController extends BaseController {
 
     @Transactional
     public static Result createUser() {
-        Form<User> form = Form.form(User.class).bindFromRequest();
-        if (form.hasErrors()) {
-            return badRequest(form.errorsAsJson());
-        } else {
-            User user = form.get();
-            JPA.em().persist(user);
+        Map<String, String> data = form().bindFromRequest().data();
+        String fbAccessTokenKey = "fbAccessToken";
+        String platformKey = "platform";
+        String regIdKey = "regId";
 
-            ObjectNode response = Json.newObject();
-            response.put("userId", user.userId);
-            response.put("token", SecurityHelper.generateAuthToken(user.userId));
-            return created(response);
-        }
-    }
+        String fbAccessToken = data.get(fbAccessTokenKey);
+        String platform = data.get(platformKey);
+        String regId = data.get(regIdKey);
 
-    public static Result login() {
-        String userIdKey = "userId";
-        Long userId = Longs.tryParse(form().bindFromRequest().get(userIdKey));
+        DataValidator validator = new DataValidator(
+                new FieldValidator<>(fbAccessTokenKey, fbAccessToken, Validators.required()),
+                new FieldValidator<>(fbAccessTokenKey, platform, Validators.required(), Validators.enumValue(Platform.class))
+        );
 
-        DataValidator validator = new DataValidator(new FieldValidator<>(userIdKey, userId,
-                Validators.required(),
-                Validators.positive()));
         if (validator.hasErrors()) {
             return badRequest(validator.errorsAsJson());
         }
 
-        ObjectNode response = Json.newObject();
-        response.put("token", SecurityHelper.generateAuthToken(userId));
+        JsonNode facebookUserJson = User.getFacebookInformation(fbAccessToken);
+        if (facebookUserJson.has("error")) {
+            Logger.error("Invalid facebook access token received in user creation: "
+                    + facebookUserJson.get("error").get("message").asText());
+            return badRequest(facebookUserJson);
+        }
 
-        return ok(response);
+        String facebookId = facebookUserJson.get("id").asText();
+        String name = facebookUserJson.get("name").asText();
+        String gender = facebookUserJson.get("gender").asText();
+
+        User user = new User();
+        user.facebookId = facebookId;
+        user.name = name;
+        user.gender = gender;
+        user.platform = Platform.valueOf(platform);
+        user.registrationId = regId;
+
+        Optional<User> existingUserOptional = User.byFacebookId(facebookId);
+        if (existingUserOptional.isPresent()) {
+            // TODO if platform changed set regId to new value
+            // otherwise add it to a list of registration ids
+            user.userId = existingUserOptional.get().userId;
+            JPA.em().merge(user);
+        } else {
+            JPA.em().persist(user);
+        }
+
+        ObjectNode response = Json.newObject();
+        response.put("userId", user.userId);
+        response.put("facebookId", facebookId);
+        response.put("name", name);
+        response.put("authToken", SecurityHelper.generateAuthToken(user.userId));
+
+        if (existingUserOptional.isPresent()) {
+            return ok(response);
+        } else {
+            return created(response);
+        }
+    }
+
+    @Transactional
+    public static Result auth(String fbAccessToken) {
+        JsonNode facebookUserJson = User.getFacebookInformation(fbAccessToken);
+        if (facebookUserJson.has("error")) {
+            Logger.error("Invalid facebook access token received in auth: "
+                    + facebookUserJson.get("error").get("message").asText());
+            return badRequest(facebookUserJson);
+        }
+
+        String facebookId = facebookUserJson.get("id").asText();
+        Optional<User> existingUserOptional = User.byFacebookId(facebookId);
+
+        if (existingUserOptional.isPresent()) {
+            ObjectNode response = Json.newObject();
+            response.put("authToken", SecurityHelper.generateAuthToken(existingUserOptional.get().userId));
+            return ok(response);
+        } else {
+            return badRequest(Json.toJson("facebook access token doesn't match any users"));
+        }
     }
 
     @Transactional
@@ -63,8 +115,12 @@ public class UsersController extends Controller {
     }
 
     @Transactional
-    public static Result updateUser(long id) {
-        return BaseController.update(User.class, id);
+    @Security.Authenticated(Secured.class)
+    public static Result updateUser(long userId) {
+        if (BaseController.isUnauthorized(userId)) {
+            return forbidden();
+        }
+        return BaseController.update(User.class, userId);
     }
 
     @Transactional

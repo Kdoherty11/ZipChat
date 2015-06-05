@@ -2,7 +2,7 @@ package unit;
 
 import org.junit.Test;
 import validation.Validator;
-import validation.Validators;
+import validation.validators.Validators;
 
 import java.util.Optional;
 

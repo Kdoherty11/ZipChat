@@ -4,10 +4,13 @@ import models.entities.PrivateRoom;
 import play.Logger;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.Secured;
 import utils.DbUtils;
 
 import java.util.Optional;
 
+@Security.Authenticated(Secured.class)
 public class PrivateRoomsController extends BaseController {
 
     @Transactional
