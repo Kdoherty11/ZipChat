@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Strings;
 import models.Platform;
 import models.entities.User;
 import play.Logger;
@@ -17,6 +18,7 @@ import validation.DataValidator;
 import validation.FieldValidator;
 import validation.validators.Validators;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -60,15 +62,24 @@ public class UsersController extends BaseController {
         user.name = name;
         user.gender = gender;
         user.platform = Platform.valueOf(platform);
-        user.registrationId = regId;
 
         Optional<User> existingUserOptional = User.byFacebookId(facebookId);
         if (existingUserOptional.isPresent()) {
-            // TODO if platform changed set regId to new value
-            // otherwise add it to a list of registration ids
-            user.userId = existingUserOptional.get().userId;
+            User existing = existingUserOptional.get();
+            user.userId = existing.userId;
+
+            if (user.platform == existing.platform) {
+                if (Strings.isNullOrEmpty(regId) && !existing.registrationIds.contains(regId)) {
+                    user.registrationIds = existing.registrationIds;
+                    user.registrationIds.add(regId);
+                }
+            } else {
+                user.registrationIds = Collections.singletonList(regId);
+            }
+
             JPA.em().merge(user);
         } else {
+            user.registrationIds = Collections.singletonList(regId);
             JPA.em().persist(user);
         }
 

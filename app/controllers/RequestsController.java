@@ -2,6 +2,9 @@ package controllers;
 
 import com.google.common.primitives.Longs;
 import models.entities.Request;
+import models.entities.User;
+import models.entities.UserAlias;
+import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -22,12 +25,53 @@ public class RequestsController extends BaseController {
 
     @Transactional
     public static Result createRequest() {
-        long senderId = Longs.tryParse(form().bindFromRequest().data().get("sender"));
+        Map<String, String> data = form().bindFromRequest().data();
+
+        String senderKey = "sender";
+        String receiverKey = "receiver";
+        String anonKey = "isAnon";
+
+        Long senderId = Longs.tryParse(data.get(senderKey));
+        Long receiverId = Longs.tryParse(data.get(receiverKey));
+
+        if (senderId == null) {
+            return badRequestJson(FieldValidator.typeError(senderKey, Long.class));
+        }
+
+        if (receiverId == null) {
+            return badRequestJson(FieldValidator.typeError(receiverKey, Long.class));
+        }
+
         if (isUnauthorized(senderId)) {
             return forbidden();
         }
-        return createWithForeignEntities(Request.class, createdRequest ->
-                NotificationUtils.sendChatRequest(createdRequest.sender, createdRequest.receiver));
+
+        boolean isAnon = Boolean.valueOf(data.get(anonKey));
+        if (isAnon) {
+            Optional<UserAlias> userAliasOptional = DbUtils.findEntityById(UserAlias.class, senderId);
+            if (userAliasOptional.isPresent()) {
+                receiverId = userAliasOptional.get().userId;
+            } else {
+                throw new IllegalStateException("No user alias for anon user request");
+            }
+        }
+
+        Optional<User> senderOptional = DbUtils.findEntityById(User.class, senderId);
+        if (senderOptional.isPresent()) {
+            Optional<User> receiverOptional = DbUtils.findEntityById(User.class, receiverId);
+            if (receiverOptional.isPresent()) {
+                Request request = new Request();
+                request.sender = senderOptional.get();
+                request.receiver = receiverOptional.get();
+                JPA.em().persist(request);
+                NotificationUtils.sendChatRequest(request.sender, request.receiver);
+                return OK_RESULT;
+            } else {
+                return DbUtils.getNotFoundResult(User.class, receiverId);
+            }
+        } else {
+            return DbUtils.getNotFoundResult(User.class, senderId);
+        }
     }
 
     @Transactional

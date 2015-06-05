@@ -78,15 +78,14 @@ public class UserAlias {
         throw new RuntimeException("Random index was not in set");
     }
 
-    public static String getOrCreateAlias(long userId, long roomId) {
-        Optional<String> aliasOptional = getAlias(userId, roomId);
+    public static UserAlias getOrCreateAlias(long userId, long roomId) {
+        Optional<UserAlias> aliasOptional = getAlias(userId, roomId);
 
         if (aliasOptional.isPresent()) {
             return aliasOptional.get();
         }
 
-        UserAlias alias = createAlias(userId, roomId);
-        return alias.alias;
+        return createAlias(userId, roomId);
     }
 
     public static UserAlias createAlias(long userId, long roomId) {
@@ -95,14 +94,14 @@ public class UserAlias {
         return alias;
     }
 
-    public static Optional<String> getAlias(long userId, long roomId) {
-        String queryString = "select a.alias from UserAlias a where a.userId = :userId and a.roomId = :roomId";
+    public static Optional<UserAlias> getAlias(long userId, long roomId) {
+        String queryString = "select a from UserAlias a where a.userId = :userId and a.roomId = :roomId";
 
-        TypedQuery<String> query = JPA.em().createQuery(queryString, String.class)
+        TypedQuery<UserAlias> query = JPA.em().createQuery(queryString, UserAlias.class)
                 .setParameter("userId", userId)
                 .setParameter("roomId", roomId);
 
-        List<String> aliases = query.getResultList();
+        List<UserAlias> aliases = query.getResultList();
         if (aliases.isEmpty()) {
             return Optional.empty();
         } else {

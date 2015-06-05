@@ -47,7 +47,8 @@ public class User {
     @Constraints.Required
     public String name;
 
-    public String registrationId;
+    @ElementCollection
+    public List<String> registrationIds;
 
     @Constraints.Required
     public Platform platform;
@@ -70,9 +71,8 @@ public class User {
         }
     }
 
-    // TODO Return a Promise / Future JsonNode
     public static JsonNode getFacebookInformation(String fbAccessToken) {
-        return WS.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(2, TimeUnit.SECONDS).asJson();
+        return WS.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(3, TimeUnit.SECONDS).asJson();
     }
 
     public static long getId(User user) {
@@ -89,7 +89,7 @@ public class User {
     }
 
     public String sendNotification(Map<String, String> data) {
-        if (Strings.isNullOrEmpty(registrationId)) {
+        if (registrationIds.isEmpty()) {
             String error = "No registrationId found for " + this;
             Logger.error(error);
             return error;
@@ -97,9 +97,9 @@ public class User {
         
         switch (platform) {
             case android:
-                return NotificationUtils.sendAndroidNotification(registrationId, data);
+                return NotificationUtils.sendBatchAndroidNotifications(registrationIds, data);
             case ios:
-                return NotificationUtils.sendAppleNotification(registrationId, data);
+                return NotificationUtils.sendBatchAppleNotifications(registrationIds, data);
             default:
                 throw new UnsupportedOperationException("Sending notifications to " + platform +
                         "devices is not supported");
@@ -108,7 +108,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(userId, facebookId, name, registrationId, platform);
+        return Objects.hashCode(userId, facebookId, name, registrationIds, platform);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class User {
         return Objects.equal(this.userId, other.userId)
                 && Objects.equal(this.facebookId, other.facebookId)
                 && Objects.equal(this.name, other.name)
-                && Objects.equal(this.registrationId, other.registrationId)
+                && Objects.equal(this.registrationIds, other.registrationIds)
                 && Objects.equal(this.platform, other.platform);
     }
 
@@ -133,7 +133,7 @@ public class User {
                 .add("userId", userId)
                 .add("name", name)
                 .add("facebookId", facebookId)
-                .add("registrationId", registrationId)
+                .add("registrationIds", registrationIds)
                 .add("platform", platform)
                 .toString();
     }

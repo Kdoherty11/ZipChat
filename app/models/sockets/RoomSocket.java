@@ -242,6 +242,16 @@ public class RoomSocket extends UntypedActor {
         Message message = pair.getLeft();
         User messageSender = pair.getRight();
 
+        ObjectNode senderJson = Json.newObject();
+        senderJson.put("id", message.senderId);
+        senderJson.put("name", message.senderName);
+        senderJson.put("fbId", message.senderFbId);
+
+        ObjectNode messageJson = Json.newObject();
+        messageJson.put("isAnon", message.isAnon);
+        messageJson.put("message", message.message);
+        messageJson.put("sender", senderJson);
+
         notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
         notifyRoomSubscribers(message.room, messageSender, message, j);
     }
@@ -268,10 +278,18 @@ public class RoomSocket extends UntypedActor {
 
         return JPA.withTransaction(() -> {
             User sender = DbUtils.findExistingEntityById(User.class, senderId);
-            String senderName = isAnon ? UserAlias.getOrCreateAlias(senderId, roomId) : sender.name;
-            String facebookId = isAnon ? null : sender.facebookId;
+            String senderName = sender.name;
+            String facebookId = sender.facebookId;
+            long userId = senderId;
 
-            Message message = new Message(roomId, senderId, senderName, facebookId, talk.getText(), isAnon);
+            if (isAnon) {
+                UserAlias userAlias = UserAlias.getOrCreateAlias(senderId, roomId);
+                senderName = userAlias.alias;
+                facebookId = null;
+                userId = userAlias.userAliasId;
+            }
+
+            Message message = new Message(roomId, userId, senderName, facebookId, talk.getText(), isAnon);
             message.addToRoom();
             return Pair.of(message, sender);
         });

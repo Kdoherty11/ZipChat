@@ -48,9 +48,6 @@ public class Request {
     @Constraints.Required
     public User receiver;
 
-    @NoUpdate
-    public String message;
-
     public Status status = Status.pending;
 
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
@@ -129,7 +126,7 @@ public class Request {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(requestId, User.getId(receiver), User.getId(sender), status, message, timeStamp, respondedTimeStamp);
+        return Objects.hashCode(requestId, User.getId(receiver), User.getId(sender), status, timeStamp, respondedTimeStamp);
     }
 
     @Override
@@ -145,7 +142,6 @@ public class Request {
                 && Objects.equal(User.getId(this.receiver), User.getId(other.receiver))
                 && Objects.equal(User.getId(this.sender), User.getId(other.sender))
                 && Objects.equal(this.status, other.status)
-                && Objects.equal(this.message, other.message)
                 && Objects.equal(this.timeStamp, other.timeStamp)
                 && Objects.equal(this.respondedTimeStamp, other.respondedTimeStamp);
     }
@@ -157,7 +153,6 @@ public class Request {
                 .add("receiverId", receiver.userId)
                 .add("senderId", sender.userId)
                 .add("status", status)
-                .add("message", message)
                 .add("timeStamp", timeStamp)
                 .add("respondedTimeStamp", respondedTimeStamp)
                 .toString();
