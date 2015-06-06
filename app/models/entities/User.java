@@ -42,18 +42,20 @@ public class User {
     @Constraints.Required
     public String facebookId;
 
+    @JsonIgnore
     public String gender;
 
     @Constraints.Required
     public String name;
 
-    @ElementCollection
+    @JsonIgnore
+    @ElementCollection(fetch = FetchType.LAZY)
     public List<String> registrationIds;
 
+    @JsonIgnore
     @Constraints.Required
     public Platform platform;
 
-    @NoUpdate
     @JsonIgnore
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
