@@ -1,6 +1,8 @@
 package security;
 
 import play.Play;
+
+import play.Logger;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -18,12 +20,16 @@ public class Secured extends Security.Authenticator {
         if (authTokenHeaderValues != null && authTokenHeaderValues.length == 1
                 && authTokenHeaderValues[0] != null) {
             String jwt = authTokenHeaderValues[0];
+            Logger.debug("Received jwt: " + jwt);
             Optional<Long> userIdOptional = SecurityHelper.getUserId(jwt);
 
             if (userIdOptional.isPresent()) {
                 long userId = userIdOptional.get();
                 ctx.args.put(USER_ID_KEY, userId);
+                Logger.debug("Received legit authToken from user " + userId);
                 return Long.toString(userId);
+            } else {
+                Logger.debug("Could not parse user id from auth token");
             }
         }
 
