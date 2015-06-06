@@ -23,7 +23,7 @@ DELETE        /privateRooms/:roomId                             controllers.Priv
 PUT           /privateRooms/:roomId/leave                       controllers.PrivateRoomsController.leaveRoom(roomId: Long, userId: Long)
 
 GET           /rooms/:roomId/messages                           controllers.MessagesController.getMessages(roomId: Long, limit: Int, offset: Int)
-GET           /rooms/:roomId/join                               controllers.RoomsController.joinRoom(roomId: Long, userId: Long)
+GET           /rooms/:roomId/join                               controllers.RoomsController.joinRoom(roomId: Long, userId: Long, authToken: String)
 
 PUT           /messages/:messageId/favorite                     controllers.MessagesController.favorite(messageId: Long, userId: Long)
 DELETE        /messages/:messageId/favorite                     controllers.MessagesController.removeFavorite(messageId: Long, userId: Long)

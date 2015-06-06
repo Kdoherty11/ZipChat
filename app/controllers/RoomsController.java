@@ -4,16 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import models.sockets.RoomSocket;
 import play.Logger;
 import play.db.jpa.Transactional;
-import play.mvc.Security;
 import play.mvc.WebSocket;
-import security.Secured;
+import security.SecurityHelper;
 
-@Security.Authenticated(Secured.class)
+import java.util.Optional;
+
 public class RoomsController extends BaseController {
 
     @Transactional
-    public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId) {
-        if (isUnauthorized(userId)) {
+    public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) {
+        Optional<Long> userIdOptional = SecurityHelper.getUserId(authToken);
+        if (!userIdOptional.isPresent() || userIdOptional.get() != userId) {
             return WebSocket.reject(forbidden());
         }
 
