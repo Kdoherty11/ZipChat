@@ -8,7 +8,7 @@ public class MinValidator implements Validator<Number> {
 
     private long min;
 
-    public MinValidator(long value) {
+    MinValidator(long value) {
         this.min = value;
     }
 

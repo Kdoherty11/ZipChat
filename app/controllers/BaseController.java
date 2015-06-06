@@ -12,7 +12,9 @@ import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Yaml;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
+import security.Secured;
 import utils.DbUtils;
 
 import javax.persistence.Id;
@@ -35,6 +37,14 @@ public class BaseController extends Controller {
 
     public interface Callback<T> {
         void success(T createdEntity);
+    }
+
+    public static long getTokenUserId() {
+        return (long) Http.Context.current().args.get(Secured.USER_ID_KEY);
+    }
+
+    public static boolean isUnauthorized(long userId) {
+        return userId != getTokenUserId();
     }
 
     protected static <T> Result create(Class<T> clazz) {

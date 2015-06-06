@@ -4,10 +4,13 @@ import models.entities.PrivateRoom;
 import play.Logger;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.Secured;
 import utils.DbUtils;
 
 import java.util.Optional;
 
+@Security.Authenticated(Secured.class)
 public class PrivateRoomsController extends BaseController {
 
     @Transactional
@@ -32,12 +35,19 @@ public class PrivateRoomsController extends BaseController {
 
     @Transactional
     public static Result getRoomsByUserId(long userId) {
+        if (isUnauthorized(userId)) {
+            return forbidden();
+        }
         Logger.debug("Getting Private Rooms by userId: " + userId);
         return okJson(PrivateRoom.getRoomsByUserId(userId));
     }
 
     @Transactional
     public static Result leaveRoom(long roomId, long userId) {
+        if (isUnauthorized(userId)) {
+            return forbidden();
+        }
+
         Optional<PrivateRoom> roomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
 
         if (roomOptional.isPresent()) {

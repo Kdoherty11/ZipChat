@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public class RequiredValidator implements Validator<Object> {
 
+    RequiredValidator() {}
+
     @Override
     public boolean isValid(Optional<Object> valueOptional) {
         return valueOptional.isPresent();

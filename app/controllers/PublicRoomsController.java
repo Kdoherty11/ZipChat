@@ -5,16 +5,19 @@ import models.entities.PublicRoom;
 import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.Secured;
 import utils.DbUtils;
 import validation.DataValidator;
 import validation.FieldValidator;
-import validation.Validators;
+import validation.validators.Validators;
 
 import java.util.Map;
 import java.util.Optional;
 
 import static play.data.Form.form;
 
+@Security.Authenticated(Secured.class)
 public class PublicRoomsController extends BaseController {
 
     @Transactional
@@ -59,8 +62,12 @@ public class PublicRoomsController extends BaseController {
             return FieldValidator.typeError(userIdKey, Long.class);
         }
 
+        if (isUnauthorized(userId)) {
+            return forbidden();
+        }
+
         DataValidator validator = new DataValidator(
-                new FieldValidator<>(userIdKey, userId, Validators.required(), Validators.positive()));
+                new FieldValidator<>(userIdKey, userId, Validators.positive()));
 
         if (validator.hasErrors()) {
             return badRequest(validator.errorsAsJson());
@@ -93,6 +100,10 @@ public class PublicRoomsController extends BaseController {
 
     @Transactional
     public static Result removeSubscription(long roomId, long userId) {
+        if (isUnauthorized(userId)) {
+            return forbidden();
+        }
+
         Optional<PublicRoom> roomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
         if (roomOptional.isPresent()) {
             roomOptional.get().removeSubscription(userId);

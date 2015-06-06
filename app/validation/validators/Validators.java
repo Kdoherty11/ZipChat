@@ -1,9 +1,11 @@
-package validation;
+package validation.validators;
 
 import com.google.common.collect.Sets;
-import validation.validators.MinValidator;
-import validation.validators.RequiredValidator;
-import validation.validators.WhiteListValidator;
+import validation.Validator;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Factory methods for Validators
@@ -23,6 +25,12 @@ public class Validators {
 
     public static Validator<Object> required() {
         return new RequiredValidator();
+    }
+
+    public static Validator<String> enumValue(Class<? extends Enum> enumClass) {
+        Enum[] enumValues = enumClass.getEnumConstants();
+        Set<String> enumValueStrings = Arrays.stream(enumValues).map(Enum::name).collect(Collectors.toSet());
+        return new WhiteListValidator<>(enumValueStrings);
     }
 
     @SafeVarargs

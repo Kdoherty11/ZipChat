@@ -9,7 +9,7 @@ public class WhiteListValidator<T> implements Validator<T> {
 
     private Set<T> whiteList;
 
-    public WhiteListValidator(Set<T> whiteList) {
+    WhiteListValidator(Set<T> whiteList) {
         this.whiteList = whiteList;
     }
 

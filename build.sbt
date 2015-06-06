@@ -32,6 +32,8 @@ libraryDependencies += "com.ganyo" % "gcm-server" % "1.0.2"
 
 libraryDependencies += "com.intellij" % "annotations" % "9.0.4"
 
+libraryDependencies += "io.jsonwebtoken" % "jjwt" % "0.5"
+
 jacoco.settings
 
 herokuAppName in Compile := "zipchatapp"
