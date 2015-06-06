@@ -7,6 +7,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class Secured extends Security.Authenticator {
@@ -17,6 +18,10 @@ public class Secured extends Security.Authenticator {
     @Override
     public String getUsername(Http.Context ctx) {
         String[] authTokenHeaderValues = ctx.request().headers().get(AUTH_TOKEN_HEADER);
+
+        Logger.debug("All Headers: " + ctx.request().headers());
+        Logger.debug("Headers: " + Arrays.toString(authTokenHeaderValues));
+
         if (authTokenHeaderValues != null && authTokenHeaderValues.length == 1
                 && authTokenHeaderValues[0] != null) {
             String jwt = authTokenHeaderValues[0];
