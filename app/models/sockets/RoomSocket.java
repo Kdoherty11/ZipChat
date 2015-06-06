@@ -242,17 +242,7 @@ public class RoomSocket extends UntypedActor {
         Message message = pair.getLeft();
         User messageSender = pair.getRight();
 
-        ObjectNode senderJson = Json.newObject();
-        senderJson.put("userId", message.senderId);
-        senderJson.put("facebookId", message.senderFbId);
-        senderJson.put("name", message.senderName);
-
-        ObjectNode messageJson = Json.newObject();
-        messageJson.put("isAnon", message.isAnon);
-        messageJson.put("message", message.message);
-        messageJson.put("sender", senderJson);
-
-        notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(messageJson));
+        notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
         notifyRoomSubscribers(message.room, messageSender, message, j);
     }
 
