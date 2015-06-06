@@ -6,6 +6,7 @@ import models.NoUpdate;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.validation.DataBinder;
 import play.Logger;
+import play.Play;
 import play.data.Form;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
@@ -44,7 +45,7 @@ public class BaseController extends Controller {
     }
 
     public static boolean isUnauthorized(long userId) {
-        return userId != getTokenUserId();
+        return userId != getTokenUserId() && !Play.isDev();
     }
 
     protected static <T> Result create(Class<T> clazz) {

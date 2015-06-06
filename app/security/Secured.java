@@ -1,5 +1,6 @@
 package security;
 
+import play.Play;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -24,6 +25,10 @@ public class Secured extends Security.Authenticator {
                 ctx.args.put(USER_ID_KEY, userId);
                 return Long.toString(userId);
             }
+        }
+
+        if (Play.isDev()) {
+            return "-1";
         }
 
         return null;
