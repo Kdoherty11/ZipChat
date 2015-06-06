@@ -252,7 +252,7 @@ public class RoomSocket extends UntypedActor {
         messageJson.put("message", message.message);
         messageJson.put("sender", senderJson);
 
-        notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
+        notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(messageJson));
         notifyRoomSubscribers(message.room, messageSender, message, j);
     }
 
