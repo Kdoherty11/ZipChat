@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public class Secured extends Security.Authenticator {
 
-    private static final String AUTH_TOKEN_HEADER = "X-AUTH-TOKEN";
+    private static final String AUTH_TOKEN_HEADER = "X-Auth-Token";
     public static final String USER_ID_KEY = "userId";
 
     @Override
