@@ -6,24 +6,16 @@
 
 POST          /publicRooms                                      controllers.PublicRoomsController.createRoom()
 GET           /publicRooms                                      controllers.PublicRoomsController.getGeoRooms(lat: Double, lon: Double)
-GET           /publicRooms/:roomId                              controllers.PublicRoomsController.showRoom(roomId: Long)
-PUT           /publicRooms/:roomId                              controllers.PublicRoomsController.updateRoom(roomId: Long)
-DELETE        /publicRooms/:roomId                              controllers.PublicRoomsController.deleteRoom(roomId: Long)
-POST          /publicRooms/:roomId/notify                       controllers.PublicRoomsController.notifySubscribers(roomId: Long)
 POST          /publicRooms/:roomId/subscriptions                controllers.PublicRoomsController.createSubscription(roomId: Long)
-GET           /publicRooms/:roomId/subscriptions                controllers.PublicRoomsController.getSubscriptions(roomId: Long)
 DELETE        /publicRooms/:roomId/subscriptions/:userId        controllers.PublicRoomsController.removeSubscription(roomId: Long, userId: Long)
 GET           /publicRooms/:roomId/subscriptions/exists         controllers.PublicRoomsController.isSubscribed(roomId: Long, userId: Long)
+GET           /publicRooms/:roomId/join                         controllers.PublicRoomsController.joinRoom(roomId: Long, userId: Long, authToken: String)
 
-POST          /privateRooms                                     controllers.PrivateRoomsController.createRoom()
 GET           /privateRooms                                     controllers.PrivateRoomsController.getRoomsByUserId(userId: Long)
-GET           /privateRooms/:roomId                             controllers.PrivateRoomsController.showRoom(roomId: Long)
-PUT           /privateRooms/:roomId                             controllers.PrivateRoomsController.updateRoom(roomId: Long)
-DELETE        /privateRooms/:roomId                             controllers.PrivateRoomsController.deleteRoom(roomId: Long)
+GET           /privateRooms/:roomId/join                        controllers.PrivateRoomsController.joinRoom(roomId: Long, userId: Long, authToken: String)
 PUT           /privateRooms/:roomId/leave                       controllers.PrivateRoomsController.leaveRoom(roomId: Long, userId: Long)
 
 GET           /rooms/:roomId/messages                           controllers.MessagesController.getMessages(roomId: Long, limit: Int, offset: Int)
-GET           /rooms/:roomId/join                               controllers.RoomsController.joinRoom(roomId: Long, userId: Long, authToken: String)
 
 PUT           /messages/:messageId/favorite                     controllers.MessagesController.favorite(messageId: Long, userId: Long)
 DELETE        /messages/:messageId/favorite                     controllers.MessagesController.removeFavorite(messageId: Long, userId: Long)
@@ -31,18 +23,13 @@ PUT           /messages/:messageId/flag                         controllers.Mess
 DELETE        /messages/:messageId/flag                         controllers.MessagesController.removeFlag(messageId: Long, userId: Long)
 
 PUT           /users                                            controllers.UsersController.createUser()
-GET           /users                                            controllers.UsersController.getUsers()
-GET           /users/:userId                                    controllers.UsersController.showUser(userId: Long)
 PUT           /users/:userId                                    controllers.UsersController.updateUser(userId: Long)
-DELETE        /users/:userId                                    controllers.UsersController.deleteUser(userId: Long)
-POST          /users/:userId/sendNotification                   controllers.UsersController.sendNotification(userId: Long)
+GET           /auth                                             controllers.UsersController.auth(fbAccessToken: String)
 
 POST          /requests                                         controllers.RequestsController.createRequest()
 GET           /requests                                         controllers.RequestsController.getRequestsByReceiver(userId: Long)
 GET           /requests/status                                  controllers.RequestsController.getStatus(senderId: Long, receiverId: Long)
 PUT           /requests/:requestId                              controllers.RequestsController.handleResponse(requestId: Long)
-
-GET           /auth                                             controllers.UsersController.auth(fbAccessToken: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                     controllers.Assets.at(path="/public", file)

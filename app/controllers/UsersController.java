@@ -13,7 +13,6 @@ import play.mvc.Result;
 import play.mvc.Security;
 import security.Secured;
 import security.SecurityHelper;
-import utils.DbUtils;
 import validation.DataValidator;
 import validation.FieldValidator;
 import validation.validators.Validators;
@@ -116,15 +115,7 @@ public class UsersController extends BaseController {
             return badRequest(Json.toJson("facebook access token doesn't match any users"));
         }
     }
-
-    @Transactional
-    public static Result getUsers() { return BaseController.read(User.class); }
-
-    @Transactional
-    public static Result showUser(long id) {
-        return BaseController.show(User.class, id);
-    }
-
+    
     @Transactional
     @Security.Authenticated(Secured.class)
     public static Result updateUser(long userId) {
@@ -132,26 +123,5 @@ public class UsersController extends BaseController {
             return forbidden();
         }
         return BaseController.update(User.class, userId);
-    }
-
-    @Transactional
-    public static Result deleteUser(long id) {
-        return BaseController.delete(User.class, id);
-    }
-
-    @Transactional
-    public static Result sendNotification(long userId) {
-        Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
-
-        if (userOptional.isPresent()) {
-            String result = userOptional.get().sendNotification(form().bindFromRequest().data());
-            if (BaseController.OK_STRING.equals(result)) {
-                return BaseController.OK_RESULT;
-            } else {
-                return BaseController.badRequestJson(result);
-            }
-        } else {
-            return DbUtils.getNotFoundResult(User.ENTITY_NAME, userId);
-        }
     }
 }
