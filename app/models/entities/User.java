@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 
 @Entity
@@ -49,11 +48,15 @@ public class User {
     public String name;
 
     @JsonIgnore
-    @OneToMany(targetEntity = NotificationInfo.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<NotificationInfo> notificationInfoList;
+    @OneToMany(targetEntity = Device.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List<Device> devices;
 
     @JsonIgnore
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+
+    public List<Device> getDevices() {
+        return devices;
+    }
 
     public static Optional<User> byFacebookId(String facebookId) {
         String queryString = "select u from User u where u.facebookId = :facebookId";
@@ -77,10 +80,6 @@ public class User {
         return user == null ? -1 : user.userId;
     }
 
-    public void addNotificationInfo(NotificationInfo notificationInfo) {
-        notificationInfoList.add(notificationInfo);
-    }
-
     public static void sendNotification(long userId, Map<String, String> data) {
         Optional<User> userOptional = DbUtils.findEntityById(User.class,userId);
         if (userOptional.isPresent()) {
@@ -91,37 +90,39 @@ public class User {
     }
 
     public void sendNotification(Map<String, String> data) {
-        if (notificationInfoList.isEmpty()) {
+        if (devices.isEmpty()) {
             return;
         }
 
         List<String> androidRegIds = new ArrayList<>();
         List<String> iosRegIds = new ArrayList<>();
 
-        for (NotificationInfo notificationInfo : notificationInfoList) {
-            if (notificationInfo.platform == Platform.android) {
-                androidRegIds.add(notificationInfo.registrationId);
+        for (Device info : devices) {
+            if (info.platform == Platform.android) {
+                androidRegIds.add(info.regId);
             } else {
-                iosRegIds.add(notificationInfo.registrationId);
+                iosRegIds.add(info.regId);
             }
         }
 
-        if (androidRegIds.size() == 1) {
+        int numAndroidRegIds = androidRegIds.size();
+        if (numAndroidRegIds == 1) {
             NotificationUtils.sendAndroidNotification(androidRegIds.get(0), data);
-        } else {
+        } else if (numAndroidRegIds > 1) {
             NotificationUtils.sendBatchAndroidNotifications(androidRegIds, data);
         }
 
-        if (iosRegIds.size() == 1) {
+        int numIosRegIds = iosRegIds.size();
+        if (numIosRegIds == 1) {
             NotificationUtils.sendAppleNotification(iosRegIds.get(0), data);
-        } else {
+        } else if (numIosRegIds > 1) {
             NotificationUtils.sendBatchAppleNotifications(iosRegIds, data);
         }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(userId, facebookId, name, notificationInfoList);
+        return Objects.hashCode(userId, facebookId, name, devices);
     }
 
     @Override
@@ -136,7 +137,7 @@ public class User {
         return Objects.equal(this.userId, other.userId)
                 && Objects.equal(this.facebookId, other.facebookId)
                 && Objects.equal(this.name, other.name)
-                && Objects.equal(this.notificationInfoList, other.notificationInfoList);
+                && Objects.equal(this.devices, other.devices);
     }
 
     @Override
@@ -145,7 +146,7 @@ public class User {
                 .add("userId", userId)
                 .add("name", name)
                 .add("facebookId", facebookId)
-                .add("notificationInfoList", notificationInfoList)
+                .add("devices", devices)
                 .toString();
     }
 }

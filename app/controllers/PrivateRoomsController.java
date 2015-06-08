@@ -77,4 +77,18 @@ public class PrivateRoomsController extends BaseController {
             }
         };
     }
+
+    @Transactional
+    public static Result getMessages(long roomId, int limit, int offset) {
+        Optional<PrivateRoom> privateRoomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
+        if (privateRoomOptional.isPresent()) {
+            if (!privateRoomOptional.get().isUserInRoom(getTokenUserId())) {
+                return forbidden();
+            }
+        } else {
+            return DbUtils.getNotFoundResult(PrivateRoom.class, roomId);
+        }
+
+        return MessagesController.getMessages(roomId, limit, offset);
+    }
 }
