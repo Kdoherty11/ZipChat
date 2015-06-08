@@ -16,15 +16,16 @@ GET           /privateRooms/:roomId/join                        controllers.Priv
 PUT           /privateRooms/:roomId/leave                       controllers.PrivateRoomsController.leaveRoom(roomId: Long, userId: Long)
 
 GET           /rooms/:roomId/messages                           controllers.MessagesController.getMessages(roomId: Long, limit: Int, offset: Int)
-
 PUT           /messages/:messageId/favorite                     controllers.MessagesController.favorite(messageId: Long, userId: Long)
 DELETE        /messages/:messageId/favorite                     controllers.MessagesController.removeFavorite(messageId: Long, userId: Long)
 PUT           /messages/:messageId/flag                         controllers.MessagesController.flag(messageId: Long, userId: Long)
 DELETE        /messages/:messageId/flag                         controllers.MessagesController.removeFlag(messageId: Long, userId: Long)
 
 PUT           /users                                            controllers.UsersController.createUser()
-PUT           /users/:userId                                    controllers.UsersController.updateUser(userId: Long)
 GET           /auth                                             controllers.UsersController.auth(fbAccessToken: String)
+
+POST          /notificationInfo                                 controllers.NotificationInfoController.createNotificationInfo()
+PUT           /notificationInfo/:notificationInfoId             controllers.NotificationInfoController.updateNotificationInfo(notificationInfoId: Long, regId: String)
 
 POST          /requests                                         controllers.RequestsController.createRequest()
 GET           /requests                                         controllers.RequestsController.getRequestsByReceiver(userId: Long)

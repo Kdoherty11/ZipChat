@@ -106,9 +106,9 @@ public class PublicRoom extends AbstractRoom {
             subscribers.forEach(user -> {
                 if (!userIdsInRoom.contains(user.userId)) {
                     if (user.platform == Platform.android) {
-                        androidRegIds.addAll(user.registrationIds);
+                        androidRegIds.addAll(user.notificationInfoList);
                     } else if (user.platform == Platform.ios) {
-                        iosRegIds.addAll(user.registrationIds);
+                        iosRegIds.addAll(user.notificationInfoList);
                     }
                 }
             });
