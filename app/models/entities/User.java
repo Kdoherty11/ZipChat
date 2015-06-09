@@ -3,8 +3,6 @@ package models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
-import models.NoUpdate;
 import models.Platform;
 import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
@@ -17,6 +15,7 @@ import utils.NotificationUtils;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,15 +48,15 @@ public class User {
     public String name;
 
     @JsonIgnore
-    @ElementCollection(fetch = FetchType.LAZY)
-    public List<String> registrationIds;
-
-    @JsonIgnore
-    @Constraints.Required
-    public Platform platform;
+    @OneToMany(targetEntity = Device.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List<Device> devices;
 
     @JsonIgnore
     public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+
+    public List<Device> getDevices() {
+        return devices;
+    }
 
     public static Optional<User> byFacebookId(String facebookId) {
         String queryString = "select u from User u where u.facebookId = :facebookId";
@@ -74,43 +73,56 @@ public class User {
     }
 
     public static JsonNode getFacebookInformation(String fbAccessToken) {
-        return WS.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(3, TimeUnit.SECONDS).asJson();
+        return WS.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(5, TimeUnit.SECONDS).asJson();
     }
 
     public static long getId(User user) {
         return user == null ? -1 : user.userId;
     }
 
-    public static String sendNotification(long userId, Map<String, String> data) {
+    public static void sendNotification(long userId, Map<String, String> data) {
         Optional<User> userOptional = DbUtils.findEntityById(User.class,userId);
         if (userOptional.isPresent()) {
-            return userOptional.get().sendNotification(data);
+            userOptional.get().sendNotification(data);
         } else {
-            return DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, userId);
+            Logger.error(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, userId));
         }
     }
 
-    public String sendNotification(Map<String, String> data) {
-        if (registrationIds.isEmpty()) {
-            String error = "No registrationId found for " + this;
-            Logger.error(error);
-            return error;
+    public void sendNotification(Map<String, String> data) {
+        if (devices.isEmpty()) {
+            return;
         }
-        
-        switch (platform) {
-            case android:
-                return NotificationUtils.sendBatchAndroidNotifications(registrationIds, data);
-            case ios:
-                return NotificationUtils.sendBatchAppleNotifications(registrationIds, data);
-            default:
-                throw new UnsupportedOperationException("Sending notifications to " + platform +
-                        "devices is not supported");
+
+        List<String> androidRegIds = new ArrayList<>();
+        List<String> iosRegIds = new ArrayList<>();
+
+        for (Device info : devices) {
+            if (info.platform == Platform.android) {
+                androidRegIds.add(info.regId);
+            } else {
+                iosRegIds.add(info.regId);
+            }
+        }
+
+        int numAndroidRegIds = androidRegIds.size();
+        if (numAndroidRegIds == 1) {
+            NotificationUtils.sendAndroidNotification(androidRegIds.get(0), data);
+        } else if (numAndroidRegIds > 1) {
+            NotificationUtils.sendBatchAndroidNotifications(androidRegIds, data);
+        }
+
+        int numIosRegIds = iosRegIds.size();
+        if (numIosRegIds == 1) {
+            NotificationUtils.sendAppleNotification(iosRegIds.get(0), data);
+        } else if (numIosRegIds > 1) {
+            NotificationUtils.sendBatchAppleNotifications(iosRegIds, data);
         }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(userId, facebookId, name, registrationIds, platform);
+        return Objects.hashCode(userId, facebookId, name, devices);
     }
 
     @Override
@@ -125,8 +137,7 @@ public class User {
         return Objects.equal(this.userId, other.userId)
                 && Objects.equal(this.facebookId, other.facebookId)
                 && Objects.equal(this.name, other.name)
-                && Objects.equal(this.registrationIds, other.registrationIds)
-                && Objects.equal(this.platform, other.platform);
+                && Objects.equal(this.devices, other.devices);
     }
 
     @Override
@@ -135,8 +146,7 @@ public class User {
                 .add("userId", userId)
                 .add("name", name)
                 .add("facebookId", facebookId)
-                .add("registrationIds", registrationIds)
-                .add("platform", platform)
+                .add("devices", devices)
                 .toString();
     }
 }

@@ -10,12 +10,12 @@ POST          /publicRooms/:roomId/subscriptions                controllers.Publ
 DELETE        /publicRooms/:roomId/subscriptions/:userId        controllers.PublicRoomsController.removeSubscription(roomId: Long, userId: Long)
 GET           /publicRooms/:roomId/subscriptions/exists         controllers.PublicRoomsController.isSubscribed(roomId: Long, userId: Long)
 GET           /publicRooms/:roomId/join                         controllers.PublicRoomsController.joinRoom(roomId: Long, userId: Long, authToken: String)
+GET           /publicRooms/:roomId/messages                     controllers.PublicRoomsController.getMessages(roomId: Long, limit: Int, offset: Int)
 
 GET           /privateRooms                                     controllers.PrivateRoomsController.getRoomsByUserId(userId: Long)
 GET           /privateRooms/:roomId/join                        controllers.PrivateRoomsController.joinRoom(roomId: Long, userId: Long, authToken: String)
 PUT           /privateRooms/:roomId/leave                       controllers.PrivateRoomsController.leaveRoom(roomId: Long, userId: Long)
-
-GET           /rooms/:roomId/messages                           controllers.MessagesController.getMessages(roomId: Long, limit: Int, offset: Int)
+GET           /privateRooms/:roomId/messages                    controllers.PrivateRoomsController.getMessages(roomId: Long, limit: Int, offset: Int)
 
 PUT           /messages/:messageId/favorite                     controllers.MessagesController.favorite(messageId: Long, userId: Long)
 DELETE        /messages/:messageId/favorite                     controllers.MessagesController.removeFavorite(messageId: Long, userId: Long)
@@ -23,16 +23,16 @@ PUT           /messages/:messageId/flag                         controllers.Mess
 DELETE        /messages/:messageId/flag                         controllers.MessagesController.removeFlag(messageId: Long, userId: Long)
 
 PUT           /users                                            controllers.UsersController.createUser()
-PUT           /users/:userId                                    controllers.UsersController.updateUser(userId: Long)
 GET           /auth                                             controllers.UsersController.auth(fbAccessToken: String)
+
+POST          /devices                                          controllers.DevicesController.createDevice()
+PUT           /devices/:deviceId                                controllers.DevicesController.updateDeviceInfo(deviceId: Long, regId: String)
 
 POST          /requests                                         controllers.RequestsController.createRequest()
 GET           /requests                                         controllers.RequestsController.getRequestsByReceiver(userId: Long)
 GET           /requests/status                                  controllers.RequestsController.getStatus(senderId: Long, receiverId: Long)
 PUT           /requests/:requestId                              controllers.RequestsController.handleResponse(requestId: Long)
 
-# Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                                     controllers.Assets.at(path="/public", file)
-
-POST          /init                                             controllers.BaseController.init()
+GET           /status                                           controllers.BaseController.status()
 GET           /test                                             controllers.PublicRoomsController.getRooms()
+POST          /init                                             controllers.BaseController.init()

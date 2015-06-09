@@ -85,10 +85,6 @@ public class PublicRoom extends AbstractRoom {
         return subscribers.stream().anyMatch(user -> user.userId == userId);
     }
 
-    public void notifySubscribers(Map<String, String> data) {
-        notifySubscribers(data, Collections.emptySet());
-    }
-
     public boolean hasSubscribers() {
         return !subscribers.isEmpty();
     }
@@ -97,30 +93,28 @@ public class PublicRoom extends AbstractRoom {
         if (!hasSubscribers()) {
             return;
         }
-        new Thread(() -> {
-            List<String> androidRegIds = new ArrayList<>();
-            List<String> iosRegIds = new ArrayList<>();
+        List<String> androidRegIds = new ArrayList<>();
+        List<String> iosRegIds = new ArrayList<>();
 
-            Logger.debug("Not notifying users: " + userIdsInRoom);
-
-            subscribers.forEach(user -> {
-                if (!userIdsInRoom.contains(user.userId)) {
-                    if (user.platform == Platform.android) {
-                        androidRegIds.addAll(user.registrationIds);
-                    } else if (user.platform == Platform.ios) {
-                        iosRegIds.addAll(user.registrationIds);
+        subscribers.forEach(user -> {
+            if (!userIdsInRoom.contains(user.userId)) {
+                user.getDevices().forEach(info -> {
+                    if (info.platform == Platform.android) {
+                        androidRegIds.add(info.regId);
+                    } else {
+                        iosRegIds.add(info.regId);
                     }
-                }
-            });
-
-            if (!androidRegIds.isEmpty()) {
-                NotificationUtils.sendBatchAndroidNotifications(androidRegIds, data);
+                });
             }
+        });
 
-            if (!iosRegIds.isEmpty()) {
-                NotificationUtils.sendBatchAppleNotifications(iosRegIds, data);
-            }
-        }).start();
+        if (!androidRegIds.isEmpty()) {
+            NotificationUtils.sendBatchAndroidNotifications(androidRegIds, data);
+        }
+
+        if (!iosRegIds.isEmpty()) {
+            NotificationUtils.sendBatchAppleNotifications(iosRegIds, data);
+        }
     }
 
     @Override

@@ -221,4 +221,8 @@ public class BaseController extends Controller {
         all.get("requests").forEach(request -> JPA.em().persist(request));
         return OK_RESULT;
     }
+
+    public static Result status() {
+        return OK_RESULT;
+    }
 }

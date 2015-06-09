@@ -1,8 +1,6 @@
 package controllers;
 
-import models.entities.AbstractRoom;
 import models.entities.Message;
-import models.entities.PrivateRoom;
 import models.entities.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
@@ -26,20 +24,6 @@ public class MessagesController extends BaseController {
 
     @Transactional
     public static Result getMessages(long roomId, int limit, int offset) {
-
-        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
-        if (roomOptional.isPresent()) {
-            AbstractRoom room = roomOptional.get();
-
-            if (room instanceof PrivateRoom) {
-                if (!((PrivateRoom) room).isUserInRoom(getTokenUserId())) {
-                    return forbidden();
-                }
-            }
-        } else {
-            return DbUtils.getNotFoundResult(AbstractRoom.class, roomId);
-        }
-
         DataValidator validator = new DataValidator(
                 new FieldValidator<>("limit", limit, Validators.min(0)),
                 new FieldValidator<>("offset", offset, Validators.min(0)));

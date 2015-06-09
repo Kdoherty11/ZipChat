@@ -2,22 +2,17 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
-import models.Platform;
 import models.entities.User;
 import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Result;
-import play.mvc.Security;
-import security.Secured;
 import security.SecurityHelper;
 import validation.DataValidator;
 import validation.FieldValidator;
 import validation.validators.Validators;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,16 +24,10 @@ public class UsersController extends BaseController {
     public static Result createUser() {
         Map<String, String> data = form().bindFromRequest().data();
         String fbAccessTokenKey = "fbAccessToken";
-        String platformKey = "platform";
-        String regIdKey = "regId";
-
         String fbAccessToken = data.get(fbAccessTokenKey);
-        String platform = data.get(platformKey);
-        String regId = data.get(regIdKey);
 
         DataValidator validator = new DataValidator(
-                new FieldValidator<>(fbAccessTokenKey, fbAccessToken, Validators.required()),
-                new FieldValidator<>(fbAccessTokenKey, platform, Validators.required(), Validators.enumValue(Platform.class))
+                new FieldValidator<>(fbAccessTokenKey, fbAccessToken, Validators.required())
         );
 
         if (validator.hasErrors()) {
@@ -60,25 +49,14 @@ public class UsersController extends BaseController {
         user.facebookId = facebookId;
         user.name = name;
         user.gender = gender;
-        user.platform = Platform.valueOf(platform);
 
         Optional<User> existingUserOptional = User.byFacebookId(facebookId);
         if (existingUserOptional.isPresent()) {
             User existing = existingUserOptional.get();
             user.userId = existing.userId;
 
-            if (user.platform == existing.platform) {
-                if (Strings.isNullOrEmpty(regId) && !existing.registrationIds.contains(regId)) {
-                    user.registrationIds = existing.registrationIds;
-                    user.registrationIds.add(regId);
-                }
-            } else {
-                user.registrationIds = Collections.singletonList(regId);
-            }
-
             JPA.em().merge(user);
         } else {
-            user.registrationIds = Collections.singletonList(regId);
             JPA.em().persist(user);
         }
 
@@ -114,14 +92,5 @@ public class UsersController extends BaseController {
         } else {
             return badRequest(Json.toJson("facebook access token doesn't match any users"));
         }
-    }
-    
-    @Transactional
-    @Security.Authenticated(Secured.class)
-    public static Result updateUser(long userId) {
-        if (BaseController.isUnauthorized(userId)) {
-            return forbidden();
-        }
-        return BaseController.update(User.class, userId);
     }
 }

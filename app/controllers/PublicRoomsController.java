@@ -122,4 +122,14 @@ public class PublicRoomsController extends BaseController {
             }
         };
     }
+
+    @Transactional
+    public static Result getMessages(long roomId, int limit, int offset) {
+        Optional<PublicRoom> publicRoomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
+        if (!publicRoomOptional.isPresent()) {
+            return DbUtils.getNotFoundResult(PublicRoom.class, roomId);
+        }
+
+        return MessagesController.getMessages(roomId, limit, offset);
+    }
 }
