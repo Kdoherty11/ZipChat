@@ -1,11 +1,13 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.primitives.Longs;
 import models.Platform;
 import models.entities.Device;
 import models.entities.User;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
+import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.Secured;
@@ -59,7 +61,8 @@ public class DevicesController extends BaseController {
         if (userOptional.isPresent()) {
             Device device = new Device(userOptional.get(), regId, Platform.valueOf(platform));
             JPA.em().persist(device);
-            return okJson(device);
+            ObjectNode jsonResponse = Json.newObject().put("deviceId", device.deviceId);
+            return ok(jsonResponse);
         } else {
             return DbUtils.getNotFoundResult(User.class, userId);
         }

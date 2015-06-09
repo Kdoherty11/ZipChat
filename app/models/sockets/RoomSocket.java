@@ -198,7 +198,6 @@ public class RoomSocket extends UntypedActor {
             boolean success;
             if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
                 success = message.favorite(user);
-
             } else {
                 success = message.removeFavorite(user);
             }

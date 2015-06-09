@@ -48,7 +48,7 @@ public class Device {
     }
 
     public static Optional<Device> getDevice(long userId, String regId, Platform platform) {
-        String queryString = "select n from Device n where n.user.userId = :userId and n.regId = :regId and n.platform = :platform";
+        String queryString = "select d from Device d where d.user.userId = :userId and d.regId = :regId and d.platform = :platform";
 
         TypedQuery<Device> query = JPA.em().createQuery(queryString, Device.class)
                 .setParameter("userId", userId)

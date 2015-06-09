@@ -46,7 +46,7 @@ public class NotificationUtils {
         private static final String PUBLIC_ROOM_TYPE = "PublicRoom";
     }
 
-    public static final String GCM_API_KEY = "AIzaSyDp2t64B8FsJUAOszaFl14-uiDVoZRu4W4";
+    public static final String GCM_API_KEY = "AIzaSyC45QxNleXmw_Nf2L2m3bWDoLiTjpTE9wA";
     private static final int GCM_RETRIES = 3;
 
     private static final Sender GCM_SENDER = new Sender(GCM_API_KEY);
