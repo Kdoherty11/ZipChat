@@ -62,7 +62,7 @@ public class DevicesController extends BaseController {
             Device device = new Device(userOptional.get(), regId, Platform.valueOf(platform));
             JPA.em().persist(device);
             ObjectNode jsonResponse = Json.newObject().put("deviceId", device.deviceId);
-            return ok(jsonResponse);
+            return created(jsonResponse);
         } else {
             return DbUtils.getNotFoundResult(User.class, userId);
         }

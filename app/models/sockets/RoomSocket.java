@@ -37,6 +37,8 @@ import static utils.DbUtils.findExistingEntityById;
 
 public class RoomSocket extends UntypedActor {
 
+    private static final boolean VERBOSE = true;
+
     private static final String CHANNEL = "messages";
 
     private static final String OK_JOIN_RESULT = "OK";
@@ -87,6 +89,8 @@ public class RoomSocket extends UntypedActor {
                             .mapToObj(id -> findExistingEntityById(User.class, id))
                             .toArray();
 
+                    logV("Join room room members: " + roomMembers);
+
                     ObjectNode event = Json.newObject();
                     event.put(EVENT_KEY, "joinSuccess");
 
@@ -96,10 +100,13 @@ public class RoomSocket extends UntypedActor {
                     AbstractRoom room = findExistingEntityById(AbstractRoom.class, roomId);
                     if (room instanceof PublicRoom) {
                         boolean isSubscribed = ((PublicRoom) room).isSubscribed(userId);
+                        logV("Join is subscribed: " + isSubscribed);
                         message.put("isSubscribed", isSubscribed);
                     }
 
                     event.put(MESSAGE_KEY, message);
+
+                    logV("join JSON response: " + event);
 
                     out.write(event);
                 });
@@ -110,18 +117,18 @@ public class RoomSocket extends UntypedActor {
             // For each event received on the socket,
             in.onMessage(message -> {
 
+                logV("onMessage message: " + message);
+
                 final String event = message.get("event").asText();
 
                 Object messageObject;
                 switch (event) {
                     case Talk.TYPE:
-                        Logger.debug("onMessage message " + message);
                         if (message.has("isAnon") && message.get("isAnon").asBoolean()) {
                             messageObject = new Talk(roomId, userId, message.get("message").asText(), message.get("isAnon").asBoolean());
                         } else {
                             messageObject = new Talk(roomId, userId, message.get("message").asText());
                         }
-                        Logger.debug("onMessage messageObject" + messageObject);
                         break;
                     case FavoriteNotification.TYPE:
                         messageObject = new FavoriteNotification(userId, Long.parseLong(message.get("messageId").asText()), message.get("action").asText());
@@ -129,6 +136,8 @@ public class RoomSocket extends UntypedActor {
                     default:
                         throw new RuntimeException("Event: " + event + " is not supported");
                 }
+
+                logV("onMessage object: " + messageObject);
 
                 Jedis jedis = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
                 try {
@@ -139,12 +148,17 @@ public class RoomSocket extends UntypedActor {
             });
 
             // When the socket is closed.
-            in.onClose(() -> defaultRoom.tell(new Quit(roomId, userId), null));
+            in.onClose(() -> {
+                logV("Closing socket for user: " + userId);
+                defaultRoom.tell(new Quit(roomId, userId), null);
+            });
         } else {
             // Cannot connect, create a Json error.
             ObjectNode error = Json.newObject();
             error.put(EVENT_KEY, "error");
             error.put(MESSAGE_KEY, result);
+
+            logV("Error: Could not connect: " + error);
 
             // Send the error to the socket.
             out.write(error);
@@ -161,6 +175,8 @@ public class RoomSocket extends UntypedActor {
     public void onReceive(Object message) throws Exception {
         Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
 
+        logV("onReceive: " + message);
+
         try {
             if (message instanceof Join) {
                 receiveJoin(j, (Join) message);
@@ -176,6 +192,8 @@ public class RoomSocket extends UntypedActor {
                 unhandled(message);
             }
         } catch (Throwable throwable) {
+            logV("onReceive caught throwable: " + throwable.getMessage());
+
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             throwable.printStackTrace(pw);
@@ -352,11 +370,10 @@ public class RoomSocket extends UntypedActor {
             members.remove(userId);
         }
 
-        j.srem(String.valueOf(roomId), String.valueOf(userId));
+        String roomIdStr = Long.toString(roomId);
+        j.srem(roomIdStr, String.valueOf(userId));
 
-        Set<String> roomMembers = j.smembers(String.valueOf(roomId));
-
-        Logger.debug("After quit room members are: " + roomMembers);
+        Set<String> roomMembers = j.smembers(roomIdStr);
 
         // For the robot
         if (roomMembers.size() == 1) {
@@ -383,9 +400,11 @@ public class RoomSocket extends UntypedActor {
 
                 addKeepAlive(roomId);
             }
+            Logger.debug("After quit room members are: " + roomMembers);
         } else {
             //Publish the quit notification to all nodes
             RosterNotification rosterNotify = new RosterNotification(roomId, userId, Quit.TYPE);
+            // TODO What is this doing / should this be using notify room
             j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
         }
     }
@@ -483,6 +502,12 @@ public class RoomSocket extends UntypedActor {
 
         @Override
         public void onUnsubscribe(String arg0, int arg1) {
+        }
+    }
+
+    private static void logV(String msg) {
+        if (VERBOSE) {
+            Logger.debug(msg);
         }
     }
 
