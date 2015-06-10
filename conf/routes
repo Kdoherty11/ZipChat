@@ -25,8 +25,8 @@ DELETE        /messages/:messageId/flag                         controllers.Mess
 PUT           /users                                            controllers.UsersController.createUser()
 GET           /auth                                             controllers.UsersController.auth(fbAccessToken: String)
 
-POST          /users/:userId/devices                            controllers.DevicesController.createDevice()
-PUT           /users/:userId/devices/:deviceId                  controllers.DevicesController.updateDeviceInfo(deviceId: Long, regId: String)
+POST          /devices                                          controllers.DevicesController.createDevice()
+PUT           /devices/:deviceId                                controllers.DevicesController.updateDeviceInfo(deviceId: Long, regId: String)
 
 POST          /requests                                         controllers.RequestsController.createRequest()
 GET           /requests                                         controllers.RequestsController.getRequestsByReceiver(userId: Long)
