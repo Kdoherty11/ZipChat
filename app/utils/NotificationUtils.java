@@ -134,7 +134,7 @@ public class NotificationUtils {
         data.put(Key.FACEBOOK_ID, messageFavoritor.facebookId);
         data.put(Key.MESSAGE, message.message);
         data.putAll(getRoomData(message.room));
-        User.sendNotification(message.senderId, data);
+        JPA.withTransaction(() -> User.sendNotification(message.senderId, data));
     }
 
 
