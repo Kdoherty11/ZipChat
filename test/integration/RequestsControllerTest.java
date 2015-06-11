@@ -106,7 +106,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
         long senderId = 500;
         Result badSenderResult = adapter.createRequest(senderId, null, MESSAGE);
         assertThat(status(badSenderResult)).isEqualTo(NOT_FOUND);
-        assertThat(contentAsString(badSenderResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, senderId)));
+        assertThat(contentAsString(badSenderResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.class, senderId)));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
         long receiverId = 500;
         Result badReceiverResult = adapter.createRequest(null, receiverId, MESSAGE);
         assertThat(status(badReceiverResult)).isEqualTo(NOT_FOUND);
-        assertThat(contentAsString(badReceiverResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, receiverId)));
+        assertThat(contentAsString(badReceiverResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.class, receiverId)));
     }
 
     @Test
@@ -222,7 +222,7 @@ public class RequestsControllerTest extends AbstractControllerTest {
         int badId = 1;
         Result badIdResult = adapter.handleResponse(badId, Request.Status.accepted.toString());
         assertThat(status(badIdResult)).isEqualTo(NOT_FOUND);
-        assertThat(contentAsString(badIdResult).contains(DbUtils.buildEntityNotFoundString(Request.ENTITY_NAME, badId)));
+        assertThat(contentAsString(badIdResult).contains(DbUtils.buildEntityNotFoundString(Request.class, badId)));
     }
 
     @Test

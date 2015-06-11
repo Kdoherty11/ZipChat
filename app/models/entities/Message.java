@@ -22,8 +22,6 @@ import java.util.Optional;
 @Table(name = "messages")
 public class Message {
 
-    public static final String ENTITY_NAME = "Message";
-
     @Id
     @GenericGenerator(name = "messages_gen", strategy = "sequence", parameters = {
             @org.hibernate.annotations.Parameter(name = "sequenceName", value = "messages_gen"),
@@ -73,7 +71,7 @@ public class Message {
         if (roomOptional.isPresent()) {
             this.room = roomOptional.get();
         } else {
-            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(AbstractRoom.ENTITY_NAME, roomId));
+            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(AbstractRoom.class, roomId));
         }
         this.message = Preconditions.checkNotNull(message);
         this.senderId = senderId;

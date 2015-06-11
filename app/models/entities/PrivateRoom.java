@@ -13,8 +13,6 @@ import java.util.Optional;
 @Table(name = "private_rooms")
 public class PrivateRoom extends AbstractRoom {
 
-    public static final String ENTITY_NAME = "Private Room";
-
     @ManyToOne
     @JoinColumn(name = "sender")
     @ForeignEntity

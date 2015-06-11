@@ -45,7 +45,7 @@ public class PrivateRoomsController extends BaseController {
             }
 
         } else {
-            return DbUtils.getNotFoundResult(PrivateRoom.ENTITY_NAME, roomId);
+            return DbUtils.getNotFoundResult(PrivateRoom.class, roomId);
         }
     }
 

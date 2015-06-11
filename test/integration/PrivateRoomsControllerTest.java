@@ -64,7 +64,7 @@ public class PrivateRoomsControllerTest extends AbstractControllerTest {
         long badId = 10;
         Result badRoomIdResult = adapter.leaveRoom(badId, 1);
         assertThat(status(badRoomIdResult)).isEqualTo(NOT_FOUND);
-        assertThat(contentAsString(badRoomIdResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(PrivateRoom.ENTITY_NAME, badId)));
+        assertThat(contentAsString(badRoomIdResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(PrivateRoom.class, badId)));
     }
 
     @Test

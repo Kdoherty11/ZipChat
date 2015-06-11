@@ -19,8 +19,6 @@ import java.util.*;
 @Table(name = "requests")
 public class Request {
 
-    public static final String ENTITY_NAME = "Request";
-
     public enum Status {
         accepted,
         denied,

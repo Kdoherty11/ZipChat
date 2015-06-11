@@ -23,7 +23,7 @@ public class DbUtils {
         T entity = JPA.em().find(clazz, id);
 
         if (entity == null) {
-            throw new EntityNotFoundException(buildEntityNotFoundString(clazz.getSimpleName(), id));
+            throw new EntityNotFoundException(buildEntityNotFoundString(clazz, id));
         }
 
         return entity;
@@ -36,7 +36,7 @@ public class DbUtils {
                 T entity = JPA.em().find(clazz, id);
 
                 if (entity == null) {
-                    throw new EntityNotFoundException(buildEntityNotFoundString(clazz.getSimpleName(), id));
+                    throw new EntityNotFoundException(buildEntityNotFoundString(clazz, id));
                 }
 
                 return entity;
@@ -59,18 +59,16 @@ public class DbUtils {
         }
     }
 
-    public static Result getNotFoundResult(String entityName, long id) {
-        return Controller.notFound(toJson(buildEntityNotFoundString(entityName, id)));
-    }
-
     public static Result getNotFoundResult(Class clazz, long id) {
-        return getNotFoundResult(clazz.getSimpleName(), id);
+        return Controller.notFound(toJson(buildEntityNotFoundString(clazz, id)));
     }
 
-    public static String buildEntityNotFoundString(String entityName, long id) {
-        String errorMessage = entityName + " with id " + id + " was not found";
+    public static String buildEntityNotFoundString(Class clazz, long id) {
+        String errorMessage = clazz.getSimpleName() + " with id " + id + " was not found";
         Logger.warn(errorMessage);
 
         return errorMessage;
     }
+
+
 }

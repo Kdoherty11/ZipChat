@@ -109,7 +109,7 @@ public class RequestsController extends BaseController {
 
             return OK_RESULT;
         } else {
-            return DbUtils.getNotFoundResult(Request.ENTITY_NAME, requestId);
+            return DbUtils.getNotFoundResult(Request.class, requestId);
         }
     }
 

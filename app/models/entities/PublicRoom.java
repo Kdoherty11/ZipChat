@@ -18,8 +18,6 @@ import java.util.*;
 @Table(name = "public_rooms")
 public class PublicRoom extends AbstractRoom {
 
-    public static final String ENTITY_NAME = "Public Room";
-
     @Constraints.Required
     @NoUpdate
     public String name;

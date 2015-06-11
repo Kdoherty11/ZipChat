@@ -86,7 +86,7 @@ public class BaseController extends Controller {
                         JsonNode jsonNode = toJson(entityOptional.get());
                         formatFormData(fieldName, jsonNode, validatedFormData);
                     } else {
-                        return DbUtils.getNotFoundResult(field.getType().getSimpleName(), id);
+                        return DbUtils.getNotFoundResult(field.getType(), id);
                     }
                 } else if (field.isAnnotationPresent(Constraints.Required.class)) {
                     return badRequestJson(clazz.getSimpleName() + "." + fieldName + " is required!");

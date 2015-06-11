@@ -113,10 +113,10 @@ public class MessagesController extends BaseController {
                 }
                 return OK_RESULT;
             } else {
-                return DbUtils.getNotFoundResult(User.ENTITY_NAME, userId);
+                return DbUtils.getNotFoundResult(User.class, userId);
             }
         } else {
-            return DbUtils.getNotFoundResult(Message.ENTITY_NAME, messageId);
+            return DbUtils.getNotFoundResult(Message.class, messageId);
         }
     }
 }

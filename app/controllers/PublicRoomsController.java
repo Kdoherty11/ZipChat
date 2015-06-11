@@ -71,10 +71,10 @@ public class PublicRoomsController extends BaseController {
                 roomOptional.get().addSubscription(userOptional.get());
                 return OK_RESULT;
             } else {
-                return DbUtils.getNotFoundResult(User.ENTITY_NAME, userId);
+                return DbUtils.getNotFoundResult(User.class, userId);
             }
         } else {
-            return DbUtils.getNotFoundResult(PublicRoom.ENTITY_NAME, roomId);
+            return DbUtils.getNotFoundResult(PublicRoom.class, roomId);
         }
     }
 
@@ -89,7 +89,7 @@ public class PublicRoomsController extends BaseController {
             roomOptional.get().removeSubscription(userId);
             return OK_RESULT;
         } else {
-            return DbUtils.getNotFoundResult(PublicRoom.ENTITY_NAME, roomId);
+            return DbUtils.getNotFoundResult(PublicRoom.class, roomId);
         }
     }
 
@@ -99,7 +99,7 @@ public class PublicRoomsController extends BaseController {
         if (roomOptional.isPresent()) {
             return okJson(roomOptional.get().isSubscribed(userId));
         } else {
-            return DbUtils.getNotFoundResult(PublicRoom.ENTITY_NAME, roomId);
+            return DbUtils.getNotFoundResult(PublicRoom.class, roomId);
         }
     }
 

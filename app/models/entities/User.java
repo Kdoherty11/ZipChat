@@ -27,8 +27,6 @@ import java.util.concurrent.TimeUnit;
 @SequenceGenerator(name="users_userId_seq", sequenceName="users_userId_seq", allocationSize=10)
 public class User {
 
-    public static final String ENTITY_NAME = "User";
-
     @Id
     @GenericGenerator(name = "users_gen", strategy = "sequence", parameters = {
             @org.hibernate.annotations.Parameter(name = "sequenceName", value = "users_gen"),
@@ -85,7 +83,7 @@ public class User {
         if (userOptional.isPresent()) {
             userOptional.get().sendNotification(data);
         } else {
-            Logger.error(DbUtils.buildEntityNotFoundString(User.ENTITY_NAME, userId));
+            Logger.error(DbUtils.buildEntityNotFoundString(User.class, userId));
         }
     }
 
