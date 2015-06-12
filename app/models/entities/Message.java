@@ -89,7 +89,7 @@ public class Message {
 
     public static List<Message> getMessages(long roomId, int limit, int offset) {
 
-        String queryString = "select m from Message m where m.room.roomId = :roomId order by m.timeStamp DESC";
+        String queryString = "select m from Message m where m.room.roomId = :roomId order by m.createdAt DESC";
 
         TypedQuery<Message> limitOffsetQuery = JPA.em().createQuery(queryString, Message.class)
                 .setParameter("roomId", roomId)
