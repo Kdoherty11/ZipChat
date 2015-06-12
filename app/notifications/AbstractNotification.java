@@ -41,9 +41,8 @@ public abstract class AbstractNotification {
 
     private Map<String, String> content;
 
-    public AbstractNotification(String event, Map<String, String> content) {
-        content.put(Key.EVENT, event);
-        this.content = content;
+    public AbstractNotification(String event, ImmutableMap.Builder<String, String> contentBuilder) {
+        this.content = contentBuilder.put(Key.EVENT, event).build();
     }
 
     public void send(List<String> androidRegIds, List<String> iosRegIds) {

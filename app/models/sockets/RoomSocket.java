@@ -227,7 +227,7 @@ public class RoomSocket extends UntypedActor {
                         .map(Long::parseLong)
                         .collect(Collectors.toSet());
 
-                if (!userIdsInRoom.contains(message.sender.userId)) {
+                if (!userIdsInRoom.contains(message.sender.getActual().userId)) {
                     message.sender.sendNotification(new MessageFavoritedNotification(message, user));
                 }
             } else {
