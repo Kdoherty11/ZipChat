@@ -3,6 +3,8 @@ package notifications;
 import com.google.common.collect.ImmutableMap;
 import models.entities.Message;
 
+import java.util.Map;
+
 /**
  * Created by kevin on 6/11/15.
  */
@@ -12,7 +14,7 @@ public class MessageNotification extends AbstractNotification {
         super(Event.CHAT_MESSAGE, getContent(message));
     }
 
-    private static ImmutableMap<String, String> getContent(Message message) {
+    private static Map<String, String> getContent(Message message) {
         return new ImmutableMap.Builder<String, String>()
                 .put(Key.FACEBOOK_NAME, message.sender.name)
                 .put(Key.FACEBOOK_ID, message.sender.facebookId)
