@@ -6,6 +6,7 @@ import models.entities.User;
 import models.sockets.RoomSocket;
 import play.Logger;
 import play.Play;
+import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -52,7 +53,7 @@ public class PrivateRoomsController extends BaseController {
     }
 
     @Transactional
-    public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) {
+    public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) throws Throwable {
         Optional<Long> userIdOptional = SecurityHelper.getUserId(authToken);
         if (!userIdOptional.isPresent()) {
             return WebSocket.reject(DbUtils.getNotFoundResult(User.class, userId));
@@ -61,7 +62,7 @@ public class PrivateRoomsController extends BaseController {
             return WebSocket.reject(forbidden());
         }
 
-        Optional<PrivateRoom> privateRoomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
+        Optional<PrivateRoom> privateRoomOptional = JPA.withTransaction(() -> DbUtils.findEntityById(PrivateRoom.class, roomId));
         if (privateRoomOptional.isPresent()) {
             if (!privateRoomOptional.get().isUserInRoom(userId) && !Play.isDev()) {
                 return WebSocket.reject(forbidden());
