@@ -254,7 +254,6 @@ public class RoomSocket extends UntypedActor {
         }
 
         Message message = storeMessage(talk);
-
         notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
         notifyRoomSubscribers(message, j);
     }
