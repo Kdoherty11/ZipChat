@@ -14,7 +14,7 @@ import java.util.Map;
 public abstract class AbstractNotification {
 
     protected static class Key {
-        protected static final String EVENT = "event";
+        private static final String EVENT = "event";
         protected static final String FACEBOOK_NAME = "name";
         protected static final String CHAT_REQUEST_RESPONSE = "response";
         protected static final String FACEBOOK_ID = "facebookId";

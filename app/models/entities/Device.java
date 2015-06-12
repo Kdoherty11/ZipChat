@@ -39,7 +39,9 @@ public class Device {
     @JsonIgnore
     public User user;
 
-    public Device() { }
+    public Device() {
+        // Needed for JPA
+    }
 
     public Device(User user, String regId, Platform platform) {
         this.user = Preconditions.checkNotNull(user);

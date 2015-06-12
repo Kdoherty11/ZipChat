@@ -47,7 +47,9 @@ public class Request {
 
     public long respondedTimeStamp;
 
-    public Request() { }
+    public Request() {
+        // Needed for JPA
+    }
 
     public Request(User sender, User receiver) {
         this.sender = sender;
@@ -59,14 +61,10 @@ public class Request {
     public String validate() {
         // Prevents duplicate requests between 2 users
         if (getRequest(sender.userId, receiver.userId).isPresent()) {
-            return "A request with sender " + User.getId(sender) + " and receiver " + User.getId(receiver) + " already exists";
+            return "A request with sender " + sender.userId + " and receiver " + receiver.userId + " already exists";
         }
 
         return null;
-    }
-
-    public static long getId(Request request) {
-        return request == null ? -1 : request.requestId;
     }
 
     public static List<Request> getPendingRequestsByReceiver(long receiverId) {

@@ -1,11 +1,9 @@
 package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.*;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import models.ForeignEntity;
 import notifications.AbstractNotification;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
@@ -47,7 +45,7 @@ public class AnonUser extends AbstractUser {
     public PublicRoom room;
 
     public AnonUser() {
-
+        // Needed for JPA
     }
 
     private AnonUser(User actual, PublicRoom room) {

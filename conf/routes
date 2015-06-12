@@ -35,4 +35,3 @@ PUT           /requests/:requestId                              controllers.Requ
 
 GET           /status                                           controllers.BaseController.status()
 GET           /test                                             controllers.PublicRoomsController.getRooms()
-POST          /init                                             controllers.BaseController.init()

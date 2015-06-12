@@ -48,10 +48,6 @@ public class User extends AbstractUser {
         return WS.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(5, TimeUnit.SECONDS).asJson();
     }
 
-    public static long getId(User user) {
-        return user == null ? -1 : user.userId;
-    }
-
     @Override
     public void sendNotification(AbstractNotification notification) {
         if (devices.isEmpty()) {

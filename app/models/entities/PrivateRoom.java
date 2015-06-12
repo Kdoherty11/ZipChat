@@ -1,7 +1,6 @@
 package models.entities;
 
 import com.google.common.base.Objects;
-import models.ForeignEntity;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
 
@@ -15,13 +14,11 @@ public class PrivateRoom extends AbstractRoom {
 
     @ManyToOne
     @JoinColumn(name = "sender")
-    @ForeignEntity
     @Constraints.Required
     public User sender;
 
     @ManyToOne
     @JoinColumn(name = "receiver")
-    @ForeignEntity
     @Constraints.Required
     public User receiver;
 
@@ -33,6 +30,7 @@ public class PrivateRoom extends AbstractRoom {
     public Request request;
 
     public PrivateRoom() {
+        // Needed for JPA
     }
 
     public PrivateRoom(Request request) {

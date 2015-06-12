@@ -55,6 +55,7 @@ public class Message {
     public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     public Message() {
+        // Needed for JPA
     }
 
     public Message(AbstractRoom room, AbstractUser sender, String message) {
