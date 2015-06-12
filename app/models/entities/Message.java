@@ -35,7 +35,6 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "userId")
-    @JsonIgnore
     public AbstractUser sender;
 
     @Constraints.Required
