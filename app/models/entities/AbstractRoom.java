@@ -2,7 +2,7 @@ package models.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import models.NoUpdate;
+import com.google.common.base.Objects;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,16 +13,14 @@ import java.util.List;
 @Entity
 @Table(name = "abstract_rooms")
 @Inheritance(strategy= InheritanceType.TABLE_PER_CLASS)
-public class AbstractRoom {
+public abstract class AbstractRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     public long roomId;
 
-    @NoUpdate
-    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
-    @NoUpdate
     public long lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     @JsonIgnore
@@ -32,5 +30,30 @@ public class AbstractRoom {
     public void addMessage(Message message) {
         messages.add(message);
         lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractRoom that = (AbstractRoom) o;
+        return Objects.equal(createdAt, that.createdAt) &&
+                Objects.equal(lastActivity, that.lastActivity) &&
+                Objects.equal(messages, that.messages);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(createdAt, lastActivity, messages);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("roomId", roomId)
+                .add("createdAt", createdAt)
+                .add("lastActivity", lastActivity)
+                .add("messages", messages)
+                .toString();
     }
 }

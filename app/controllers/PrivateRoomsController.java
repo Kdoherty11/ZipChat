@@ -2,8 +2,10 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.entities.PrivateRoom;
+import models.entities.User;
 import models.sockets.RoomSocket;
 import play.Logger;
+import play.Play;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -52,13 +54,16 @@ public class PrivateRoomsController extends BaseController {
     @Transactional
     public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) {
         Optional<Long> userIdOptional = SecurityHelper.getUserId(authToken);
-        if (!userIdOptional.isPresent() || userIdOptional.get() != userId) {
+        if (!userIdOptional.isPresent()) {
+            return WebSocket.reject(DbUtils.getNotFoundResult(User.class, userId));
+        }
+        if (userIdOptional.get() != userId && !Play.isDev()) {
             return WebSocket.reject(forbidden());
         }
 
         Optional<PrivateRoom> privateRoomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
         if (privateRoomOptional.isPresent()) {
-            if (!privateRoomOptional.get().isUserInRoom(userId)) {
+            if (!privateRoomOptional.get().isUserInRoom(userId) && !Play.isDev()) {
                 return WebSocket.reject(forbidden());
             }
         } else {
@@ -82,7 +87,7 @@ public class PrivateRoomsController extends BaseController {
     public static Result getMessages(long roomId, int limit, int offset) {
         Optional<PrivateRoom> privateRoomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
         if (privateRoomOptional.isPresent()) {
-            if (!privateRoomOptional.get().isUserInRoom(getTokenUserId())) {
+            if (!privateRoomOptional.get().isUserInRoom(getTokenUserId()) && !Play.isDev()) {
                 return forbidden();
             }
         } else {

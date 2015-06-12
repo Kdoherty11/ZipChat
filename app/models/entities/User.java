@@ -3,54 +3,28 @@ package models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableMap;
 import models.Platform;
-import org.hibernate.annotations.GenericGenerator;
+import notifications.AbstractNotification;
+import notifications.ChatRequestNotification;
 import play.Logger;
-import play.data.validation.Constraints;
 import play.db.jpa.JPA;
 import play.libs.ws.WS;
 import utils.DbUtils;
-import utils.NotificationUtils;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-
 @Entity
 @Table(name = "users")
-@SequenceGenerator(name="users_userId_seq", sequenceName="users_userId_seq", allocationSize=10)
-public class User {
-
-    @Id
-    @GenericGenerator(name = "users_gen", strategy = "sequence", parameters = {
-            @org.hibernate.annotations.Parameter(name = "sequenceName", value = "users_gen"),
-            @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
-    })
-    @GeneratedValue(generator = "users_gen", strategy=GenerationType.SEQUENCE)
-    public long userId;
-
-    @Column(unique = true)
-    @Constraints.Required
-    public String facebookId;
-
-    @JsonIgnore
-    public String gender;
-
-    @Constraints.Required
-    public String name;
+public class User extends AbstractUser {
 
     @JsonIgnore
     @OneToMany(targetEntity = Device.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Device> devices;
-
-    @JsonIgnore
-    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     public List<Device> getDevices() {
         return devices;
@@ -78,16 +52,8 @@ public class User {
         return user == null ? -1 : user.userId;
     }
 
-    public static void sendNotification(long userId, Map<String, String> data) {
-        Optional<User> userOptional = DbUtils.findEntityById(User.class,userId);
-        if (userOptional.isPresent()) {
-            userOptional.get().sendNotification(data);
-        } else {
-            Logger.error(DbUtils.buildEntityNotFoundString(User.class, userId));
-        }
-    }
-
-    public void sendNotification(Map<String, String> data) {
+    @Override
+    public void sendNotification(AbstractNotification notification) {
         if (devices.isEmpty()) {
             return;
         }
@@ -103,48 +69,36 @@ public class User {
             }
         }
 
-        int numAndroidRegIds = androidRegIds.size();
-        if (numAndroidRegIds == 1) {
-            NotificationUtils.sendAndroidNotification(androidRegIds.get(0), data);
-        } else if (numAndroidRegIds > 1) {
-            NotificationUtils.sendBatchAndroidNotifications(androidRegIds, data);
-        }
+        notification.send(androidRegIds, iosRegIds);
+    }
 
-        int numIosRegIds = iosRegIds.size();
-        if (numIosRegIds == 1) {
-            NotificationUtils.sendAppleNotification(iosRegIds.get(0), data);
-        } else if (numIosRegIds > 1) {
-            NotificationUtils.sendBatchAppleNotifications(iosRegIds, data);
-        }
+    @Override
+    public boolean isAnon() {
+        return false;
+    }
+
+    @Override
+    public User getActual() {
+        return this;
+    }
+
+    public void sendChatRequest(AbstractUser receiver) {
+        User actualReceiver = receiver.getActual();
+        JPA.em().persist(new Request(this, actualReceiver));
+        actualReceiver.sendNotification(new ChatRequestNotification(this));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        User user = (User) o;
+        return Objects.equal(devices, user.devices);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(userId, facebookId, name, devices);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final User other = (User) obj;
-        return Objects.equal(this.userId, other.userId)
-                && Objects.equal(this.facebookId, other.facebookId)
-                && Objects.equal(this.name, other.name)
-                && Objects.equal(this.devices, other.devices);
-    }
-
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this)
-                .add("userId", userId)
-                .add("name", name)
-                .add("facebookId", facebookId)
-                .add("devices", devices)
-                .toString();
+        return Objects.hashCode(super.hashCode(), devices);
     }
 }
