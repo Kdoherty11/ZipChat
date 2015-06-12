@@ -53,7 +53,7 @@ public class Message {
 
     public int score;
 
-    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     public Message() {
     }
@@ -127,7 +127,7 @@ public class Message {
         if (o == null || getClass() != o.getClass()) return false;
         Message message1 = (Message) o;
         return Objects.equal(score, message1.score) &&
-                Objects.equal(timeStamp, message1.timeStamp) &&
+                Objects.equal(createdAt, message1.createdAt) &&
                 Objects.equal(room, message1.room) &&
                 Objects.equal(sender, message1.sender) &&
                 Objects.equal(message, message1.message) &&
@@ -137,7 +137,7 @@ public class Message {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(room, sender, message, favorites, flags, score, timeStamp);
+        return Objects.hashCode(room, sender, message, favorites, flags, score, createdAt);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class Message {
                 .add("favorites", favorites)
                 .add("flags", flags)
                 .add("score", score)
-                .add("timeStamp", timeStamp)
+                .add("createdAt", createdAt)
                 .toString();
     }
 }
