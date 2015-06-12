@@ -111,7 +111,7 @@ public class AnonUser extends AbstractUser {
     }
 
     private static Optional<AnonUser> getAnonUser(User actual, PublicRoom room) {
-        String queryString = "select a from AnonUser a where a.user.userId = :userId and a.room.roomId = :roomId";
+        String queryString = "select a from AnonUser a where a.actual.userId = :userId and a.room.roomId = :roomId";
 
         TypedQuery<AnonUser> query = JPA.em().createQuery(queryString, AnonUser.class)
                 .setParameter("userId", actual.userId)
