@@ -418,7 +418,7 @@ public class RoomSocket extends UntypedActor {
 
     // Send a Json event to all members connected to this node
     public void notifyRoom(long roomId, String kind, long userId, String text) throws Throwable {
-        Logger.debug("NotifyAll called with roomId: " + roomId + " and message: " + text);
+        Logger.debug("NotifyAll called with kind: " + kind + ", roomId: " + roomId + " and message: " + text);
 
         if (!rooms.containsKey(roomId)) {
             Logger.error("Not notifying rooms because rooms map does not contain room " + roomId);
@@ -435,7 +435,11 @@ public class RoomSocket extends UntypedActor {
             message.put(USER_KEY, toJson(sender));
         }
 
+        logV("About to notify room with: " + message);
+
         rooms.get(roomId).values().stream().forEach(channel -> channel.write(message));
+
+        logV("Success notifying room with: " + message);
     }
 
     // -- Messages
