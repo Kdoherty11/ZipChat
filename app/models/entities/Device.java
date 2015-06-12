@@ -64,12 +64,27 @@ public class Device {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Device device = (Device) o;
+        return Objects.equal(regId, device.regId) &&
+                Objects.equal(platform, device.platform) &&
+                Objects.equal(user, device.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(regId, platform, user);
+    }
+
+    @Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("deviceId", deviceId)
                 .add("regId", regId)
                 .add("platform", platform)
-                .add("user", User.getId(user))
+                .add("userId", user.userId)
                 .toString();
     }
 }

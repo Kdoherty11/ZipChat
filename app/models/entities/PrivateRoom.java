@@ -51,13 +51,13 @@ public class PrivateRoom extends AbstractRoom {
     }
 
     public boolean removeUser(long userId) {
-        if (userId == User.getId(sender)) {
+        if (userId == sender.userId) {
             if (!receiverInRoom) {
                 JPA.em().remove(this);
             } else {
                 senderInRoom = false;
             }
-        } else if (userId == User.getId(receiver)) {
+        } else if (userId == receiver.userId) {
             if (!senderInRoom) {
                 JPA.em().remove(this);
             } else {
@@ -73,20 +73,8 @@ public class PrivateRoom extends AbstractRoom {
     }
 
     public boolean isUserInRoom(long userId) {
-        return (User.getId(sender) == userId && senderInRoom) ||
-                (User.getId(receiver) == userId && receiverInRoom);
-    }
-
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this)
-                .add("id", roomId)
-                .add("senderId", User.getId(sender))
-                .add("receiverId", User.getId(receiver))
-                .add("senderInRoom", senderInRoom)
-                .add("receiverInRoom", receiverInRoom)
-                .add("request", Request.getId(request))
-                .toString();
+        return (sender.userId == userId && senderInRoom) ||
+                (receiver.userId == userId && receiverInRoom);
     }
 
     public static Optional<PrivateRoom> getRoom(long senderId, long receiverId) {
@@ -107,5 +95,34 @@ public class PrivateRoom extends AbstractRoom {
         }
 
         return Optional.of(rooms.get(0));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        PrivateRoom that = (PrivateRoom) o;
+        return Objects.equal(senderInRoom, that.senderInRoom) &&
+                Objects.equal(receiverInRoom, that.receiverInRoom) &&
+                Objects.equal(sender, that.sender) &&
+                Objects.equal(receiver, that.receiver) &&
+                Objects.equal(request, that.request);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), sender, receiver, senderInRoom, receiverInRoom, request);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("senderId", sender.userId)
+                .add("receiverId", receiver.userId)
+                .add("senderInRoom", senderInRoom)
+                .add("receiverInRoom", receiverInRoom)
+                .add("request", request)
+                .toString();
     }
 }

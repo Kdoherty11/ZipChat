@@ -3,12 +3,11 @@ package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
-import models.NoUpdate;
 import models.Platform;
+import notifications.AbstractNotification;
 import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
-import utils.NotificationUtils;
 
 import javax.persistence.*;
 import java.util.*;
@@ -19,29 +18,31 @@ import java.util.*;
 public class PublicRoom extends AbstractRoom {
 
     @Constraints.Required
-    @NoUpdate
     public String name;
 
     @Constraints.Required
     @Column(columnDefinition = "NUMERIC")
-    @NoUpdate
     public Double latitude;
 
     @Constraints.Required
     @Column(columnDefinition = "NUMERIC")
-    @NoUpdate
     public Double longitude;
 
     @Constraints.Required
-    @NoUpdate
     public Integer radius;
 
-    public Integer score = 0;
+    @JsonIgnore
+    @OneToMany(targetEntity = AnonUser.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List<AnonUser> anonUsers = new ArrayList<>();
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
+
+    public List<AnonUser> getAnonUsers() {
+        return anonUsers;
+    }
 
     public static List<PublicRoom> allInGeoRange(double lat, double lon) {
         Logger.debug("Getting all rooms containing location " + lat + ", " + lon);
@@ -75,7 +76,7 @@ public class PublicRoom extends AbstractRoom {
         if (userOptional.isPresent()) {
             subscribers.remove(userOptional.get());
         } else {
-            Logger.warn("Could not find a subscription with userId " + userId + " in " + this.name);
+            Logger.warn("Could not find a subscription with userId " + userId + " in " + roomId);
         }
     }
 
@@ -87,7 +88,7 @@ public class PublicRoom extends AbstractRoom {
         return !subscribers.isEmpty();
     }
 
-    public void notifySubscribers(Map<String, String> data, Set<Long> userIdsInRoom) {
+    public void notifySubscribers(AbstractNotification notification, Set<Long> userIdsInRoom) {
         if (!hasSubscribers()) {
             return;
         }
@@ -106,53 +107,35 @@ public class PublicRoom extends AbstractRoom {
             }
         });
 
-        if (!androidRegIds.isEmpty()) {
-            NotificationUtils.sendBatchAndroidNotifications(androidRegIds, data);
-        }
+        notification.send(androidRegIds, iosRegIds);
+    }
 
-        if (!iosRegIds.isEmpty()) {
-            NotificationUtils.sendBatchAppleNotifications(iosRegIds, data);
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        PublicRoom that = (PublicRoom) o;
+        return Objects.equal(name, that.name) &&
+                Objects.equal(latitude, that.latitude) &&
+                Objects.equal(longitude, that.longitude) &&
+                Objects.equal(radius, that.radius);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(roomId, name, latitude, longitude, radius, timeStamp, lastActivity, subscribers, score);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final PublicRoom other = (PublicRoom) obj;
-
-        return Objects.equal(this.roomId, other.roomId)
-                && Objects.equal(this.name, other.name)
-                && Objects.equal(this.latitude, other.latitude)
-                && Objects.equal(this.longitude, other.longitude)
-                && Objects.equal(this.radius, other.radius)
-                && Objects.equal(this.timeStamp, other.timeStamp)
-                && Objects.equal(this.lastActivity, other.lastActivity)
-                && Objects.equal(this.subscribers, other.subscribers)
-                && Objects.equal(this.score, other.score);
+        return Objects.hashCode(super.hashCode(), name, latitude, longitude, radius);
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("roomId", roomId)
                 .add("name", name)
                 .add("latitude", latitude)
                 .add("longitude", longitude)
                 .add("radius", radius)
-                .add("score", score)
-                .add("creationTime", timeStamp)
-                .add("lastActivity", lastActivity)
+                .add("anonUsers", anonUsers)
+                .add("subscribers", subscribers)
                 .toString();
     }
-
 }

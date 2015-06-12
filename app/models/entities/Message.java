@@ -3,12 +3,11 @@ package models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import models.ForeignEntity;
+import notifications.MessageFavoritedNotification;
 import org.hibernate.annotations.GenericGenerator;
 import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
-import utils.DbUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,7 +15,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "messages")
@@ -30,24 +28,18 @@ public class Message {
     @GeneratedValue(generator = "messages_gen", strategy = GenerationType.SEQUENCE)
     public long messageId;
 
-    @Constraints.Required
-    public String message;
-
     @ManyToOne
     @JoinColumn(name = "roomId")
     @JsonIgnore
-    @ForeignEntity
     public AbstractRoom room;
 
-    @Constraints.Required
-    public long senderId;
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    @JsonIgnore
+    public AbstractUser sender;
 
     @Constraints.Required
-    public String senderName;
-
-    public String senderFbId;
-
-    public boolean isAnon;
+    public String message;
 
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "message_favorites", joinColumns = @JoinColumn(name = "userId"),
@@ -66,26 +58,10 @@ public class Message {
     public Message() {
     }
 
-    public Message(long roomId, long senderId, String senderName, String senderFbId, String message, boolean isAnon) {
-        Optional<AbstractRoom> roomOptional = DbUtils.findEntityById(AbstractRoom.class, roomId);
-        if (roomOptional.isPresent()) {
-            this.room = roomOptional.get();
-        } else {
-            throw new IllegalArgumentException(DbUtils.buildEntityNotFoundString(AbstractRoom.class, roomId));
-        }
+    public Message(AbstractRoom room, AbstractUser sender, String message) {
+        this.room = Preconditions.checkNotNull(room);
+        this.sender = Preconditions.checkNotNull(sender);
         this.message = Preconditions.checkNotNull(message);
-        this.senderId = senderId;
-        this.senderName = senderName;
-        this.senderFbId = senderFbId;
-        this.isAnon = isAnon;
-    }
-
-    public void addToRoom() {
-        if (room != null) {
-            room.addMessage(this);
-        } else {
-            Logger.error(this + " has a null room");
-        }
     }
 
     public boolean favorite(User user) {
@@ -95,6 +71,9 @@ public class Message {
         }
         favorites.add(user);
         score++;
+        if (!user.equals(sender)) {
+            sender.sendNotification(new MessageFavoritedNotification(this, user));
+        }
         return true;
     }
 
@@ -147,36 +126,29 @@ public class Message {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Message message1 = (Message) o;
-        return Objects.equal(messageId, message1.messageId) &&
-                Objects.equal(senderId, message1.senderId) &&
-                Objects.equal(isAnon, message1.isAnon) &&
-                Objects.equal(score, message1.score) &&
+        return Objects.equal(score, message1.score) &&
                 Objects.equal(timeStamp, message1.timeStamp) &&
-                Objects.equal(message, message1.message) &&
                 Objects.equal(room, message1.room) &&
-                Objects.equal(senderName, message1.senderName) &&
-                Objects.equal(senderFbId, message1.senderFbId) &&
-                Objects.equal(flags, message1.flags) &&
-                Objects.equal(favorites, message1.favorites);
+                Objects.equal(sender, message1.sender) &&
+                Objects.equal(message, message1.message) &&
+                Objects.equal(favorites, message1.favorites) &&
+                Objects.equal(flags, message1.flags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(messageId, message, room, senderId, senderName, senderFbId, isAnon, favorites, flags, score, timeStamp);
+        return Objects.hashCode(room, sender, message, favorites, flags, score, timeStamp);
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("messageId", messageId)
+                .add("roomId", room.roomId)
+                .add("senderId", sender.userId)
                 .add("message", message)
-                .add("room", room)
-                .add("senderId", senderId)
-                .add("senderName", senderName)
-                .add("senderFbId", senderFbId)
-                .add("isAnon", isAnon)
-                .add("flags", flags)
                 .add("favorites", favorites)
+                .add("flags", flags)
                 .add("score", score)
                 .add("timeStamp", timeStamp)
                 .toString();

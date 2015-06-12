@@ -1,19 +1,17 @@
 package models.entities;
 
+import com.google.common.base.*;
 import com.google.common.base.Objects;
-import models.ForeignEntity;
-import models.NoUpdate;
+import notifications.ChatResponseNotification;
 import org.hibernate.annotations.GenericGenerator;
-import play.Logger;
 import play.data.validation.Constraints;
-import play.data.validation.ValidationError;
 import play.db.jpa.JPA;
-import utils.NotificationUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.Optional;
 
 @Entity
 @Table(name = "requests")
@@ -34,31 +32,33 @@ public class Request {
     public long requestId;
 
     @ManyToOne
-    @NoUpdate
-    @ForeignEntity
     @JoinColumn(name="sender")
     @Constraints.Required
     public User sender;
 
     @ManyToOne
-    @ForeignEntity
     @JoinColumn(name="receiver")
     @Constraints.Required
     public User receiver;
 
     public Status status = Status.pending;
 
-    public long timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     public long respondedTimeStamp;
 
     public Request() { }
 
+    public Request(User sender, User receiver) {
+        this.sender = sender;
+        this.receiver = receiver;
+    }
+
 
     @SuppressWarnings("unused")
     public String validate() {
         // Prevents duplicate requests between 2 users
-        if (getRequest(User.getId(sender), User.getId(receiver)).isPresent()) {
+        if (getRequest(sender.userId, receiver.userId).isPresent()) {
             return "A request with sender " + User.getId(sender) + " and receiver " + User.getId(receiver) + " already exists";
         }
 
@@ -114,7 +114,7 @@ public class Request {
         this.status = status;
         this.respondedTimeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
-        NotificationUtils.sendChatResponse(receiver, sender, status);
+        sender.sendNotification(new ChatResponseNotification(this, status));
 
         if (status == Status.accepted) {
             PrivateRoom room = new PrivateRoom(this);
@@ -123,35 +123,30 @@ public class Request {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(requestId, User.getId(receiver), User.getId(sender), status, timeStamp, respondedTimeStamp);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Request request = (Request) o;
+        return Objects.equal(createdAt, request.createdAt) &&
+                Objects.equal(respondedTimeStamp, request.respondedTimeStamp) &&
+                Objects.equal(sender, request.sender) &&
+                Objects.equal(receiver, request.receiver) &&
+                Objects.equal(status, request.status);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final Request other = (Request) obj;
-        return Objects.equal(this.requestId, other.requestId)
-                && Objects.equal(User.getId(this.receiver), User.getId(other.receiver))
-                && Objects.equal(User.getId(this.sender), User.getId(other.sender))
-                && Objects.equal(this.status, other.status)
-                && Objects.equal(this.timeStamp, other.timeStamp)
-                && Objects.equal(this.respondedTimeStamp, other.respondedTimeStamp);
+    public int hashCode() {
+        return Objects.hashCode(sender, receiver, status, createdAt, respondedTimeStamp);
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("requestId", requestId)
-                .add("receiverId", receiver.userId)
-                .add("senderId", sender.userId)
+                .add("sender", sender.userId)
+                .add("receiver", receiver.userId)
                 .add("status", status)
-                .add("timeStamp", timeStamp)
+                .add("createdAt", createdAt)
                 .add("respondedTimeStamp", respondedTimeStamp)
                 .toString();
     }

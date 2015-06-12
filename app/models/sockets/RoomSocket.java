@@ -8,7 +8,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
 import models.entities.*;
 import models.sockets.messages.*;
-import org.apache.commons.lang3.tuple.Pair;
+import notifications.MessageFavoritedNotification;
+import notifications.MessageNotification;
 import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
@@ -20,7 +21,6 @@ import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 import utils.DbUtils;
-import utils.NotificationUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -88,8 +88,6 @@ public class RoomSocket extends UntypedActor {
                             .filter(id -> id != userId && id != SocketKeepAlive.USER_ID)
                             .mapToObj(id -> findExistingEntityById(User.class, id))
                             .toArray();
-
-                    logV("Join room room members: " + roomMembers);
 
                     ObjectNode event = Json.newObject();
                     event.put(EVENT_KEY, "joinSuccess");
@@ -229,8 +227,8 @@ public class RoomSocket extends UntypedActor {
                         .map(Long::parseLong)
                         .collect(Collectors.toSet());
 
-                if (!userIdsInRoom.contains(message.senderId)) {
-                    NotificationUtils.sendMessageFavorited(user, message);
+                if (!userIdsInRoom.contains(message.sender.userId)) {
+                    message.sender.sendNotification(new MessageFavoritedNotification(message, user));
                 }
             } else {
                 ObjectNode error = Json.newObject();
@@ -255,12 +253,10 @@ public class RoomSocket extends UntypedActor {
             return;
         }
 
-        Pair<Message, User> pair = storeMessage(talk);
-        Message message = pair.getLeft();
-        User messageSender = pair.getRight();
+        Message message = storeMessage(talk);
 
         notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
-        notifyRoomSubscribers(message.room, messageSender, message, j);
+        notifyRoomSubscribers(message, j);
     }
 
     private void notifyUser(long roomId, long userId, JsonNode message) {
@@ -278,33 +274,37 @@ public class RoomSocket extends UntypedActor {
         nodeOut.write(message);
     }
 
-    private Pair<Message, User> storeMessage(Talk talk) throws Throwable {
+    private Message storeMessage(Talk talk) throws Throwable {
         final long senderId = talk.getUserId();
         final long roomId = talk.getRoomId();
         final boolean isAnon = talk.isAnon();
 
         return JPA.withTransaction(() -> {
             User sender = DbUtils.findExistingEntityById(User.class, senderId);
-            String senderName = sender.name;
-            String facebookId = sender.facebookId;
-            long userId = senderId;
+            AbstractRoom room = DbUtils.findExistingEntityById(AbstractRoom.class, roomId);
 
+            AbstractUser messageSender;
             if (isAnon) {
-                UserAlias userAlias = UserAlias.getOrCreateAlias(senderId, roomId);
-                senderName = userAlias.alias;
-                facebookId = null;
-                userId = userAlias.userAliasId;
+                if (room instanceof PublicRoom) {
+                    messageSender = AnonUser.getOrCreateAnonUser(sender, ((PublicRoom) room));
+                } else {
+                    throw new RuntimeException("Trying to store an anon message in a private room");
+                }
+            } else {
+                messageSender = sender;
             }
 
-            Message message = new Message(roomId, userId, senderName, facebookId, talk.getText(), isAnon);
-            message.addToRoom();
-            return Pair.of(message, sender);
+            Message message = new Message(room, messageSender, talk.getText());
+            room.addMessage(message);
+            return message;
         });
     }
 
-    private void notifyRoomSubscribers(AbstractRoom room, User messageSender, Message message, Jedis j) throws Throwable {
+    private void notifyRoomSubscribers(Message message, Jedis j) throws Throwable {
+        AbstractRoom room = message.room;
+        AbstractUser messageSender = message.sender;
 
-        if (room instanceof PublicRoom && !message.isAnon) {
+        if (room instanceof PublicRoom && !messageSender.isAnon()) {
             PublicRoom publicRoom = (PublicRoom) room;
 
             if (publicRoom.hasSubscribers()) {
@@ -313,16 +313,16 @@ public class RoomSocket extends UntypedActor {
                         .map(Long::parseLong)
                         .collect(Collectors.toSet());
 
-                NotificationUtils.messageSubscribers(publicRoom, messageSender, message.message, userIdsInRoom);
+                publicRoom.notifySubscribers(new MessageNotification(message), userIdsInRoom);
             }
         } else if (room instanceof PrivateRoom) {
             PrivateRoom privateRoom = (PrivateRoom) room;
-            long recipientId = privateRoom.sender.userId == message.senderId ?
-                    privateRoom.receiver.userId : privateRoom.sender.userId;
+            User receiver = privateRoom.sender.userId == message.sender.userId ?
+                    privateRoom.receiver : privateRoom.sender;
 
             Set<String> roomMembers = j.smembers(String.valueOf(room.roomId));
-            if (!roomMembers.contains(String.valueOf(recipientId))) {
-                NotificationUtils.messageUser(privateRoom, messageSender, recipientId, message.message);
+            if (!roomMembers.contains(String.valueOf(receiver.userId))) {
+                receiver.sendNotification(new MessageNotification(message));
             }
         }
     }
@@ -404,7 +404,6 @@ public class RoomSocket extends UntypedActor {
         } else {
             //Publish the quit notification to all nodes
             RosterNotification rosterNotify = new RosterNotification(roomId, userId, Quit.TYPE);
-            // TODO What is this doing / should this be using notify room
             j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
         }
     }

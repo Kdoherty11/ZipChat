@@ -222,6 +222,7 @@ public class BaseController extends Controller {
         return OK_RESULT;
     }
 
+    // Pinged to check server status
     public static Result status() {
         return OK_RESULT;
     }
