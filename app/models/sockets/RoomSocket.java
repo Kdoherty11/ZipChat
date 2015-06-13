@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -163,6 +164,10 @@ public class RoomSocket extends UntypedActor {
 
     }
 
+    public static Optional<WebSocket.Out<JsonNode>> getWebSocket(long roomId, long userId) {
+        return Optional.ofNullable(rooms.get(roomId).get(userId));
+    }
+
     public static void remoteMessage(Object message) {
         defaultRoom.tell(message, null);
     }
@@ -204,27 +209,31 @@ public class RoomSocket extends UntypedActor {
         Logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
 
         JPA.withTransaction(() -> {
-            long messageId = favoriteNotification.getMessageId();
-            Message message = findExistingEntityById(Message.class, messageId);
+            try {
+                long messageId = favoriteNotification.getMessageId();
+                Message message = findExistingEntityById(Message.class, messageId);
 
-            long userId = favoriteNotification.getUserId();
-            final User user = findExistingEntityById(User.class, userId);
+                long userId = favoriteNotification.getUserId();
+                final User user = findExistingEntityById(User.class, userId);
 
-            boolean success;
-            if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
-                success = message.favorite(user);
-            } else {
-                success = message.removeFavorite(user);
-            }
+                boolean success;
+                if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
+                    success = message.favorite(user);
+                } else {
+                    success = message.removeFavorite(user);
+                }
 
-            if (success) {
-                notifyRoom(message.room.roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
-            } else {
-                ObjectNode error = Json.newObject();
-                error.put(EVENT_KEY, "error");
-                error.put(MESSAGE_KEY, "Problem " + favoriteNotification.getAction() + "ing a favorite");
+                if (success) {
+                    notifyRoom(message.room.roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
+                } else {
+                    ObjectNode error = Json.newObject();
+                    error.put(EVENT_KEY, "error");
+                    error.put(MESSAGE_KEY, "Problem " + favoriteNotification.getAction() + "ing a favorite");
 
-                notifyUser(message.room.roomId, userId, error);
+                    notifyUser(message.room.roomId, userId, error);
+                }
+            } catch (Exception e) {
+                Logger.error("Error in receiveFavoriteNotification", e);
             }
         });
     }
