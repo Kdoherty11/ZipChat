@@ -165,7 +165,12 @@ public class RoomSocket extends UntypedActor {
     }
 
     public static Optional<WebSocket.Out<JsonNode>> getWebSocket(long roomId, long userId) {
-        return Optional.ofNullable(rooms.get(roomId).get(userId));
+        Map<Long, WebSocket.Out<JsonNode>> room = rooms.get(roomId);
+        if (room == null) {
+            throw new RuntimeException("Can't notify user because room " + roomId + " does not exist in rooms");
+        }
+
+        return Optional.ofNullable(room.get(userId));
     }
 
     public static void remoteMessage(Object message) {
@@ -258,19 +263,14 @@ public class RoomSocket extends UntypedActor {
 
     private void notifyUser(long roomId, long userId, JsonNode message) {
         Logger.debug("sending " + message + " to user " + userId);
-        Map<Long, WebSocket.Out<JsonNode>> room = rooms.get(roomId);
-        if (room == null) {
-            throw new RuntimeException("Can't notify user because room " + roomId + " does not exist in rooms");
+        Optional<WebSocket.Out<JsonNode>> outOptional = getWebSocket(roomId, userId);
+
+        if (outOptional.isPresent()) {
+            outOptional.get().write(message);
+            logV("Success notifying user");
+        } else {
+            Logger.error("No Out WebSocket for user " + userId + " in room " + roomId);
         }
-
-        WebSocket.Out<JsonNode> nodeOut = room.get(userId);
-
-        if (nodeOut == null) {
-            throw new RuntimeException("Can't notify user " + userId + " because they are not in room " + roomId);
-        }
-
-        nodeOut.write(message);
-        logV("Success notifying user");
     }
 
     private Message storeMessage(Talk talk) throws Throwable {
@@ -331,8 +331,11 @@ public class RoomSocket extends UntypedActor {
         long roomId = join.getRoomId();
         long userId = join.getUserId();
         if (j.sismember(String.valueOf(roomId), String.valueOf(userId))) {
-            getSender().tell("This userId is already used", getSelf());
             Logger.error("User " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
+
+            rooms.get(roomId).put(userId, join.getChannel());
+
+            getSender().tell(OK_JOIN_RESULT, getSelf());
         } else {
             if (!rooms.containsKey(roomId)) {
                 // Creating a new room
@@ -370,7 +373,7 @@ public class RoomSocket extends UntypedActor {
         }
 
         String roomIdStr = Long.toString(roomId);
-        j.srem(roomIdStr, String.valueOf(userId));
+        j.srem(roomIdStr, Long.toString(userId));
 
         Set<String> roomMembers = j.smembers(roomIdStr);
 
