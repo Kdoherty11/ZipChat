@@ -88,7 +88,8 @@ public class PublicRoom extends AbstractRoom {
         return !subscribers.isEmpty();
     }
 
-    public void notifySubscribers(AbstractNotification notification, Set<Long> userIdsInRoom) {
+    @Override
+    void sendNotification(AbstractNotification notification, Set<Long> userIdsInRoom) {
         if (!hasSubscribers()) {
             return;
         }

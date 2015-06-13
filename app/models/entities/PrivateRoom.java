@@ -1,12 +1,14 @@
 package models.entities;
 
 import com.google.common.base.Objects;
+import notifications.AbstractNotification;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Entity
 @Table(name = "private_rooms")
@@ -93,6 +95,15 @@ public class PrivateRoom extends AbstractRoom {
         }
 
         return Optional.of(rooms.get(0));
+    }
+
+    @Override
+    void sendNotification(AbstractNotification notification, Set<Long> userIdsInRoom) {
+        if (senderInRoom && !userIdsInRoom.contains(sender.userId)) {
+            sender.sendNotification(notification);
+        } else if (receiverInRoom && !userIdsInRoom.contains(receiver.userId)) {
+            receiver.sendNotification(notification);
+        }
     }
 
     @Override

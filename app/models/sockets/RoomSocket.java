@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
 import models.entities.*;
 import models.sockets.messages.*;
-import notifications.MessageNotification;
 import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
@@ -238,16 +237,16 @@ public class RoomSocket extends UntypedActor {
             notifyRoom(roomId, Talk.TYPE, userId, messageText);
             return;
         }
+
         Message message;
         try {
-            message = JPA.withTransaction(() -> storeMessage(talk));
+            message = JPA.withTransaction(() -> storeMessage(talk, j));
         } catch (Throwable throwable) {
             Logger.error("Problem storing the message", throwable);
             throw new RuntimeException("Problem storing the message: " + throwable.getMessage());
         }
 
         notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
-        notifyRoomSubscribers(message, j);
     }
 
     private void notifyUser(long roomId, long userId, JsonNode message) {
@@ -262,7 +261,7 @@ public class RoomSocket extends UntypedActor {
         }
     }
 
-    private Message storeMessage(Talk talk) {
+    private Message storeMessage(Talk talk, Jedis j) {
         final long senderId = talk.getUserId();
         final long roomId = talk.getRoomId();
         final boolean isAnon = talk.isAnon();
@@ -281,35 +280,15 @@ public class RoomSocket extends UntypedActor {
         }
 
         Message message = new Message(room, messageSender, talk.getText());
-        room.addMessage(message);
+        room.addMessage(message, getUserIdsInRoom(roomId, j));
         return message;
     }
 
-    private void notifyRoomSubscribers(Message message, Jedis j) {
-        AbstractRoom room = message.room;
-        AbstractUser messageSender = message.sender;
-
-        if (room instanceof PublicRoom && !messageSender.isAnon()) {
-            PublicRoom publicRoom = (PublicRoom) room;
-
-            if (publicRoom.hasSubscribers()) {
-                Set<Long> userIdsInRoom = j.smembers(String.valueOf(publicRoom.roomId))
-                        .stream()
-                        .map(Long::parseLong)
-                        .collect(Collectors.toSet());
-
-                publicRoom.notifySubscribers(new MessageNotification(message), userIdsInRoom);
-            }
-        } else if (room instanceof PrivateRoom) {
-            PrivateRoom privateRoom = (PrivateRoom) room;
-            User receiver = privateRoom.sender.userId == message.sender.userId ?
-                    privateRoom.receiver : privateRoom.sender;
-
-            Set<String> roomMembers = j.smembers(String.valueOf(room.roomId));
-            if (!roomMembers.contains(String.valueOf(receiver.userId))) {
-                receiver.sendNotification(new MessageNotification(message));
-            }
-        }
+    private Set<Long> getUserIdsInRoom(long roomId, Jedis j) {
+        return j.smembers(Long.toString(roomId))
+                .stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toSet());
     }
 
     private void receiveJoin(Jedis j, Join join) {
