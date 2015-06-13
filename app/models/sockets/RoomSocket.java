@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
 import models.entities.*;
 import models.sockets.messages.*;
-import notifications.MessageFavoritedNotification;
 import notifications.MessageNotification;
 import play.Logger;
 import play.db.jpa.JPA;
@@ -185,7 +184,7 @@ public class RoomSocket extends UntypedActor {
             } else if (message instanceof Talk) {
                 receiveTalk(j, (Talk) message);
             } else if (message instanceof FavoriteNotification) {
-                receiveFavoriteNotification(j, (FavoriteNotification) message);
+                receiveFavoriteNotification((FavoriteNotification) message);
             } else {
                 unhandled(message);
             }
@@ -201,7 +200,7 @@ public class RoomSocket extends UntypedActor {
         }
     }
 
-    private void receiveFavoriteNotification(Jedis j, FavoriteNotification favoriteNotification) throws Throwable {
+    private void receiveFavoriteNotification(FavoriteNotification favoriteNotification) throws Throwable {
         Logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
 
         JPA.withTransaction(() -> {
@@ -219,17 +218,7 @@ public class RoomSocket extends UntypedActor {
             }
 
             if (success) {
-                long roomId = message.room.roomId;
-                notifyRoom(roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
-
-                Set<Long> userIdsInRoom = j.smembers(String.valueOf(roomId))
-                        .stream()
-                        .map(Long::parseLong)
-                        .collect(Collectors.toSet());
-
-                if (!userIdsInRoom.contains(message.sender.getActual().userId)) {
-                    message.sender.sendNotification(new MessageFavoritedNotification(message, user));
-                }
+                notifyRoom(message.room.roomId, favoriteNotification.getAction().getType(), userId, String.valueOf(messageId));
             } else {
                 ObjectNode error = Json.newObject();
                 error.put(EVENT_KEY, "error");
@@ -259,6 +248,7 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void notifyUser(long roomId, long userId, JsonNode message) {
+        Logger.debug("sending " + message + " to user " + userId);
         Map<Long, WebSocket.Out<JsonNode>> room = rooms.get(roomId);
         if (room == null) {
             throw new RuntimeException("Can't notify user because room " + roomId + " does not exist in rooms");
@@ -271,6 +261,7 @@ public class RoomSocket extends UntypedActor {
         }
 
         nodeOut.write(message);
+        logV("Success notifying user");
     }
 
     private Message storeMessage(Talk talk) throws Throwable {

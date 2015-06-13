@@ -71,8 +71,9 @@ public class Message {
         }
         favorites.add(user);
         score++;
-        if (!user.equals(sender)) {
-            sender.sendNotification(new MessageFavoritedNotification(this, user));
+        User actual = sender.getActual();
+        if (!user.equals(actual)) {
+            actual.sendNotification(new MessageFavoritedNotification(this, user));
         }
         return true;
     }
