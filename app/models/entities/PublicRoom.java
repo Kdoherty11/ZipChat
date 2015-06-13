@@ -98,6 +98,7 @@ public class PublicRoom extends AbstractRoom {
 
         subscribers.forEach(user -> {
             if (!userIdsInRoom.contains(user.userId)) {
+                Logger.debug("PublicRoom sendNotification to user " + user.userId);
                 user.getDevices().forEach(info -> {
                     if (info.platform == Platform.android) {
                         androidRegIds.add(info.regId);

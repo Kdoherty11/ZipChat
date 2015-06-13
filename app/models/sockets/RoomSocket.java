@@ -404,10 +404,7 @@ public class RoomSocket extends UntypedActor {
 
         logV("About to notify room with: " + message);
 
-        Collection<WebSocket.Out<JsonNode>> outSockets = userSocketsInRoom.values();
-        for (WebSocket.Out<JsonNode> channel : outSockets) {
-            channel.write(message);
-        }
+        userSocketsInRoom.values().forEach(channel -> channel.write(message));
 
         Logger.debug("Notified users: " + userSocketsInRoom.keySet());
     }
@@ -457,24 +454,19 @@ public class RoomSocket extends UntypedActor {
         }
 
         @Override
-        public void onPMessage(String arg0, String arg1, String arg2) {
-        }
+        public void onPMessage(String arg0, String arg1, String arg2) { }
 
         @Override
-        public void onPSubscribe(String arg0, int arg1) {
-        }
+        public void onPSubscribe(String arg0, int arg1) { }
 
         @Override
-        public void onPUnsubscribe(String arg0, int arg1) {
-        }
+        public void onPUnsubscribe(String arg0, int arg1) { }
 
         @Override
-        public void onSubscribe(String arg0, int arg1) {
-        }
+        public void onSubscribe(String arg0, int arg1) { }
 
         @Override
-        public void onUnsubscribe(String arg0, int arg1) {
-        }
+        public void onUnsubscribe(String arg0, int arg1) { }
     }
 
     private static void logV(String msg) {
