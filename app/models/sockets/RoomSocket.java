@@ -454,7 +454,7 @@ public class RoomSocket extends UntypedActor {
             channel.write(message);
         }
 
-        logV("Success notifying room with: " + message);
+        Logger.debug("Notified users: " + userSocketsInRoom.keySet());
     }
 
     // -- Messages
