@@ -23,10 +23,7 @@ import utils.DbUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -150,6 +147,7 @@ public class RoomSocket extends UntypedActor {
                 logV("Closing socket for user: " + userId);
                 defaultRoom.tell(new Quit(roomId, userId), null);
             });
+
         } else {
             // Cannot connect, create a Json error.
             ObjectNode error = Json.newObject();
@@ -432,7 +430,9 @@ public class RoomSocket extends UntypedActor {
     public void notifyRoom(long roomId, String kind, long userId, String text) throws Throwable {
         Logger.debug("NotifyAll called with kind: " + kind + ", roomId: " + roomId + " and message: " + text);
 
-        if (!rooms.containsKey(roomId)) {
+        Map<Long, WebSocket.Out<JsonNode>> userSocketsInRoom = rooms.get(roomId);
+
+        if (userSocketsInRoom == null) {
             Logger.error("Not notifying rooms because rooms map does not contain room " + roomId);
             return;
         }
@@ -449,7 +449,10 @@ public class RoomSocket extends UntypedActor {
 
         logV("About to notify room with: " + message);
 
-        rooms.get(roomId).values().stream().forEach(channel -> channel.write(message));
+        Collection<WebSocket.Out<JsonNode>> outSockets = userSocketsInRoom.values();
+        for (WebSocket.Out<JsonNode> channel : outSockets) {
+            channel.write(message);
+        }
 
         logV("Success notifying room with: " + message);
     }
