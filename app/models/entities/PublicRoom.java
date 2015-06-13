@@ -98,16 +98,21 @@ public class PublicRoom extends AbstractRoom {
 
         subscribers.forEach(user -> {
             if (!userIdsInRoom.contains(user.userId)) {
-                Logger.debug("PublicRoom sendNotification to user " + user.userId);
-                user.getDevices().forEach(info -> {
-                    if (info.platform == Platform.android) {
-                        androidRegIds.add(info.regId);
+                Logger.debug("PublicRoom sendNotification to user " + user.userId + " with devices: " + user.devices);
+
+                user.devices.forEach(device -> {
+                    if (device.platform == Platform.android) {
+                        Logger.debug("Added android regId: " + device.regId);
+                        androidRegIds.add(device.regId);
                     } else {
-                        iosRegIds.add(info.regId);
+                        Logger.debug("Added ios regId: " + device.regId);
+                        iosRegIds.add(device.regId);
                     }
                 });
             }
         });
+
+        Logger.debug("Sending to androidRegIds: " + androidRegIds + " and iosRegIds: " + iosRegIds);
 
         notification.send(androidRegIds, iosRegIds);
     }

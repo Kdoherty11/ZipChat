@@ -31,6 +31,7 @@ public enum  AndroidNotificationSender implements NotificationSender {
         Message message = buildGcmMessage(data);
         try {
             GCM_SENDER.send(message, regId, GCM_RETRIES);
+            Logger.debug("Success sending android notification");
         } catch (IOException e) {
             Logger.error("Problem sending GCM Message", e);
         }
@@ -41,6 +42,7 @@ public enum  AndroidNotificationSender implements NotificationSender {
         Message message = buildGcmMessage(data);
         try {
             GCM_SENDER.send(message, regIds, GCM_RETRIES);
+            Logger.debug("Success sending ios notification");
         } catch (IOException e) {
             Logger.error("Problem sending batch GCM message", e);
         }
