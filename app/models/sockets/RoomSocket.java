@@ -238,8 +238,14 @@ public class RoomSocket extends UntypedActor {
             notifyRoom(roomId, Talk.TYPE, userId, messageText);
             return;
         }
+        Message message;
+        try {
+            message = JPA.withTransaction(() -> storeMessage(talk));
+        } catch (Throwable throwable) {
+            Logger.error("Problem storing the message", throwable);
+            throw new RuntimeException("Problem storing the message: " + throwable.getMessage());
+        }
 
-        Message message = storeMessage(talk);
         notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
         notifyRoomSubscribers(message, j);
     }
