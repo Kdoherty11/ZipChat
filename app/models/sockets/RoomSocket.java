@@ -333,6 +333,15 @@ public class RoomSocket extends UntypedActor {
         if (j.sismember(String.valueOf(roomId), String.valueOf(userId))) {
             Logger.error("User " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
 
+            if (!rooms.containsKey(roomId)) {
+                // Creating a new room
+                Logger.debug("Adding new room " + roomId + " and adding a keep alive");
+
+                rooms.put(roomId, new HashMap<>());
+
+                addKeepAlive(roomId);
+            }
+
             rooms.get(roomId).put(userId, join.getChannel());
 
             getSender().tell(OK_JOIN_RESULT, getSelf());
