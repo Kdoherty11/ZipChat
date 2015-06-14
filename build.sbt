@@ -1,3 +1,4 @@
+import play.PlayJava
 
 name := """ZipChat"""
 
