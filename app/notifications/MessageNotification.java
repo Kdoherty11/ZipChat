@@ -1,5 +1,6 @@
 package notifications;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import models.entities.Message;
 
@@ -13,10 +14,15 @@ public class MessageNotification extends AbstractNotification {
     }
 
     private static ImmutableMap.Builder<String, String> getContentBuilder(Message message) {
-        return new ImmutableMap.Builder<String, String>()
+        ImmutableMap.Builder<String, String> builder = new ImmutableMap.Builder<String, String>()
                 .put(Key.FACEBOOK_NAME, message.sender.name)
-                .put(Key.FACEBOOK_ID, message.sender.facebookId)
                 .put(Key.MESSAGE, message.message)
                 .putAll(getRoomData(message.room));
+
+        if (!Strings.isNullOrEmpty(message.sender.facebookId)) {
+            builder.put(Key.FACEBOOK_ID, message.sender.facebookId);
+        }
+
+        return builder;
     }
 }
