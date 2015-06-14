@@ -2,6 +2,7 @@ package models.sockets.messages;
 
 import com.google.common.base.Objects;
 
+
 public class Quit {
 
     public static final String TYPE = "quit";

@@ -80,8 +80,10 @@ public class User extends AbstractUser {
 
     public void sendChatRequest(AbstractUser receiver) {
         User actualReceiver = receiver.getActual();
-        JPA.em().persist(new Request(this, actualReceiver));
-        actualReceiver.sendNotification(new ChatRequestNotification(this));
+        if (!PrivateRoom.getRoom(userId, actualReceiver.userId).isPresent()) {
+            JPA.em().persist(new Request(this, actualReceiver));
+            actualReceiver.sendNotification(new ChatRequestNotification(this));
+        }
     }
 
     @Override
