@@ -41,13 +41,13 @@ public class Message {
     public String message;
 
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "message_favorites", joinColumns = @JoinColumn(name = "userId"),
-            inverseJoinColumns = @JoinColumn(name = "messageId"))
+    @JoinTable(name = "message_favorites", joinColumns = @JoinColumn(name = "messageId"),
+            inverseJoinColumns = @JoinColumn(name = "userId"))
     public List<User> favorites = new ArrayList<>();
 
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "message_flags", joinColumns = @JoinColumn(name = "userId"),
-            inverseJoinColumns = @JoinColumn(name = "messageId"))
+    @JoinTable(name = "message_flags", joinColumns = @JoinColumn(name = "messageId"),
+            inverseJoinColumns = @JoinColumn(name = "userId"))
     public List<User> flags = new ArrayList<>();
 
     public int score;
