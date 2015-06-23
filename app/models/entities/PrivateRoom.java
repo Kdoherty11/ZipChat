@@ -127,11 +127,11 @@ public class PrivateRoom extends AbstractRoom {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("senderId", sender.userId)
-                .add("receiverId", receiver.userId)
+                .add("senderId", AbstractUser.getId(sender))
+                .add("receiverId", AbstractUser.getId(receiver))
                 .add("senderInRoom", senderInRoom)
                 .add("receiverInRoom", receiverInRoom)
-                .add("request", request)
+                .add("requestId", request == null ? -1 : request.requestId)
                 .toString();
     }
 }

@@ -29,6 +29,10 @@ public abstract class AbstractUser {
     @JsonIgnore
     public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
+    public static long getId(AbstractUser user) {
+        return user == null ? -1 : user.userId;
+    }
+
     public abstract void sendNotification(AbstractNotification notification);
     @JsonIgnore
     public abstract boolean isAnon();

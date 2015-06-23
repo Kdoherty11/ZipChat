@@ -31,10 +31,12 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "roomId")
     @JsonIgnore
+    @Constraints.Required
     public AbstractRoom room;
 
     @ManyToOne
     @JoinColumn(name = "userId")
+    @Constraints.Required
     public AbstractUser sender;
 
     @Constraints.Required
@@ -145,8 +147,8 @@ public class Message {
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("messageId", messageId)
-                .add("roomId", room.roomId)
-                .add("senderId", sender.userId)
+                .add("roomId", AbstractRoom.getId(room))
+                .add("senderId", AbstractUser.getId(sender))
                 .add("message", message)
                 .add("favorites", favorites)
                 .add("flags", flags)

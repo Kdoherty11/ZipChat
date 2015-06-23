@@ -62,4 +62,8 @@ public abstract class AbstractRoom {
                 .add("messages", messages)
                 .toString();
     }
+
+    public static long getId(AbstractRoom room) {
+        return room == null ? -1 : room.roomId;
+    }
 }

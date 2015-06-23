@@ -28,16 +28,16 @@ public class Request {
             @org.hibernate.annotations.Parameter(name = "sequenceName", value = "requests_gen"),
             @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1"),
     })
-    @GeneratedValue(generator = "requests_gen", strategy=GenerationType.SEQUENCE)
+    @GeneratedValue(generator = "requests_gen", strategy = GenerationType.SEQUENCE)
     public long requestId;
 
     @ManyToOne
-    @JoinColumn(name="sender")
+    @JoinColumn(name = "sender")
     @Constraints.Required
     public User sender;
 
     @ManyToOne
-    @JoinColumn(name="receiver")
+    @JoinColumn(name = "receiver")
     @Constraints.Required
     public User receiver;
 
@@ -52,8 +52,8 @@ public class Request {
     }
 
     public Request(User sender, User receiver) {
-        this.sender = sender;
-        this.receiver = receiver;
+        this.sender = Preconditions.checkNotNull(sender);
+        this.receiver = Preconditions.checkNotNull(receiver);
     }
 
 
@@ -141,8 +141,8 @@ public class Request {
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("requestId", requestId)
-                .add("sender", sender.userId)
-                .add("receiver", receiver.userId)
+                .add("sender", AbstractUser.getId(sender))
+                .add("receiver", AbstractUser.getId(receiver))
                 .add("status", status)
                 .add("createdAt", createdAt)
                 .add("respondedTimeStamp", respondedTimeStamp)

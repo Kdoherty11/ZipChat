@@ -5,13 +5,9 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import models.Platform;
 import org.hibernate.annotations.GenericGenerator;
-import play.Logger;
 import play.data.validation.Constraints;
-import play.db.jpa.JPA;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by kevin on 6/7/15.
@@ -37,6 +33,7 @@ public class Device {
     @ManyToOne
     @JoinColumn(name = "userId")
     @JsonIgnore
+    @Constraints.Required
     public User user;
 
     public Device() {
@@ -47,22 +44,6 @@ public class Device {
         this.user = Preconditions.checkNotNull(user);
         this.regId = Preconditions.checkNotNull(regId);
         this.platform = Preconditions.checkNotNull(platform);
-    }
-
-    public static Optional<Device> getDevice(long userId, String regId, Platform platform) {
-        String queryString = "select d from Device d where d.user.userId = :userId and d.regId = :regId and d.platform = :platform";
-
-        TypedQuery<Device> query = JPA.em().createQuery(queryString, Device.class)
-                .setParameter("userId", userId)
-                .setParameter("regId", regId)
-                .setParameter("platform", platform);
-
-        List<Device> deviceList = query.getResultList();
-        if (deviceList.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(deviceList.get(0));
-        }
     }
 
     @Override
@@ -86,7 +67,7 @@ public class Device {
                 .add("deviceId", deviceId)
                 .add("regId", regId)
                 .add("platform", platform)
-                .add("userId", user.userId)
+                .add("userId", user == null ? -1 : user.userId)
                 .toString();
     }
 }

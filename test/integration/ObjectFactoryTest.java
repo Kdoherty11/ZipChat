@@ -8,7 +8,7 @@ import models.entities.User;
 /**
  * Created by kevin on 6/15/15.
  */
-public class ObjectFactoryTest extends AbstractControllerTest {
+public class ObjectFactoryTest extends AbstractTest {
 
     private ObjectFactory<User> userFactory = new ObjectFactory<>(User.class);
     private ObjectFactory<Device> deviceFactory = new ObjectFactory<>(Device.class);

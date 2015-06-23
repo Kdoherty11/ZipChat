@@ -74,7 +74,7 @@ public class AnonUser extends AbstractUser {
     }
 
     private static String getAvailableAlias(PublicRoom room) {
-        Set<String> usedAliases = room.getAnonUsers().stream().map(AnonUser::getName).collect(Collectors.toSet());
+        Set<String> usedAliases = room.anonUsers.stream().map(AnonUser::getName).collect(Collectors.toSet());
         Set<String> availableAliases = Sets.difference(FULL_NAMES, new HashSet<>(usedAliases));
 
         if (availableAliases.isEmpty()) {
@@ -141,8 +141,9 @@ public class AnonUser extends AbstractUser {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("actualId", actual.userId)
-                .add("roomId", room.roomId)
+                .add("name", super.name)
+                .add("actualId", User.getId(actual))
+                .add("roomId", PublicRoom.getId(room))
                 .toString();
     }
 }

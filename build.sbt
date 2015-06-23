@@ -34,6 +34,8 @@ libraryDependencies += "com.intellij" % "annotations" % "9.0.4"
 
 libraryDependencies += "io.jsonwebtoken" % "jjwt" % "0.5"
 
+libraryDependencies += "com.github.javafaker" % "javafaker" % "0.5"
+
 jacoco.settings
 
 herokuAppName in Compile := "zipchatapp"

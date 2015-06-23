@@ -40,10 +40,6 @@ public class PublicRoom extends AbstractRoom {
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
 
-    public List<AnonUser> getAnonUsers() {
-        return anonUsers;
-    }
-
     public static List<PublicRoom> allInGeoRange(double lat, double lon) {
         Logger.debug("Getting all rooms containing location " + lat + ", " + lon);
 
