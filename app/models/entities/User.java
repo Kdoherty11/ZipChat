@@ -21,7 +21,7 @@ public class User extends AbstractUser {
 
     @JsonIgnore
     @OneToMany(targetEntity = Device.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<Device> devices;
+    public List<Device> devices = new ArrayList<>();
 
     public static Optional<User> byFacebookId(String facebookId) {
         String queryString = "select u from User u where u.facebookId = :facebookId";

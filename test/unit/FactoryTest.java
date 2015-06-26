@@ -4,10 +4,14 @@ import com.google.common.collect.ImmutableMap;
 import factories.IncludeEntity;
 import factories.ObjectFactory;
 import integration.AbstractTest;
+import models.Platform;
 import models.entities.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -15,6 +19,7 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * Created by kevin on 6/22/15.
  */
+@Ignore
 public class FactoryTest extends AbstractTest {
 
     @Test
@@ -38,6 +43,25 @@ public class FactoryTest extends AbstractTest {
         assertThat(user.devices.get(0).user).isEqualTo(user);
         assertThat(user.devices.get(0).deviceId).isPositive();
         userObjectFactory.cleanUp();
+    }
+
+    @Test
+    public void createUserOverridingDevices() throws Throwable {
+        ObjectFactory<User> userFactory = new ObjectFactory<>(User.class);
+        User user = userFactory.create();
+
+        ObjectFactory<Device> deviceFactory = new ObjectFactory<>(Device.class);
+        List<Device> androidDevices = deviceFactory.createList(3, ImmutableMap.of("platform", Platform.android, "user", user));
+        List<Device> iosDevices = deviceFactory.createList(2, ImmutableMap.of("platform", Platform.ios, "user", user));
+        List<Device> allDevices = new ArrayList<>();
+        allDevices.addAll(androidDevices);
+        allDevices.addAll(iosDevices);
+
+        user.devices = allDevices;
+
+        testPersistedUser(user);
+        assertThat(user.devices).hasSize(allDevices.size());
+        testDevice(user.devices.get(0));
     }
 
     @Test

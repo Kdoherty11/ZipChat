@@ -189,6 +189,8 @@ public class ObjectFactory<T> {
                             if (value instanceof IncludeEntity) {
                                 childEntityMap.put(field, (IncludeEntity) value);
                             } else {
+                                // If child entity do it afterwards
+                                // If parent entity do it before all this...
                                 field.set(entity, value);
                             }
                         } else if (fieldHasDefaultValue(entity, field)) {
@@ -248,12 +250,12 @@ public class ObjectFactory<T> {
             value = factory.create(includeObjectOverrides);
         }
 
-        Logger.debug("A: " + childField.getName());
-        Logger.debug("B: " + value);
+        //Logger.debug("A: " + childField.getName());
+        //Logger.debug("B: " + value);
 
         childField.set(parentEntity, value);
 
-        Logger.debug("C: " + parentEntity);
+        //Logger.debug("C: " + parentEntity);
     }
 
     private void createChildEntities(Map<Field, IncludeEntity> includeEntityMap, T createdEntity) throws Throwable {
