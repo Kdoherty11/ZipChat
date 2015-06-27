@@ -20,7 +20,10 @@ import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 import utils.DbUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -179,23 +182,48 @@ public class RoomSocket extends UntypedActor {
 
         logV("onReceive: " + message);
 
-        try {
-            if (message instanceof Join) {
+        if (message instanceof Join) {
+            try {
                 receiveJoin(j, (Join) message);
-            } else if (message instanceof Quit) {
-                receiveQuit(j, (Quit) message);
-            } else if (message instanceof RosterNotification) {
-                JPA.withTransaction(() -> receiveRosterNotification((RosterNotification) message));
-            } else if (message instanceof Talk) {
-                JPA.withTransaction(() -> receiveTalk(j, (Talk) message));
-            } else if (message instanceof FavoriteNotification) {
-                JPA.withTransaction(() -> receiveFavoriteNotification((FavoriteNotification) message));
-            } else {
-                unhandled(message);
+            } catch (Exception e) {
+                Logger.error("Error receiving join", e);
             }
-        } finally {
-            play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+        } else if (message instanceof Quit) {
+            try {
+                receiveQuit(j, (Quit) message);
+            } catch (Exception e) {
+                Logger.error("Error receiving quit", e);
+            }
+        } else if (message instanceof RosterNotification) {
+            JPA.withTransaction(() -> {
+                try {
+                    receiveRosterNotification((RosterNotification) message);
+                } catch (Exception e) {
+                    Logger.error("Error receiving roster notification", e);
+                }
+            });
+        } else if (message instanceof Talk) {
+            JPA.withTransaction(() -> {
+                try {
+                    receiveTalk(j, (Talk) message);
+                } catch (Exception e) {
+                    Logger.error("Error receiving talk", e);
+                }
+            });
+        } else if (message instanceof FavoriteNotification) {
+            JPA.withTransaction(() -> {
+                try {
+                    receiveFavoriteNotification((FavoriteNotification) message);
+                } catch (Exception e) {
+                    Logger.error("Error receiving favorite notification", e);
+                }
+            });
+        } else {
+            Logger.error("Unhandled message received");
+            unhandled(message);
         }
+
+        play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
     }
 
     private void receiveFavoriteNotification(FavoriteNotification favoriteNotification) {
@@ -409,7 +437,7 @@ public class RoomSocket extends UntypedActor {
         Logger.debug("Notified users: " + userSocketsInRoom.keySet());
     }
 
-    // -- Messages
+// -- Messages
 
     public static class MessageListener extends JedisPubSub {
 
@@ -454,19 +482,25 @@ public class RoomSocket extends UntypedActor {
         }
 
         @Override
-        public void onPMessage(String arg0, String arg1, String arg2) { }
+        public void onPMessage(String arg0, String arg1, String arg2) {
+        }
 
         @Override
-        public void onPSubscribe(String arg0, int arg1) { }
+        public void onPSubscribe(String arg0, int arg1) {
+        }
 
         @Override
-        public void onPUnsubscribe(String arg0, int arg1) { }
+        public void onPUnsubscribe(String arg0, int arg1) {
+        }
 
         @Override
-        public void onSubscribe(String arg0, int arg1) { }
+        public void onSubscribe(String arg0, int arg1) {
+        }
 
         @Override
-        public void onUnsubscribe(String arg0, int arg1) { }
+        public void onUnsubscribe(String arg0, int arg1) {
+        }
+
     }
 
     private static void logV(String msg) {
