@@ -39,7 +39,7 @@ public class UserTest extends AbstractTest {
 
     @After
     public void cleanUp() {
-        userFactory.cleanUp();
+        //userFactory.cleanUp();
         userFactory = null;
     }
 
@@ -127,7 +127,6 @@ public class UserTest extends AbstractTest {
 //        when(receiverMock.getActual()).thenReturn(receiverMock);
 //        long receiverId = userFactory.create().userId;
 //        when(receiverMock.userId).thenReturn(receiverId);
-
             JPA.withTransaction(() -> sender.sendChatRequest(receiver));
 
             assertThat(Request.getRequest(sender.userId, receiver.userId).isPresent()).isTrue();

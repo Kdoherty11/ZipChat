@@ -1,4 +1,4 @@
-package models.sockets.messages;
+package models.sockets.events;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;

@@ -27,7 +27,7 @@ public class Secured extends Security.Authenticator {
             }
         }
 
-        if (Play.isDev()) {
+        if (!Play.isProd()) {
             return "-1";
         }
 

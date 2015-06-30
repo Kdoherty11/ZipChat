@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
 import models.entities.*;
-import models.sockets.messages.*;
+import models.sockets.events.*;
 import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
@@ -20,12 +20,11 @@ import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 import utils.DbUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static akka.pattern.Patterns.ask;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -47,9 +46,9 @@ public class RoomSocket extends UntypedActor {
     static final ActorRef defaultRoom = Akka.system().actorOf(Props.create(RoomSocket.class));
 
     // Key is roomId, value is the users connected to that room
-    static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
+    static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new ConcurrentHashMap<>();
 
-    static final Map<Long, SocketKeepAlive> clientHeartbeats = new HashMap<>();
+    static final Map<Long, SocketKeepAlive> clientHeartbeats = new ConcurrentHashMap<>();
 
     static {
 
@@ -79,18 +78,13 @@ public class RoomSocket extends UntypedActor {
             try {
                 JPA.withTransaction(() -> {
 
-                    Object[] roomMembers = j.smembers(String.valueOf(roomId))
-                            .stream()
-                            .mapToLong(Long::parseLong)
-                            .filter(id -> id != userId && id != SocketKeepAlive.USER_ID)
-                            .mapToObj(id -> findExistingEntityById(User.class, id))
-                            .toArray();
+                    List<User> roomMembers = getRoomMembers(roomId, j);
 
                     ObjectNode event = Json.newObject();
                     event.put(EVENT_KEY, "joinSuccess");
 
                     ObjectNode message = Json.newObject();
-                    message.put("roomMembers", toJson(roomMembers));
+                    message.set("roomMembers", toJson(roomMembers));
 
                     AbstractRoom room = findExistingEntityById(AbstractRoom.class, roomId);
                     if (room instanceof PublicRoom) {
@@ -99,7 +93,7 @@ public class RoomSocket extends UntypedActor {
                         message.put("isSubscribed", isSubscribed);
                     }
 
-                    event.put(MESSAGE_KEY, message);
+                    event.set(MESSAGE_KEY, message);
 
                     logV("join JSON response: " + event);
 
@@ -120,7 +114,7 @@ public class RoomSocket extends UntypedActor {
                 switch (event) {
                     case Talk.TYPE:
                         if (message.has("isAnon") && message.get("isAnon").asBoolean()) {
-                            messageObject = new Talk(roomId, userId, message.get("message").asText(), message.get("isAnon").asBoolean());
+                            messageObject = new Talk(roomId, userId, message.get("message").asText(), true);
                         } else {
                             messageObject = new Talk(roomId, userId, message.get("message").asText());
                         }
@@ -171,6 +165,23 @@ public class RoomSocket extends UntypedActor {
         return Optional.ofNullable(room.get(userId));
     }
 
+    private static List<User> getRoomMembers(long roomId, Jedis j) {
+        return getUserIdsInRoomStream(roomId, j)
+                .filter(id -> id != SocketKeepAlive.USER_ID)
+                .map(id -> DbUtils.findExistingEntityById(User.class, id))
+                .collect(Collectors.<User>toList());
+    }
+
+    private static Set<Long> getUserIdsInRoom(long roomId, Jedis j) {
+        return getUserIdsInRoomStream(roomId, j).collect(Collectors.toSet());
+    }
+
+    private static Stream<Long> getUserIdsInRoomStream(long roomId, Jedis j) {
+        return j.smembers(Long.toString(roomId))
+                .stream()
+                .map(Long::parseLong);
+    }
+
     public static void remoteMessage(Object message) {
         defaultRoom.tell(message, null);
     }
@@ -178,9 +189,9 @@ public class RoomSocket extends UntypedActor {
     @Override
     @Transactional
     public void onReceive(Object message) {
-        Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-
         logV("onReceive: " + message);
+
+        Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
 
         if (message instanceof Join) {
             try {
@@ -312,13 +323,6 @@ public class RoomSocket extends UntypedActor {
         return message;
     }
 
-    private Set<Long> getUserIdsInRoom(long roomId, Jedis j) {
-        return j.smembers(Long.toString(roomId))
-                .stream()
-                .map(Long::parseLong)
-                .collect(Collectors.toSet());
-    }
-
     private void receiveJoin(Jedis j, Join join) {
         Logger.debug("receiveJoin: " + join);
         long roomId = join.getRoomId();
@@ -427,7 +431,7 @@ public class RoomSocket extends UntypedActor {
         // If its not a talk or keepalive add the user to the message
         if (!Talk.TYPE.equals(kind) && userId != SocketKeepAlive.USER_ID) {
             User sender = findExistingEntityById(User.class, userId);
-            message.put(USER_KEY, toJson(sender));
+            message.set(USER_KEY, toJson(sender));
         }
 
         logV("About to notify room with: " + message);

@@ -10,7 +10,6 @@ import play.db.jpa.JPA;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -25,11 +24,7 @@ public class AnonUser extends AbstractUser {
     private static final Set<String> FULL_NAMES = new HashSet<>(FIRST_NAMES.size() * LAST_NAMES.size());
 
     static {
-        for (String firstName : FIRST_NAMES) {
-            for (String lastName : LAST_NAMES) {
-                FULL_NAMES.add(firstName + " " + lastName);
-            }
-        }
+        FIRST_NAMES.forEach(firstName -> LAST_NAMES.forEach(lastName -> FULL_NAMES.add(firstName + " " + lastName)));
     }
 
     @ManyToOne

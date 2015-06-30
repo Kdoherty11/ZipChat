@@ -1,4 +1,4 @@
-package models.sockets.messages;
+package models.sockets.events;
 
 import com.google.common.base.Objects;
 

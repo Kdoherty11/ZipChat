@@ -58,13 +58,13 @@ public class PrivateRoomsController extends BaseController {
         if (!userIdOptional.isPresent()) {
             return WebSocket.reject(DbUtils.getNotFoundResult(User.class, userId));
         }
-        if (userIdOptional.get() != userId && !Play.isDev()) {
+        if (userIdOptional.get() != userId && Play.isProd()) {
             return WebSocket.reject(forbidden());
         }
 
         Optional<PrivateRoom> privateRoomOptional = JPA.withTransaction(() -> DbUtils.findEntityById(PrivateRoom.class, roomId));
         if (privateRoomOptional.isPresent()) {
-            if (!privateRoomOptional.get().isUserInRoom(userId) && !Play.isDev()) {
+            if (!privateRoomOptional.get().isUserInRoom(userId) && Play.isProd()) {
                 return WebSocket.reject(forbidden());
             }
         } else {
@@ -88,7 +88,7 @@ public class PrivateRoomsController extends BaseController {
     public static Result getMessages(long roomId, int limit, int offset) {
         Optional<PrivateRoom> privateRoomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
         if (privateRoomOptional.isPresent()) {
-            if (!privateRoomOptional.get().isUserInRoom(getTokenUserId()) && !Play.isDev()) {
+            if (!privateRoomOptional.get().isUserInRoom(getTokenUserId()) && Play.isProd()) {
                 return forbidden();
             }
         } else {

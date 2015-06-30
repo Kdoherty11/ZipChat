@@ -1,30 +1,24 @@
-package models.sockets.messages;
+package models.sockets.events;
 
 import com.google.common.base.Objects;
 
-public class RosterNotification {
+public class Quit {
 
-    public static final String TYPE = "rosterNotify";
+    public static final String TYPE = "quit";
 
-    final long roomId;
-    final long userId;
-    final String direction;
+    private final long roomId;
+    private final long userId;
 
     // For JSON serialization
     final String type = TYPE;
 
-    public RosterNotification(long roomId, long userId, String direction) {
+    public Quit(long roomId, long userId) {
         this.roomId = roomId;
         this.userId = userId;
-        this.direction = direction;
     }
 
     public long getUserId() {
         return userId;
-    }
-
-    public String getDirection() {
-        return direction;
     }
 
     public long getRoomId() {
@@ -40,7 +34,7 @@ public class RosterNotification {
         return Objects.toStringHelper(this)
                 .add("roomId", roomId)
                 .add("userId", userId)
-                .add("direction", direction)
                 .toString();
     }
+
 }

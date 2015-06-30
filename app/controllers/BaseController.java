@@ -25,7 +25,7 @@ public class BaseController extends Controller {
     }
 
     public static boolean isUnauthorized(long userId) {
-        return userId != getTokenUserId() && !Play.isDev();
+        return userId != getTokenUserId() && Play.isProd();
     }
 
     public static Result okJson(Object obj) {

@@ -75,6 +75,7 @@ public class User extends AbstractUser {
         User actualReceiver = receiver.getActual();
         if (!PrivateRoom.getRoom(userId, actualReceiver.userId).isPresent()) {
             JPA.em().persist(new Request(this, actualReceiver));
+
             actualReceiver.sendNotification(new ChatRequestNotification(this));
         }
     }
