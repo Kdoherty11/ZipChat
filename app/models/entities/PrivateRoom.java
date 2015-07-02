@@ -41,15 +41,6 @@ public class PrivateRoom extends AbstractRoom {
         this.receiver = request.receiver;
     }
 
-    public static List<PrivateRoom> getRoomsByUserId(long userId) {
-        String queryString = "select p from PrivateRoom p where (p.sender.userId = :userId and p.senderInRoom = true) or (p.receiver.userId = :userId and p.receiverInRoom = true)";
-
-        TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
-                .setParameter("userId", userId);
-
-        return query.getResultList();
-    }
-
     public boolean removeUser(long userId) {
         if (userId == sender.userId) {
             if (!receiverInRoom) {
@@ -77,6 +68,7 @@ public class PrivateRoom extends AbstractRoom {
                 (receiver.userId == userId && receiverInRoom);
     }
 
+    // TODO Remove
     public static Optional<PrivateRoom> getRoom(long senderId, long receiverId) {
 
         String queryString = "select p from PrivateRoom p where " +

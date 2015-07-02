@@ -21,10 +21,14 @@ public class PublicRoom extends AbstractRoom {
     public String name;
 
     @Constraints.Required
+    @Constraints.Min(-90)
+    @Constraints.Max(90)
     @Column(columnDefinition = "NUMERIC")
     public Double latitude;
 
     @Constraints.Required
+    @Constraints.Min(-180)
+    @Constraints.Max(180)
     @Column(columnDefinition = "NUMERIC")
     public Double longitude;
 
@@ -39,29 +43,6 @@ public class PublicRoom extends AbstractRoom {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
-
-    public static List<PublicRoom> allInGeoRange(double lat, double lon) {
-        Logger.debug("Getting all rooms containing location " + lat + ", " + lon);
-
-        int earthRadius = 6371; // in km
-
-        String firstCutSql = "select r2.roomId" +
-                " from PublicRoom r2" +
-                " where :lat >= r2.latitude - degrees((r2.radius * 1000) / :R) and :lat <= r2.latitude + degrees((r2.radius * 1000) / :R)" +
-                " and :lon >= r2.longitude - degrees((r2.radius * 1000) / :R) and :lon <= r2.longitude + degrees((r2.radius * 1000) / :R)";
-
-        String sql = "select r" +
-                " from PublicRoom r" +
-                " where r.roomId in (" + firstCutSql + ") and" +
-                " acos(sin(radians(:lat)) * sin(radians(latitude)) + cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lon))) * :R * 1000 <= radius";
-
-        TypedQuery<PublicRoom> query = JPA.em().createQuery(sql, PublicRoom.class)
-                .setParameter("lat", lat)
-                .setParameter("lon", lon)
-                .setParameter("R", earthRadius);
-
-        return query.getResultList();
-    }
 
     public void addSubscription(User user) {
         subscribers.add(user);

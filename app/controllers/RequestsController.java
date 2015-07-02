@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.common.primitives.Longs;
+import com.google.inject.Inject;
 import models.entities.AbstractUser;
 import models.entities.Request;
 import models.entities.User;
@@ -8,7 +9,9 @@ import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.Secured;
-import utils.DbUtils;
+import services.AbstractUserService;
+import services.RequestService;
+import services.UserService;
 import validation.DataValidator;
 import validation.FieldValidator;
 import validation.validators.Validators;
@@ -21,8 +24,21 @@ import static play.data.Form.form;
 @Security.Authenticated(Secured.class)
 public class RequestsController extends BaseController {
 
+    private RequestService requestService;
+    private UserService userService;
+    private AbstractUserService abstractUserService;
+
+    @Inject
+    public RequestsController(final RequestService requestService,
+                              final AbstractUserService abstractUserService,
+                              final UserService userService) {
+        this.requestService = requestService;
+        this.abstractUserService = abstractUserService;
+        this.userService = userService;
+    }
+
     @Transactional
-    public static Result createRequest() {
+    public Result createRequest() {
         Map<String, String> data = form().bindFromRequest().data();
 
         String senderKey = "sender";
@@ -43,30 +59,30 @@ public class RequestsController extends BaseController {
             return forbidden();
         }
 
-        Optional<User> senderOptional = DbUtils.findEntityById(User.class, senderId);
+        Optional<User> senderOptional = userService.findById(senderId);
         if (senderOptional.isPresent()) {
-            Optional<AbstractUser> receiverOptional = DbUtils.findEntityById(AbstractUser.class, receiverId);
+            Optional<AbstractUser> receiverOptional = abstractUserService.findById(receiverId);
             if (receiverOptional.isPresent()) {
-                senderOptional.get().sendChatRequest(receiverOptional.get());
+                userService.sendChatRequest(senderOptional.get(), receiverOptional.get());
                 return OK_RESULT;
             } else {
-                return DbUtils.getNotFoundResult(AbstractUser.class, receiverId);
+                return entityNotFound(AbstractUser.class, receiverId);
             }
         } else {
-            return DbUtils.getNotFoundResult(User.class, senderId);
+            return entityNotFound(User.class, senderId);
         }
     }
 
-    @Transactional
-    public static Result getRequestsByReceiver(long receiverId) {
+    @Transactional(readOnly = true)
+    public Result getRequestsByReceiver(long receiverId) {
         if (isUnauthorized(receiverId)) {
             return forbidden();
         }
-        return okJson(Request.getPendingRequestsByReceiver(receiverId));
+        return okJson(requestService.findPendingRequestsByReceiver(receiverId));
     }
 
     @Transactional
-    public static Result handleResponse(long requestId) {
+    public Result handleResponse(long requestId) {
         String responseKey = "status";
 
         Map<String, String> formData = form().bindFromRequest(responseKey).data();
@@ -80,7 +96,7 @@ public class RequestsController extends BaseController {
             return badRequest(validator.errorsAsJson());
         }
 
-        Optional<Request> requestOptional = DbUtils.findEntityById(Request.class, requestId);
+        Optional<Request> requestOptional = requestService.findById(requestId);
         if (requestOptional.isPresent()) {
 
             Request request = requestOptional.get();
@@ -92,12 +108,12 @@ public class RequestsController extends BaseController {
 
             return OK_RESULT;
         } else {
-            return DbUtils.getNotFoundResult(Request.class, requestId);
+            return entityNotFound(Request.class, requestId);
         }
     }
 
-    @Transactional
-    public static Result getStatus(long senderId, long receiverId) {
-        return ok(Request.getStatus(senderId, receiverId));
+    @Transactional(readOnly = true)
+    public Result getStatus(long senderId, long receiverId) {
+        return ok(requestService.getStatus(senderId, receiverId));
     }
 }

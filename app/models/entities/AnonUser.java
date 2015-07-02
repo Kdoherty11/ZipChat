@@ -76,6 +76,7 @@ public class AnonUser extends AbstractUser {
             throw new IllegalStateException("There are no more available aliases for room " + room.roomId);
         }
 
+        // Pick a random alias from the set
         int item = new Random().nextInt(availableAliases.size());
         int i = 0;
         for (String alias : availableAliases) {

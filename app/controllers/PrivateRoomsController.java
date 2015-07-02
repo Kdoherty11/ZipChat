@@ -1,41 +1,53 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.inject.Inject;
 import models.entities.PrivateRoom;
 import models.entities.User;
 import models.sockets.RoomSocket;
 import play.Logger;
 import play.Play;
-import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
 import play.mvc.WebSocket;
 import security.Secured;
 import security.SecurityHelper;
-import utils.DbUtils;
+import services.PrivateRoomService;
 
 import java.util.Optional;
 
 @Security.Authenticated(Secured.class)
 public class PrivateRoomsController extends BaseController {
 
-    @Transactional
-    public static Result getRoomsByUserId(long userId) {
+    private PrivateRoomService privateRoomService;
+    private SecurityHelper securityHelper;
+    private MessagesController messagesController;
+
+    @Inject
+    public PrivateRoomsController(final PrivateRoomService privateRoomService, final MessagesController messagesController,
+                                  final SecurityHelper securityHelper) {
+        this.privateRoomService = privateRoomService;
+        this.messagesController = messagesController;
+        this.securityHelper = securityHelper;
+    }
+
+    @Transactional(readOnly = true)
+    public Result getRoomsByUserId(long userId) {
         if (isUnauthorized(userId)) {
             return forbidden();
         }
         Logger.debug("Getting Private Rooms by userId: " + userId);
-        return okJson(PrivateRoom.getRoomsByUserId(userId));
+        return okJson(privateRoomService.findByUserId(userId));
     }
 
     @Transactional
-    public static Result leaveRoom(long roomId, long userId) {
+    public Result leaveRoom(long roomId, long userId) {
         if (isUnauthorized(userId)) {
             return forbidden();
         }
 
-        Optional<PrivateRoom> roomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
+        Optional<PrivateRoom> roomOptional = privateRoomService.findById(roomId);
 
         if (roomOptional.isPresent()) {
             PrivateRoom room = roomOptional.get();
@@ -48,27 +60,27 @@ public class PrivateRoomsController extends BaseController {
             }
 
         } else {
-            return DbUtils.getNotFoundResult(PrivateRoom.class, roomId);
+            return entityNotFound(PrivateRoom.class, roomId);
         }
     }
 
     @Transactional
-    public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) throws Throwable {
-        Optional<Long> userIdOptional = SecurityHelper.getUserId(authToken);
+    public WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) throws Throwable {
+        Optional<Long> userIdOptional = securityHelper.getUserId(authToken);
         if (!userIdOptional.isPresent()) {
-            return WebSocket.reject(DbUtils.getNotFoundResult(User.class, userId));
+            return WebSocket.reject(entityNotFound(User.class, userId));
         }
         if (userIdOptional.get() != userId && Play.isProd()) {
             return WebSocket.reject(forbidden());
         }
 
-        Optional<PrivateRoom> privateRoomOptional = JPA.withTransaction(() -> DbUtils.findEntityById(PrivateRoom.class, roomId));
+        Optional<PrivateRoom> privateRoomOptional = privateRoomService.findById(roomId);
         if (privateRoomOptional.isPresent()) {
             if (!privateRoomOptional.get().isUserInRoom(userId) && Play.isProd()) {
                 return WebSocket.reject(forbidden());
             }
         } else {
-            return WebSocket.reject(DbUtils.getNotFoundResult(PrivateRoom.class, roomId));
+            return WebSocket.reject(entityNotFound(PrivateRoom.class, roomId));
         }
 
         return new WebSocket<JsonNode>() {
@@ -84,17 +96,17 @@ public class PrivateRoomsController extends BaseController {
         };
     }
 
-    @Transactional
-    public static Result getMessages(long roomId, int limit, int offset) {
-        Optional<PrivateRoom> privateRoomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
+    @Transactional(readOnly = true)
+    public Result getMessages(long roomId, int limit, int offset) {
+        Optional<PrivateRoom> privateRoomOptional = privateRoomService.findById(roomId);
         if (privateRoomOptional.isPresent()) {
             if (!privateRoomOptional.get().isUserInRoom(getTokenUserId()) && Play.isProd()) {
                 return forbidden();
             }
         } else {
-            return DbUtils.getNotFoundResult(PrivateRoom.class, roomId);
+            return entityNotFound(PrivateRoom.class, roomId);
         }
 
-        return MessagesController.getMessages(roomId, limit, offset);
+        return messagesController.getMessages(roomId, limit, offset);
     }
 }

@@ -90,22 +90,6 @@ public class Message {
         return didDeleteUser;
     }
 
-    public static List<Message> getMessages(long roomId, int limit, int offset) {
-
-        String queryString = "select m from Message m where m.room.roomId = :roomId order by m.createdAt DESC";
-
-        TypedQuery<Message> limitOffsetQuery = JPA.em().createQuery(queryString, Message.class)
-                .setParameter("roomId", roomId)
-                .setMaxResults(limit)
-                .setFirstResult(offset);
-
-        List<Message> messages = limitOffsetQuery.getResultList();
-
-        Collections.reverse(messages);
-
-        return messages;
-    }
-
     public boolean flag(User user) {
         if (flags.contains(user)) {
             Logger.error(user + " is attempting to flag " + this + " but has already flagged it");

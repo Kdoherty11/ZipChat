@@ -1,5 +1,6 @@
 package controllers;
 
+import com.google.inject.Inject;
 import models.entities.Message;
 import models.entities.User;
 import play.db.jpa.Transactional;
@@ -7,7 +8,8 @@ import play.mvc.Result;
 import play.mvc.Results;
 import play.mvc.Security;
 import security.Secured;
-import utils.DbUtils;
+import services.MessageService;
+import services.UserService;
 import validation.DataValidator;
 import validation.FieldValidator;
 import validation.validators.Validators;
@@ -17,13 +19,21 @@ import java.util.Optional;
 @Security.Authenticated(Secured.class)
 public class MessagesController extends BaseController {
 
+    private final MessageService messageService;
+    private final UserService userService;
+
+    @Inject
+    public MessagesController(final MessageService messageService, final UserService userService) {
+        this.messageService = messageService;
+        this.userService = userService;
+    }
+
     private interface UserMessageAction {
         boolean messageAction(Message message, User user);
         String onActionFailed(User user);
     }
 
-    @Transactional
-    public static Result getMessages(long roomId, int limit, int offset) {
+    public Result getMessages(long roomId, int limit, int offset) {
         DataValidator validator = new DataValidator(
                 new FieldValidator<>("limit", limit, Validators.min(0)),
                 new FieldValidator<>("offset", offset, Validators.min(0)));
@@ -32,11 +42,11 @@ public class MessagesController extends BaseController {
             return badRequest(validator.errorsAsJson());
         }
 
-        return okJson(Message.getMessages(roomId, limit, offset));
+        return okJson(messageService.getMessages(roomId, limit, offset));
     }
 
     @Transactional
-    public static Result favorite(long messageId, long userId) {
+    public Result favorite(long messageId, long userId) {
         return messageActionHelper(messageId, userId, new UserMessageAction() {
             @Override
             public boolean messageAction(Message message, User user) {
@@ -51,7 +61,7 @@ public class MessagesController extends BaseController {
     }
 
     @Transactional
-    public static Result removeFavorite(long messageId, long userId) {
+    public Result removeFavorite(long messageId, long userId) {
         return messageActionHelper(messageId, userId, new UserMessageAction() {
             @Override
             public boolean messageAction(Message message, User user) {
@@ -66,7 +76,7 @@ public class MessagesController extends BaseController {
     }
 
     @Transactional
-    public static Result flag(long messageId, long userId) {
+    public Result flag(long messageId, long userId) {
         return messageActionHelper(messageId, userId, new UserMessageAction() {
             @Override
             public boolean messageAction(Message message, User user) {
@@ -81,7 +91,7 @@ public class MessagesController extends BaseController {
     }
 
     @Transactional
-    public static Result removeFlag(long messageId, long userId) {
+    public Result removeFlag(long messageId, long userId) {
         return messageActionHelper(messageId, userId, new UserMessageAction() {
             @Override
             public boolean messageAction(Message message, User user) {
@@ -95,16 +105,16 @@ public class MessagesController extends BaseController {
         });
     }
 
-    public static Result messageActionHelper(long messageId, long userId, UserMessageAction cb) {
+    public Result messageActionHelper(long messageId, long userId, UserMessageAction cb) {
         if (isUnauthorized(userId)) {
             return Results.forbidden();
         }
-        Optional<Message> messageOptional = DbUtils.findEntityById(Message.class, messageId);
+        Optional<Message> messageOptional = messageService.findById(messageId);
 
         if (messageOptional.isPresent()) {
             Message message = messageOptional.get();
 
-            Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
+            Optional<User> userOptional = userService.findById(userId);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
                 boolean success = cb.messageAction(message, user);
@@ -113,10 +123,10 @@ public class MessagesController extends BaseController {
                 }
                 return OK_RESULT;
             } else {
-                return DbUtils.getNotFoundResult(User.class, userId);
+                return entityNotFound(User.class, userId);
             }
         } else {
-            return DbUtils.getNotFoundResult(Message.class, messageId);
+            return entityNotFound(Message.class, messageId);
         }
     }
 }
