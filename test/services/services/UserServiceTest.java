@@ -56,7 +56,7 @@ public class UserServiceTest {
         when(privateRoomRepository.findBySenderAndReceiver(anyLong(), anyLong())).thenReturn(Optional.empty());
 
         doNothing().when(requestRepository).save(any(Request.class));
-        doNothing().when(mockActualReceiver).sendChatRequest(any());
+        doNothing().when(mockActualReceiver).sendNotification(any(ChatRequestNotification.class));
 
         spy(requestRepository);
         spy(mockActualReceiver);

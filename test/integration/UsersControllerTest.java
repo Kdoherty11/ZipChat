@@ -1,10 +1,8 @@
 package integration;
 
-import adapters.UsersControllerAdapter;
-
 public class UsersControllerTest extends AbstractTest {
 
-    private UsersControllerAdapter adapter = UsersControllerAdapter.INSTANCE;
+    //private UsersControllerAdapter adapter = UsersControllerAdapter.INSTANCE;
 
 //    @Test
 //    public void createUserSuccess() throws JSONException {
