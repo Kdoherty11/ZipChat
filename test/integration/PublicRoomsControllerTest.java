@@ -1,10 +1,11 @@
-package controllers;
+package integration;
 
+import controllers.MessagesController;
+import controllers.PublicRoomsController;
 import factories.ObjectFactory;
 import models.entities.PublicRoom;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +19,7 @@ import security.SecurityHelper;
 import services.PublicRoomService;
 import services.UserService;
 import utils.JsonArrayIterator;
+import utils.JsonValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +70,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     }
 
     @Test
-    public void testGetGeoRoomsEmpty() throws JSONException {
+    public void getGeoRoomsEmpty() throws JSONException {
         List<PublicRoom> rooms = new ArrayList<>();
         when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
         final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
@@ -78,7 +80,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     }
 
     @Test
-    public void testGeoRooms() throws Throwable {
+    public void getGeoRooms() throws Throwable {
         List<PublicRoom> rooms = publicRoomFactory.createList(3, false);
         when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
         final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
@@ -86,7 +88,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         assertThat(status(result)).isEqualTo(OK);
         JSONArray resultRooms = new JSONArray(contentAsString(result));
         assertThat(resultRooms.length()).isEqualTo(3);
-        new JsonArrayIterator(resultRooms).forEach(PublicRoomsControllerTest::validatePublicRoom);
+        new JsonArrayIterator(resultRooms).forEach(JsonValidator::validatePublicRoom);
     }
 
     @Test
@@ -107,36 +109,16 @@ public class PublicRoomsControllerTest extends WithApplication {
         assertThat(status(result)).isEqualTo(BAD_REQUEST);
     }
 
-    private static void validatePublicRoom(JSONObject publicRoom) {
-        try {
-            final long roomId = publicRoom.getLong("roomId");
-            final String name = publicRoom.getString("name");
-            final double latitude = publicRoom.getDouble("latitude");
-            final double longitude = publicRoom.getDouble("longitude");
-            final int radius = publicRoom.getInt("radius");
-            final long createdAt = publicRoom.getLong("createdAt");
-            final long lastActivity = publicRoom.getLong("lastActivity");
-
-            assertThat(roomId).isPositive();
-            assertThat(name).isNotEmpty();
-            assertThat(latitude).isGreaterThanOrEqualTo(-90.0).isLessThanOrEqualTo(90.0);
-            assertThat(longitude).isGreaterThanOrEqualTo(-180.0).isLessThanOrEqualTo(180.0);
-            assertThat(radius).isPositive();
-            assertThat(createdAt).isGreaterThan(0);
-            assertThat(lastActivity).isGreaterThanOrEqualTo(createdAt);
-        } catch (JSONException e) {
-            throw new RuntimeException("Problem parsing public room json!", e);
-        }
-    }
 
 
 
+    @Test
+    public void createRoomSuccess() throws JSONException {
+        // TODO
+        //Result createResult = route(fakeRequest(POST, "/publicRooms"));
+        //assertThat(status(createResult)).isEqualTo(CREATED);
 
-//    @Test
-//    public void createRoomSuccess() throws JSONException {
-//        Result createResult = adapter.createRoom();
-//        assertThat(status(createResult)).isEqualTo(CREATED);
-//
+
 //        JSONObject createJson = new JSONObject(contentAsString(createResult));
 //        assertThat(createJson.getLong(RoomsControllerAdapter.ID_KEY)).isNotNull();
 //        assertThat(createJson.getString(RoomsControllerAdapter.NAME_KEY)).isEqualTo(RoomsControllerAdapter.NAME);
@@ -148,7 +130,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 //
 //        JSONObject showJson = new JSONObject(contentAsString(showResult));
 //        assertThat(showJson.getLong(RoomsControllerAdapter.ID_KEY)).isNotNull();
-//    }
+    }
 //
 //    @Test
 //    public void createRoomNoName() {

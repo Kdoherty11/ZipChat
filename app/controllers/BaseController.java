@@ -22,7 +22,7 @@ public class BaseController extends Controller {
     public static final Result OK_RESULT = okJson(OK_STRING);
 
     public static long getTokenUserId() {
-        return (long) Http.Context.current().args.get(Secured.USER_ID_KEY);
+        return Play.isProd() ? (long) Http.Context.current().args.get(Secured.USER_ID_KEY) : 1;
     }
 
     public static boolean isUnauthorized(long userId) {

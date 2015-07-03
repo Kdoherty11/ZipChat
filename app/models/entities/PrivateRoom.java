@@ -1,5 +1,6 @@
 package models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import notifications.AbstractNotification;
 import play.data.validation.Constraints;
@@ -24,9 +25,13 @@ public class PrivateRoom extends AbstractRoom {
     @Constraints.Required
     public User receiver;
 
+    @JsonIgnore
     public boolean senderInRoom = true;
+
+    @JsonIgnore
     public boolean receiverInRoom = true;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "requestId")
     public Request request;
