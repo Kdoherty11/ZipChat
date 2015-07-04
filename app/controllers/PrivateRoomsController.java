@@ -53,6 +53,8 @@ public class PrivateRoomsController extends BaseController {
             PrivateRoom room = roomOptional.get();
             boolean removed = privateRoomService.removeUser(room, userId);
 
+            Logger.debug("HERE!!!: " + removed);
+
             if (removed) {
                 return OK_RESULT;
             } else {

@@ -32,14 +32,12 @@ public class JsonValidator {
             final JSONObject sender = privateRoomJson.getJSONObject("sender");
             final JSONObject receiver = privateRoomJson.getJSONObject("receiver");
 
-            final long createdAt = privateRoomJson.getLong("createdAt");
             final long lastActivity = privateRoomJson.getLong("lastActivity");
 
             assertThat(roomId).isPositive();
             validateUserJson(sender);
             validateUserJson(receiver);
-            assertThat(createdAt).isPositive();
-            assertThat(lastActivity).isGreaterThanOrEqualTo(createdAt);
+            assertThat(lastActivity).isPositive();
         } catch (JSONException e) {
             throw new RuntimeException("Problem parsing public room json", e);
         }
@@ -52,7 +50,6 @@ public class JsonValidator {
             final double latitude = publicRoomJson.getDouble("latitude");
             final double longitude = publicRoomJson.getDouble("longitude");
             final int radius = publicRoomJson.getInt("radius");
-            final long createdAt = publicRoomJson.getLong("createdAt");
             final long lastActivity = publicRoomJson.getLong("lastActivity");
 
             assertThat(roomId).isPositive();
@@ -60,8 +57,7 @@ public class JsonValidator {
             assertThat(latitude).isGreaterThanOrEqualTo(-90.0).isLessThanOrEqualTo(90.0);
             assertThat(longitude).isGreaterThanOrEqualTo(-180.0).isLessThanOrEqualTo(180.0);
             assertThat(radius).isPositive();
-            assertThat(createdAt).isPositive();
-            assertThat(lastActivity).isGreaterThanOrEqualTo(createdAt);
+            assertThat(lastActivity).isPositive();
         } catch (JSONException e) {
             throw new RuntimeException("Problem parsing public room json", e);
         }

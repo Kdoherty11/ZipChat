@@ -1,17 +1,14 @@
 package models.entities;
 
-import com.google.common.base.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
-import notifications.ChatResponseNotification;
+import com.google.common.base.Preconditions;
 import org.hibernate.annotations.GenericGenerator;
 import play.data.validation.Constraints;
-import play.db.jpa.JPA;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
-import java.util.Optional;
 
 @Entity
 @Table(name = "requests")
@@ -39,12 +36,15 @@ public class Request {
     @ManyToOne
     @JoinColumn(name = "receiver")
     @Constraints.Required
+    @JsonIgnore
     public User receiver;
 
+    @JsonIgnore
     public Status status = Status.pending;
 
     public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
+    @JsonIgnore
     public long respondedTimeStamp;
 
     public Request() {

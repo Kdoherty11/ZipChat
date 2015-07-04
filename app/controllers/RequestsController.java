@@ -104,6 +104,10 @@ public class RequestsController extends BaseController {
                 return forbidden();
             }
 
+            if (request.status != Request.Status.pending) {
+                return badRequestJson("This request has already been responded to");
+            }
+
             requestService.handleResponse(request, Request.Status.valueOf(formData.get(responseKey)));
 
             return OK_RESULT;

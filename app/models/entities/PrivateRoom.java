@@ -46,28 +46,6 @@ public class PrivateRoom extends AbstractRoom {
         this.receiver = request.receiver;
     }
 
-    public boolean removeUser(long userId) {
-        if (userId == sender.userId) {
-            if (!receiverInRoom) {
-                JPA.em().remove(this);
-            } else {
-                senderInRoom = false;
-            }
-        } else if (userId == receiver.userId) {
-            if (!senderInRoom) {
-                JPA.em().remove(this);
-            } else {
-                receiverInRoom = false;
-            }
-        } else {
-            return false;
-        }
-
-        // Allow both users to request each other again
-        JPA.em().remove(request);
-        return true;
-    }
-
     public boolean isUserInRoom(long userId) {
         return (sender.userId == userId && senderInRoom) ||
                 (receiver.userId == userId && receiverInRoom);

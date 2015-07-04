@@ -1,9 +1,9 @@
 package services.impl;
 
 import com.google.inject.Inject;
-import models.entities.PrivateRoom;
 import daos.PrivateRoomDao;
 import daos.RequestDao;
+import models.entities.PrivateRoom;
 import services.PrivateRoomService;
 
 import java.util.List;
@@ -53,8 +53,12 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
             return false;
         }
 
-        // Allow both users to request each other again
-        requestRepository.remove(room.request);
+        if (room.request != null) {
+            // Allow both users to request each other again
+            requestRepository.remove(room.request);
+            room.request = null;
+        }
+
         return true;
     }
 }
