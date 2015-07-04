@@ -38,6 +38,8 @@ libraryDependencies += "com.github.javafaker" % "javafaker" % "0.5"
 
 libraryDependencies += "org.mockito" % "mockito-core" % "2.0.21-beta"
 
+libraryDependencies += "com.google.inject" % "guice" % "3.0"
+
 jacoco.settings
 
 herokuAppName in Compile := "zipchatapp"

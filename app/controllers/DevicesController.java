@@ -2,16 +2,17 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.primitives.Longs;
+import com.google.inject.Inject;
 import models.Platform;
 import models.entities.Device;
 import models.entities.User;
-import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.Secured;
-import utils.DbUtils;
+import services.DeviceService;
+import services.UserService;
 import validation.DataValidator;
 import validation.FieldValidator;
 import validation.validators.Validators;
@@ -27,8 +28,17 @@ import static play.data.Form.form;
 @Security.Authenticated(Secured.class)
 public class DevicesController extends BaseController {
 
+    private final UserService userService;
+    private final DeviceService deviceService;
+
+    @Inject
+    public DevicesController(final DeviceService deviceService, final UserService userService) {
+        this.deviceService = deviceService;
+        this.userService = userService;
+    }
+
     @Transactional
-    public static Result createDevice() {
+    public Result createDevice() {
         Map<String, String> data = form().bindFromRequest().data();
         String userIdKey = "userId";
 
@@ -56,36 +66,36 @@ public class DevicesController extends BaseController {
             return badRequest(validator.errorsAsJson());
         }
 
-        Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
+        Optional<User> userOptional = userService.findById(userId);
 
         if (userOptional.isPresent()) {
             Device device = new Device(userOptional.get(), regId, Platform.valueOf(platform));
-            JPA.em().persist(device);
+            deviceService.save(device);
             ObjectNode jsonResponse = Json.newObject().put("deviceId", device.deviceId);
             return created(jsonResponse);
         } else {
-            return DbUtils.getNotFoundResult(User.class, userId);
+            return entityNotFound(User.class, userId);
         }
     }
 
     @Transactional
-    public static Result updateDeviceInfo(long notificationInfoId, String regId) {
-        Optional<Device> infoOptional = DbUtils.findEntityById(Device.class, notificationInfoId);
+    public Result updateDeviceInfo(long deviceId, String regId) {
+        Optional<Device> deviceOptional = deviceService.findById(deviceId);
 
-        if (infoOptional.isPresent()) {
-            Device info = infoOptional.get();
+        if (deviceOptional.isPresent()) {
+            Device device = deviceOptional.get();
 
-            long userId = info.user.userId;
+            long userId = device.user.userId;
             if (isUnauthorized(userId)) {
                 return forbidden();
             }
 
-            if (!info.regId.equals(regId)) {
-                info.regId = regId;
+            if (!device.regId.equals(regId)) {
+                device.regId = regId;
             }
             return OK_RESULT;
         } else {
-            return DbUtils.getNotFoundResult(Device.class, notificationInfoId);
+            return entityNotFound(Device.class, deviceId);
         }
     }
 

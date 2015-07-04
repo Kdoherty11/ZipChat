@@ -1,17 +1,14 @@
 package models.entities;
 
-import com.google.common.base.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
-import notifications.ChatResponseNotification;
+import com.google.common.base.Preconditions;
 import org.hibernate.annotations.GenericGenerator;
 import play.data.validation.Constraints;
-import play.db.jpa.JPA;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
-import java.util.Optional;
 
 @Entity
 @Table(name = "requests")
@@ -39,12 +36,15 @@ public class Request {
     @ManyToOne
     @JoinColumn(name = "receiver")
     @Constraints.Required
+    @JsonIgnore
     public User receiver;
 
+    @JsonIgnore
     public Status status = Status.pending;
 
     public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
+    @JsonIgnore
     public long respondedTimeStamp;
 
     public Request() {
@@ -54,70 +54,6 @@ public class Request {
     public Request(User sender, User receiver) {
         this.sender = Preconditions.checkNotNull(sender);
         this.receiver = Preconditions.checkNotNull(receiver);
-    }
-
-
-    @SuppressWarnings("unused")
-    public String validate() {
-        // Prevents duplicate requests between 2 users
-        if (getRequest(sender.userId, receiver.userId).isPresent()) {
-            return "A request with sender " + sender.userId + " and receiver " + receiver.userId + " already exists";
-        }
-
-        return null;
-    }
-
-    public static List<Request> getPendingRequestsByReceiver(long receiverId) {
-        String queryString = "select r from Request r where r.receiver.userId = :receiverId and r.status = :status";
-
-        TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
-                .setParameter("receiverId", receiverId)
-                .setParameter("status", Status.pending);
-
-        return query.getResultList();
-    }
-
-    public static String getStatus(long senderId, long receiverId) {
-
-        Optional<PrivateRoom> privateRoomOptional = PrivateRoom.getRoom(senderId, receiverId);
-
-        if (privateRoomOptional.isPresent()) {
-            return Long.toString(privateRoomOptional.get().roomId);
-        }
-
-        Optional<Request> requestOptional = getRequest(senderId, receiverId);
-        if (requestOptional.isPresent()) {
-            return requestOptional.get().status.name();
-        } else {
-            return "none";
-        }
-    }
-
-    public static Optional<Request> getRequest(long senderId, long receiverId) {
-        String queryString = "select r from Request r where r.sender.userId = :senderId and r.receiver.userId = :receiverId";
-
-        TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
-                .setParameter("senderId", senderId)
-                .setParameter("receiverId", receiverId);
-
-        List<Request> requests = query.getResultList();
-        if (requests.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(requests.get(0));
-        }
-    }
-
-    public void handleResponse(Status status) {
-        this.status = status;
-        this.respondedTimeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-
-        sender.sendNotification(new ChatResponseNotification(this, status));
-
-        if (status == Status.accepted) {
-            PrivateRoom room = new PrivateRoom(this);
-            JPA.em().persist(room);
-        }
     }
 
     @Override

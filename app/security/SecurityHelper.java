@@ -17,12 +17,12 @@ public class SecurityHelper {
     private static final String SIGNING_KEY = "myKey";
     private static final String ISSUER = "ZipChat";
 
-    private SecurityHelper() { }
+    public SecurityHelper() { }
 
     // 1 day in millis
     private static final long EXPIRATION_TIME_MILLIS = 1000L * 60L * 60L * 24L;
 
-    public static String generateAuthToken(long userId) {
+    public String generateAuthToken(long userId) {
         long issuedMillis = System.currentTimeMillis();
         long expMillis = issuedMillis + EXPIRATION_TIME_MILLIS;
 
@@ -35,7 +35,7 @@ public class SecurityHelper {
                 .compact();
     }
 
-    public static Optional<Long> getUserId(String jwt) {
+    public Optional<Long> getUserId(String jwt) {
         if (Strings.isNullOrEmpty(jwt)) {
             return Optional.empty();
         }

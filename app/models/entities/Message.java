@@ -66,64 +66,6 @@ public class Message {
         this.message = Preconditions.checkNotNull(message);
     }
 
-    public boolean favorite(User user) {
-        if (favorites.contains(user)) {
-            Logger.error(user + " is attempting to favorite " + this + " but has already favorited it");
-            return false;
-        }
-        favorites.add(user);
-        score++;
-        User actual = sender.getActual();
-        if (!user.equals(actual)) {
-            actual.sendNotification(new MessageFavoritedNotification(this, user));
-        }
-        return true;
-    }
-
-    public boolean removeFavorite(User user) {
-        boolean didDeleteUser = favorites.remove(user);
-        if (didDeleteUser) {
-            score--;
-        } else {
-            Logger.warn(user + " attempted to remove favorite from " + this + " but has not favorited it");
-        }
-        return didDeleteUser;
-    }
-
-    public static List<Message> getMessages(long roomId, int limit, int offset) {
-
-        String queryString = "select m from Message m where m.room.roomId = :roomId order by m.createdAt DESC";
-
-        TypedQuery<Message> limitOffsetQuery = JPA.em().createQuery(queryString, Message.class)
-                .setParameter("roomId", roomId)
-                .setMaxResults(limit)
-                .setFirstResult(offset);
-
-        List<Message> messages = limitOffsetQuery.getResultList();
-
-        Collections.reverse(messages);
-
-        return messages;
-    }
-
-    public boolean flag(User user) {
-        if (flags.contains(user)) {
-            Logger.error(user + " is attempting to flag " + this + " but has already flagged it");
-            return false;
-        }
-
-        flags.add(user);
-        return true;
-    }
-
-    public boolean removeFlag(User user) {
-        boolean didDeleteUser = flags.remove(user);
-        if (!didDeleteUser) {
-            Logger.warn(user + " attempted to remove a flag from " + this + " but has not flagged it");
-        }
-        return didDeleteUser;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

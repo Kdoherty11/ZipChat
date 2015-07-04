@@ -22,6 +22,7 @@ public abstract class AbstractRoom {
     @GeneratedValue(strategy = GenerationType.TABLE)
     public long roomId;
 
+    @JsonIgnore
     public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     public long lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);

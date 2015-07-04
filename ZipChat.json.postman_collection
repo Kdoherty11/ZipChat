@@ -1,0 +1,727 @@
+{
+	"id": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+	"name": "ZipChat",
+	"description": "",
+	"order": [],
+	"folders": [
+		{
+			"id": "ab3bc2f9-0c19-3e62-9d70-5749a2ae92c7",
+			"name": "Devices",
+			"description": "",
+			"write": true,
+			"order": [
+				"cd3a191d-f0ec-1450-dca8-c5c65bc85659",
+				"a50aceb5-7d2d-5034-d0c8-7c008170603d"
+			],
+			"collection": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"owner": "35112",
+			"collection_name": "ZipChat",
+			"collection_owner": "35112",
+			"collection_id": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e"
+		},
+		{
+			"id": "ea91afc4-5ec0-66db-2e2b-b4c6ddc7e73d",
+			"name": "Messages",
+			"description": "",
+			"write": true,
+			"order": [
+				"257142c8-6c3d-4295-77cd-9a67a337561c",
+				"d4eff062-50b0-0dc2-0b8f-153b4488a847",
+				"d7d261a5-4e46-e0f1-a316-55565bd2f7b6",
+				"c9a34b8a-68c5-f76e-8216-2d86575e4aea"
+			],
+			"collection": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"owner": "35112",
+			"collection_name": "ZipChat",
+			"collection_owner": "35112",
+			"collection_id": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e"
+		},
+		{
+			"id": "81443d65-22f6-5a98-86ee-27301bbf30da",
+			"name": "PrivateRooms",
+			"description": "",
+			"write": true,
+			"order": [
+				"770c9043-6f8a-d0fc-d2f7-69a05cca37db",
+				"54f17f3a-9e4a-62cc-6734-ab8673f8d3c0"
+			],
+			"collection": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"owner": "35112",
+			"collection_name": "ZipChat",
+			"collection_owner": "35112",
+			"collection_id": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e"
+		},
+		{
+			"id": "20d6bb8f-ba7a-b005-3373-bdd76a897118",
+			"name": "Public Rooms",
+			"description": "",
+			"write": true,
+			"order": [
+				"cb242853-3d8d-0bae-a9b3-e0203c6f8f5b",
+				"408c1f3c-e58a-65e3-18b0-d7a8a0fac2c0",
+				"4b2b4820-d26e-931b-d17e-a09ce4aae93b",
+				"1c2ad5ff-b551-49ad-2838-ac555596f9dd",
+				"02e1cc61-5878-0bca-6523-0a4836c3dc9e",
+				"fa10ed87-3ecd-4b6f-d4f9-adbed63b5f26"
+			],
+			"collection": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"owner": "35112",
+			"collection_name": "ZipChat",
+			"collection_owner": "35112",
+			"collection_id": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e"
+		},
+		{
+			"id": "44954aa2-707a-c4f4-77c9-a48d638aae91",
+			"name": "Requests",
+			"description": "",
+			"write": true,
+			"order": [
+				"401d98e1-4851-62dd-fcdb-a34c3838a4fd",
+				"68027c71-7b2b-d0b6-9416-dedfe68f68c2",
+				"e275550d-57e3-ecf0-874d-72451cdf8142",
+				"01247ec0-f6d0-103e-328b-be327363dadd",
+				"ae33d839-ae6a-2908-016c-2fb22ae0b95f"
+			],
+			"collection": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"owner": "35112",
+			"collection_name": "ZipChat",
+			"collection_owner": "35112",
+			"collection_id": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e"
+		},
+		{
+			"id": "aa52ac22-7177-7a7d-eeed-99886a2b8ab7",
+			"name": "Users",
+			"description": "",
+			"write": true,
+			"order": [
+				"f8f8de9d-d9f4-9c16-516a-227d161c3185"
+			],
+			"collection": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"owner": "35112",
+			"collection_name": "ZipChat",
+			"collection_owner": "35112",
+			"collection_id": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e"
+		}
+	],
+	"timestamp": 1436043867435,
+	"owner": "35112",
+	"remoteLink": "",
+	"public": false,
+	"requests": [
+		{
+			"id": "01247ec0-f6d0-103e-328b-be327363dadd",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/requests/1?status=accepted",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "PUT",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "sender",
+					"value": "2",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "receiver",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Accept Request",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436045006751,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "44954aa2-707a-c4f4-77c9-a48d638aae91"
+		},
+		{
+			"id": "02e1cc61-5878-0bca-6523-0a4836c3dc9e",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/publicRooms/1/subscriptions",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "userId",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Subscribe",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044392003,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "20d6bb8f-ba7a-b005-3373-bdd76a897118"
+		},
+		{
+			"id": "1c2ad5ff-b551-49ad-2838-ac555596f9dd",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/test",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "GET",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "score",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Get All",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044325093,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "20d6bb8f-ba7a-b005-3373-bdd76a897118"
+		},
+		{
+			"id": "257142c8-6c3d-4295-77cd-9a67a337561c",
+			"headers": "",
+			"url": "{{url}}/messages/1/favorite?userId=1",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "PUT",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [],
+			"dataMode": "params",
+			"name": "Favorite",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044718998,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "ea91afc4-5ec0-66db-2e2b-b4c6ddc7e73d"
+		},
+		{
+			"id": "401d98e1-4851-62dd-fcdb-a34c3838a4fd",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/requests?userId=1",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "GET",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [],
+			"dataMode": "params",
+			"name": "Get By Receiver",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044820712,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "44954aa2-707a-c4f4-77c9-a48d638aae91"
+		},
+		{
+			"id": "408c1f3c-e58a-65e3-18b0-d7a8a0fac2c0",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/publicRooms/1/messages?limit=25&offset=0",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "GET",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "name",
+					"value": "Room Name",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "latitude",
+					"value": "22",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "longitude",
+					"value": "33",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "radius",
+					"value": "10",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Get Messages",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044217486,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "20d6bb8f-ba7a-b005-3373-bdd76a897118"
+		},
+		{
+			"id": "4b2b4820-d26e-931b-d17e-a09ce4aae93b",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/publicRooms?lat=22&lon=33",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "GET",
+			"data": [
+				{
+					"key": "name",
+					"value": "Room Name",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "latitude",
+					"value": "22",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "longitude",
+					"value": "33",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "radius",
+					"value": "10",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1436045124628,
+			"name": "Get By Location",
+			"description": "",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"responses": []
+		},
+		{
+			"id": "54f17f3a-9e4a-62cc-6734-ab8673f8d3c0",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/privateRooms/1/messages?limit=25&offset=0",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "GET",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "message",
+					"value": "TEST MESSAGE",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "sender",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Get Messages",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044602738,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "81443d65-22f6-5a98-86ee-27301bbf30da"
+		},
+		{
+			"id": "68027c71-7b2b-d0b6-9416-dedfe68f68c2",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/requests?sender=1&receiver=2",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "sender",
+					"value": "2",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "receiver",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Send Request",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044895098,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "44954aa2-707a-c4f4-77c9-a48d638aae91"
+		},
+		{
+			"id": "770c9043-6f8a-d0fc-d2f7-69a05cca37db",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/privateRooms?userId=1",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "GET",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "message",
+					"value": "TEST MESSAGE",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "sender",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Get By UserId",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044542588,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "81443d65-22f6-5a98-86ee-27301bbf30da"
+		},
+		{
+			"id": "a50aceb5-7d2d-5034-d0c8-7c008170603d",
+			"headers": "",
+			"url": "{{url}}/devices/1?regId=newRegId",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "PUT",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [],
+			"dataMode": "params",
+			"name": "Update Reg Id",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044084268,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "ab3bc2f9-0c19-3e62-9d70-5749a2ae92c7"
+		},
+		{
+			"id": "ae33d839-ae6a-2908-016c-2fb22ae0b95f",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/requests/1?status=denied",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "PUT",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "sender",
+					"value": "2",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "receiver",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Deny Request",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436045023969,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "44954aa2-707a-c4f4-77c9-a48d638aae91"
+		},
+		{
+			"id": "c9a34b8a-68c5-f76e-8216-2d86575e4aea",
+			"headers": "",
+			"url": "{{url}}/messages/1/flag?userId=1",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "DELETE",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [],
+			"dataMode": "params",
+			"name": "Unflag",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044774347,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "ea91afc4-5ec0-66db-2e2b-b4c6ddc7e73d"
+		},
+		{
+			"id": "cb242853-3d8d-0bae-a9b3-e0203c6f8f5b",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/publicRooms",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "name",
+					"value": "Room Name",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "latitude",
+					"value": "22",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "longitude",
+					"value": "33",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "radius",
+					"value": "10",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1436045108368,
+			"name": "Create",
+			"description": "",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"responses": []
+		},
+		{
+			"id": "cd3a191d-f0ec-1450-dca8-c5c65bc85659",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/devices",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "userId",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "regId",
+					"value": "tisdoahfisaofjsdkjfkldsamfkldsmafkldsakfl",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "platform",
+					"value": "android",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Create",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044005512,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "ab3bc2f9-0c19-3e62-9d70-5749a2ae92c7"
+		},
+		{
+			"id": "d4eff062-50b0-0dc2-0b8f-153b4488a847",
+			"headers": "",
+			"url": "{{url}}/messages/1/favorite?userId=1",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "DELETE",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [],
+			"dataMode": "params",
+			"name": "Unfavorite",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044738622,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "ea91afc4-5ec0-66db-2e2b-b4c6ddc7e73d"
+		},
+		{
+			"id": "d7d261a5-4e46-e0f1-a316-55565bd2f7b6",
+			"headers": "",
+			"url": "{{url}}/messages/1/flag?userId=1",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "PUT",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [],
+			"dataMode": "params",
+			"name": "Flag",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044760849,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "ea91afc4-5ec0-66db-2e2b-b4c6ddc7e73d"
+		},
+		{
+			"id": "e275550d-57e3-ecf0-874d-72451cdf8142",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/requests/status?senderId=1&receiverId=2",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "GET",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "sender",
+					"value": "2",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "receiver",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Status",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044952862,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "44954aa2-707a-c4f4-77c9-a48d638aae91"
+		},
+		{
+			"id": "f8f8de9d-d9f4-9c16-516a-227d161c3185",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/users",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [
+				{
+					"key": "name",
+					"value": "First Last",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "facebookId",
+					"value": "1234567890",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "Create",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436043897123,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "aa52ac22-7177-7a7d-eeed-99886a2b8ab7"
+		},
+		{
+			"id": "fa10ed87-3ecd-4b6f-d4f9-adbed63b5f26",
+			"headers": "X-ATTENDWARE-KEY: abc\n",
+			"url": "{{url}}/publicRooms/1/subscriptions/1",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "DELETE",
+			"collectionId": "17f0f546-8ea9-c618-d58f-13f1b24f3d6e",
+			"data": [],
+			"dataMode": "params",
+			"name": "Unsubscribe",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1436044470182,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"folder": "20d6bb8f-ba7a-b005-3373-bdd76a897118"
+		}
+	]
+}

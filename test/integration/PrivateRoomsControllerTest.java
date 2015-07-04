@@ -1,6 +1,100 @@
 package integration;
 
-public class PrivateRoomsControllerTest extends AbstractTest {
+import controllers.MessagesController;
+import controllers.PrivateRoomsController;
+import factories.ObjectFactory;
+import models.entities.PrivateRoom;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import play.GlobalSettings;
+import play.mvc.Action;
+import play.mvc.Result;
+import play.test.WithApplication;
+import security.SecurityHelper;
+import services.PrivateRoomService;
+import utils.JsonArrayIterator;
+import utils.JsonValidator;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+import static play.mvc.Http.Status.OK;
+import static play.test.Helpers.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class PrivateRoomsControllerTest extends WithApplication {
+
+    private PrivateRoomsController controller;
+    private ObjectFactory<PrivateRoom> privateRoomFactory;
+
+    @Mock
+    private PrivateRoomService privateRoomService;
+
+    @Mock
+    private MessagesController messagesController;
+
+    @Mock
+    private SecurityHelper securityHelper;
+
+    @Before
+    public void setUp() throws Exception {
+        privateRoomFactory = new ObjectFactory<>(PrivateRoom.class);
+        controller = new PrivateRoomsController(privateRoomService, messagesController,
+                securityHelper);
+
+        final GlobalSettings global = new GlobalSettings() {
+
+            @Override
+            public <T> T getControllerInstance(Class<T> clazz) {
+                if (clazz.getSuperclass() == Action.class) {
+                    return null;
+                }
+
+                return (T) controller;
+            }
+
+        };
+
+        start(fakeApplication(global));
+    }
+
+    @Test
+    public void getRoomsByUserIdEmpty() throws JSONException {
+        List<PrivateRoom> rooms = new ArrayList<>();
+        when(privateRoomService.findByUserId(1l)).thenReturn(rooms);
+
+        Result result = route(fakeRequest(GET, "/privateRooms?userId=1"));
+        assertThat(status(result)).isEqualTo(OK);
+
+        JSONArray resultRooms = new JSONArray(contentAsString(result));
+        assertThat(resultRooms.length()).isZero();
+    }
+
+    @Test
+    public void getRoomsByUserId() throws Throwable {
+        List<PrivateRoom> rooms = privateRoomFactory.createList(3, false);
+
+        when(privateRoomService.findByUserId(1l)).thenReturn(rooms);
+
+        Result result = route(fakeRequest(GET, "/privateRooms?userId=1"));
+        assertThat(status(result)).isEqualTo(OK);
+
+        JSONArray resultRooms = new JSONArray(contentAsString(result));
+        assertThat(resultRooms.length()).isEqualTo(3);
+        new JsonArrayIterator(resultRooms).forEach(JsonValidator::validatePrivateRoom);
+    }
+
+}
+
+
+//public class PrivateRoomsControllerTest extends AbstractTest {
 
 //    private static final PrivateRoomsControllerAdapter adapter = PrivateRoomsControllerAdapter.INSTANCE;
 //    private static final UsersControllerAdapter userAdapter = UsersControllerAdapter.INSTANCE;
@@ -68,4 +162,4 @@ public class PrivateRoomsControllerTest extends AbstractTest {
 //        throw new AssertionError();
 //    }
 
-}
+//}

@@ -12,34 +12,17 @@ import play.libs.ws.WS;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Entity
 @Table(name = "users")
 public class User extends AbstractUser {
 
+    public User() { }
+
     @JsonIgnore
     @OneToMany(targetEntity = Device.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Device> devices = new ArrayList<>();
-
-    public static Optional<User> byFacebookId(String facebookId) {
-        String queryString = "select u from User u where u.facebookId = :facebookId";
-
-        TypedQuery<User> query = JPA.em().createQuery(queryString, User.class)
-                .setParameter("facebookId", facebookId);
-
-        List<User> users = query.getResultList();
-        if (users.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(users.get(0));
-        }
-    }
-
-    public static JsonNode getFacebookInformation(String fbAccessToken) {
-        return WS.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(5, TimeUnit.SECONDS).asJson();
-    }
 
     @Override
     public void sendNotification(AbstractNotification notification) {
@@ -69,14 +52,6 @@ public class User extends AbstractUser {
     @Override
     public User getActual() {
         return this;
-    }
-
-    public void sendChatRequest(AbstractUser receiver) {
-        User actualReceiver = receiver.getActual();
-        if (!PrivateRoom.getRoom(userId, actualReceiver.userId).isPresent()) {
-            JPA.em().persist(new Request(this, actualReceiver));
-            actualReceiver.sendNotification(new ChatRequestNotification(this));
-        }
     }
 
     @Override

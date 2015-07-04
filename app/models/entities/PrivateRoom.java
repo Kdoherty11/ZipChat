@@ -1,5 +1,6 @@
 package models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import notifications.AbstractNotification;
 import play.data.validation.Constraints;
@@ -24,9 +25,13 @@ public class PrivateRoom extends AbstractRoom {
     @Constraints.Required
     public User receiver;
 
+    @JsonIgnore
     public boolean senderInRoom = true;
+
+    @JsonIgnore
     public boolean receiverInRoom = true;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "requestId")
     public Request request;
@@ -41,42 +46,12 @@ public class PrivateRoom extends AbstractRoom {
         this.receiver = request.receiver;
     }
 
-    public static List<PrivateRoom> getRoomsByUserId(long userId) {
-        String queryString = "select p from PrivateRoom p where (p.sender.userId = :userId and p.senderInRoom = true) or (p.receiver.userId = :userId and p.receiverInRoom = true)";
-
-        TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
-                .setParameter("userId", userId);
-
-        return query.getResultList();
-    }
-
-    public boolean removeUser(long userId) {
-        if (userId == sender.userId) {
-            if (!receiverInRoom) {
-                JPA.em().remove(this);
-            } else {
-                senderInRoom = false;
-            }
-        } else if (userId == receiver.userId) {
-            if (!senderInRoom) {
-                JPA.em().remove(this);
-            } else {
-                receiverInRoom = false;
-            }
-        } else {
-            return false;
-        }
-
-        // Allow both users to request each other again
-        JPA.em().remove(request);
-        return true;
-    }
-
     public boolean isUserInRoom(long userId) {
         return (sender.userId == userId && senderInRoom) ||
                 (receiver.userId == userId && receiverInRoom);
     }
 
+    // TODO Remove
     public static Optional<PrivateRoom> getRoom(long senderId, long receiverId) {
 
         String queryString = "select p from PrivateRoom p where " +

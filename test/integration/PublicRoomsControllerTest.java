@@ -1,18 +1,124 @@
 package integration;
 
+import controllers.MessagesController;
+import controllers.PublicRoomsController;
+import factories.ObjectFactory;
+import models.entities.PublicRoom;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import play.GlobalSettings;
+import play.mvc.Action;
+import play.mvc.Result;
+import play.test.WithApplication;
+import security.SecurityHelper;
+import services.PublicRoomService;
+import services.UserService;
+import utils.JsonArrayIterator;
+import utils.JsonValidator;
 
-public class PublicRoomsControllerTest extends AbstractTest {
+import java.util.ArrayList;
+import java.util.List;
 
-    @Test
-    public void testGetGeoRooms() {
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Mockito.when;
+import static play.test.Helpers.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class PublicRoomsControllerTest extends WithApplication {
+
+    private PublicRoomsController controller;
+    private ObjectFactory<PublicRoom> publicRoomFactory;
+
+    @Mock
+    private PublicRoomService publicRoomService;
+
+    @Mock
+    private MessagesController messagesController;
+
+    @Mock
+    private SecurityHelper securityHelper;
+
+    @Mock
+    private UserService userService;
+
+    @Before
+    public void setUp() throws Exception {
+        publicRoomFactory = new ObjectFactory<>(PublicRoom.class);
+        controller = new PublicRoomsController(publicRoomService, messagesController,
+                securityHelper, userService);
+
+        final GlobalSettings global = new GlobalSettings() {
+
+            @Override
+            public <T> T getControllerInstance(Class<T> clazz) {
+                if (clazz.getSuperclass() == Action.class) {
+                    return null;
+                }
+
+                return (T) controller;
+            }
+
+        };
+
+        start(fakeApplication(global));
     }
 
-//    @Test
-//    public void createRoomSuccess() throws JSONException {
-//        Result createResult = adapter.createRoom();
-//        assertThat(status(createResult)).isEqualTo(CREATED);
-//
+    @Test
+    public void getGeoRoomsEmpty() throws JSONException {
+        List<PublicRoom> rooms = new ArrayList<>();
+        when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
+        final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
+        assertThat(status(result)).isEqualTo(OK);
+        JSONArray resultRooms = new JSONArray(contentAsString(result));
+        assertThat(resultRooms.length()).isZero();
+    }
+
+    @Test
+    public void getGeoRooms() throws Throwable {
+        List<PublicRoom> rooms = publicRoomFactory.createList(3, false);
+        when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
+        final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
+
+        assertThat(status(result)).isEqualTo(OK);
+        JSONArray resultRooms = new JSONArray(contentAsString(result));
+        assertThat(resultRooms.length()).isEqualTo(3);
+        new JsonArrayIterator(resultRooms).forEach(JsonValidator::validatePublicRoom);
+    }
+
+    @Test
+    public void testGeoRoomsNoLat() {
+        final Result result = route(fakeRequest(GET, "/publicRooms?lon=43.0"));
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void testGeoRoomsNoLon() {
+        final Result result = route(fakeRequest(GET, "/publicRooms?lat=43.0"));
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void testGeoRoomsNoParams() {
+        final Result result = route(fakeRequest(GET, "/publicRooms"));
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+    }
+
+
+
+
+    @Test
+    public void createRoomSuccess() throws JSONException {
+        // TODO
+        //Result createResult = route(fakeRequest(POST, "/publicRooms"));
+        //assertThat(status(createResult)).isEqualTo(CREATED);
+
+
 //        JSONObject createJson = new JSONObject(contentAsString(createResult));
 //        assertThat(createJson.getLong(RoomsControllerAdapter.ID_KEY)).isNotNull();
 //        assertThat(createJson.getString(RoomsControllerAdapter.NAME_KEY)).isEqualTo(RoomsControllerAdapter.NAME);
@@ -24,7 +130,7 @@ public class PublicRoomsControllerTest extends AbstractTest {
 //
 //        JSONObject showJson = new JSONObject(contentAsString(showResult));
 //        assertThat(showJson.getLong(RoomsControllerAdapter.ID_KEY)).isNotNull();
-//    }
+    }
 //
 //    @Test
 //    public void createRoomNoName() {
