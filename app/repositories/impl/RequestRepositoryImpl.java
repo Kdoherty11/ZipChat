@@ -4,7 +4,6 @@ import models.entities.PrivateRoom;
 import models.entities.Request;
 import play.db.jpa.JPA;
 import repositories.RequestRepository;
-import utils.DbUtils;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -13,11 +12,10 @@ import java.util.Optional;
 /**
  * Created by kdoherty on 6/30/15.
  */
-public class RequestRepositoryImpl implements RequestRepository {
+public class RequestRepositoryImpl extends GenericRepositoryImpl<Request> implements RequestRepository {
 
-    @Override
-    public Optional<Request> findById(long requestId) {
-        return DbUtils.findEntityById(Request.class, requestId);
+    public RequestRepositoryImpl() {
+        super(Request.class);
     }
 
     @Override
@@ -62,10 +60,5 @@ public class RequestRepositoryImpl implements RequestRepository {
         } else {
             return Optional.of(requests.get(0));
         }
-    }
-
-    @Override
-    public void save(Request request) {
-        JPA.em().persist(request);
     }
 }

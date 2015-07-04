@@ -3,7 +3,6 @@ package repositories.impl;
 import models.entities.PrivateRoom;
 import play.db.jpa.JPA;
 import repositories.PrivateRoomRepository;
-import utils.DbUtils;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -12,10 +11,10 @@ import java.util.Optional;
 /**
  * Created by kdoherty on 6/30/15.
  */
-public class PrivateRoomRepositoryImpl implements PrivateRoomRepository {
-    @Override
-    public Optional<PrivateRoom> findById(long roomId) {
-        return DbUtils.findEntityById(PrivateRoom.class, roomId);
+public class PrivateRoomRepositoryImpl extends GenericRepositoryImpl<PrivateRoom> implements PrivateRoomRepository {
+
+    public PrivateRoomRepositoryImpl() {
+        super(PrivateRoom.class);
     }
 
     @Override

@@ -50,7 +50,7 @@ public class UsersController extends BaseController {
             return badRequest(validator.errorsAsJson());
         }
 
-        JsonNode facebookUserJson = User.getFacebookInformation(fbAccessToken);
+        JsonNode facebookUserJson = userService.getFacebookInformation(fbAccessToken);
         if (facebookUserJson.has("error")) {
             Logger.error("Invalid facebook access token received in user creation: "
                     + facebookUserJson.get("error").get("message").asText());
@@ -73,7 +73,7 @@ public class UsersController extends BaseController {
 
             JPA.em().merge(user);
         } else {
-            JPA.em().persist(user);
+            userService.save(user);
         }
 
         ObjectNode response = Json.newObject();
@@ -91,7 +91,7 @@ public class UsersController extends BaseController {
 
     @Transactional(readOnly = true)
     public Result auth(String fbAccessToken) {
-        JsonNode facebookUserJson = User.getFacebookInformation(fbAccessToken);
+        JsonNode facebookUserJson = userService.getFacebookInformation(fbAccessToken);
         if (facebookUserJson.has("error")) {
             Logger.error("Invalid facebook access token received in auth: "
                     + facebookUserJson.get("error").get("message").asText());

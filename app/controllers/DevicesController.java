@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import models.Platform;
 import models.entities.Device;
 import models.entities.User;
-import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Result;
@@ -71,7 +70,7 @@ public class DevicesController extends BaseController {
 
         if (userOptional.isPresent()) {
             Device device = new Device(userOptional.get(), regId, Platform.valueOf(platform));
-            JPA.em().persist(device);
+            deviceService.save(device);
             ObjectNode jsonResponse = Json.newObject().put("deviceId", device.deviceId);
             return created(jsonResponse);
         } else {

@@ -56,18 +56,6 @@ public class Request {
         this.receiver = Preconditions.checkNotNull(receiver);
     }
 
-    public void handleResponse(Status status) {
-        this.status = status;
-        this.respondedTimeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-
-        sender.sendNotification(new ChatResponseNotification(this, status));
-
-        if (status == Status.accepted) {
-            PrivateRoom room = new PrivateRoom(this);
-            JPA.em().persist(room);
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,47 +1,20 @@
 package services;
 
-import com.google.inject.Inject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.inject.ImplementedBy;
 import models.entities.AbstractUser;
-import models.entities.Request;
 import models.entities.User;
-import notifications.ChatRequestNotification;
-import repositories.PrivateRoomRepository;
-import repositories.RequestRepository;
+import notifications.AbstractNotification;
 import repositories.UserRepository;
-
-import java.util.Optional;
+import services.impl.UserServiceImpl;
 
 /**
  * Created by kdoherty on 7/1/15.
  */
-public class UserService implements UserRepository {
+@ImplementedBy(UserServiceImpl.class)
+public interface UserService extends UserRepository {
 
-    private final UserRepository userRepository;
-    private final RequestRepository requestRepository;
-    private final PrivateRoomRepository privateRoomRepository;
-
-    @Inject
-    public UserService(final UserRepository userRepository, final RequestRepository requestRepository, final PrivateRoomRepository privateRoomRepository) {
-        this.userRepository = userRepository;
-        this.requestRepository =requestRepository;
-        this.privateRoomRepository = privateRoomRepository;
-    }
-
-    public void sendChatRequest(User sender, AbstractUser receiver) {
-        User actualReceiver = receiver.getActual();
-        if (!privateRoomRepository.findBySenderAndReceiver(sender.userId, actualReceiver.userId).isPresent()) {
-            requestRepository.save(new Request(sender, actualReceiver));
-            actualReceiver.sendNotification(new ChatRequestNotification(sender));
-        }
-    }
-
-    @Override
-    public Optional<User> findById(long userId) {
-        return userRepository.findById(userId);
-    }
-
-    @Override
-    public Optional<User> findByFacebookId(String facebookId) {
-        return userRepository.findByFacebookId(facebookId);
-    }
+    void sendChatRequest(User sender, AbstractUser receiver);
+    void sendNotification(User receiver, AbstractNotification notification);
+    JsonNode getFacebookInformation(String fbAccessToken);
 }

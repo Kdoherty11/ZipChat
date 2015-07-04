@@ -1,22 +1,21 @@
 package repositories.impl;
 
 import models.entities.PublicRoom;
+import models.entities.User;
 import play.db.jpa.JPA;
 import repositories.PublicRoomRepository;
-import utils.DbUtils;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by kdoherty on 6/29/15.
  */
-public class PublicRoomRepositoryImpl implements PublicRoomRepository {
+public class PublicRoomRepositoryImpl extends GenericRepositoryImpl<PublicRoom> implements PublicRoomRepository {
 
-    @Override
-    public Optional<PublicRoom> findById(long roomId) {
-        return DbUtils.findEntityById(PublicRoom.class, roomId);
+    public PublicRoomRepositoryImpl() {
+        super(PublicRoom.class);
     }
 
     @Override
@@ -39,5 +38,10 @@ public class PublicRoomRepositoryImpl implements PublicRoomRepository {
                 .setParameter("R", earthRadius);
 
         return query.getResultList();
+    }
+
+    @Override
+    public Set<User> getSubscribers(PublicRoom room) {
+        return room.subscribers;
     }
 }

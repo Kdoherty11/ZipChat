@@ -1,25 +1,13 @@
 package services;
 
-import com.google.inject.Inject;
-import models.entities.Device;
+import com.google.inject.ImplementedBy;
 import repositories.DeviceRepository;
-
-import java.util.Optional;
+import services.impl.DeviceServiceImpl;
 
 /**
  * Created by kdoherty on 7/1/15.
  */
-public class DeviceService implements DeviceRepository {
+@ImplementedBy(DeviceServiceImpl.class)
+public interface DeviceService extends DeviceRepository {
 
-    private DeviceRepository deviceRepository;
-
-    @Inject
-    public DeviceService(DeviceRepository deviceRepository) {
-        this.deviceRepository = deviceRepository;
-    }
-
-    @Override
-    public Optional<Device> findById(long deviceId) {
-        return deviceRepository.findById(deviceId);
-    }
 }

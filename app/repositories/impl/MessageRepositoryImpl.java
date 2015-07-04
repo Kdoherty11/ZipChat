@@ -3,21 +3,18 @@ package repositories.impl;
 import models.entities.Message;
 import play.db.jpa.JPA;
 import repositories.MessageRepository;
-import utils.DbUtils;
 
 import javax.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by kdoherty on 6/30/15.
  */
-public class MessageRepositoryImpl implements MessageRepository {
+public class MessageRepositoryImpl extends GenericRepositoryImpl<Message> implements MessageRepository {
 
-    @Override
-    public Optional<Message> findById(long messageId) {
-        return DbUtils.findEntityById(Message.class, messageId);
+    public MessageRepositoryImpl() {
+        super(Message.class);
     }
 
     public List<Message> getMessages(long roomId, int limit, int offset) {

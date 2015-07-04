@@ -8,7 +8,6 @@ import models.entities.*;
 import play.Logger;
 import play.data.validation.Constraints;
 import play.db.jpa.JPA;
-import utils.DbUtils;
 import utils.TestUtils;
 
 import javax.persistence.Id;
@@ -318,7 +317,7 @@ public class ObjectFactory<T> {
     }
 
     private void removeEntity(T entity) {
-        Optional<T> entityOptional = DbUtils.findEntityById(entityClass, getId(entity));
+        Optional<T> entityOptional = Optional.ofNullable(JPA.em().find(entityClass, getId(entity)));
         if (entityOptional.isPresent()) {
             JPA.em().remove(entityOptional.get());
         }

@@ -4,16 +4,10 @@ import play.Logger;
 import play.db.jpa.JPA;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
 
 public class DbUtils {
 
     private DbUtils() { }
-
-    public static <T> Optional<T> findEntityById(Class<T> clazz, long id) {
-        T entity = JPA.em().find(clazz, id);
-        return Optional.ofNullable(entity);
-    }
 
     public static <T> T findExistingEntityById(Class<T> clazz, long id) {
         T entity = JPA.em().find(clazz, id);

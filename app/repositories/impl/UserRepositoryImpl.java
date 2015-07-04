@@ -1,9 +1,9 @@
 package repositories.impl;
 
+import models.entities.Device;
 import models.entities.User;
 import play.db.jpa.JPA;
 import repositories.UserRepository;
-import utils.DbUtils;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -12,11 +12,10 @@ import java.util.Optional;
 /**
  * Created by kdoherty on 6/30/15.
  */
-public class UserRepositoryImpl implements UserRepository {
+public class UserRepositoryImpl extends GenericRepositoryImpl<User> implements UserRepository {
 
-    @Override
-    public Optional<User> findById(long userId) {
-        return DbUtils.findEntityById(User.class, userId);
+    public UserRepositoryImpl() {
+        super(User.class);
     }
 
     @Override
@@ -32,5 +31,10 @@ public class UserRepositoryImpl implements UserRepository {
         } else {
             return Optional.of(users.get(0));
         }
+    }
+
+    @Override
+    public List<Device> getDevices(User user) {
+        return user.devices;
     }
 }

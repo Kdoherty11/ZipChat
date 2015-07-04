@@ -1,31 +1,17 @@
 package services;
 
-import com.google.inject.Inject;
+import com.google.inject.ImplementedBy;
 import models.entities.Message;
+import models.entities.User;
 import repositories.MessageRepository;
-
-import java.util.List;
-import java.util.Optional;
+import services.impl.MessageServiceImpl;
 
 /**
  * Created by kdoherty on 7/1/15.
  */
-public class MessageService implements MessageRepository {
+@ImplementedBy(MessageServiceImpl.class)
+public interface MessageService extends MessageRepository {
 
-    private MessageRepository messageRepository;
 
-    @Inject
-    public MessageService(final MessageRepository messageRepository) {
-        this.messageRepository = messageRepository;
-    }
-
-    @Override
-    public Optional<Message> findById(long messageId) {
-        return messageRepository.findById(messageId);
-    }
-
-    @Override
-    public List<Message> getMessages(long roomId, int limit, int offset) {
-        return messageRepository.getMessages(roomId, limit, offset);
-    }
+    boolean favorite(Message message, User user);
 }

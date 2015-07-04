@@ -11,7 +11,7 @@ import java.util.Optional;
  * Created by kdoherty on 6/30/15.
  */
 @ImplementedBy(MessageRepositoryImpl.class)
-public interface MessageRepository {
-    public Optional<Message> findById(long messageId);
-    public List<Message> getMessages(long roomId, int limit, int offset);
+public interface MessageRepository extends GenericRepository<Message> {
+    Optional<Message> findById(long messageId);
+    List<Message> getMessages(long roomId, int limit, int offset);
 }

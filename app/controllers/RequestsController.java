@@ -104,7 +104,7 @@ public class RequestsController extends BaseController {
                 return forbidden();
             }
 
-            request.handleResponse(Request.Status.valueOf(formData.get(responseKey)));
+            requestService.handleResponse(request, Request.Status.valueOf(formData.get(responseKey)));
 
             return OK_RESULT;
         } else {

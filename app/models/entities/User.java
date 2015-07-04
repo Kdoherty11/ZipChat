@@ -24,10 +24,6 @@ public class User extends AbstractUser {
     @OneToMany(targetEntity = Device.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Device> devices = new ArrayList<>();
 
-    public static JsonNode getFacebookInformation(String fbAccessToken) {
-        return WS.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(5, TimeUnit.SECONDS).asJson();
-    }
-
     @Override
     public void sendNotification(AbstractNotification notification) {
         if (devices.isEmpty()) {
@@ -56,15 +52,6 @@ public class User extends AbstractUser {
     @Override
     public User getActual() {
         return this;
-    }
-
-    public void sendChatRequest(AbstractUser receiver) {
-        User actualReceiver = receiver.getActual();
-        if (!PrivateRoom.getRoom(userId, actualReceiver.userId).isPresent()) {
-            JPA.em().persist(new Request(this, actualReceiver));
-
-            actualReceiver.sendNotification(new ChatRequestNotification(this));
-        }
     }
 
     @Override
