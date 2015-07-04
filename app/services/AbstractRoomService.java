@@ -1,10 +1,10 @@
 package services;
 
-import repositories.AbstractRoomRepository;
+import daos.AbstractRoomDao;
 
 /**
  * Created by kdoherty on 7/4/15.
  */
 
-public interface AbstractRoomService extends AbstractRoomRepository {
+public interface AbstractRoomService extends AbstractRoomDao {
 }

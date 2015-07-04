@@ -1,34 +1,34 @@
 package services.impl;
 
 import com.google.common.base.Preconditions;
-import repositories.GenericRepository;
+import daos.GenericDao;
 
 import java.util.Optional;
 
 /**
  * Created by kdoherty on 7/3/15.
  */
-public class GenericServiceImpl<T> implements GenericRepository<T> {
+public class GenericServiceImpl<T> implements GenericDao<T> {
 
-    private GenericRepository<T> repository;
+    private GenericDao<T> tDao;
 
-    public GenericServiceImpl(GenericRepository<T> repository) {
-        this.repository = Preconditions.checkNotNull(repository);
+    public GenericServiceImpl(GenericDao<T> tDao) {
+        this.tDao = Preconditions.checkNotNull(tDao);
     }
 
     @Override
     public void save(Object entity) {
-        repository.save(entity);
+        tDao.save(entity);
     }
 
     @Override
     public Optional<T> findById(long id) {
-        return repository.findById(id);
+        return tDao.findById(id);
     }
 
     @Override
     public void remove(Object entity) {
-        repository.remove(entity);
+        tDao.remove(entity);
     }
 
 

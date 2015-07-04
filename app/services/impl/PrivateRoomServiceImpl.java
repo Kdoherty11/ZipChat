@@ -2,8 +2,8 @@ package services.impl;
 
 import com.google.inject.Inject;
 import models.entities.PrivateRoom;
-import repositories.PrivateRoomRepository;
-import repositories.RequestRepository;
+import daos.PrivateRoomDao;
+import daos.RequestDao;
 import services.PrivateRoomService;
 
 import java.util.List;
@@ -14,12 +14,12 @@ import java.util.Optional;
  */
 public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> implements PrivateRoomService {
 
-    private final PrivateRoomRepository privateRoomRepository;
-    private final RequestRepository requestRepository;
+    private final PrivateRoomDao privateRoomRepository;
+    private final RequestDao requestRepository;
 
     @Inject
-    public PrivateRoomServiceImpl(final PrivateRoomRepository privateRoomRepository,
-                                  final RequestRepository requestRepository) {
+    public PrivateRoomServiceImpl(final PrivateRoomDao privateRoomRepository,
+                                  final RequestDao requestRepository) {
         super(privateRoomRepository);
         this.privateRoomRepository = privateRoomRepository;
         this.requestRepository = requestRepository;

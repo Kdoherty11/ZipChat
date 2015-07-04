@@ -5,7 +5,7 @@ import models.entities.Message;
 import models.entities.User;
 import notifications.MessageFavoritedNotification;
 import play.Logger;
-import repositories.MessageRepository;
+import daos.MessageDao;
 import services.MessageService;
 
 import java.util.List;
@@ -14,10 +14,10 @@ import java.util.List;
  * Created by kdoherty on 7/3/15.
  */
 public class MessageServiceImpl extends GenericServiceImpl<Message> implements MessageService {
-    private MessageRepository messageRepository;
+    private MessageDao messageRepository;
 
     @Inject
-    public MessageServiceImpl(final MessageRepository messageRepository) {
+    public MessageServiceImpl(final MessageDao messageRepository) {
         super(messageRepository);
         this.messageRepository = messageRepository;
     }
@@ -40,5 +40,36 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
             actual.sendNotification(new MessageFavoritedNotification(message, user));
         }
         return true;
+    }
+
+    @Override
+    public boolean removeFavorite(Message message, User user) {
+        boolean didRemoveFavorite = message.favorites.remove(user);
+        if (didRemoveFavorite) {
+            message.score--;
+        } else {
+            Logger.warn(user + " attempted to remove favorite from " + this + " but has not favorited it");
+        }
+        return didRemoveFavorite;
+    }
+
+    @Override
+    public boolean flag(Message message, User user) {
+        if (message.flags.contains(user)) {
+            Logger.error(user + " is attempting to flag " + this + " but has already flagged it");
+            return false;
+        }
+
+        message.flags.add(user);
+        return true;
+    }
+
+    @Override
+    public boolean removeFlag(Message message, User user) {
+        boolean didRemoveFlag = message.flags.remove(user);
+        if (!didRemoveFlag) {
+            Logger.warn(user + " attempted to remove a flag from " + this + " but has not flagged it");
+        }
+        return didRemoveFlag;
     }
 }

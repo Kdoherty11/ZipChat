@@ -1,8 +1,8 @@
-package repositories.impl;
+package daos.impl;
 
 import models.entities.PrivateRoom;
 import play.db.jpa.JPA;
-import repositories.PrivateRoomRepository;
+import daos.PrivateRoomDao;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -11,9 +11,9 @@ import java.util.Optional;
 /**
  * Created by kdoherty on 6/30/15.
  */
-public class PrivateRoomRepositoryImpl extends GenericRepositoryImpl<PrivateRoom> implements PrivateRoomRepository {
+public class PrivateRoomDaoImpl extends GenericDaoImpl<PrivateRoom> implements PrivateRoomDao {
 
-    public PrivateRoomRepositoryImpl() {
+    public PrivateRoomDaoImpl() {
         super(PrivateRoom.class);
     }
 

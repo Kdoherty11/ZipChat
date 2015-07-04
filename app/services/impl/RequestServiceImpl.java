@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import models.entities.PrivateRoom;
 import models.entities.Request;
 import notifications.ChatResponseNotification;
-import repositories.PrivateRoomRepository;
-import repositories.RequestRepository;
+import daos.PrivateRoomDao;
+import daos.RequestDao;
 import services.RequestService;
 
 import java.time.LocalDateTime;
@@ -18,11 +18,11 @@ import java.util.Optional;
  */
 public class RequestServiceImpl extends GenericServiceImpl<Request> implements RequestService {
 
-    private final RequestRepository requestRepository;
-    private final PrivateRoomRepository privateRoomRepository;
+    private final RequestDao requestRepository;
+    private final PrivateRoomDao privateRoomRepository;
 
     @Inject
-    public RequestServiceImpl(final RequestRepository requestRepository, final PrivateRoomRepository privateRoomRepository) {
+    public RequestServiceImpl(final RequestDao requestRepository, final PrivateRoomDao privateRoomRepository) {
         super(requestRepository);
         this.requestRepository = requestRepository;
         this.privateRoomRepository = privateRoomRepository;

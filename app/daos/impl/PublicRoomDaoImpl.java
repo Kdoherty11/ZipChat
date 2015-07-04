@@ -1,9 +1,9 @@
-package repositories.impl;
+package daos.impl;
 
 import models.entities.PublicRoom;
 import models.entities.User;
 import play.db.jpa.JPA;
-import repositories.PublicRoomRepository;
+import daos.PublicRoomDao;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.Set;
 /**
  * Created by kdoherty on 6/29/15.
  */
-public class PublicRoomRepositoryImpl extends GenericRepositoryImpl<PublicRoom> implements PublicRoomRepository {
+public class PublicRoomDaoImpl extends GenericDaoImpl<PublicRoom> implements PublicRoomDao {
 
-    public PublicRoomRepositoryImpl() {
+    public PublicRoomDaoImpl() {
         super(PublicRoom.class);
     }
 

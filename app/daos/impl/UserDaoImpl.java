@@ -1,9 +1,9 @@
-package repositories.impl;
+package daos.impl;
 
 import models.entities.Device;
 import models.entities.User;
 import play.db.jpa.JPA;
-import repositories.UserRepository;
+import daos.UserDao;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.Optional;
 /**
  * Created by kdoherty on 6/30/15.
  */
-public class UserRepositoryImpl extends GenericRepositoryImpl<User> implements UserRepository {
+public class UserDaoImpl extends GenericDaoImpl<User> implements UserDao {
 
-    public UserRepositoryImpl() {
+    public UserDaoImpl() {
         super(User.class);
     }
 

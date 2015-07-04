@@ -50,7 +50,7 @@ public class MessagesController extends BaseController {
         return messageActionHelper(messageId, userId, new UserMessageAction() {
             @Override
             public boolean messageAction(Message message, User user) {
-                return message.favorite(user);
+                return messageService.favorite(message, user);
             }
 
             @Override
@@ -65,7 +65,7 @@ public class MessagesController extends BaseController {
         return messageActionHelper(messageId, userId, new UserMessageAction() {
             @Override
             public boolean messageAction(Message message, User user) {
-                return message.removeFavorite(user);
+                return messageService.removeFavorite(message, user);
             }
 
             @Override
@@ -80,7 +80,7 @@ public class MessagesController extends BaseController {
         return messageActionHelper(messageId, userId, new UserMessageAction() {
             @Override
             public boolean messageAction(Message message, User user) {
-                return message.flag(user);
+                return messageService.flag(message, user);
             }
 
             @Override
@@ -95,7 +95,7 @@ public class MessagesController extends BaseController {
         return messageActionHelper(messageId, userId, new UserMessageAction() {
             @Override
             public boolean messageAction(Message message, User user) {
-                return message.removeFlag(user);
+                return messageService.removeFlag(message, user);
             }
 
             @Override
@@ -119,7 +119,7 @@ public class MessagesController extends BaseController {
                 User user = userOptional.get();
                 boolean success = cb.messageAction(message, user);
                 if (!success) {
-                    return badRequestJson(cb.onActionFailed(user));
+                    return notFound(cb.onActionFailed(user));
                 }
                 return OK_RESULT;
             } else {

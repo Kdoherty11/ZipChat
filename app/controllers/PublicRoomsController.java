@@ -3,6 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Longs;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import models.entities.PublicRoom;
 import models.entities.User;
 import models.sockets.RoomSocket;
@@ -25,6 +26,7 @@ import java.util.Optional;
 
 import static play.data.Form.form;
 
+@Singleton
 @Security.Authenticated(Secured.class)
 public class PublicRoomsController extends BaseController {
 
@@ -103,7 +105,13 @@ public class PublicRoomsController extends BaseController {
 
         Optional<PublicRoom> roomOptional = publicRoomService.findById(roomId);
         if (roomOptional.isPresent()) {
-            roomOptional.get().removeSubscription(userId);
+            boolean removed = roomOptional.get().removeSubscription(userId);
+
+            if (!removed) {
+                return notFound("Could not unsubscribe user " + userId + " from room " + roomId + " because" +
+                        " they were not subscribed");
+            }
+
             return OK_RESULT;
         } else {
             return entityNotFound(PublicRoom.class, roomId);

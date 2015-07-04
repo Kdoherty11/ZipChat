@@ -1,8 +1,8 @@
-package repositories;
+package daos;
 
 import com.google.inject.ImplementedBy;
 import models.entities.Message;
-import repositories.impl.MessageRepositoryImpl;
+import daos.impl.MessageDaoImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,8 +10,8 @@ import java.util.Optional;
 /**
  * Created by kdoherty on 6/30/15.
  */
-@ImplementedBy(MessageRepositoryImpl.class)
-public interface MessageRepository extends GenericRepository<Message> {
+@ImplementedBy(MessageDaoImpl.class)
+public interface MessageDao extends GenericDao<Message> {
     Optional<Message> findById(long messageId);
     List<Message> getMessages(long roomId, int limit, int offset);
 }

@@ -1,9 +1,9 @@
-package repositories.impl;
+package daos.impl;
 
 import models.entities.PrivateRoom;
 import models.entities.Request;
 import play.db.jpa.JPA;
-import repositories.RequestRepository;
+import daos.RequestDao;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.Optional;
 /**
  * Created by kdoherty on 6/30/15.
  */
-public class RequestRepositoryImpl extends GenericRepositoryImpl<Request> implements RequestRepository {
+public class RequestDaoImpl extends GenericDaoImpl<Request> implements RequestDao {
 
-    public RequestRepositoryImpl() {
+    public RequestDaoImpl() {
         super(Request.class);
     }
 

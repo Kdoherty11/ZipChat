@@ -1,18 +1,18 @@
-package repositories.impl;
+package daos.impl;
 
 import play.db.jpa.JPA;
-import repositories.GenericRepository;
+import daos.GenericDao;
 
 import java.util.Optional;
 
 /**
  * Created by kdoherty on 7/3/15.
  */
-public class GenericRepositoryImpl<T> implements GenericRepository<T> {
+public class GenericDaoImpl<T> implements GenericDao<T> {
 
     private Class<T> entityClazz;
 
-    public GenericRepositoryImpl(final Class<T> entityClazz) {
+    public GenericDaoImpl(final Class<T> entityClazz) {
         this.entityClazz = entityClazz;
     }
 

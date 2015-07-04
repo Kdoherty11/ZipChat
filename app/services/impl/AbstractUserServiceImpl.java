@@ -2,7 +2,7 @@ package services.impl;
 
 import com.google.inject.Inject;
 import models.entities.AbstractUser;
-import repositories.AbstractUserRepository;
+import daos.AbstractUserDao;
 import services.AbstractUserService;
 
 /**
@@ -11,7 +11,7 @@ import services.AbstractUserService;
 public class AbstractUserServiceImpl extends GenericServiceImpl<AbstractUser> implements AbstractUserService {
 
     @Inject
-    public AbstractUserServiceImpl(AbstractUserRepository abstractUserRepository) {
-        super(abstractUserRepository);
+    public AbstractUserServiceImpl(AbstractUserDao abstractUserDao) {
+        super(abstractUserDao);
     }
 }

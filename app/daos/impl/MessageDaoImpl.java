@@ -1,8 +1,8 @@
-package repositories.impl;
+package daos.impl;
 
 import models.entities.Message;
 import play.db.jpa.JPA;
-import repositories.MessageRepository;
+import daos.MessageDao;
 
 import javax.persistence.TypedQuery;
 import java.util.Collections;
@@ -11,9 +11,9 @@ import java.util.List;
 /**
  * Created by kdoherty on 6/30/15.
  */
-public class MessageRepositoryImpl extends GenericRepositoryImpl<Message> implements MessageRepository {
+public class MessageDaoImpl extends GenericDaoImpl<Message> implements MessageDao {
 
-    public MessageRepositoryImpl() {
+    public MessageDaoImpl() {
         super(Message.class);
     }
 

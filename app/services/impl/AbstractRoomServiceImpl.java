@@ -1,7 +1,7 @@
 package services.impl;
 
 import models.entities.AbstractRoom;
-import repositories.AbstractRoomRepository;
+import daos.AbstractRoomDao;
 import services.AbstractRoomService;
 
 /**
@@ -9,7 +9,7 @@ import services.AbstractRoomService;
  */
 public class AbstractRoomServiceImpl extends GenericServiceImpl<AbstractRoom> implements AbstractRoomService {
 
-    public AbstractRoomServiceImpl(AbstractRoomRepository abstractRoomRepository) {
-        super(abstractRoomRepository);
+    public AbstractRoomServiceImpl(AbstractRoomDao abstractRoomDao) {
+        super(abstractRoomDao);
     }
 }

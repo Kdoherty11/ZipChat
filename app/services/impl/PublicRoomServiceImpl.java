@@ -6,8 +6,8 @@ import models.entities.PublicRoom;
 import models.entities.User;
 import notifications.AbstractNotification;
 import play.Logger;
-import repositories.PublicRoomRepository;
-import repositories.UserRepository;
+import daos.PublicRoomDao;
+import daos.UserDao;
 import services.PublicRoomService;
 
 import java.util.ArrayList;
@@ -19,11 +19,11 @@ import java.util.Set;
  */
 public class PublicRoomServiceImpl extends GenericServiceImpl<PublicRoom> implements PublicRoomService {
 
-    private final PublicRoomRepository publicRoomRepository;
-    private final UserRepository userRepository;
+    private final PublicRoomDao publicRoomRepository;
+    private final UserDao userRepository;
 
     @Inject
-    public PublicRoomServiceImpl(final PublicRoomRepository publicRoomRepository, final UserRepository userRepository) {
+    public PublicRoomServiceImpl(final PublicRoomDao publicRoomRepository, final UserDao userRepository) {
         super(publicRoomRepository);
         this.publicRoomRepository = publicRoomRepository;
         this.userRepository = userRepository;

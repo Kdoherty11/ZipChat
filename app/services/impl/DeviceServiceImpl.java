@@ -2,7 +2,7 @@ package services.impl;
 
 import com.google.inject.Inject;
 import models.entities.Device;
-import repositories.DeviceRepository;
+import daos.DeviceDao;
 import services.DeviceService;
 
 /**
@@ -11,7 +11,7 @@ import services.DeviceService;
 public class DeviceServiceImpl extends GenericServiceImpl<Device> implements DeviceService {
 
     @Inject
-    public DeviceServiceImpl(DeviceRepository deviceRepository) {
-        super(deviceRepository);
+    public DeviceServiceImpl(DeviceDao deviceDao) {
+        super(deviceDao);
     }
 }

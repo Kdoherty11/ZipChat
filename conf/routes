@@ -23,7 +23,7 @@ PUT           /messages/:messageId/flag                         @controllers.Mes
 DELETE        /messages/:messageId/flag                         @controllers.MessagesController.removeFlag(messageId: Long, userId: Long)
 
 PUT           /users                                            @controllers.UsersController.createUser()
-POST          /users/test                                       @controllers.UsersController.testCreate()
+POST          /users                                            @controllers.UsersController.testCreate()
 GET           /auth                                             @controllers.UsersController.auth(fbAccessToken: String)
 
 POST          /devices                                          @controllers.DevicesController.createDevice()

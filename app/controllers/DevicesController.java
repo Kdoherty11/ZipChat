@@ -80,18 +80,18 @@ public class DevicesController extends BaseController {
 
     @Transactional
     public Result updateDeviceInfo(long deviceId, String regId) {
-        Optional<Device> infoOptional = deviceService.findById(deviceId);
+        Optional<Device> deviceOptional = deviceService.findById(deviceId);
 
-        if (infoOptional.isPresent()) {
-            Device info = infoOptional.get();
+        if (deviceOptional.isPresent()) {
+            Device device = deviceOptional.get();
 
-            long userId = info.user.userId;
+            long userId = device.user.userId;
             if (isUnauthorized(userId)) {
                 return forbidden();
             }
 
-            if (!info.regId.equals(regId)) {
-                info.regId = regId;
+            if (!device.regId.equals(regId)) {
+                device.regId = regId;
             }
             return OK_RESULT;
         } else {

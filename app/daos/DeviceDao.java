@@ -1,15 +1,15 @@
-package repositories;
+package daos;
 
 import com.google.inject.ImplementedBy;
 import models.entities.Device;
-import repositories.impl.DeviceRepositoryImpl;
+import daos.impl.DeviceDaoImpl;
 
 import java.util.Optional;
 
 /**
  * Created by kdoherty on 6/30/15.
  */
-@ImplementedBy(DeviceRepositoryImpl.class)
-public interface DeviceRepository extends GenericRepository<Device> {
+@ImplementedBy(DeviceDaoImpl.class)
+public interface DeviceDao extends GenericDao<Device> {
     public Optional<Device> findById(long deviceId);
 }

@@ -48,12 +48,14 @@ public class PublicRoom extends AbstractRoom {
         subscribers.add(user);
     }
 
-    public void removeSubscription(long userId) {
+    public boolean removeSubscription(long userId) {
         Optional<User> userOptional = subscribers.stream().filter(user -> user.userId == userId).findFirst();
         if (userOptional.isPresent()) {
             subscribers.remove(userOptional.get());
+            return true;
         } else {
             Logger.warn("Could not find a subscription with userId " + userId + " in " + roomId);
+            return false;
         }
     }
 

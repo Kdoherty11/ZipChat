@@ -11,9 +11,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import repositories.PrivateRoomRepository;
-import repositories.RequestRepository;
-import repositories.UserRepository;
+import daos.PrivateRoomDao;
+import daos.RequestDao;
+import daos.UserDao;
 import services.UserService;
 
 import java.util.Optional;
@@ -30,13 +30,13 @@ public class UserServiceTest {
     private UserService userService;
 
     @Mock
-    private UserRepository userRepository;
+    private UserDao userRepository;
 
     @Mock
-    private RequestRepository requestRepository;
+    private RequestDao requestRepository;
 
     @Mock
-    private PrivateRoomRepository privateRoomRepository;
+    private PrivateRoomDao privateRoomRepository;
 
     @Before
     public void setUp() {

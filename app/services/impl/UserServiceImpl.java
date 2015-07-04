@@ -10,9 +10,9 @@ import models.entities.User;
 import notifications.AbstractNotification;
 import notifications.ChatRequestNotification;
 import play.libs.ws.WS;
-import repositories.PrivateRoomRepository;
-import repositories.RequestRepository;
-import repositories.UserRepository;
+import daos.PrivateRoomDao;
+import daos.RequestDao;
+import daos.UserDao;
 import services.UserService;
 
 import java.util.ArrayList;
@@ -25,12 +25,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class UserServiceImpl extends GenericServiceImpl<User> implements UserService {
 
-    private final UserRepository userRepository;
-    private final RequestRepository requestRepository;
-    private final PrivateRoomRepository privateRoomRepository;
+    private final UserDao userRepository;
+    private final RequestDao requestRepository;
+    private final PrivateRoomDao privateRoomRepository;
 
     @Inject
-    public UserServiceImpl(final UserRepository userRepository, final RequestRepository requestRepository, final PrivateRoomRepository privateRoomRepository) {
+    public UserServiceImpl(final UserDao userRepository, final RequestDao requestRepository, final PrivateRoomDao privateRoomRepository) {
         super(userRepository);
         this.userRepository = userRepository;
         this.requestRepository =requestRepository;
