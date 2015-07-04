@@ -7,6 +7,7 @@ import models.entities.User;
 import models.sockets.RoomSocket;
 import play.Logger;
 import play.Play;
+import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -76,7 +77,7 @@ public class PrivateRoomsController extends BaseController {
             return WebSocket.reject(forbidden());
         }
 
-        Optional<PrivateRoom> privateRoomOptional = privateRoomService.findById(roomId);
+        Optional<PrivateRoom> privateRoomOptional = JPA.withTransaction(() -> privateRoomService.findById(roomId));
         if (privateRoomOptional.isPresent()) {
             if (!privateRoomOptional.get().isUserInRoom(userId) && Play.isProd()) {
                 return WebSocket.reject(forbidden());
