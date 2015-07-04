@@ -14,38 +14,37 @@ import java.util.Optional;
  */
 public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> implements PrivateRoomService {
 
-    private final PrivateRoomDao privateRoomRepository;
-    private final RequestDao requestRepository;
+    private final PrivateRoomDao privateRoomDao;
+    private final RequestDao requestDao;
 
     @Inject
-    public PrivateRoomServiceImpl(final PrivateRoomDao privateRoomRepository,
-                                  final RequestDao requestRepository) {
-        super(privateRoomRepository);
-        this.privateRoomRepository = privateRoomRepository;
-        this.requestRepository = requestRepository;
+    public PrivateRoomServiceImpl(final PrivateRoomDao privateRoomDao, final RequestDao requestDao) {
+        super(privateRoomDao);
+        this.privateRoomDao = privateRoomDao;
+        this.requestDao = requestDao;
     }
 
     @Override
     public List<PrivateRoom> findByUserId(long userId) {
-        return privateRoomRepository.findByUserId(userId);
+        return privateRoomDao.findByUserId(userId);
     }
 
     @Override
     public Optional<PrivateRoom> findBySenderAndReceiver(long senderId, long receiverId) {
-        return privateRoomRepository.findBySenderAndReceiver(senderId, receiverId);
+        return privateRoomDao.findBySenderAndReceiver(senderId, receiverId);
     }
 
     @Override
     public boolean removeUser(PrivateRoom room, long userId) {
         if (userId == room.sender.userId) {
             if (!room.receiverInRoom) {
-                privateRoomRepository.remove(room);
+                privateRoomDao.remove(room);
             } else {
                 room.senderInRoom = false;
             }
         } else if (userId == room.receiver.userId) {
             if (!room.senderInRoom) {
-                privateRoomRepository.remove(room);
+                privateRoomDao.remove(room);
             } else {
                 room.receiverInRoom = false;
             }
@@ -55,7 +54,7 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
 
         if (room.request != null) {
             // Allow both users to request each other again
-            requestRepository.remove(room.request);
+            requestDao.remove(room.request);
             room.request = null;
         }
 

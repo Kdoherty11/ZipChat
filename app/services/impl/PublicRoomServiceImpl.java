@@ -19,24 +19,24 @@ import java.util.Set;
  */
 public class PublicRoomServiceImpl extends GenericServiceImpl<PublicRoom> implements PublicRoomService {
 
-    private final PublicRoomDao publicRoomRepository;
-    private final UserDao userRepository;
+    private final PublicRoomDao publicRoomDao;
+    private final UserDao userDao;
 
     @Inject
-    public PublicRoomServiceImpl(final PublicRoomDao publicRoomRepository, final UserDao userRepository) {
-        super(publicRoomRepository);
-        this.publicRoomRepository = publicRoomRepository;
-        this.userRepository = userRepository;
+    public PublicRoomServiceImpl(final PublicRoomDao publicRoomDao, final UserDao userDao) {
+        super(publicRoomDao);
+        this.publicRoomDao = publicRoomDao;
+        this.userDao = userDao;
     }
 
     @Override
     public List<PublicRoom> allInGeoRange(double lat, double lon) {
-        return publicRoomRepository.allInGeoRange(lat, lon);
+        return publicRoomDao.allInGeoRange(lat, lon);
     }
 
     @Override
     public Set<User> getSubscribers(PublicRoom room) {
-        return publicRoomRepository.getSubscribers(room);
+        return publicRoomDao.getSubscribers(room);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class PublicRoomServiceImpl extends GenericServiceImpl<PublicRoom> implem
             if (!userIdsInRoom.contains(user.userId)) {
                 Logger.debug("PublicRoom sendNotification to user " + user.userId + " with devices: " + user.devices);
 
-                userRepository.getDevices(user).forEach(device -> {
+                userDao.getDevices(user).forEach(device -> {
                     if (device.platform == Platform.android) {
                         Logger.debug("Added android regId: " + device.regId);
                         androidRegIds.add(device.regId);
@@ -68,5 +68,30 @@ public class PublicRoomServiceImpl extends GenericServiceImpl<PublicRoom> implem
         Logger.debug("Sending to androidRegIds: " + androidRegIds + " and iosRegIds: " + iosRegIds);
 
         notification.send(androidRegIds, iosRegIds);
+    }
+
+    @Override
+    public boolean subscribe(PublicRoom room, User user) {
+        boolean subscribed = room.subscribers.add(user);
+        if (!subscribed) {
+            Logger.error(user + " is attempting to re-subscribe to " + this);
+        }
+
+        return subscribed;
+    }
+
+    @Override
+    public boolean unsubscribe(PublicRoom room, User user) {
+        boolean removed = room.subscribers.remove(user);
+        if (!removed) {
+            Logger.error(user + " is trying to unsubscribe from " + this + " but is not subscribed");
+        }
+
+        return removed;
+    }
+
+    @Override
+    public boolean isSubscribed(PublicRoom room, long userId) {
+        return room.subscribers.stream().anyMatch(user -> user.userId == userId);
     }
 }

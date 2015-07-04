@@ -18,29 +18,29 @@ import java.util.Optional;
  */
 public class RequestServiceImpl extends GenericServiceImpl<Request> implements RequestService {
 
-    private final RequestDao requestRepository;
-    private final PrivateRoomDao privateRoomRepository;
+    private final RequestDao requestDao;
+    private final PrivateRoomDao privateRoomDao;
 
     @Inject
-    public RequestServiceImpl(final RequestDao requestRepository, final PrivateRoomDao privateRoomRepository) {
-        super(requestRepository);
-        this.requestRepository = requestRepository;
-        this.privateRoomRepository = privateRoomRepository;
+    public RequestServiceImpl(final RequestDao requestDao, final PrivateRoomDao privateRoomDao) {
+        super(requestDao);
+        this.requestDao = requestDao;
+        this.privateRoomDao = privateRoomDao;
     }
 
     @Override
     public List<Request> findPendingRequestsByReceiver(long receiverId) {
-        return requestRepository.findPendingRequestsByReceiver(receiverId);
+        return requestDao.findPendingRequestsByReceiver(receiverId);
     }
 
     @Override
     public String getStatus(long senderId, long receiverId) {
-        return requestRepository.getStatus(senderId, receiverId);
+        return requestDao.getStatus(senderId, receiverId);
     }
 
     @Override
     public Optional<Request> findBySenderAndReceiver(long senderId, long receiverId) {
-        return requestRepository.findBySenderAndReceiver(senderId, receiverId);
+        return requestDao.findBySenderAndReceiver(senderId, receiverId);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
 
         if (status == Request.Status.accepted) {
             PrivateRoom room = new PrivateRoom(request);
-            privateRoomRepository.save(room);
+            privateRoomDao.save(room);
         }
     }
 }

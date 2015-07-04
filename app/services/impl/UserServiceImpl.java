@@ -25,30 +25,30 @@ import java.util.concurrent.TimeUnit;
  */
 public class UserServiceImpl extends GenericServiceImpl<User> implements UserService {
 
-    private final UserDao userRepository;
-    private final RequestDao requestRepository;
-    private final PrivateRoomDao privateRoomRepository;
+    private final UserDao userDao;
+    private final RequestDao requestDao;
+    private final PrivateRoomDao privateRoomDao;
 
     @Inject
-    public UserServiceImpl(final UserDao userRepository, final RequestDao requestRepository, final PrivateRoomDao privateRoomRepository) {
-        super(userRepository);
-        this.userRepository = userRepository;
-        this.requestRepository =requestRepository;
-        this.privateRoomRepository = privateRoomRepository;
+    public UserServiceImpl(final UserDao userDao, final RequestDao requestDao, final PrivateRoomDao privateRoomDao) {
+        super(userDao);
+        this.userDao = userDao;
+        this.requestDao = requestDao;
+        this.privateRoomDao = privateRoomDao;
     }
 
     @Override
     public void sendChatRequest(User sender, AbstractUser receiver) {
         User actualReceiver = receiver.getActual();
-        if (!privateRoomRepository.findBySenderAndReceiver(sender.userId, actualReceiver.userId).isPresent()) {
-            requestRepository.save(new Request(sender, actualReceiver));
+        if (!privateRoomDao.findBySenderAndReceiver(sender.userId, actualReceiver.userId).isPresent()) {
+            requestDao.save(new Request(sender, actualReceiver));
             actualReceiver.sendNotification(new ChatRequestNotification(sender));
         }
     }
 
     @Override
     public void sendNotification(User receiver, AbstractNotification notification) {
-        List<Device> devices = userRepository.getDevices(receiver);
+        List<Device> devices = userDao.getDevices(receiver);
         if (devices.isEmpty()) {
             return;
         }
@@ -75,11 +75,11 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public Optional<User> findByFacebookId(String facebookId) {
-        return userRepository.findByFacebookId(facebookId);
+        return userDao.findByFacebookId(facebookId);
     }
 
     @Override
     public List<Device> getDevices(User user) {
-        return userRepository.getDevices(user);
+        return userDao.getDevices(user);
     }
 }

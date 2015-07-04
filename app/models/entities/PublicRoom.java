@@ -44,25 +44,6 @@ public class PublicRoom extends AbstractRoom {
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
 
-    public void addSubscription(User user) {
-        subscribers.add(user);
-    }
-
-    public boolean removeSubscription(long userId) {
-        Optional<User> userOptional = subscribers.stream().filter(user -> user.userId == userId).findFirst();
-        if (userOptional.isPresent()) {
-            subscribers.remove(userOptional.get());
-            return true;
-        } else {
-            Logger.warn("Could not find a subscription with userId " + userId + " in " + roomId);
-            return false;
-        }
-    }
-
-    public boolean isSubscribed(long userId) {
-        return subscribers.stream().anyMatch(user -> user.userId == userId);
-    }
-
     public boolean hasSubscribers() {
         return !subscribers.isEmpty();
     }

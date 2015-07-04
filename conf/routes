@@ -8,7 +8,6 @@ POST          /publicRooms                                      @controllers.Pub
 GET           /publicRooms                                      @controllers.PublicRoomsController.getGeoRooms(lat: Double, lon: Double)
 POST          /publicRooms/:roomId/subscriptions                @controllers.PublicRoomsController.createSubscription(roomId: Long)
 DELETE        /publicRooms/:roomId/subscriptions/:userId        @controllers.PublicRoomsController.removeSubscription(roomId: Long, userId: Long)
-GET           /publicRooms/:roomId/subscriptions/exists         @controllers.PublicRoomsController.isSubscribed(roomId: Long, userId: Long)
 GET           /publicRooms/:roomId/join                         @controllers.PublicRoomsController.joinRoom(roomId: Long, userId: Long, authToken: String)
 GET           /publicRooms/:roomId/messages                     @controllers.PublicRoomsController.getMessages(roomId: Long, limit: Int, offset: Int)
 

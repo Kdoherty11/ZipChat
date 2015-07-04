@@ -14,23 +14,23 @@ import java.util.List;
  * Created by kdoherty on 7/3/15.
  */
 public class MessageServiceImpl extends GenericServiceImpl<Message> implements MessageService {
-    private MessageDao messageRepository;
+    private MessageDao messageDao;
 
     @Inject
-    public MessageServiceImpl(final MessageDao messageRepository) {
-        super(messageRepository);
-        this.messageRepository = messageRepository;
+    public MessageServiceImpl(final MessageDao messageDao) {
+        super(messageDao);
+        this.messageDao = messageDao;
     }
 
     @Override
     public List<Message> getMessages(long roomId, int limit, int offset) {
-        return messageRepository.getMessages(roomId, limit, offset);
+        return messageDao.getMessages(roomId, limit, offset);
     }
 
     @Override
     public boolean favorite(Message message, User user) {
         if (message.favorites.contains(user)) {
-            Logger.error(user + " is attempting to favorite " + this + " but has already favorited it");
+            Logger.error(user + " is attempting to favorite " + message + " but has already favorited it");
             return false;
         }
         message.favorites.add(user);
@@ -48,7 +48,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
         if (didRemoveFavorite) {
             message.score--;
         } else {
-            Logger.warn(user + " attempted to remove favorite from " + this + " but has not favorited it");
+            Logger.warn(user + " attempted to remove favorite from " + message + " but has not favorited it");
         }
         return didRemoveFavorite;
     }
@@ -56,7 +56,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
     @Override
     public boolean flag(Message message, User user) {
         if (message.flags.contains(user)) {
-            Logger.error(user + " is attempting to flag " + this + " but has already flagged it");
+            Logger.error(user + " is attempting to flag " + message + " but has already flagged it");
             return false;
         }
 
@@ -68,7 +68,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
     public boolean removeFlag(Message message, User user) {
         boolean didRemoveFlag = message.flags.remove(user);
         if (!didRemoveFlag) {
-            Logger.warn(user + " attempted to remove a flag from " + this + " but has not flagged it");
+            Logger.warn(user + " attempted to remove a flag from " + message + " but has not flagged it");
         }
         return didRemoveFlag;
     }

@@ -6,6 +6,9 @@ import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
+import daos.impl.MessageDaoImpl;
+import daos.impl.PublicRoomDaoImpl;
+import daos.impl.UserDaoImpl;
 import models.entities.*;
 import models.sockets.events.*;
 import play.Logger;
@@ -18,6 +21,10 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
+import services.MessageService;
+import services.PublicRoomService;
+import services.impl.MessageServiceImpl;
+import services.impl.PublicRoomServiceImpl;
 import utils.DbUtils;
 
 import java.util.*;
@@ -49,6 +56,10 @@ public class RoomSocket extends UntypedActor {
     static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new ConcurrentHashMap<>();
 
     static final Map<Long, SocketKeepAlive> clientHeartbeats = new ConcurrentHashMap<>();
+
+    private static final MessageService messageService = new MessageServiceImpl(new MessageDaoImpl());
+    private static final PublicRoomService publicRoomService = new PublicRoomServiceImpl(
+            new PublicRoomDaoImpl(), new UserDaoImpl());
 
     static {
 
@@ -88,7 +99,8 @@ public class RoomSocket extends UntypedActor {
 
                     AbstractRoom room = findExistingEntityById(AbstractRoom.class, roomId);
                     if (room instanceof PublicRoom) {
-                        boolean isSubscribed = ((PublicRoom) room).isSubscribed(userId);
+
+                        boolean isSubscribed =  publicRoomService.isSubscribed((PublicRoom) room, userId);
                         logV("Join is subscribed: " + isSubscribed);
                         message.put("isSubscribed", isSubscribed);
                     }
@@ -248,9 +260,9 @@ public class RoomSocket extends UntypedActor {
 
         boolean success;
         if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
-            success = message.favorite(user);
+            success = messageService.favorite(message, user);
         } else {
-            success = message.removeFavorite(user);
+            success = messageService.removeFavorite(message, user);
         }
 
         if (success) {

@@ -87,7 +87,12 @@ public class PublicRoomsController extends BaseController {
 
             Optional<User> userOptional = userService.findById(userId);
             if (userOptional.isPresent()) {
-                roomOptional.get().addSubscription(userOptional.get());
+                boolean subscribed = publicRoomService.subscribe(roomOptional.get(), userOptional.get());
+
+                if (!subscribed) {
+                    return badRequestJson(userOptional.get() + " is already subscribed to " + roomOptional.get());
+                }
+
                 return OK_RESULT;
             } else {
                 return entityNotFound(User.class, userId);
@@ -105,24 +110,21 @@ public class PublicRoomsController extends BaseController {
 
         Optional<PublicRoom> roomOptional = publicRoomService.findById(roomId);
         if (roomOptional.isPresent()) {
-            boolean removed = roomOptional.get().removeSubscription(userId);
+            Optional<User> userOptional = userService.findById(userId);
 
-            if (!removed) {
-                return notFound("Could not unsubscribe user " + userId + " from room " + roomId + " because" +
-                        " they were not subscribed");
+            if (userOptional.isPresent()) {
+                boolean unsubscribed =publicRoomService.unsubscribe(roomOptional.get(), userOptional.get());
+
+                if (!unsubscribed) {
+                    return notFound("Could not unsubscribe user " + userId + " from room " + roomId + " because" +
+                            " they were not subscribed");
+                }
+
+                return OK_RESULT;
+            } else {
+                return entityNotFound(User.class, roomId);
             }
 
-            return OK_RESULT;
-        } else {
-            return entityNotFound(PublicRoom.class, roomId);
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public Result isSubscribed(long roomId, long userId) {
-        Optional<PublicRoom> roomOptional = publicRoomService.findById(roomId);
-        if (roomOptional.isPresent()) {
-            return okJson(roomOptional.get().isSubscribed(userId));
         } else {
             return entityNotFound(PublicRoom.class, roomId);
         }
