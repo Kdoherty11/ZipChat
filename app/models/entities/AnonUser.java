@@ -42,6 +42,11 @@ public class AnonUser extends AbstractUser {
     }
 
     @Override
+    public boolean isAnon() {
+        return false;
+    }
+
+    @Override
     public User getActual() {
         return actual;
     }
