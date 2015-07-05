@@ -52,9 +52,8 @@ public class PrivateRoomsController extends BaseController {
 
         if (roomOptional.isPresent()) {
             PrivateRoom room = roomOptional.get();
-            boolean removed = privateRoomService.removeUser(room, userId);
 
-            Logger.debug("HERE!!!: " + removed);
+            boolean removed = privateRoomService.removeUser(room, userId);
 
             if (removed) {
                 return OK_RESULT;
@@ -79,7 +78,7 @@ public class PrivateRoomsController extends BaseController {
 
         Optional<PrivateRoom> privateRoomOptional = JPA.withTransaction(() -> privateRoomService.findById(roomId));
         if (privateRoomOptional.isPresent()) {
-            if (!privateRoomOptional.get().isUserInRoom(userId) && Play.isProd()) {
+            if (isForbidden(privateRoomOptional.get())) {
                 return WebSocket.reject(forbidden());
             }
         } else {
@@ -103,7 +102,7 @@ public class PrivateRoomsController extends BaseController {
     public Result getMessages(long roomId, int limit, int offset) {
         Optional<PrivateRoom> privateRoomOptional = privateRoomService.findById(roomId);
         if (privateRoomOptional.isPresent()) {
-            if (!privateRoomOptional.get().isUserInRoom(getTokenUserId()) && Play.isProd()) {
+            if (isForbidden(privateRoomOptional.get())) {
                 return forbidden();
             }
         } else {
@@ -111,5 +110,9 @@ public class PrivateRoomsController extends BaseController {
         }
 
         return messagesController.getMessages(roomId, limit, offset);
+    }
+
+    private boolean isForbidden(PrivateRoom room) {
+        return !privateRoomService.isUserInRoom(room, getTokenUserId()) && Play.isProd();
     }
 }

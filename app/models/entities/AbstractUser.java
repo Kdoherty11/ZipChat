@@ -33,7 +33,6 @@ public abstract class AbstractUser {
         return user == null ? -1 : user.userId;
     }
 
-    public abstract void sendNotification(AbstractNotification notification);
     @JsonIgnore
     public abstract boolean isAnon();
     @JsonIgnore

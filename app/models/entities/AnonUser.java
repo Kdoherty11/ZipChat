@@ -50,11 +50,6 @@ public class AnonUser extends AbstractUser {
     }
 
     @Override
-    public void sendNotification(AbstractNotification notification) {
-        actual.sendNotification(notification);
-    }
-
-    @Override
     public boolean isAnon() {
         return true;
     }

@@ -69,4 +69,17 @@ public class BaseController extends Controller {
     public static Result entityNotFound(Class clazz, long id) {
         return notFound(toJson(DbUtils.buildEntityNotFoundString(clazz, id)));
     }
+
+//    public static long getId(Object entity) {
+//        try {
+//            return Arrays.asList(entity.getClass().getFields())
+//                    .stream()
+//                    .filter(field -> field.isAnnotationPresent(Id.class))
+//                    .findFirst()
+//                    .orElseThrow(() -> new RuntimeException("No ID for entity " + entity))
+//                    .getLong(entity);
+//        } catch (IllegalAccessException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }

@@ -1,9 +1,8 @@
 package daos.impl;
 
-import models.entities.PrivateRoom;
+import daos.RequestDao;
 import models.entities.Request;
 import play.db.jpa.JPA;
-import daos.RequestDao;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -27,23 +26,6 @@ public class RequestDaoImpl extends GenericDaoImpl<Request> implements RequestDa
                 .setParameter("status", Request.Status.pending);
 
         return query.getResultList();
-    }
-
-    @Override
-    public String getStatus(long senderId, long receiverId) {
-
-        Optional<PrivateRoom> privateRoomOptional = PrivateRoom.getRoom(senderId, receiverId);
-
-        if (privateRoomOptional.isPresent()) {
-            return Long.toString(privateRoomOptional.get().roomId);
-        }
-
-        Optional<Request> requestOptional = findBySenderAndReceiver(senderId, receiverId);
-        if (requestOptional.isPresent()) {
-            return requestOptional.get().status.name();
-        } else {
-            return "none";
-        }
     }
 
     @Override

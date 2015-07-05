@@ -2,14 +2,9 @@ package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
-import notifications.AbstractNotification;
 import play.data.validation.Constraints;
-import play.db.jpa.JPA;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Entity
 @Table(name = "private_rooms")
@@ -44,41 +39,6 @@ public class PrivateRoom extends AbstractRoom {
         this.request = request;
         this.sender = request.sender;
         this.receiver = request.receiver;
-    }
-
-    public boolean isUserInRoom(long userId) {
-        return (sender.userId == userId && senderInRoom) ||
-                (receiver.userId == userId && receiverInRoom);
-    }
-
-    // TODO Remove
-    public static Optional<PrivateRoom> getRoom(long senderId, long receiverId) {
-
-        String queryString = "select p from PrivateRoom p where " +
-                "((p.sender.userId = :senderId and p.receiver.userId = :receiverId)" +
-                " or (p.receiver.userId = :senderId and p.sender.userId = :receiverId))" +
-                " and p.senderInRoom = true and p.receiverInRoom = true";
-
-        TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
-                .setParameter("senderId", senderId)
-                .setParameter("receiverId", receiverId);
-
-        List<PrivateRoom> rooms = query.getResultList();
-
-        if (rooms.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(rooms.get(0));
-    }
-
-    @Override
-    void sendNotification(AbstractNotification notification, Set<Long> userIdsInRoom) {
-        if (senderInRoom && !userIdsInRoom.contains(sender.userId)) {
-            sender.sendNotification(notification);
-        } else if (receiverInRoom && !userIdsInRoom.contains(receiver.userId)) {
-            receiver.sendNotification(notification);
-        }
     }
 
     @Override

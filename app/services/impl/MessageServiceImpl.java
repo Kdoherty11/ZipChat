@@ -1,11 +1,12 @@
 package services.impl;
 
 import com.google.inject.Inject;
+import daos.MessageDao;
 import models.entities.Message;
 import models.entities.User;
 import notifications.MessageFavoritedNotification;
 import play.Logger;
-import daos.MessageDao;
+import services.AbstractUserService;
 import services.MessageService;
 
 import java.util.List;
@@ -15,11 +16,13 @@ import java.util.List;
  */
 public class MessageServiceImpl extends GenericServiceImpl<Message> implements MessageService {
     private MessageDao messageDao;
+    private AbstractUserService abstractUserService;
 
     @Inject
-    public MessageServiceImpl(final MessageDao messageDao) {
+    public MessageServiceImpl(final MessageDao messageDao, final AbstractUserService abstractUserService) {
         super(messageDao);
         this.messageDao = messageDao;
+        this.abstractUserService = abstractUserService;
     }
 
     @Override
@@ -37,7 +40,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
         message.score++;
         User actual = message.sender.getActual();
         if (!user.equals(actual)) {
-            actual.sendNotification(new MessageFavoritedNotification(message, user));
+            abstractUserService.sendNotification(actual, new MessageFavoritedNotification(message, user));
         }
         return true;
     }

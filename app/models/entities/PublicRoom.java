@@ -44,39 +44,6 @@ public class PublicRoom extends AbstractRoom {
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
 
-    public boolean hasSubscribers() {
-        return !subscribers.isEmpty();
-    }
-
-    @Override
-    void sendNotification(AbstractNotification notification, Set<Long> userIdsInRoom) {
-        if (!hasSubscribers()) {
-            return;
-        }
-        List<String> androidRegIds = new ArrayList<>();
-        List<String> iosRegIds = new ArrayList<>();
-
-        subscribers.forEach(user -> {
-            if (!userIdsInRoom.contains(user.userId)) {
-                Logger.debug("PublicRoom sendNotification to user " + user.userId + " with devices: " + user.devices);
-
-                user.devices.forEach(device -> {
-                    if (device.platform == Platform.android) {
-                        Logger.debug("Added android regId: " + device.regId);
-                        androidRegIds.add(device.regId);
-                    } else {
-                        Logger.debug("Added ios regId: " + device.regId);
-                        iosRegIds.add(device.regId);
-                    }
-                });
-            }
-        });
-
-        Logger.debug("Sending to androidRegIds: " + androidRegIds + " and iosRegIds: " + iosRegIds);
-
-        notification.send(androidRegIds, iosRegIds);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -25,26 +25,6 @@ public class User extends AbstractUser {
     public List<Device> devices = new ArrayList<>();
 
     @Override
-    public void sendNotification(AbstractNotification notification) {
-        if (devices.isEmpty()) {
-            return;
-        }
-
-        List<String> androidRegIds = new ArrayList<>();
-        List<String> iosRegIds = new ArrayList<>();
-
-        for (Device info : devices) {
-            if (info.platform == Platform.android) {
-                androidRegIds.add(info.regId);
-            } else {
-                iosRegIds.add(info.regId);
-            }
-        }
-
-        notification.send(androidRegIds, iosRegIds);
-    }
-
-    @Override
     public boolean isAnon() {
         return false;
     }

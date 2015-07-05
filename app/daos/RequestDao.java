@@ -13,6 +13,5 @@ import java.util.Optional;
 @ImplementedBy(RequestDaoImpl.class)
 public interface RequestDao extends GenericDao<Request> {
     public List<Request> findPendingRequestsByReceiver(long receiverId);
-    public String getStatus(long senderId, long receiverId);
     public Optional<Request> findBySenderAndReceiver(long senderId, long receiverId);
 }

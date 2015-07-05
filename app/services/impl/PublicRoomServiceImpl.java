@@ -1,13 +1,13 @@
 package services.impl;
 
 import com.google.inject.Inject;
+import daos.PublicRoomDao;
+import daos.UserDao;
 import models.Platform;
 import models.entities.PublicRoom;
 import models.entities.User;
 import notifications.AbstractNotification;
 import play.Logger;
-import daos.PublicRoomDao;
-import daos.UserDao;
 import services.PublicRoomService;
 
 import java.util.ArrayList;
@@ -94,4 +94,5 @@ public class PublicRoomServiceImpl extends GenericServiceImpl<PublicRoom> implem
     public boolean isSubscribed(PublicRoom room, long userId) {
         return room.subscribers.stream().anyMatch(user -> user.userId == userId);
     }
+
 }

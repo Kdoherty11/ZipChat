@@ -6,9 +6,8 @@ import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.RedisPlugin;
-import daos.impl.MessageDaoImpl;
-import daos.impl.PublicRoomDaoImpl;
-import daos.impl.UserDaoImpl;
+import daos.*;
+import daos.impl.*;
 import models.entities.*;
 import models.sockets.events.*;
 import play.Logger;
@@ -21,10 +20,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
-import services.MessageService;
-import services.PublicRoomService;
-import services.impl.MessageServiceImpl;
-import services.impl.PublicRoomServiceImpl;
+import services.*;
+import services.impl.*;
 import utils.DbUtils;
 
 import java.util.*;
@@ -57,9 +54,26 @@ public class RoomSocket extends UntypedActor {
 
     static final Map<Long, SocketKeepAlive> clientHeartbeats = new ConcurrentHashMap<>();
 
-    private static final MessageService messageService = new MessageServiceImpl(new MessageDaoImpl());
+    private static final AbstractUserDao abstractUserDao = new AbstractUserDaoImpl();
+    private static final UserDao userDao = new UserDaoImpl();
+    private static final AnonUserDao anonUserDao = new AnonUserDaoImpl();
+    private static final AbstractRoomDao abstractRoomDao = new AbstractRoomDaoImpl();
+    private static final PublicRoomDao publicRoomDao = new PublicRoomDaoImpl();
+    private static final PrivateRoomDao privateRoomDao = new PrivateRoomDaoImpl();
+    private static final MessageDao messageDao = new MessageDaoImpl();
+    private static final RequestDao requestDao = new RequestDaoImpl();
+
+    private static final UserService userService = new UserServiceImpl(userDao, requestDao, privateRoomDao);
+    private static final AnonUserService anonUserService = new AnonUserServiceImpl(anonUserDao, userService);
+    private static final AbstractUserService abstractUserService = new AbstractUserServiceImpl(abstractUserDao,
+            userService, anonUserService);
+
     private static final PublicRoomService publicRoomService = new PublicRoomServiceImpl(
-            new PublicRoomDaoImpl(), new UserDaoImpl());
+            publicRoomDao, userDao);
+    private static final PrivateRoomService privateRoomService = new PrivateRoomServiceImpl(privateRoomDao, requestDao, userService);
+    private static final AbstractRoomService abstractRoomService = new AbstractRoomServiceImpl(abstractRoomDao, publicRoomService, privateRoomService);
+
+    private static final MessageService messageService = new MessageServiceImpl(messageDao, abstractUserService);
 
     static {
 
@@ -97,9 +111,9 @@ public class RoomSocket extends UntypedActor {
                     ObjectNode message = Json.newObject();
                     message.set("roomMembers", toJson(roomMembers));
 
-                    AbstractRoom room = findExistingEntityById(AbstractRoom.class, roomId);
+                    Optional<AbstractRoom> roomOptional = abstractRoomService.findById(roomId);
+                    AbstractRoom room = roomOptional.orElseThrow(RuntimeException::new);
                     if (room instanceof PublicRoom) {
-
                         boolean isSubscribed =  publicRoomService.isSubscribed((PublicRoom) room, userId);
                         logV("Join is subscribed: " + isSubscribed);
                         message.put("isSubscribed", isSubscribed);
@@ -331,7 +345,7 @@ public class RoomSocket extends UntypedActor {
         }
 
         Message message = new Message(room, messageSender, talk.getText());
-        room.addMessage(message, getUserIdsInRoom(roomId, j));
+        abstractRoomService.addMessage(room, message, getUserIdsInRoom(roomId, j));
         return message;
     }
 

@@ -42,7 +42,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         User actualReceiver = receiver.getActual();
         if (!privateRoomDao.findBySenderAndReceiver(sender.userId, actualReceiver.userId).isPresent()) {
             requestDao.save(new Request(sender, actualReceiver));
-            actualReceiver.sendNotification(new ChatRequestNotification(sender));
+            sendNotification(actualReceiver, new ChatRequestNotification(sender));
         }
     }
 
