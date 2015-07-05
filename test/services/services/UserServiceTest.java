@@ -1,20 +1,20 @@
 package services.services;
 
+import daos.PrivateRoomDao;
+import daos.RequestDao;
+import daos.UserDao;
 import exceptions.MethodShouldNotBeCalled;
 import models.entities.AbstractUser;
 import models.entities.PrivateRoom;
 import models.entities.Request;
 import models.entities.User;
-import notifications.ChatRequestNotification;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import daos.PrivateRoomDao;
-import daos.RequestDao;
-import daos.UserDao;
 import services.UserService;
+import services.impl.UserServiceImpl;
 
 import java.util.Optional;
 
@@ -30,17 +30,17 @@ public class UserServiceTest {
     private UserService userService;
 
     @Mock
-    private UserDao userRepository;
+    private UserDao userDao;
 
     @Mock
-    private RequestDao requestRepository;
+    private RequestDao requestDao;
 
     @Mock
-    private PrivateRoomDao privateRoomRepository;
+    private PrivateRoomDao privateRoomDao;
 
     @Before
     public void setUp() {
-        userService = new UserService(userRepository, requestRepository, privateRoomRepository);
+        userService = new UserServiceImpl(userDao, requestDao, privateRoomDao);
     }
 
     @Test
@@ -53,18 +53,18 @@ public class UserServiceTest {
         when(mockSender.name).thenReturn("TestName");
         when(mockSender.facebookId).thenReturn("TestFbId");
 
-        when(privateRoomRepository.findBySenderAndReceiver(anyLong(), anyLong())).thenReturn(Optional.empty());
+        when(privateRoomDao.findBySenderAndReceiver(anyLong(), anyLong())).thenReturn(Optional.empty());
 
-        doNothing().when(requestRepository).save(any(Request.class));
-        doNothing().when(mockActualReceiver).sendNotification(any(ChatRequestNotification.class));
+        doNothing().when(requestDao).save(any(Request.class));
+        // TODO doNothing().when(mockActualReceiver).sendNotification(any(ChatRequestNotification.class));
 
-        spy(requestRepository);
+        spy(requestDao);
         spy(mockActualReceiver);
 
         userService.sendChatRequest(mockSender, mockReceiver);
 
-        verify(mockActualReceiver).sendNotification(isA(ChatRequestNotification.class));
-        verify(requestRepository).save(any(Request.class));
+        // TODO verify(mockActualReceiver).sendNotification(isA(ChatRequestNotification.class));
+        verify(requestDao).save(any(Request.class));
     }
 
     @Test
@@ -77,10 +77,10 @@ public class UserServiceTest {
         when(mockSender.name).thenReturn("TestName");
         when(mockSender.facebookId).thenReturn("TestFbId");
 
-        when(privateRoomRepository.findBySenderAndReceiver(anyLong(), anyLong())).thenReturn(Optional.of(new PrivateRoom()));
+        when(privateRoomDao.findBySenderAndReceiver(anyLong(), anyLong())).thenReturn(Optional.of(new PrivateRoom()));
 
-        doThrow(MethodShouldNotBeCalled.class).when(requestRepository).save(any());
-        doThrow(MethodShouldNotBeCalled.class).when(mockActualReceiver).sendNotification(any());
+        doThrow(MethodShouldNotBeCalled.class).when(requestDao).save(any());
+        // TODO doThrow(MethodShouldNotBeCalled.class).when(mockActualReceiver).sendNotification(any());
 
         userService.sendChatRequest(mockSender, mockReceiver);
     }
@@ -88,22 +88,22 @@ public class UserServiceTest {
     @Test
     public void findById() {
         long userId = 1;
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        spy(userRepository);
+        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        spy(userDao);
 
         userService.findById(userId);
 
-        verify(userRepository).findById(userId);
+        verify(userDao).findById(userId);
     }
 
     @Test
     public void findByFacebookId() {
         String facebookId = "TestFbId";
-        when(userRepository.findByFacebookId(facebookId)).thenReturn(Optional.empty());
-        spy(userRepository);
+        when(userDao.findByFacebookId(facebookId)).thenReturn(Optional.empty());
+        spy(userDao);
 
         userService.findByFacebookId(facebookId);
 
-        verify(userRepository).findByFacebookId(facebookId);
+        verify(userDao).findByFacebookId(facebookId);
     }
 }

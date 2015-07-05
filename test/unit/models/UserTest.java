@@ -68,7 +68,7 @@ public class UserTest extends AbstractTest {
         User user = userFactory.create(ImmutableMap.of("devices", new IncludeEntity<>(Device.class, 1, TestUtils.mapOf("platform", Platform.android))));
 
         AbstractNotification mockNotification = mock(AbstractNotification.class);
-        user.sendNotification(mockNotification);
+        // TODO user.sendNotification(mockNotification);
 
         verify(mockNotification).send(Collections.singletonList(user.devices.get(0).regId), Collections.emptyList());
     }
@@ -78,7 +78,7 @@ public class UserTest extends AbstractTest {
         User user = userFactory.create(ImmutableMap.of("devices", new IncludeEntity<>(Device.class, 1, TestUtils.mapOf("platform", Platform.ios))));
 
         AbstractNotification mockNotification = mock(AbstractNotification.class);
-        user.sendNotification(mockNotification);
+        // TODO user.sendNotification(mockNotification);
 
         verify(mockNotification).send(Collections.emptyList(), Collections.singletonList(user.devices.get(0).regId));
     }
@@ -97,7 +97,7 @@ public class UserTest extends AbstractTest {
         user.devices = allDevices;
 
         AbstractNotification mockNotification = mock(AbstractNotification.class);
-        user.sendNotification(mockNotification);
+        // TODO user.sendNotification(mockNotification);
 
         List<String> androidRegIds = androidDevices.stream().map(device -> device.regId).collect(Collectors.toList());
         List<String> iosRegIds = iosDevices.stream().map(device -> device.regId).collect(Collectors.toList());

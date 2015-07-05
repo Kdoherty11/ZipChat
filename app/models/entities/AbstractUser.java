@@ -35,6 +35,7 @@ public abstract class AbstractUser {
 
     @JsonIgnore
     public abstract boolean isAnon();
+
     @JsonIgnore
     public abstract User getActual();
 

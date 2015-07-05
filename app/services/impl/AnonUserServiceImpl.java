@@ -68,7 +68,7 @@ public class AnonUserServiceImpl extends GenericServiceImpl<AnonUser> implements
     }
 
     private String getAvailableAlias(PublicRoom room) {
-        Set<String> usedAliases = room.anonUsers.stream().map(AnonUser::getName).collect(Collectors.toSet());
+        Set<String> usedAliases = room.anonUsers.stream().map(anonUser -> anonUser.name).collect(Collectors.toSet());
         Set<String> availableAliases = Sets.difference(FULL_NAMES, new HashSet<>(usedAliases));
 
         if (availableAliases.isEmpty()) {
