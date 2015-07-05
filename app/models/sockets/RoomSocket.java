@@ -336,7 +336,7 @@ public class RoomSocket extends UntypedActor {
         AbstractUser messageSender;
         if (isAnon) {
             if (room instanceof PublicRoom) {
-                messageSender = AnonUser.getOrCreateAnonUser(sender, ((PublicRoom) room));
+                messageSender = anonUserService.getOrCreateAnonUser(sender, (PublicRoom) room);
             } else {
                 throw new RuntimeException("Trying to store an anon message in a private room");
             }

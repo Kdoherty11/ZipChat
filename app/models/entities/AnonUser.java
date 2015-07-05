@@ -19,14 +19,6 @@ import java.util.stream.Collectors;
 @Table(name = "anon_users")
 public class AnonUser extends AbstractUser {
 
-    private static final Set<String> FIRST_NAMES = ImmutableSet.of("John", "Drew", "Carl", "Trevor", "Rahul", "Jim", "Tom", "Dave", "Matt", "Eric");
-    private static final Set<String> LAST_NAMES = ImmutableSet.of("Smith", "Brown", "Doe", "Forgo", "Cogan", "Dexter", "Matthews", "Jordan");
-    private static final Set<String> FULL_NAMES = new HashSet<>(FIRST_NAMES.size() * LAST_NAMES.size());
-
-    static {
-        FIRST_NAMES.forEach(firstName -> LAST_NAMES.forEach(lastName -> FULL_NAMES.add(firstName + " " + lastName)));
-    }
-
     @ManyToOne
     @JoinColumn(name = "actualUserId")
     @JsonIgnore
@@ -43,10 +35,10 @@ public class AnonUser extends AbstractUser {
         // Needed for JPA
     }
 
-    private AnonUser(User actual, PublicRoom room) {
+    public AnonUser(User actual, PublicRoom room, String name) {
         this.actual = actual;
         this.room = room;
-        this.name = getAvailableAlias(room);
+        this.name = name;
     }
 
     @Override
@@ -61,57 +53,6 @@ public class AnonUser extends AbstractUser {
 
     public String getName() {
         return name;
-    }
-
-    private static String getAvailableAlias(PublicRoom room) {
-        Set<String> usedAliases = room.anonUsers.stream().map(AnonUser::getName).collect(Collectors.toSet());
-        Set<String> availableAliases = Sets.difference(FULL_NAMES, new HashSet<>(usedAliases));
-
-        if (availableAliases.isEmpty()) {
-            throw new IllegalStateException("There are no more available aliases for room " + room.roomId);
-        }
-
-        // Pick a random alias from the set
-        int item = new Random().nextInt(availableAliases.size());
-        int i = 0;
-        for (String alias : availableAliases) {
-            if (i++ == item) {
-                return alias;
-            }
-        }
-
-        throw new RuntimeException("Random index was not in set");
-    }
-
-    public static AnonUser getOrCreateAnonUser(User actual, PublicRoom room) {
-        Optional<AnonUser> aliasOptional = getAnonUser(actual, room);
-
-        if (aliasOptional.isPresent()) {
-            return aliasOptional.get();
-        }
-
-        return createAnonUser(actual, room);
-    }
-
-    private static AnonUser createAnonUser(User actual, PublicRoom room) {
-        AnonUser anonUser = new AnonUser(actual, room);
-        JPA.em().persist(anonUser);
-        return anonUser;
-    }
-
-    private static Optional<AnonUser> getAnonUser(User actual, PublicRoom room) {
-        String queryString = "select a from AnonUser a where a.actual.userId = :userId and a.room.roomId = :roomId";
-
-        TypedQuery<AnonUser> query = JPA.em().createQuery(queryString, AnonUser.class)
-                .setParameter("userId", actual.userId)
-                .setParameter("roomId", room.roomId);
-
-        List<AnonUser> aliases = query.getResultList();
-        if (aliases.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(aliases.get(0));
-        }
     }
 
     @Override

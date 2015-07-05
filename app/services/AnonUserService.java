@@ -3,6 +3,8 @@ package services;
 import com.google.inject.ImplementedBy;
 import daos.AnonUserDao;
 import models.entities.AnonUser;
+import models.entities.PublicRoom;
+import models.entities.User;
 import notifications.AbstractNotification;
 import services.impl.AnonUserServiceImpl;
 
@@ -13,5 +15,6 @@ import services.impl.AnonUserServiceImpl;
 public interface AnonUserService extends AnonUserDao {
 
     void sendNotification(AnonUser receiver, AbstractNotification notification);
+    AnonUser getOrCreateAnonUser(User actual, PublicRoom room);
 
 }
