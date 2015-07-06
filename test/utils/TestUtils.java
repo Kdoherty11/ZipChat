@@ -1,9 +1,8 @@
 package utils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import javax.persistence.Id;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TestUtils {
 
@@ -40,6 +39,32 @@ public class TestUtils {
         Set<E> set = new HashSet<>();
         set.add(element);
         return set;
+    }
+
+    public static long getId(Object object) {
+        try {
+            return Arrays.asList(object.getClass().getFields())
+                    .stream()
+                    .filter(field -> field.isAnnotationPresent(Id.class))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No ID for entity " + object))
+                    .getLong(object);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    // Returns an Id that is not used by any of the input entities
+    @SafeVarargs
+    public static <T> long getUniqueId(T... entities) {
+        Set<Long> objectIds = Arrays.asList(entities).stream().map(TestUtils::getId).collect(Collectors.toSet());
+        for (long i = 0; i < entities.length + 1; i++) {
+            if (!objectIds.contains(i)) {
+                return i;
+            }
+        }
+        throw new AssertionError("This method is broken...");
     }
 
 }
