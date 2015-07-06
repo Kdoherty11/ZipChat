@@ -16,6 +16,10 @@ import services.RequestService;
 import services.UserService;
 import services.impl.RequestServiceImpl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -80,5 +84,63 @@ public class RequestServiceTest {
         verify(privateRoomDao, never()).save(any(PrivateRoom.class));
     }
 
+    @Test
+    public void getStatusPrivateRoomExists() {
+        long senderId = 1;
+        long receiverId = 2;
+        long roomId = 3;
+        PrivateRoom mockRoom = mock(PrivateRoom.class);
+        when(mockRoom.roomId).thenReturn(roomId);
+        when(privateRoomDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.of(mockRoom));
+        String status = requestService.getStatus(senderId, receiverId);
 
+        assertThat(status).isEqualTo(Long.toString(roomId));
+    }
+
+    @Test
+    public void getStatusNoPrivateRoomWithRequest() {
+        long senderId = 1;
+        long receiverId = 2;
+        when(privateRoomDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
+
+        Request mockRequest = mock(Request.class);
+        Request.Status requestStatus = Request.Status.denied;
+        when(mockRequest.status).thenReturn(requestStatus);
+        when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.of(mockRequest));
+        String status = requestService.getStatus(senderId, receiverId);
+
+        assertThat(status).isEqualTo(requestStatus.name());
+    }
+
+    @Test
+    public void getStatusNoPrivateRoomNoRequest() {
+        long senderId = 1;
+        long receiverId = 2;
+        when(privateRoomDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
+        when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
+        String status = requestService.getStatus(senderId, receiverId);
+
+        assertThat(status).isEqualTo("none");
+    }
+
+    @Test
+    public void findPendingRequestsByReceiver() {
+        long receiverId = 1;
+        List<Request> expectedResults = new ArrayList<>();
+        when(requestDao.findPendingRequestsByReceiver(receiverId)).thenReturn(expectedResults);
+        List<Request> requests = requestService.findPendingRequestsByReceiver(receiverId);
+        verify(requestDao).findPendingRequestsByReceiver(receiverId);
+        assertThat(requests == expectedResults).isTrue();
+    }
+
+    @Test
+    public void findBySenderAndReceiver() {
+        long senderId = 1;
+        long receiverId = 2;
+        Optional<Request> expected = Optional.empty();
+        when(requestDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(expected);
+        Optional<Request> requestOptional = requestService.findBySenderAndReceiver(senderId, receiverId);
+        verify(requestDao).findBySenderAndReceiver(senderId, receiverId);
+        assertThat(requestOptional == expected).isTrue();
+    }
 }
