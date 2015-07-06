@@ -15,6 +15,7 @@ import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Akka;
 import play.libs.Json;
+import play.libs.ws.WS;
 import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
@@ -63,7 +64,7 @@ public class RoomSocket extends UntypedActor {
     private static final MessageDao messageDao = new MessageDaoImpl();
     private static final RequestDao requestDao = new RequestDaoImpl();
 
-    private static final UserService userService = new UserServiceImpl(userDao, requestDao, privateRoomDao);
+    private static final UserService userService = new UserServiceImpl(userDao, requestDao, privateRoomDao, WS.client());
     private static final AnonUserService anonUserService = new AnonUserServiceImpl(anonUserDao, userService);
     private static final AbstractUserService abstractUserService = new AbstractUserServiceImpl(abstractUserDao,
             userService, anonUserService);

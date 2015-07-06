@@ -4,10 +4,12 @@ import factories.ObjectFactory;
 import models.entities.Device;
 import models.entities.Message;
 import models.entities.User;
+import org.junit.Ignore;
 
 /**
  * Created by kevin on 6/15/15.
  */
+@Ignore
 public class ObjectFactoryTest extends AbstractTest {
 
     private ObjectFactory<User> userFactory = new ObjectFactory<>(User.class);

@@ -52,7 +52,7 @@ public class UserTest extends AbstractTest {
     @Test
     public void byFacebookId() throws Throwable {
         String facebookId = "UserFacebookId";
-        userFactory.create(ImmutableMap.of("facebookId", facebookId));
+        //userFactory.create(ImmutableMap.of("facebookId", facebookId));
         //Optional<User> userOptional = JPA.withTransaction(() -> User.byFacebookId(facebookId));
         //assertThat(userOptional.isPresent()).isTrue();
         //assertThat(userOptional.get().facebookId).isEqualTo(facebookId);

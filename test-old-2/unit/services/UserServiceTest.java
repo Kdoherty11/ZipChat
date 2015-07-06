@@ -1,4 +1,4 @@
-package services.services;
+package unit.services;
 
 import daos.PrivateRoomDao;
 import daos.RequestDao;
@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import play.Logger;
 import services.UserService;
 import services.impl.UserServiceImpl;
 
@@ -45,6 +46,7 @@ public class UserServiceTest {
 
     @Test
     public void sendChatRequest() {
+        Logger.debug("Send chat request test!!!");
         AbstractUser mockReceiver = mock(AbstractUser.class);
         User mockActualReceiver = mock(User.class);
         when(mockReceiver.getActual()).thenReturn(mockActualReceiver);

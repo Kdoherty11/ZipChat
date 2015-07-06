@@ -1,15 +1,21 @@
 package factories;
 
 import com.google.common.collect.ImmutableMap;
+import models.entities.PublicRoom;
 
 import java.util.Map;
 
 /**
  * Created by kevin on 6/23/15.
  */
-public class PublicRoomDefaults extends FactoryDefaults {
+public class PublicRoomFactory extends GenericFactory<PublicRoom> {
+
+    public PublicRoomFactory() {
+        super(PublicRoom.class);
+    }
+
     @Override
-    public Map<String, Object> getDefaults() {
+    Map<String, Object> getDefaultProperties() {
         return new ImmutableMap.Builder<String, Object>()
                 .put("name", faker.lorem().fixedString(20))
                 .put("latitude", 0.0)

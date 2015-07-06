@@ -1,5 +1,8 @@
 package integration;
 
+import org.junit.Ignore;
+
+@Ignore
 public class UsersControllerTest extends AbstractTest {
 
     //private UsersControllerAdapter adapter = UsersControllerAdapter.INSTANCE;

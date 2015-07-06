@@ -1,16 +1,21 @@
 package factories;
 
 import com.google.common.collect.ImmutableMap;
+import models.entities.AnonUser;
 
 import java.util.Map;
 
 /**
  * Created by kevin on 6/23/15.
  */
-public class AnonUserDefaults extends FactoryDefaults {
+public class AnonUserFactory extends GenericFactory<AnonUser> {
+
+    public AnonUserFactory() {
+        super(AnonUser.class);
+    }
 
     @Override
-    public Map<String, Object> getDefaults() {
+    Map<String, Object> getDefaultProperties() {
         return ImmutableMap.of("name", faker.name().fullName());
     }
 

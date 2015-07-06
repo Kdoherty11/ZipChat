@@ -7,6 +7,7 @@ import models.entities.PublicRoom;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.when;
 import static play.test.Helpers.*;
 
 @RunWith(MockitoJUnitRunner.class)
+@Ignore
 public class PublicRoomsControllerTest extends WithApplication {
 
     private PublicRoomsController controller;

@@ -2,6 +2,9 @@ package services.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
+import daos.PrivateRoomDao;
+import daos.RequestDao;
+import daos.UserDao;
 import models.Platform;
 import models.entities.AbstractUser;
 import models.entities.Device;
@@ -9,10 +12,7 @@ import models.entities.Request;
 import models.entities.User;
 import notifications.AbstractNotification;
 import notifications.ChatRequestNotification;
-import play.libs.ws.WS;
-import daos.PrivateRoomDao;
-import daos.RequestDao;
-import daos.UserDao;
+import play.libs.ws.WSClient;
 import services.UserService;
 
 import java.util.ArrayList;
@@ -28,13 +28,15 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     private final UserDao userDao;
     private final RequestDao requestDao;
     private final PrivateRoomDao privateRoomDao;
+    private final WSClient wsClient;
 
     @Inject
-    public UserServiceImpl(final UserDao userDao, final RequestDao requestDao, final PrivateRoomDao privateRoomDao) {
+    public UserServiceImpl(final UserDao userDao, final RequestDao requestDao, final PrivateRoomDao privateRoomDao, final WSClient wsClient) {
         super(userDao);
         this.userDao = userDao;
         this.requestDao = requestDao;
         this.privateRoomDao = privateRoomDao;
+        this.wsClient = wsClient;
     }
 
     @Override
@@ -69,8 +71,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public JsonNode getFacebookInformation(String fbAccessToken) {
-        return WS.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(5, TimeUnit.SECONDS).asJson();
-
+        return wsClient.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(5, TimeUnit.SECONDS).asJson();
     }
 
     @Override

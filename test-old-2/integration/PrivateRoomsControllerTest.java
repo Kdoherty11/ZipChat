@@ -7,6 +7,7 @@ import models.entities.PrivateRoom;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,6 +30,7 @@ import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.*;
 
 @RunWith(MockitoJUnitRunner.class)
+@Ignore
 public class PrivateRoomsControllerTest extends WithApplication {
 
     private PrivateRoomsController controller;

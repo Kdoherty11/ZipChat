@@ -1,5 +1,8 @@
 package integration;
 
+import org.junit.Ignore;
+
+@Ignore
 public class RequestsControllerTest extends AbstractTest {
 
 //    RequestsControllerAdapter adapter = RequestsControllerAdapter.INSTANCE;
