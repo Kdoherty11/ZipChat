@@ -14,7 +14,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import play.libs.ws.WSResponse;
+import play.libs.F;
 import play.libs.ws.WSClient;
+import play.libs.ws.WSRequestHolder;
 import services.UserService;
 import services.impl.UserServiceImpl;
 
@@ -159,7 +162,17 @@ public class UserServiceTest {
 
     @Test
     public void testGetFacebookInformation() {
+        String fbAccessToken = "testFbAccessToken";
+        WSClient mockWs = mock(WSClient.class);
+        WSRequestHolder mockRequestHolder = mock(WSRequestHolder.class);
+        WSRequestHolder mockSecondRequestHolder = mock(WSRequestHolder.class);
 
+        @SuppressWarnings("unchecked")
+        F.Promise<WSResponse> mockResponsePromise = (F.Promise<WSResponse>) mock(F.Promise.class);
+
+        when(mockWs.url("https://graph.facebook.com/me")).thenReturn(mockRequestHolder);
+        when(mockRequestHolder.setQueryParameter("access_token", fbAccessToken)).thenReturn(mockSecondRequestHolder);
+        when(mockSecondRequestHolder.get()).thenReturn(mockResponsePromise);
     }
 
     @Test
