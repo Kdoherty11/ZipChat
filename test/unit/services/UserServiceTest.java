@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -160,26 +161,27 @@ public class UserServiceTest {
     public void testGetFacebookInformation() {
 
     }
-//
-//    @Test
-//    public void findById() {
-//        long userId = 1;
-//        when(userDao.findById(userId)).thenReturn(Optional.empty());
-//        spy(userDao);
-//
-//        userService.findById(userId);
-//
-//        verify(userDao).findById(userId);
-//    }
-//
-//    @Test
-//    public void findByFacebookId() {
-//        String facebookId = "TestFbId";
-//        when(userDao.findByFacebookId(facebookId)).thenReturn(Optional.empty());
-//        spy(userDao);
-//
-//        userService.findByFacebookId(facebookId);
-//
-//        verify(userDao).findByFacebookId(facebookId);
-//    }
+
+    @Test
+    public void findById() {
+        long userId = 1;
+        when(userDao.findById(userId)).thenReturn(Optional.empty());
+
+        Optional<User> userOptional = userService.findById(userId);
+        assertThat(userOptional.isPresent()).isFalse();;
+
+        verify(userDao).findById(userId);
+    }
+
+    @Test
+    public void findByFacebookId() {
+        String facebookId = "TestFbId";
+        when(userDao.findByFacebookId(facebookId)).thenReturn(Optional.empty());
+
+        Optional<User> userOptional = userService.findByFacebookId(facebookId);
+
+        verify(userDao).findByFacebookId(facebookId);
+        assertThat(userOptional.isPresent()).isFalse();;
+    }
+
 }
