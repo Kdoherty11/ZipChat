@@ -71,7 +71,11 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public JsonNode getFacebookInformation(String fbAccessToken) {
-        return wsClient.url("https://graph.facebook.com/me").setQueryParameter("access_token", fbAccessToken).get().get(5, TimeUnit.SECONDS).asJson();
+        return wsClient.url("https://graph.facebook.com/me")
+                .setQueryParameter("access_token", fbAccessToken)
+                .get()
+                .get(5, TimeUnit.SECONDS)
+                .asJson();
     }
 
     @Override

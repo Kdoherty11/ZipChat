@@ -1,5 +1,6 @@
 package unit.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import daos.PrivateRoomDao;
 import daos.RequestDao;
 import daos.UserDao;
@@ -14,10 +15,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import play.libs.ws.WSResponse;
 import play.libs.F;
+import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequestHolder;
+import play.libs.ws.WSResponse;
 import services.UserService;
 import services.impl.UserServiceImpl;
 
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -163,16 +166,22 @@ public class UserServiceTest {
     @Test
     public void testGetFacebookInformation() {
         String fbAccessToken = "testFbAccessToken";
-        WSClient mockWs = mock(WSClient.class);
         WSRequestHolder mockRequestHolder = mock(WSRequestHolder.class);
         WSRequestHolder mockSecondRequestHolder = mock(WSRequestHolder.class);
+        WSResponse mockResponse = mock(WSResponse.class);
+        @SuppressWarnings("unchecked") F.Promise<WSResponse> mockResponsePromise =
+                (F.Promise<WSResponse>) mock(F.Promise.class);
 
-        @SuppressWarnings("unchecked")
-        F.Promise<WSResponse> mockResponsePromise = (F.Promise<WSResponse>) mock(F.Promise.class);
-
-        when(mockWs.url("https://graph.facebook.com/me")).thenReturn(mockRequestHolder);
+        when(wsClient.url("https://graph.facebook.com/me")).thenReturn(mockRequestHolder);
         when(mockRequestHolder.setQueryParameter("access_token", fbAccessToken)).thenReturn(mockSecondRequestHolder);
         when(mockSecondRequestHolder.get()).thenReturn(mockResponsePromise);
+        when(mockResponsePromise.get(anyLong(), any(TimeUnit.class))).thenReturn(mockResponse);
+
+        JsonNode expectedResult = Json.newObject();
+        when(mockResponse.asJson()).thenReturn(expectedResult);
+
+        JsonNode response = userService.getFacebookInformation(fbAccessToken);
+        assertThat(response == expectedResult).isTrue();
     }
 
     @Test
