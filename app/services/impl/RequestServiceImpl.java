@@ -32,16 +32,6 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
     }
 
     @Override
-    public List<Request> findPendingRequestsByReceiver(long receiverId) {
-        return requestDao.findPendingRequestsByReceiver(receiverId);
-    }
-
-    @Override
-    public Optional<Request> findBySenderAndReceiver(long senderId, long receiverId) {
-        return requestDao.findBySenderAndReceiver(senderId, receiverId);
-    }
-
-    @Override
     public void handleResponse(Request request, Request.Status status) {
         request.status = status;
         request.respondedTimeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
@@ -69,5 +59,15 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
         } else {
             return "none";
         }
+    }
+
+    @Override
+    public List<Request> findPendingRequestsByReceiver(long receiverId) {
+        return requestDao.findPendingRequestsByReceiver(receiverId);
+    }
+
+    @Override
+    public Optional<Request> findBySenderAndReceiver(long senderId, long receiverId) {
+        return requestDao.findBySenderAndReceiver(senderId, receiverId);
     }
 }

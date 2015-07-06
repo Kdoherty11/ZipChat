@@ -140,7 +140,7 @@ public class UserServiceTest {
 
         verify(mockNotification).send(Collections.emptyList(), Collections.singletonList(devices.get(0).regId));
     }
-//
+
     @Test
     public void sendNotificationBoth() throws Throwable {
         User mockReceiver = mock(User.class);
