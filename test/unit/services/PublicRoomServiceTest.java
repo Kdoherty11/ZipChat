@@ -9,7 +9,6 @@ import factories.UserFactory;
 import models.Platform;
 import models.entities.Device;
 import models.entities.PublicRoom;
-import models.entities.Request;
 import models.entities.User;
 import notifications.AbstractNotification;
 import org.junit.Before;
@@ -198,23 +197,22 @@ public class PublicRoomServiceTest {
     }
 
     @Test
-    public void findBySenderAndReceiver() {
-        long senderId = 1;
-        long receiverId = 2;
-        Optional<Request> expected = Optional.empty();
-        when(requestDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(expected);
-        Optional<Request> requestOptional = requestService.findBySenderAndReceiver(senderId, receiverId);
-        verify(requestDao).findBySenderAndReceiver(senderId, receiverId);
-        assertThat(requestOptional == expected).isTrue();
-    }
-
-    @Test
     public void allInGeoRange() {
         double lat = 1.0;
         double lon = 2.0;
         List<PublicRoom> expected = new ArrayList<>();
         when(publicRoomDao.allInGeoRange(lat, lon)).thenReturn(expected);
         List<PublicRoom> actual = publicRoomService.allInGeoRange(lat, lon);
+
+        assertThat(actual == expected).isTrue();
+    }
+
+    @Test
+    public void getSubscribers() {
+        PublicRoom mockRoom = mock(PublicRoom.class);
+        Set<User> expected = new HashSet<>();
+        when(publicRoomDao.getSubscribers(mockRoom)).thenReturn(expected);
+        Set<User> actual = publicRoomService.getSubscribers(mockRoom);
 
         assertThat(actual == expected).isTrue();
     }
