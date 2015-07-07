@@ -233,6 +233,4 @@ public class PrivateRoomServiceTest {
 
         assertThat(actual == expected).isTrue();
     }
-
-
 }

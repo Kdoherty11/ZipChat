@@ -3,18 +3,15 @@ package models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import notifications.MessageFavoritedNotification;
 import org.hibernate.annotations.GenericGenerator;
-import play.Logger;
 import play.data.validation.Constraints;
-import play.db.jpa.JPA;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "messages")
@@ -45,12 +42,12 @@ public class Message {
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "message_favorites", joinColumns = @JoinColumn(name = "messageId"),
             inverseJoinColumns = @JoinColumn(name = "userId"))
-    public List<User> favorites = new ArrayList<>();
+    public Set<User> favorites = new HashSet<>();
 
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "message_flags", joinColumns = @JoinColumn(name = "messageId"),
             inverseJoinColumns = @JoinColumn(name = "userId"))
-    public List<User> flags = new ArrayList<>();
+    public Set<User> flags = new HashSet<>();
 
     public int score;
 
