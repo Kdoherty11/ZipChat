@@ -15,11 +15,13 @@ import services.MessageService;
 import services.UserService;
 import services.impl.MessageServiceImpl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by kdoherty on 7/6/15.
@@ -265,4 +267,19 @@ public class MessageServiceTest {
 
         assertThat(message.flags.contains(flagger)).isFalse();
     }
+
+    @Test
+    public void getMessages() {
+        long roomId = 1;
+        int limit = 25;
+        int offset = 0;
+        List<Message> expected = new ArrayList<>();
+        when(messageDao.getMessages(roomId, limit, offset)).thenReturn(expected);
+
+        List<Message> actual = messageService.getMessages(roomId, limit, offset);
+
+        assertThat(actual == expected).isTrue();
+    }
+
+
 }

@@ -25,11 +25,6 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
     }
 
     @Override
-    public List<Message> getMessages(long roomId, int limit, int offset) {
-        return messageDao.getMessages(roomId, limit, offset);
-    }
-
-    @Override
     public boolean favorite(Message message, User user) {
         boolean didFavorite = message.favorites.add(user);
         if (didFavorite) {
@@ -61,5 +56,10 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
     @Override
     public boolean removeFlag(Message message, User user) {
         return message.flags.remove(user);
+    }
+
+    @Override
+    public List<Message> getMessages(long roomId, int limit, int offset) {
+        return messageDao.getMessages(roomId, limit, offset);
     }
 }
