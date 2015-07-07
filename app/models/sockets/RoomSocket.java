@@ -72,7 +72,7 @@ public class RoomSocket extends UntypedActor {
     private static final NotificationService notificationService = new NotificationServiceImpl(androidNotificationSender, iosNotificationSender);
 
     private static final UserService userService = new UserServiceImpl(userDao, requestDao, privateRoomDao, WS.client(), notificationService);
-    private static final AnonUserService anonUserService = new AnonUserServiceImpl(anonUserDao, userService);
+    private static final AnonUserService anonUserService = new AnonUserServiceImpl(anonUserDao);
     private static final AbstractUserService abstractUserService = new AbstractUserServiceImpl(abstractUserDao,
             userService, anonUserService);
 

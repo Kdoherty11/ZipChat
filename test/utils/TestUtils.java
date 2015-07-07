@@ -1,6 +1,7 @@
 package utils;
 
 import javax.persistence.Id;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,5 +67,12 @@ public class TestUtils {
         }
         throw new AssertionError("This method is broken...");
     }
+
+    public static Object getPrivateStaticField(Class clazz, String fieldName) throws NoSuchFieldException, IllegalAccessException {
+        Field f = clazz.getDeclaredField(fieldName); //NoSuchFieldException
+        f.setAccessible(true);
+        return f.get(null);
+    }
+
 
 }

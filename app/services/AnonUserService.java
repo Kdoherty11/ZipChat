@@ -5,7 +5,6 @@ import daos.AnonUserDao;
 import models.entities.AnonUser;
 import models.entities.PublicRoom;
 import models.entities.User;
-import notifications.AbstractNotification;
 import services.impl.AnonUserServiceImpl;
 
 /**
@@ -14,7 +13,6 @@ import services.impl.AnonUserServiceImpl;
 @ImplementedBy(AnonUserServiceImpl.class)
 public interface AnonUserService extends AnonUserDao {
 
-    void sendNotification(AnonUser receiver, AbstractNotification notification);
     AnonUser getOrCreateAnonUser(User actual, PublicRoom room);
 
 }

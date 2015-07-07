@@ -7,9 +7,7 @@ import daos.AnonUserDao;
 import models.entities.AnonUser;
 import models.entities.PublicRoom;
 import models.entities.User;
-import notifications.AbstractNotification;
 import services.AnonUserService;
-import services.UserService;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -31,18 +29,11 @@ public class AnonUserServiceImpl extends GenericServiceImpl<AnonUser> implements
     }
 
     private final AnonUserDao anonUserDao;
-    private final UserService userService;
 
     @Inject
-    public AnonUserServiceImpl(final AnonUserDao anonUserDao, final UserService userService) {
+    public AnonUserServiceImpl(final AnonUserDao anonUserDao) {
         super(anonUserDao);
         this.anonUserDao = anonUserDao;
-        this.userService = userService;
-    }
-
-    @Override
-    public void sendNotification(AnonUser receiver, AbstractNotification notification) {
-        userService.sendNotification(receiver.actual, notification);
     }
 
     @Override
