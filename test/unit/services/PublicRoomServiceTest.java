@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import daos.PublicRoomDao;
 import daos.UserDao;
 import factories.DeviceFactory;
-import factories.PropOverride;
 import factories.UserFactory;
 import models.Platform;
 import models.entities.Device;
@@ -141,7 +140,7 @@ public class PublicRoomServiceTest {
         Set<User> subscribers = TestUtils.setOf(user);
         when(mockRoom.subscribers).thenReturn(subscribers);
 
-        User subscribeUser = userFactory.create(PropOverride.of("name", UUID.randomUUID().toString()));
+        User subscribeUser = userFactory.create(UserFactory.Trait.UNIQUE_NAME);
 
         boolean result = publicRoomService.subscribe(mockRoom, subscribeUser);
 
@@ -156,7 +155,7 @@ public class PublicRoomServiceTest {
         Set<User> subscribers = TestUtils.setOf(user);
         when(mockRoom.subscribers).thenReturn(subscribers);
 
-        User unsubscribingUser = userFactory.create(PropOverride.of("name", UUID.randomUUID().toString()));
+        User unsubscribingUser = userFactory.create(UserFactory.Trait.UNIQUE_NAME);
 
         boolean result = publicRoomService.unsubscribe(mockRoom, unsubscribingUser);
 

@@ -5,11 +5,22 @@ import com.google.common.collect.ImmutableMap;
 import models.entities.User;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by kevin on 6/23/15.
  */
 public class UserFactory extends GenericFactory<User> {
+
+    public enum Trait implements ObjectMutator<User> {
+        UNIQUE_NAME {
+            @Override
+            public void apply(User user) throws IllegalAccessException, InstantiationException {
+                user.name = UUID.randomUUID().toString();
+            }
+        }
+
+    }
 
     public UserFactory() {
         super(User.class);

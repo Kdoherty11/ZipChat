@@ -2,10 +2,10 @@ package unit.services;
 
 import daos.MessageDao;
 import factories.MessageFactory;
-import factories.PublicRoomFactory;
 import factories.UserFactory;
 import models.entities.Message;
 import models.entities.User;
+import notifications.MessageFavoritedNotification;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +16,9 @@ import services.UserService;
 import services.impl.MessageServiceImpl;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.refEq;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by kdoherty on 7/6/15.
@@ -26,7 +29,6 @@ public class MessageServiceTest {
     private MessageService messageService;
     private MessageFactory messageFactory;
     private UserFactory userFactory;
-    private PublicRoomFactory publicRoomFactory;
 
     @Mock
     private MessageDao messageDao;
@@ -39,7 +41,6 @@ public class MessageServiceTest {
         messageService = new MessageServiceImpl(messageDao, userService);
         messageFactory = new MessageFactory();
         userFactory = new UserFactory();
-        publicRoomFactory = new PublicRoomFactory();
     }
 
     @Test
@@ -58,10 +59,10 @@ public class MessageServiceTest {
                 MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
 
         User favoritor = userFactory.create();
+
         messageService.favorite(message, favoritor);
 
-        assertThat(message.score).isEqualTo(1);
-        // TODO
+        verify(userService).sendNotification(refEq(message.sender.getActual()), any(MessageFavoritedNotification.class));
     }
 
 
