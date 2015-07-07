@@ -56,7 +56,7 @@ public class JsonValidator {
             assertThat(name).isNotEmpty();
             assertThat(latitude).isGreaterThanOrEqualTo(-90.0).isLessThanOrEqualTo(90.0);
             assertThat(longitude).isGreaterThanOrEqualTo(-180.0).isLessThanOrEqualTo(180.0);
-            assertThat(radius).isPositive();
+            assertThat(radius).isGreaterThanOrEqualTo(0);
             assertThat(lastActivity).isPositive();
         } catch (JSONException e) {
             throw new RuntimeException("Problem parsing public room json", e);
