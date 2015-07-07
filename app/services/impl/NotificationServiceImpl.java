@@ -26,8 +26,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void send(List<String> androidRegIds, List<String> iosRegIds, AbstractNotification notification) {
-        int numAndroidRegIds = androidRegIds.size();
         Map<String, String> content = notification.getContent();
+
+        int numAndroidRegIds = androidRegIds.size();
         if (numAndroidRegIds == 1) {
             androidNotificationSender.sendNotification(androidRegIds.get(0), content);
         } else if (numAndroidRegIds > 1) {
