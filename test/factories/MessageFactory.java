@@ -18,6 +18,12 @@ public class MessageFactory extends GenericFactory<Message> {
                 msg.sender = new UserFactory().create();
             }
         },
+        WITH_ANON_SENDER {
+            @Override
+            public void apply(Message msg) throws IllegalAccessException, InstantiationException {
+                msg.sender = new AnonUserFactory().create();
+            }
+        },
         WITH_PUBLIC_ROOM {
             @Override
             public void apply(Message msg) throws InstantiationException, IllegalAccessException {
