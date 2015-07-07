@@ -5,7 +5,6 @@ import daos.AbstractRoomDao;
 import models.entities.*;
 import notifications.MessageNotification;
 import services.AbstractRoomService;
-import services.PrivateRoomService;
 import services.PublicRoomService;
 import services.UserService;
 
@@ -19,15 +18,13 @@ import java.util.Set;
 public class AbstractRoomServiceImpl extends GenericServiceImpl<AbstractRoom> implements AbstractRoomService {
 
     private final PublicRoomService publicRoomService;
-    private final PrivateRoomService privateRoomService;
     private final UserService userService;
 
     @Inject
     public AbstractRoomServiceImpl(AbstractRoomDao abstractRoomDao, PublicRoomService publicRoomService,
-                                   PrivateRoomService privateRoomService, UserService userService) {
+                                   UserService userService) {
         super(abstractRoomDao);
         this.publicRoomService = publicRoomService;
-        this.privateRoomService = privateRoomService;
         this.userService = userService;
     }
 
@@ -39,7 +36,9 @@ public class AbstractRoomServiceImpl extends GenericServiceImpl<AbstractRoom> im
         } else {
             PrivateRoom privateRoom = (PrivateRoom) room;
             User notificationReceiver = privateRoom.sender.equals(message.sender) ? privateRoom.receiver : privateRoom.sender;
-            userService.sendNotification(notificationReceiver, new MessageNotification(message));
+            if (!userIdsInRoom.contains(notificationReceiver.userId)) {
+                userService.sendNotification(notificationReceiver, new MessageNotification(message));
+            }
         }
     }
 

@@ -37,13 +37,12 @@ public abstract class AbstractRoom {
         if (o == null || getClass() != o.getClass()) return false;
         AbstractRoom that = (AbstractRoom) o;
         return Objects.equal(createdAt, that.createdAt) &&
-                Objects.equal(lastActivity, that.lastActivity) &&
-                Objects.equal(messages, that.messages);
+                Objects.equal(lastActivity, that.lastActivity);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(createdAt, lastActivity, messages);
+        return Objects.hashCode(createdAt, lastActivity);
     }
 
     @Override

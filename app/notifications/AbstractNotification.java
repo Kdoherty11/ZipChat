@@ -34,7 +34,7 @@ public abstract class AbstractNotification {
     }
 
     protected static class Value {
-        protected static final String protected_ROOM_TYPE = "protectedRoom";
+        protected static final String PRIVATE_ROOM_TYPE = "PrivateRoom";
         protected static final String PUBLIC_ROOM_TYPE = "PublicRoom";
     }
 
@@ -65,7 +65,7 @@ public abstract class AbstractNotification {
 
     protected static Map<String, String> getRoomData(PrivateRoom protectedRoom) {
         return new ImmutableMap.Builder<String, String>()
-                .put(Key.ROOM_TYPE, Value.protected_ROOM_TYPE)
+                .put(Key.ROOM_TYPE, Value.PRIVATE_ROOM_TYPE)
                 .put(Key.ROOM_ID, String.valueOf(protectedRoom.roomId)).build();
     }
 
