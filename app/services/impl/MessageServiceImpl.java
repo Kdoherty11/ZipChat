@@ -5,8 +5,8 @@ import daos.MessageDao;
 import models.entities.Message;
 import models.entities.User;
 import notifications.MessageFavoritedNotification;
-import services.AbstractUserService;
 import services.MessageService;
+import services.UserService;
 
 import java.util.List;
 
@@ -15,13 +15,13 @@ import java.util.List;
  */
 public class MessageServiceImpl extends GenericServiceImpl<Message> implements MessageService {
     private MessageDao messageDao;
-    private AbstractUserService abstractUserService;
+    private UserService userService;
 
     @Inject
-    public MessageServiceImpl(final MessageDao messageDao, final AbstractUserService abstractUserService) {
+    public MessageServiceImpl(final MessageDao messageDao, final UserService userService) {
         super(messageDao);
         this.messageDao = messageDao;
-        this.abstractUserService = abstractUserService;
+        this.userService = userService;
     }
 
     @Override
@@ -36,7 +36,8 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
             message.score++;
             User actual = message.sender.getActual();
             if (!user.equals(actual)) {
-                abstractUserService.sendNotification(actual, new MessageFavoritedNotification(message, user));
+                // if not favoriting your own message...
+                userService.sendNotification(actual, new MessageFavoritedNotification(message, user));
             }
         }
 

@@ -1,5 +1,6 @@
 package factories;
 
+import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
 import models.entities.AnonUser;
 
@@ -16,6 +17,8 @@ public class AnonUserFactory extends GenericFactory<AnonUser> {
 
     @Override
     Map<String, Object> getDefaultProperties() {
+        Faker faker = new Faker();
+
         return ImmutableMap.of("name", faker.name().fullName());
     }
 

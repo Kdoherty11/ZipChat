@@ -8,8 +8,8 @@ import java.util.Set;
  */
 public interface Factory<T> {
 
-    T create(PropOverride... propOverrides) throws IllegalAccessException, InstantiationException;
-    List<T> createList(int size, PropOverride... propOverrides) throws InstantiationException, IllegalAccessException;
-    Set<T> createSet(int size, PropOverride... propOverrides) throws InstantiationException, IllegalAccessException;
+    T create(ObjectMutator<T>... mutators) throws IllegalAccessException, InstantiationException;
+    List<T> createList(int size, ObjectMutator<T>... mutators) throws InstantiationException, IllegalAccessException;
+    Set<T> createSet(int size, ObjectMutator<T>... mutators) throws InstantiationException, IllegalAccessException;
 
 }

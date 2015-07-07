@@ -1,8 +1,6 @@
 package factories;
 
-import com.github.javafaker.Faker;
 import com.google.common.base.Preconditions;
-import play.Logger;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -15,30 +13,37 @@ import static com.google.common.base.Defaults.defaultValue;
 public abstract class GenericFactory<T> implements Factory<T> {
 
     private Class<T> entityClass;
-    protected final Faker faker = new Faker();
 
     public GenericFactory(Class<T> entityClass) {
         this.entityClass = Preconditions.checkNotNull(entityClass);
     }
 
+    // Override this
     Map<String, Object> getDefaultProperties() {
         return Collections.emptyMap();
     }
 
+    @SafeVarargs
     @Override
-    public T create(PropOverride... propOverrides) throws IllegalAccessException, InstantiationException {
+    public final T create(ObjectMutator<T>... mutators) throws IllegalAccessException, InstantiationException {
         Map<String, Object> defaultProperties = getDefaultProperties();
-        Logger.debug("Got default properties: " + defaultProperties.toString());
-        Map<String, Object> propOverridesMap = getPropOverridesMap(propOverrides);
+        Set<String> overriddenFields = new HashSet<>();
 
         T createdObj = entityClass.newInstance();
-        Field[] fields = entityClass.getFields();
 
+        for (ObjectMutator<T> mutator : mutators) {
+            mutator.apply(createdObj);
+
+            if (mutator instanceof PropOverride) {
+                overriddenFields.add(((PropOverride) mutator).getFieldName());
+            }
+        }
+
+        Field[] fields = entityClass.getFields();
         for (Field field : fields) {
             String fieldName = field.getName();
-            if (propOverridesMap.containsKey(fieldName)) {
-                field.set(createdObj, propOverridesMap.get(fieldName));
-            } else if (fieldHasDefaultValue(createdObj, field) && defaultProperties.containsKey(fieldName)) {
+            if (!overriddenFields.contains(fieldName) && fieldHasDefaultValue(createdObj, field)
+                    && defaultProperties.containsKey(fieldName)) {
                 field.set(createdObj, defaultProperties.get(fieldName));
             }
         }
@@ -46,40 +51,28 @@ public abstract class GenericFactory<T> implements Factory<T> {
         return createdObj;
     }
 
+    @SafeVarargs
     @Override
-    public List<T> createList(int size, PropOverride... propOverrides) throws InstantiationException, IllegalAccessException {
+    public final List<T> createList(int size, ObjectMutator<T>... mutators) throws InstantiationException, IllegalAccessException {
         List<T> createdObjList = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
-            createdObjList.add(create(propOverrides));
+            createdObjList.add(create(mutators));
         }
 
         return createdObjList;
     }
 
+    @SafeVarargs
     @Override
-    public Set<T> createSet(int size, PropOverride... propOverrides) throws InstantiationException, IllegalAccessException {
+    public final Set<T> createSet(int size, ObjectMutator<T>... mutators) throws InstantiationException, IllegalAccessException {
         Set<T> createdObjSet = new HashSet<>();
 
         for (int i = 0; i < size; i++) {
-            createdObjSet.add(create(propOverrides));
+            createdObjSet.add(create(mutators));
         }
 
         return createdObjSet;
-    }
-
-    private static Map<String, Object> getPropOverridesMap(PropOverride... propOverrides) {
-        Map<String, Object> propOverrideMap = new HashMap<>();
-
-        for (PropOverride propOverride : propOverrides) {
-            if (propOverrideMap.containsKey(propOverride.getFieldName())) {
-                throw new IllegalArgumentException("Conflicting property overrides");
-            }
-
-            propOverrideMap.put(propOverride.getFieldName(), propOverride.getFieldValue());
-        }
-
-        return propOverrideMap;
     }
 
     private static boolean fieldHasDefaultValue(Object entity, Field field) throws IllegalAccessException {

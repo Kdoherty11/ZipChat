@@ -1,5 +1,6 @@
 package factories;
 
+import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
 import models.entities.User;
 
@@ -16,6 +17,7 @@ public class UserFactory extends GenericFactory<User> {
 
     @Override
     Map<String, Object> getDefaultProperties() {
+        Faker faker = new Faker();
         return new ImmutableMap.Builder<String, Object>()
                 .put("facebookId", faker.lorem().fixedString(17))
                 .put("gender", faker.options().option(new String[]{"male", "female"}))

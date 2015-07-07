@@ -1,5 +1,6 @@
 package factories;
 
+import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
 import models.entities.PublicRoom;
 
@@ -16,6 +17,7 @@ public class PublicRoomFactory extends GenericFactory<PublicRoom> {
 
     @Override
     Map<String, Object> getDefaultProperties() {
+        Faker faker = new Faker();
         return new ImmutableMap.Builder<String, Object>()
                 .put("name", faker.lorem().fixedString(20))
                 .put("latitude", 0.0)

@@ -10,6 +10,8 @@ import daos.*;
 import daos.impl.*;
 import models.entities.*;
 import models.sockets.events.*;
+import notifications.senders.AndroidNotificationSender;
+import notifications.senders.IosNotificationSender;
 import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
@@ -64,17 +66,22 @@ public class RoomSocket extends UntypedActor {
     private static final MessageDao messageDao = new MessageDaoImpl();
     private static final RequestDao requestDao = new RequestDaoImpl();
 
-    private static final UserService userService = new UserServiceImpl(userDao, requestDao, privateRoomDao, WS.client());
+    private static final AndroidNotificationSender androidNotificationSender = new AndroidNotificationSender();
+    private static final IosNotificationSender iosNotificationSender = new IosNotificationSender();
+
+    private static final NotificationService notificationService = new NotificationServiceImpl(androidNotificationSender, iosNotificationSender);
+
+    private static final UserService userService = new UserServiceImpl(userDao, requestDao, privateRoomDao, WS.client(), notificationService);
     private static final AnonUserService anonUserService = new AnonUserServiceImpl(anonUserDao, userService);
     private static final AbstractUserService abstractUserService = new AbstractUserServiceImpl(abstractUserDao,
             userService, anonUserService);
 
     private static final PublicRoomService publicRoomService = new PublicRoomServiceImpl(
-            publicRoomDao, userDao);
+            publicRoomDao, userDao, notificationService);
     private static final PrivateRoomService privateRoomService = new PrivateRoomServiceImpl(privateRoomDao, requestDao, userService);
     private static final AbstractRoomService abstractRoomService = new AbstractRoomServiceImpl(abstractRoomDao, publicRoomService, privateRoomService, userService);
 
-    private static final MessageService messageService = new MessageServiceImpl(messageDao, abstractUserService);
+    private static final MessageService messageService = new MessageServiceImpl(messageDao, userService);
 
     static {
 

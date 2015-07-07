@@ -1,11 +1,10 @@
 package notifications;
 
 import com.google.common.collect.ImmutableMap;
-import models.entities.*;
-import notifications.senders.AndroidNotificationSender;
-import notifications.senders.IosNotificationSender;
+import models.entities.AbstractRoom;
+import models.entities.PrivateRoom;
+import models.entities.PublicRoom;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,22 +44,6 @@ public abstract class AbstractNotification {
         this.content = contentBuilder.put(Key.EVENT, event).build();
     }
 
-    public void send(List<String> androidRegIds, List<String> iosRegIds) {
-        int numAndroidRegIds = androidRegIds.size();
-        if (numAndroidRegIds == 1) {
-            AndroidNotificationSender.INSTANCE.sendNotification(androidRegIds.get(0), content);
-        } else if (numAndroidRegIds > 1) {
-            AndroidNotificationSender.INSTANCE.sendBatchNotification(androidRegIds, content);
-        }
-
-        int numIosRegIds = iosRegIds.size();
-        if (numIosRegIds == 1) {
-            IosNotificationSender.INSTANCE.sendNotification(iosRegIds.get(0), content);
-        } else if (numIosRegIds > 1) {
-            IosNotificationSender.INSTANCE.sendBatchNotification(iosRegIds, content);
-        }
-    }
-
     protected static Map<String, String> getRoomData(AbstractRoom room) {
         if (room instanceof PublicRoom) {
             return getRoomData((PublicRoom) room);
@@ -84,5 +67,9 @@ public abstract class AbstractNotification {
         return new ImmutableMap.Builder<String, String>()
                 .put(Key.ROOM_TYPE, Value.protected_ROOM_TYPE)
                 .put(Key.ROOM_ID, String.valueOf(protectedRoom.roomId)).build();
+    }
+
+    public Map<String, String> getContent() {
+        return content;
     }
 }

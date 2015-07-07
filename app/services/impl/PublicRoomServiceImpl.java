@@ -7,6 +7,7 @@ import models.Platform;
 import models.entities.PublicRoom;
 import models.entities.User;
 import notifications.AbstractNotification;
+import services.NotificationService;
 import services.PublicRoomService;
 
 import java.util.ArrayList;
@@ -20,12 +21,14 @@ public class PublicRoomServiceImpl extends GenericServiceImpl<PublicRoom> implem
 
     private final PublicRoomDao publicRoomDao;
     private final UserDao userDao;
+    private final NotificationService notificationService;
 
     @Inject
-    public PublicRoomServiceImpl(final PublicRoomDao publicRoomDao, final UserDao userDao) {
+    public PublicRoomServiceImpl(final PublicRoomDao publicRoomDao, final UserDao userDao, final NotificationService notificationService) {
         super(publicRoomDao);
         this.publicRoomDao = publicRoomDao;
         this.userDao = userDao;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class PublicRoomServiceImpl extends GenericServiceImpl<PublicRoom> implem
             }
         });
 
-        notification.send(androidRegIds, iosRegIds);
+        notificationService.send(androidRegIds, iosRegIds, notification);
     }
 
     @Override

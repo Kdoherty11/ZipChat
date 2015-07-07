@@ -1,5 +1,6 @@
 package notifications.senders;
 
+import com.google.inject.Singleton;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
 import com.notnoop.apns.PayloadBuilder;
@@ -12,9 +13,9 @@ import java.util.Map;
 /**
  * Created by kevin on 6/11/15.
  */
-public enum IosNotificationSender implements NotificationSender {
 
-    INSTANCE;
+@Singleton
+public class IosNotificationSender implements NotificationSender {
 
     public static final ApnsService SERVICE = APNS.newService()
             .withCert("certificates/dev.p12", "password")

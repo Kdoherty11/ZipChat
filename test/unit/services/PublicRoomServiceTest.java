@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import services.NotificationService;
 import services.PublicRoomService;
 import services.impl.PublicRoomServiceImpl;
 import utils.TestUtils;
@@ -43,9 +44,12 @@ public class PublicRoomServiceTest {
     @Mock
     private UserDao userDao;
 
+    @Mock
+    private NotificationService notificationService;
+
     @Before
     public void setUp() {
-        publicRoomService = spy(new PublicRoomServiceImpl(publicRoomDao, userDao));
+        publicRoomService = spy(new PublicRoomServiceImpl(publicRoomDao, userDao, notificationService));
         userFactory = new UserFactory();
         deviceFactory = new DeviceFactory();
     }
@@ -74,7 +78,7 @@ public class PublicRoomServiceTest {
 
         publicRoomService.sendNotification(mockRoom, mockNotification, userIdsInRoom);
 
-        verify(mockNotification).send(Collections.emptyList(), Collections.emptyList());
+        verify(notificationService).send(Collections.emptyList(), Collections.emptyList(), mockNotification);
     }
 
     @Test
@@ -85,10 +89,10 @@ public class PublicRoomServiceTest {
         User mockUser1 = mock(User.class);
         User mockUser2 = mock(User.class);
 
-        List<Device> user1Devices = deviceFactory.createList(2, PropOverride.of("platform", Platform.android));
+        List<Device> user1Devices = deviceFactory.createList(2, DeviceFactory.Trait.ANDROID);
         List<Device> user2Devices = new ArrayList<>();
-        user2Devices.add(deviceFactory.create(PropOverride.of("platform", Platform.ios)));
-        user2Devices.addAll(deviceFactory.createList(2, PropOverride.of("platform", Platform.android)));
+        user2Devices.add(deviceFactory.create(DeviceFactory.Trait.ANDROID));
+        user2Devices.addAll(deviceFactory.createList(2, DeviceFactory.Trait.IOS));
 
         when(userDao.getDevices(mockUser1)).thenReturn(user1Devices);
         when(userDao.getDevices(mockUser2)).thenReturn(user2Devices);
@@ -113,7 +117,8 @@ public class PublicRoomServiceTest {
                 .collect(Collectors.toList());
 
 
-        verify(mockNotification).send(androidRegIds, iosRegIds);
+        verify(notificationService).send(androidRegIds, iosRegIds, mockNotification);
+        //verify(mockNotification).send(androidRegIds, iosRegIds);
     }
 
     @Test

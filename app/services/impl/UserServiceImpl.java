@@ -13,6 +13,7 @@ import models.entities.User;
 import notifications.AbstractNotification;
 import notifications.ChatRequestNotification;
 import play.libs.ws.WSClient;
+import services.NotificationService;
 import services.UserService;
 
 import java.util.ArrayList;
@@ -29,14 +30,16 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     private final RequestDao requestDao;
     private final PrivateRoomDao privateRoomDao;
     private final WSClient wsClient;
+    private final NotificationService notificationService;
 
     @Inject
-    public UserServiceImpl(final UserDao userDao, final RequestDao requestDao, final PrivateRoomDao privateRoomDao, final WSClient wsClient) {
+    public UserServiceImpl(final UserDao userDao, final RequestDao requestDao, final PrivateRoomDao privateRoomDao, final WSClient wsClient, final NotificationService notificationService) {
         super(userDao);
         this.userDao = userDao;
         this.requestDao = requestDao;
         this.privateRoomDao = privateRoomDao;
         this.wsClient = wsClient;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -66,7 +69,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
             }
         }
 
-        notification.send(androidRegIds, iosRegIds);
+        notificationService.send(androidRegIds, iosRegIds, notification);
     }
 
     @Override

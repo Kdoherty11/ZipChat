@@ -107,7 +107,7 @@ if not defined JAVACINSTALLED set JAVAOK=false
 
 if "%JAVAOK%"=="false" (
   echo.
-  echo A Java JDK is not installed or can't be found.
+  echo A Java JDK is not installed or can'traitApplier be found.
   if not "%JAVA_HOME%"=="" (
     echo JAVA_HOME = "%JAVA_HOME%"
   )
@@ -205,7 +205,7 @@ if "!args!"=="" (
 rem We add a / in front, so we get file:///C: instead of file://C:
 rem Java considers the later a UNC path.
 rem We also attempt a solid effort at making it URI friendly.
-rem We don't even bother with UNC paths.
+rem We don'traitApplier even bother with UNC paths.
 set JAVA_FRIENDLY_HOME_1=/!ACTIVATOR_HOME:\=/!
 set JAVA_FRIENDLY_HOME=/!JAVA_FRIENDLY_HOME_1: =%%20!
 

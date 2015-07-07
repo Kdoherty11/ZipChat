@@ -20,6 +20,7 @@ import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequestHolder;
 import play.libs.ws.WSResponse;
+import services.NotificationService;
 import services.UserService;
 import services.impl.UserServiceImpl;
 
@@ -54,11 +55,14 @@ public class UserServiceTest {
     @Mock
     private WSClient wsClient;
 
+    @Mock
+    private NotificationService notificationService;
+
     private DeviceFactory deviceFactory;
 
     @Before
     public void setUp() {
-        userService = spy(new UserServiceImpl(userDao, requestDao, privateRoomDao, wsClient));
+        userService = spy(new UserServiceImpl(userDao, requestDao, privateRoomDao, wsClient, notificationService));
         deviceFactory = new DeviceFactory();
     }
 
@@ -116,7 +120,7 @@ public class UserServiceTest {
     public void sendSingleAndroidNotification() throws Throwable {
         User mockReceiver = mock(User.class);
         AbstractNotification mockNotification = mock(AbstractNotification.class);
-        doNothing().when(mockNotification).send(anyListOf(String.class), anyListOf(String.class));
+        doNothing().when(notificationService).send(anyListOf(String.class), anyListOf(String.class), refEq(mockNotification));
 
         List<Device> devices = deviceFactory.createList(1, PropOverride.of("platform", Platform.android));
         when(userDao.getDevices(mockReceiver)).thenReturn(devices);
@@ -124,31 +128,31 @@ public class UserServiceTest {
 
         userService.sendNotification(mockReceiver, mockNotification);
 
-        verify(mockNotification).send(Collections.singletonList(devices.get(0).regId), Collections.emptyList());
+        verify(notificationService).send(Collections.singletonList(devices.get(0).regId), Collections.emptyList(), mockNotification);
     }
 
     @Test
     public void sendSingleIosNotification() throws Throwable {
         User mockReceiver = mock(User.class);
         AbstractNotification mockNotification = mock(AbstractNotification.class);
-        doNothing().when(mockNotification).send(anyListOf(String.class), anyListOf(String.class));
+        doNothing().when(notificationService).send(anyListOf(String.class), anyListOf(String.class), refEq(mockNotification));
 
         List<Device> devices = deviceFactory.createList(1, PropOverride.of("platform", Platform.ios));
         when(userDao.getDevices(mockReceiver)).thenReturn(devices);
 
         userService.sendNotification(mockReceiver, mockNotification);
 
-        verify(mockNotification).send(Collections.emptyList(), Collections.singletonList(devices.get(0).regId));
+        verify(notificationService).send(Collections.emptyList(), Collections.singletonList(devices.get(0).regId), mockNotification);
     }
 
     @Test
     public void sendNotificationBoth() throws Throwable {
         User mockReceiver = mock(User.class);
         AbstractNotification mockNotification = mock(AbstractNotification.class);
-        doNothing().when(mockNotification).send(anyListOf(String.class), anyListOf(String.class));
+        doNothing().when(notificationService).send(anyListOf(String.class), anyListOf(String.class), refEq(mockNotification));
 
-        List<Device> androidDevices = deviceFactory.createList(3, PropOverride.of("platform", Platform.android));
-        List<Device> iosDevices = deviceFactory.createList(2, PropOverride.of("platform", Platform.ios));
+        List<Device> androidDevices = deviceFactory.createList(3, DeviceFactory.Trait.ANDROID);
+        List<Device> iosDevices = deviceFactory.createList(2, DeviceFactory.Trait.IOS);
         List<Device> devices = new ArrayList<>();
         devices.addAll(androidDevices);
         devices.addAll(iosDevices);
@@ -160,7 +164,7 @@ public class UserServiceTest {
         List<String> androidRegIds = androidDevices.stream().map(device -> device.regId).collect(Collectors.toList());
         List<String> iosRegIds = iosDevices.stream().map(device -> device.regId).collect(Collectors.toList());
 
-        verify(mockNotification).send(androidRegIds, iosRegIds);
+        verify(notificationService).send(androidRegIds, iosRegIds, mockNotification);
     }
 
     @Test
