@@ -72,7 +72,7 @@ public class RoomSocket extends UntypedActor {
     private static final PublicRoomService publicRoomService = new PublicRoomServiceImpl(
             publicRoomDao, userDao);
     private static final PrivateRoomService privateRoomService = new PrivateRoomServiceImpl(privateRoomDao, requestDao, userService);
-    private static final AbstractRoomService abstractRoomService = new AbstractRoomServiceImpl(abstractRoomDao, publicRoomService, privateRoomService);
+    private static final AbstractRoomService abstractRoomService = new AbstractRoomServiceImpl(abstractRoomDao, publicRoomService, privateRoomService, userService);
 
     private static final MessageService messageService = new MessageServiceImpl(messageDao, abstractUserService);
 

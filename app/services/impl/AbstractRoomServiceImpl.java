@@ -2,14 +2,12 @@ package services.impl;
 
 import com.google.inject.Inject;
 import daos.AbstractRoomDao;
-import models.entities.AbstractRoom;
-import models.entities.Message;
-import models.entities.PrivateRoom;
-import models.entities.PublicRoom;
+import models.entities.*;
 import notifications.MessageNotification;
 import services.AbstractRoomService;
 import services.PrivateRoomService;
 import services.PublicRoomService;
+import services.UserService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -22,13 +20,15 @@ public class AbstractRoomServiceImpl extends GenericServiceImpl<AbstractRoom> im
 
     private final PublicRoomService publicRoomService;
     private final PrivateRoomService privateRoomService;
+    private final UserService userService;
 
     @Inject
     public AbstractRoomServiceImpl(AbstractRoomDao abstractRoomDao, PublicRoomService publicRoomService,
-                                   PrivateRoomService privateRoomService) {
+                                   PrivateRoomService privateRoomService, UserService userService) {
         super(abstractRoomDao);
         this.publicRoomService = publicRoomService;
         this.privateRoomService = privateRoomService;
+        this.userService = userService;
     }
 
     public void addMessage(AbstractRoom room, Message message, Set<Long> userIdsInRoom) {
@@ -37,7 +37,9 @@ public class AbstractRoomServiceImpl extends GenericServiceImpl<AbstractRoom> im
         if (room instanceof PublicRoom) {
             publicRoomService.sendNotification((PublicRoom) room, new MessageNotification(message), userIdsInRoom);
         } else {
-            privateRoomService.sendNotification((PrivateRoom) room, new MessageNotification(message), userIdsInRoom);
+            PrivateRoom privateRoom = (PrivateRoom) room;
+            User notificationReceiver = privateRoom.sender.equals(message.sender) ? privateRoom.receiver : privateRoom.sender;
+            userService.sendNotification(notificationReceiver, new MessageNotification(message));
         }
     }
 

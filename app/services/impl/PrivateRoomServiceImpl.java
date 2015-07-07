@@ -4,13 +4,11 @@ import com.google.inject.Inject;
 import daos.PrivateRoomDao;
 import daos.RequestDao;
 import models.entities.PrivateRoom;
-import notifications.AbstractNotification;
 import services.PrivateRoomService;
 import services.UserService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Created by kdoherty on 7/3/15.
@@ -30,26 +28,19 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
     }
 
     @Override
-    public List<PrivateRoom> findByUserId(long userId) {
-        return privateRoomDao.findByUserId(userId);
-    }
-
-    @Override
-    public Optional<PrivateRoom> findBySenderAndReceiver(long senderId, long receiverId) {
-        return privateRoomDao.findBySenderAndReceiver(senderId, receiverId);
-    }
-
-    @Override
     public boolean removeUser(PrivateRoom room, long userId) {
+        boolean roomRemoved = false;
         if (userId == room.sender.userId) {
             if (!room.receiverInRoom) {
                 privateRoomDao.remove(room);
+                roomRemoved = true;
             } else {
                 room.senderInRoom = false;
             }
         } else if (userId == room.receiver.userId) {
             if (!room.senderInRoom) {
                 privateRoomDao.remove(room);
+                roomRemoved = true;
             } else {
                 room.receiverInRoom = false;
             }
@@ -60,7 +51,9 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
         if (room.request != null) {
             // Allow both users to request each other again
             requestDao.remove(room.request);
-            room.request = null;
+            if (!roomRemoved) {
+                room.request = null;
+            }
         }
 
         return true;
@@ -73,11 +66,12 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
     }
 
     @Override
-    public void sendNotification(PrivateRoom room, AbstractNotification notification, Set<Long> userIdsInRoom) {
-        if (room.senderInRoom && !userIdsInRoom.contains(room.sender.userId)) {
-            userService.sendNotification(room.sender, notification);
-        } else if (room.receiverInRoom && !userIdsInRoom.contains(room.receiver.userId)) {
-            userService.sendNotification(room.receiver, notification);
-        }
+    public List<PrivateRoom> findByUserId(long userId) {
+        return privateRoomDao.findByUserId(userId);
+    }
+
+    @Override
+    public Optional<PrivateRoom> findBySenderAndReceiver(long senderId, long receiverId) {
+        return privateRoomDao.findBySenderAndReceiver(senderId, receiverId);
     }
 }
