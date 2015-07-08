@@ -1,10 +1,12 @@
 package unit.controllers;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import controllers.MessagesController;
 import controllers.PublicRoomsController;
 import factories.PublicRoomFactory;
 import models.entities.PublicRoom;
+import models.entities.User;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
@@ -25,16 +27,12 @@ import utils.JsonArrayIterator;
 import utils.JsonValidator;
 import utils.TestUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static play.test.Helpers.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -199,12 +197,24 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     @Test
     public void createSubscription() {
+        long roomId = 1;
+        long userId = 2;
+        PublicRoom mockRoom = mock(PublicRoom.class);
+        User mockUser = mock(User.class);
 
+        when(publicRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
+        when(userService.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(publicRoomService.subscribe(mockRoom, mockUser)).thenReturn(true);
+
+        FakeRequest request = new FakeRequest(POST, "/publicRooms/" + roomId + "/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
+        final Result result = route(request);
+        assertThat(status(result)).isEqualTo(CREATED);
     }
 
     @Test
     public void createSubscriptionNoUserId() {
-
+        final Result result = route(new FakeRequest(POST, "/publicRooms/1/subscriptions/"));
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
@@ -234,12 +244,17 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     @Test
     public void removeSubscription() {
+        long roomId = 1;
+        long userId = 2;
+        PublicRoom mockRoom = mock(PublicRoom.class);
+        User mockUser = mock(User.class);
 
-    }
+        when(publicRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
+        when(userService.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(publicRoomService.unsubscribe(mockRoom, mockUser)).thenReturn(true);
 
-    @Test
-    public void removeSubscriptionNoUserId() {
-
+        final Result result = route(new FakeRequest(DELETE, "/publicRooms/" + roomId + "/subscriptions/" + userId));
+        assertThat(status(result)).isEqualTo(OK);
     }
 
     @Test

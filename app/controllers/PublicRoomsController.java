@@ -74,12 +74,14 @@ public class PublicRoomsController extends BaseController {
 
         String userIdKey = "userId";
 
+        if (!data.containsKey(userIdKey)) {
+            return badRequestJson(userIdKey + " is required");
+        }
+
         Long userId = Longs.tryParse(data.get(userIdKey));
 
         if (userId == null) {
-            if (!data.containsKey(userIdKey)) {
-                return badRequestJson(userIdKey + " is required");
-            }
+
 
             return FieldValidator.typeError(userIdKey, Long.class);
         }
@@ -98,6 +100,11 @@ public class PublicRoomsController extends BaseController {
             }
 
             @Override
+            public Result onActionSuccess() {
+                return created();
+            }
+
+            @Override
             public Result onActionFailed(User user) {
                 return badRequest("User " + user.userId + " is already subscribed");
             }
@@ -110,6 +117,11 @@ public class PublicRoomsController extends BaseController {
             @Override
             public boolean publicRoomAction(PublicRoom publicRoom, User user) {
                 return publicRoomService.unsubscribe(publicRoom, user);
+            }
+
+            @Override
+            public Result onActionSuccess() {
+                return OK_RESULT;
             }
 
             @Override
@@ -135,7 +147,7 @@ public class PublicRoomsController extends BaseController {
                     return cb.onActionFailed(userOptional.get());
                 }
 
-                return OK_RESULT;
+                return cb.onActionSuccess();
             } else {
                 return entityNotFound(User.class, roomId);
             }
@@ -148,6 +160,7 @@ public class PublicRoomsController extends BaseController {
     // Public due to http://stackoverflow.com/a/21442580/3258892
     public interface PublicRoomUserAction {
         boolean publicRoomAction(PublicRoom publicRoom, User user);
+        Result onActionSuccess();
         Result onActionFailed(User user);
     }
 
