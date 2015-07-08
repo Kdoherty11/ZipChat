@@ -48,7 +48,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     private UserService userService;
 
     @Before
-    @SuppressWarnings("deprecation") // start is deprecated
+    @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
         publicRoomFactory = new PublicRoomFactory();
         controller = new PublicRoomsController(publicRoomService, messagesController,
