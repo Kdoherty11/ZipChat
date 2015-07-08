@@ -1,18 +1,24 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.Logger;
 import play.Play;
 import play.data.Form;
 import play.db.jpa.JPA;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import security.Secured;
+import services.impl.GenericServiceImpl;
 import utils.DbUtils;
 
+import javax.persistence.Id;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import static play.libs.Json.toJson;
 
@@ -40,6 +46,34 @@ public class BaseController extends Controller {
     // Pinged to check server status
     public Result status() {
         return OK_RESULT;
+    }
+
+    protected static <T> Result create(Class<T> clazz, GenericServiceImpl<T> service) {
+        Form<T> form = Form.form(clazz).bindFromRequest();
+        if (form.hasErrors()) {
+            return badRequest(form.errorsAsJson());
+        } else {
+            T entity = form.get();
+            service.save(entity);
+            ObjectNode jsonResponse = getIdField(entity);
+            return created(jsonResponse);
+        }
+    }
+
+    public static ObjectNode getIdField(Object createdObject) {
+        Class<?> clazz = createdObject.getClass();
+
+        Field idField = Arrays.asList(clazz.getFields())
+                .stream()
+                .filter(field -> field.isAnnotationPresent(Id.class))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No ID for entity " + clazz));
+
+        try {
+            return Json.newObject().put(idField.getName(), idField.getLong(createdObject));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Id field must be public");
+        }
     }
 
     public static <T> Result create(Class<T> clazz) {

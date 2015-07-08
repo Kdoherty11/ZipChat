@@ -9,6 +9,7 @@ import models.entities.User;
 import models.sockets.RoomSocket;
 import play.Logger;
 import play.Play;
+import play.data.Form;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static play.data.Form.form;
+import static play.libs.Json.toJson;
 
 @Singleton
 @Security.Authenticated(Secured.class)
@@ -46,7 +48,14 @@ public class PublicRoomsController extends BaseController {
 
     @Transactional
     public Result createRoom() {
-        return create(PublicRoom.class);
+        Form<PublicRoom> form = Form.form(PublicRoom.class).bindFromRequest();
+        if (form.hasErrors()) {
+            return badRequest(form.errorsAsJson());
+        } else {
+            PublicRoom room = form.get();
+            publicRoomService.save(room);
+            return created(toJson(room));
+        }
     }
 
     @Transactional(readOnly = true)

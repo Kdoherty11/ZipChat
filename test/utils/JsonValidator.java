@@ -75,4 +75,10 @@ public class JsonValidator {
         assertThat(message).isNotEmpty();
         assertThat(createdAt).isPositive();
     }
+
+    public static void validateCreateJson(JSONObject createJson, String idKey) throws JSONException {
+        assertThat(createJson.getLong(idKey)).isPositive();
+    }
+
+
 }

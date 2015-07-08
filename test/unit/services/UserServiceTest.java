@@ -113,6 +113,8 @@ public class UserServiceTest {
         List<Device> devices = new ArrayList<>();
         when(userDao.getDevices(mockReceiver)).thenReturn(devices);
 
+        userService.sendNotification(mockReceiver, mockNotification);
+
         verifyZeroInteractions(mockNotification);
     }
 
@@ -208,6 +210,17 @@ public class UserServiceTest {
 
         verify(userDao).findByFacebookId(facebookId);
         assertThat(userOptional.isPresent()).isFalse();;
+    }
+
+    @Test
+    public void getDevices() {
+        List<Device> expected = new ArrayList<>();
+        User mockUser = mock(User.class);
+        when(userDao.getDevices(mockUser)).thenReturn(expected);
+
+        List<Device> actual = userService.getDevices(mockUser);
+
+        assertThat(actual == expected).isTrue();
     }
 
 }

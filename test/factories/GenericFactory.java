@@ -1,6 +1,7 @@
 package factories;
 
 import com.google.common.base.Preconditions;
+import play.Logger;
 
 import javax.persistence.Id;
 import java.lang.reflect.Field;
@@ -49,7 +50,12 @@ public abstract class GenericFactory<T> implements Factory<T> {
             String fieldName = field.getName();
             if (!overriddenFields.contains(fieldName)) {
                 if (field.isAnnotationPresent(Id.class)) {
-                    field.set(createdObj, getId(field.getDeclaringClass()));
+                    if (field.getType().isAssignableFrom(Long.TYPE)) {
+                        field.set(createdObj, getId(field.getDeclaringClass()));
+                    } else {
+                        Logger.warn("Id not set for " + field.getDeclaringClass().getSimpleName() +
+                                " because type " + field.getType() + "id generation is not supported");
+                    }
                 } else if (fieldHasDefaultValue(createdObj, field)
                         && defaultProperties.containsKey(fieldName)) {
                     field.set(createdObj, defaultProperties.get(fieldName));

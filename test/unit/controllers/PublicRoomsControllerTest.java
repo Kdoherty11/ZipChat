@@ -14,15 +14,20 @@ import org.mockito.runners.MockitoJUnitRunner;
 import play.GlobalSettings;
 import play.mvc.Action;
 import play.mvc.Result;
+import play.test.FakeRequest;
 import play.test.WithApplication;
 import security.SecurityHelper;
 import services.PublicRoomService;
 import services.UserService;
+import utils.AbstractResultBuilder;
 import utils.JsonArrayIterator;
 import utils.JsonValidator;
+import utils.ResultValidator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyDouble;
@@ -111,27 +116,52 @@ public class PublicRoomsControllerTest extends WithApplication {
         assertThat(status(result)).isEqualTo(BAD_REQUEST);
     }
 
+    private class CreateResultBuilder extends AbstractResultBuilder {
 
+        private Map<String, String> params = new HashMap<>();
 
+        public CreateResultBuilder() {
+            super(POST, "/publicRooms");
+        }
+
+        public CreateResultBuilder setName(String roomName) {
+            params.put("name", roomName);
+            return this;
+        }
+
+        public CreateResultBuilder setLatitude(String latitude) {
+            params.put("latitude", latitude);
+            return this;
+        }
+
+        public CreateResultBuilder setLongitude(String longitude) {
+            params.put("longitude", longitude);
+            return this;
+        }
+
+        public CreateResultBuilder setRadius(String radius) {
+            params.put("radius", radius);
+            return this;
+        }
+
+        public Result build() {
+            FakeRequest request = buildFakeRequest().withFormUrlEncodedBody(params);
+            return route(request);
+        }
+    }
 
     @Test
-    public void createRoomSuccess() throws JSONException {
-        //Result createResult = route(fakeRequest(POST, "/publicRooms"));
-        //assertThat(status(createResult)).isEqualTo(CREATED);
-
-
-//        JSONObject createJson = new JSONObject(contentAsString(createResult));
-//        assertThat(createJson.getLong(RoomsControllerAdapter.ID_KEY)).isNotNull();
-//        assertThat(createJson.getString(RoomsControllerAdapter.NAME_KEY)).isEqualTo(RoomsControllerAdapter.NAME);
-//        assertThat(createJson.getLong(RoomsControllerAdapter.LAT_KEY)).isEqualTo(RoomsControllerAdapter.LAT);
-//        assertThat(createJson.getLong(RoomsControllerAdapter.LON_KEY)).isEqualTo(RoomsControllerAdapter.LON);
-//
-//        Result showResult = adapter.showRoom(createJson.getLong(RoomsControllerAdapter.ID_KEY));
-//        assertThat(status(showResult)).isEqualTo(OK);
-//
-//        JSONObject showJson = new JSONObject(contentAsString(showResult));
-//        assertThat(showJson.getLong(RoomsControllerAdapter.ID_KEY)).isNotNull();
+    public void createRoomSuccess() throws JSONException, InstantiationException, IllegalAccessException {
+        PublicRoom createdRoom = publicRoomFactory.create();
+        //when(publicRoomService.save(any(PublicRoom.class))) then set its Id
+        Result createResult = new CreateResultBuilder()
+                .setName("roomName").setLatitude("10.0").setLongitude("12.0").setRadius("5").build();
+        ResultValidator.validateCreateResult(createResult, "roomId");
     }
+
+
+
+
 //
 //    @Test
 //    public void createRoomNoName() {

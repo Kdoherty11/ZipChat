@@ -29,18 +29,15 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
 
     @Override
     public boolean removeUser(PrivateRoom room, long userId) {
-        boolean roomRemoved = false;
         if (userId == room.sender.userId) {
             if (!room.receiverInRoom) {
                 privateRoomDao.remove(room);
-                roomRemoved = true;
             } else {
                 room.senderInRoom = false;
             }
         } else if (userId == room.receiver.userId) {
             if (!room.senderInRoom) {
                 privateRoomDao.remove(room);
-                roomRemoved = true;
             } else {
                 room.receiverInRoom = false;
             }
@@ -51,9 +48,7 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
         if (room.request != null) {
             // Allow both users to request each other again
             requestDao.remove(room.request);
-            if (!roomRemoved) {
-                room.request = null;
-            }
+            room.request = null;
         }
 
         return true;

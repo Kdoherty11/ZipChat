@@ -2,13 +2,14 @@ package services.impl;
 
 import com.google.common.base.Preconditions;
 import daos.GenericDao;
+import services.GenericService;
 
 import java.util.Optional;
 
 /**
  * Created by kdoherty on 7/3/15.
  */
-public class GenericServiceImpl<T> implements GenericDao<T> {
+public class GenericServiceImpl<T> implements GenericService<T> {
 
     private GenericDao<T> tDao;
 

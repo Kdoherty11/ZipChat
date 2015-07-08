@@ -121,7 +121,7 @@ public class PrivateRoomServiceTest {
 
         Request request = new Request(mockSender, mockReceiver);
         PrivateRoom privateRoom = new PrivateRoom(request);
-        privateRoom.receiverInRoom = false;
+        privateRoomService.removeUser(privateRoom, receiverId);
 
         boolean removed = privateRoomService.removeUser(privateRoom, senderId);
 
@@ -141,8 +141,7 @@ public class PrivateRoomServiceTest {
 
         Request request = new Request(mockSender, mockReceiver);
         PrivateRoom privateRoom = new PrivateRoom(request);
-        privateRoom.senderInRoom = false;
-
+        privateRoomService.removeUser(privateRoom, senderId);
         boolean removed = privateRoomService.removeUser(privateRoom, receiverId);
 
         assertThat(removed).isTrue();

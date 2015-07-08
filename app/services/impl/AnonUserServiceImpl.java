@@ -67,14 +67,14 @@ public class AnonUserServiceImpl extends GenericServiceImpl<AnonUser> implements
         }
 
         // Pick a random alias from the set
-        int item = new Random().nextInt(availableAliases.size());
+        int randomIndex = new Random().nextInt(availableAliases.size());
         int i = 0;
         for (String alias : availableAliases) {
-            if (i++ == item) {
+            if (i++ == randomIndex) {
                 return alias;
             }
         }
 
-        throw new RuntimeException("Random index was not in set");
+        throw new RuntimeException("Random index was not in set... Should never get here");
     }
 }
