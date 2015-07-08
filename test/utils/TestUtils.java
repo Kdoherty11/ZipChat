@@ -1,9 +1,16 @@
 package utils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import play.mvc.Result;
+
 import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static play.test.Helpers.contentAsString;
 
 public class TestUtils {
 
@@ -72,6 +79,14 @@ public class TestUtils {
         Field f = clazz.getDeclaredField(fieldName); //NoSuchFieldException
         f.setAccessible(true);
         return f.get(null);
+    }
+
+    public static JSONObject parseJsonObject(Result result) throws JSONException {
+        return new JSONObject(contentAsString(result));
+    }
+
+    public static JSONArray parseJsonArray(Result result) throws JSONException {
+        return new JSONArray(contentAsString(result));
     }
 
 

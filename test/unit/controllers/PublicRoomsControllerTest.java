@@ -1,5 +1,6 @@
 package unit.controllers;
 
+import com.google.gson.Gson;
 import controllers.MessagesController;
 import controllers.PublicRoomsController;
 import factories.PublicRoomFactory;
@@ -22,7 +23,7 @@ import services.UserService;
 import utils.AbstractResultBuilder;
 import utils.JsonArrayIterator;
 import utils.JsonValidator;
-import utils.ResultValidator;
+import utils.TestUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +32,8 @@ import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static play.test.Helpers.*;
 
@@ -76,46 +79,6 @@ public class PublicRoomsControllerTest extends WithApplication {
         start(fakeApplication(global));
     }
 
-    @Test
-    public void getGeoRoomsEmpty() throws JSONException {
-        List<PublicRoom> rooms = new ArrayList<>();
-        when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
-        final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
-        assertThat(status(result)).isEqualTo(OK);
-        JSONArray resultRooms = new JSONArray(contentAsString(result));
-        assertThat(resultRooms.length()).isZero();
-    }
-
-    @Test
-    public void getGeoRooms() throws Throwable {
-        List<PublicRoom> rooms = publicRoomFactory.createList(3);
-        when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
-        final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
-
-        assertThat(status(result)).isEqualTo(OK);
-        JSONArray resultRooms = new JSONArray(contentAsString(result));
-        assertThat(resultRooms.length()).isEqualTo(3);
-        new JsonArrayIterator(resultRooms).forEach(JsonValidator::validatePublicRoom);
-    }
-
-    @Test
-    public void testGeoRoomsNoLat() {
-        final Result result = route(fakeRequest(GET, "/publicRooms?lon=43.0"));
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
-    }
-
-    @Test
-    public void testGeoRoomsNoLon() {
-        final Result result = route(fakeRequest(GET, "/publicRooms?lat=43.0"));
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
-    }
-
-    @Test
-    public void testGeoRoomsNoParams() {
-        final Result result = route(fakeRequest(GET, "/publicRooms"));
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
-    }
-
     private class CreateResultBuilder extends AbstractResultBuilder {
 
         private Map<String, String> params = new HashMap<>();
@@ -152,40 +115,156 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     @Test
     public void createRoomSuccess() throws JSONException, InstantiationException, IllegalAccessException {
-        PublicRoom createdRoom = publicRoomFactory.create();
-        //when(publicRoomService.save(any(PublicRoom.class))) then set its Id
+        String roomName = "roomName";
+        String latitude = "10.0";
+        String longitude = "12.0";
+        String radius = "5";
+
         Result createResult = new CreateResultBuilder()
-                .setName("roomName").setLatitude("10.0").setLongitude("12.0").setRadius("5").build();
-        ResultValidator.validateCreateResult(createResult, "roomId");
+                .setName(roomName).setLatitude(latitude).setLongitude(longitude).setRadius(radius).build();
+
+        assertThat(status(createResult)).isEqualTo(CREATED);
+        Gson gson = new Gson();
+        PublicRoom room = gson.fromJson(contentAsString(createResult), PublicRoom.class);
+        assertThat(room.name).isEqualTo(roomName);
+        assertThat(room.latitude).isEqualTo(Double.parseDouble(latitude));
+        assertThat(room.longitude).isEqualTo(Double.parseDouble(longitude));
+        assertThat(room.radius).isEqualTo(Integer.parseInt(radius));
+        verify(publicRoomService).save(eq(room));
     }
 
+    @Test
+    public void createRoomNoName() {
+        Result noNameResult = new CreateResultBuilder().setLatitude("2.0").setLongitude("4.0").setRadius("1").build();
+        assertThat(status(noNameResult)).isEqualTo(BAD_REQUEST);
+    }
 
+    @Test
+    public void createRoomNoLatitude() {
+        Result noLatResult = new CreateResultBuilder().setName("name").setLongitude("4.0").setRadius("1").build();
+        assertThat(status(noLatResult)).isEqualTo(BAD_REQUEST);
+    }
 
+    @Test
+    public void createRoomNoLongitude() {
+        Result noLonResult = new CreateResultBuilder().setName("name").setLatitude("4.0").setRadius("1").build();
+        assertThat(status(noLonResult)).isEqualTo(BAD_REQUEST);
+    }
 
-//
-//    @Test
-//    public void createRoomNoName() {
-//        Result noNameResult = adapter.createRoom(null, RoomsControllerAdapter.NAME_KEY);
-//        assertThat(status(noNameResult)).isEqualTo(BAD_REQUEST);
-//    }
-//
-//    @Test
-//    public void createRoomNoLatitude() {
-//
-//        Result noLatResult = adapter.createRoom(null, RoomsControllerAdapter.LAT_KEY);
-//        assertThat(status(noLatResult)).isEqualTo(BAD_REQUEST);
-//    }
-//
-//    @Test
-//    public void createRoomNoLongitude() {
-//        Result noLonResult = adapter.createRoom(null, RoomsControllerAdapter.LON_KEY);
-//        assertThat(status(noLonResult)).isEqualTo(BAD_REQUEST);
-//    }
-//
-//    @Test
-//    public void createRoomNoRadius() {
-//        Result noRadiusResult = adapter.createRoom(null, RoomsControllerAdapter.RADIUS_KEY);
-//        assertThat(status(noRadiusResult)).isEqualTo(BAD_REQUEST);
-//    }
+    @Test
+    public void createRoomNoRadius() {
+        Result noRadiusResult = new CreateResultBuilder().setName("name").setLatitude("4.0").setLongitude("3.0").build();
+        assertThat(status(noRadiusResult)).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void getGeoRooms() throws Throwable {
+        List<PublicRoom> rooms = publicRoomFactory.createList(3);
+        when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
+        final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
+
+        assertThat(status(result)).isEqualTo(OK);
+        JSONArray resultRooms = TestUtils.parseJsonArray(result);
+        assertThat(resultRooms.length()).isEqualTo(3);
+        new JsonArrayIterator(resultRooms).forEach(JsonValidator::validatePublicRoom);
+    }
+
+    @Test
+    public void getGeoRoomsEmpty() throws JSONException {
+        List<PublicRoom> rooms = new ArrayList<>();
+        when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
+        final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
+        assertThat(status(result)).isEqualTo(OK);
+        JSONArray resultRooms = TestUtils.parseJsonArray(result);
+        assertThat(resultRooms.length()).isZero();
+    }
+
+    @Test
+    public void getGeoRoomsNoLat() {
+        final Result result = route(fakeRequest(GET, "/publicRooms?lon=43.0"));
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void getGeoRoomsNoLon() {
+        final Result result = route(fakeRequest(GET, "/publicRooms?lat=43.0"));
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void geoRoomsNoParams() {
+        final Result result = route(fakeRequest(GET, "/publicRooms"));
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void createSubscription() {
+
+    }
+
+    @Test
+    public void createSubscriptionNoUserId() {
+
+    }
+
+    @Test
+    public void createSubscriptionUserIdIsNotALong() {
+
+    }
+
+    @Test
+    public void createSubscriptionUserMustBePositive() {
+
+    }
+
+    @Test
+    public void createSubscriptionRoomDoesNotExist() {
+
+    }
+
+    @Test
+    public void createSubscriptionUserDoesNotExist() {
+
+    }
+
+    @Test
+    public void createSubscriptionUserIsAlreadySubscribed() {
+
+    }
+
+    @Test
+    public void removeSubscription() {
+
+    }
+
+    @Test
+    public void removeSubscriptionNoUserId() {
+
+    }
+
+    @Test
+    public void removeSubscriptionUserIdIsNotALong() {
+
+    }
+
+    @Test
+    public void removeSubscriptionUserMustBePositive() {
+
+    }
+
+    @Test
+    public void removeSubscriptionRoomDoesNotExist() {
+
+    }
+
+    @Test
+    public void removeSubscriptionUserDoesNotExist() {
+
+    }
+
+    @Test
+    public void removeSubscriptionUserIsNotSubscribed() {
+
+    }
 
 }

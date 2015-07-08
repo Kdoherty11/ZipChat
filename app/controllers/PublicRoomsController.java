@@ -77,11 +77,11 @@ public class PublicRoomsController extends BaseController {
         Long userId = Longs.tryParse(data.get(userIdKey));
 
         if (userId == null) {
-            return FieldValidator.typeError(userIdKey, Long.class);
-        }
+            if (!data.containsKey(userIdKey)) {
+                return badRequestJson(userIdKey + " is required");
+            }
 
-        if (isUnauthorized(userId)) {
-            return forbidden();
+            return FieldValidator.typeError(userIdKey, Long.class);
         }
 
         DataValidator validator = new DataValidator(
@@ -91,28 +91,35 @@ public class PublicRoomsController extends BaseController {
             return badRequest(validator.errorsAsJson());
         }
 
-        Optional<PublicRoom> roomOptional = publicRoomService.findById(roomId);
-        if (roomOptional.isPresent()) {
-
-            Optional<User> userOptional = userService.findById(userId);
-            if (userOptional.isPresent()) {
-                boolean subscribed = publicRoomService.subscribe(roomOptional.get(), userOptional.get());
-
-                if (!subscribed) {
-                    return badRequestJson(userOptional.get() + " is already subscribed to " + roomOptional.get());
-                }
-
-                return OK_RESULT;
-            } else {
-                return entityNotFound(User.class, userId);
+        return publicRoomUserActionHelper(roomId, userId, new PublicRoomUserAction() {
+            @Override
+            public boolean publicRoomAction(PublicRoom publicRoom, User user) {
+                return publicRoomService.subscribe(publicRoom, user);
             }
-        } else {
-            return entityNotFound(PublicRoom.class, roomId);
-        }
+
+            @Override
+            public Result onActionFailed(User user) {
+                return badRequest("User " + user.userId + " is already subscribed");
+            }
+        });
     }
 
     @Transactional
     public Result removeSubscription(long roomId, long userId) {
+        return publicRoomUserActionHelper(roomId, userId, new PublicRoomUserAction() {
+            @Override
+            public boolean publicRoomAction(PublicRoom publicRoom, User user) {
+                return publicRoomService.unsubscribe(publicRoom, user);
+            }
+
+            @Override
+            public Result onActionFailed(User user) {
+                return notFound("User " + user.userId + " is not subscribed to the room");
+            }
+        });
+    }
+
+    private Result publicRoomUserActionHelper(long roomId, long userId, PublicRoomUserAction cb) {
         if (isUnauthorized(userId)) {
             return forbidden();
         }
@@ -122,11 +129,10 @@ public class PublicRoomsController extends BaseController {
             Optional<User> userOptional = userService.findById(userId);
 
             if (userOptional.isPresent()) {
-                boolean unsubscribed =publicRoomService.unsubscribe(roomOptional.get(), userOptional.get());
+                boolean result = cb.publicRoomAction(roomOptional.get(), userOptional.get());
 
-                if (!unsubscribed) {
-                    return notFound("Could not unsubscribe user " + userId + " from room " + roomId + " because" +
-                            " they were not subscribed");
+                if (!result) {
+                    return cb.onActionFailed(userOptional.get());
                 }
 
                 return OK_RESULT;
@@ -137,6 +143,12 @@ public class PublicRoomsController extends BaseController {
         } else {
             return entityNotFound(PublicRoom.class, roomId);
         }
+    }
+
+    // Public due to http://stackoverflow.com/a/21442580/3258892
+    public interface PublicRoomUserAction {
+        boolean publicRoomAction(PublicRoom publicRoom, User user);
+        Result onActionFailed(User user);
     }
 
     @Transactional

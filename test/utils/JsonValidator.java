@@ -1,5 +1,6 @@
 package utils;
 
+import models.entities.PublicRoom;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,6 +45,20 @@ public class JsonValidator {
     }
 
     public static void validatePublicRoom(JSONObject publicRoomJson) {
+
+            PublicRoom publicRoom = parsePublicRoom(publicRoomJson);
+
+            assertThat(publicRoom.roomId).isPositive();
+            assertThat(publicRoom.name).isNotEmpty();
+            assertThat(publicRoom.latitude).isGreaterThanOrEqualTo(-90.0).isLessThanOrEqualTo(90.0);
+            assertThat(publicRoom.longitude).isGreaterThanOrEqualTo(-180.0).isLessThanOrEqualTo(180.0);
+            assertThat(publicRoom.radius).isPositive();
+            assertThat(publicRoom.lastActivity).isPositive();
+    }
+
+    // Not using Gson because we want the test to fail if a variable name changes
+    public static PublicRoom parsePublicRoom(JSONObject publicRoomJson) {
+        PublicRoom publicRoom = new PublicRoom();
         try {
             final long roomId = publicRoomJson.getLong("roomId");
             final String name = publicRoomJson.getString("name");
@@ -52,15 +67,16 @@ public class JsonValidator {
             final int radius = publicRoomJson.getInt("radius");
             final long lastActivity = publicRoomJson.getLong("lastActivity");
 
-            assertThat(roomId).isPositive();
-            assertThat(name).isNotEmpty();
-            assertThat(latitude).isGreaterThanOrEqualTo(-90.0).isLessThanOrEqualTo(90.0);
-            assertThat(longitude).isGreaterThanOrEqualTo(-180.0).isLessThanOrEqualTo(180.0);
-            assertThat(radius).isPositive();
-            assertThat(lastActivity).isPositive();
+            publicRoom.roomId = roomId;
+            publicRoom.name = name;
+            publicRoom.latitude = latitude;
+            publicRoom.longitude = longitude;
+            publicRoom.radius = radius;
+            publicRoom.lastActivity = lastActivity;
         } catch (JSONException e) {
-            throw new RuntimeException("Problem parsing public room json", e);
+            throw new RuntimeException(e);
         }
+        return publicRoom;
     }
 
     public static void validateMessageJson(JSONObject messageJson) throws JSONException {

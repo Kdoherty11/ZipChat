@@ -40,6 +40,8 @@ libraryDependencies += "org.mockito" % "mockito-core" % "2.0.21-beta"
 
 libraryDependencies += "com.google.inject" % "guice" % "3.0"
 
+libraryDependencies += "com.google.code.gson" % "gson" % "2.3.1"
+
 jacoco.settings
 
 herokuAppName in Compile := "zipchatapp"
