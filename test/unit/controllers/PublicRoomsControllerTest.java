@@ -48,6 +48,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     private UserService userService;
 
     @Before
+    @SuppressWarnings("deprecation") // start is deprecated
     public void setUp() throws Exception {
         publicRoomFactory = new PublicRoomFactory();
         controller = new PublicRoomsController(publicRoomService, messagesController,
@@ -56,6 +57,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         final GlobalSettings global = new GlobalSettings() {
 
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getControllerInstance(Class<T> clazz) {
                 if (clazz.getSuperclass() == Action.class) {
                     return null;
@@ -114,7 +116,6 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     @Test
     public void createRoomSuccess() throws JSONException {
-        // TODO
         //Result createResult = route(fakeRequest(POST, "/publicRooms"));
         //assertThat(status(createResult)).isEqualTo(CREATED);
 

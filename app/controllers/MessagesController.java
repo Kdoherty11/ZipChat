@@ -28,7 +28,8 @@ public class MessagesController extends BaseController {
         this.userService = userService;
     }
 
-    private interface UserMessageAction {
+    // Public due to http://stackoverflow.com/a/21442580/3258892
+    public interface UserMessageAction {
         boolean messageAction(Message message, User user);
         String onActionFailed(User user);
     }
