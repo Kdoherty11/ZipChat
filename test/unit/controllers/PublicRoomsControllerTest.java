@@ -134,31 +134,40 @@ public class PublicRoomsControllerTest extends WithApplication {
     @Test
     public void createRoomNoName() {
         Result noNameResult = new CreateResultBuilder().setLatitude("2.0").setLongitude("4.0").setRadius("1").build();
+
         assertThat(status(noNameResult)).isEqualTo(BAD_REQUEST);
+        verifyZeroInteractions(publicRoomService);
     }
 
     @Test
     public void createRoomNoLatitude() {
         Result noLatResult = new CreateResultBuilder().setName("name").setLongitude("4.0").setRadius("1").build();
+
         assertThat(status(noLatResult)).isEqualTo(BAD_REQUEST);
+        verifyZeroInteractions(publicRoomService);
     }
 
     @Test
     public void createRoomNoLongitude() {
         Result noLonResult = new CreateResultBuilder().setName("name").setLatitude("4.0").setRadius("1").build();
+
         assertThat(status(noLonResult)).isEqualTo(BAD_REQUEST);
+        verifyZeroInteractions(publicRoomService);
     }
 
     @Test
     public void createRoomNoRadius() {
         Result noRadiusResult = new CreateResultBuilder().setName("name").setLatitude("4.0").setLongitude("3.0").build();
+
         assertThat(status(noRadiusResult)).isEqualTo(BAD_REQUEST);
+        verifyZeroInteractions(publicRoomService);
     }
 
     @Test
     public void getGeoRooms() throws Throwable {
         List<PublicRoom> rooms = publicRoomFactory.createList(3);
         when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
+
         final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
 
         assertThat(status(result)).isEqualTo(OK);
@@ -171,7 +180,9 @@ public class PublicRoomsControllerTest extends WithApplication {
     public void getGeoRoomsEmpty() throws JSONException {
         List<PublicRoom> rooms = new ArrayList<>();
         when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
+
         final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
+
         assertThat(status(result)).isEqualTo(OK);
         JSONArray resultRooms = TestUtils.parseJsonArray(result);
         assertThat(resultRooms.length()).isZero();
@@ -213,33 +224,90 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     @Test
     public void createSubscriptionNoUserId() {
-        final Result result = route(new FakeRequest(POST, "/publicRooms/1/subscriptions/"));
+        final Result result = route(new FakeRequest(POST, "/publicRooms/1/subscriptions"));
+
         assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        verifyZeroInteractions(userService, publicRoomService);
     }
 
     @Test
     public void createSubscriptionUserIdIsNotALong() {
+        FakeRequest fakeRequest = new FakeRequest(POST, "/publicRooms/1/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", "notALong"));
 
+        final Result result = route(fakeRequest);
+
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        verifyZeroInteractions(userService, publicRoomService);
     }
 
     @Test
     public void createSubscriptionUserMustBePositive() {
+        FakeRequest fakeRequest = new FakeRequest(POST, "/publicRooms/1/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", "-1"));
 
+        final Result result = route(fakeRequest);
+
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        verifyZeroInteractions(userService, publicRoomService);
     }
 
     @Test
     public void createSubscriptionRoomDoesNotExist() {
+        long roomId = 1;
+        long userId = 2;
+        PublicRoom mockRoom = mock(PublicRoom.class);
+        User mockUser = mock(User.class);
 
+        when(publicRoomService.findById(roomId)).thenReturn(Optional.empty());
+        when(userService.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(publicRoomService.subscribe(mockRoom, mockUser)).thenReturn(true);
+
+        FakeRequest request = new FakeRequest(POST, "/publicRooms/" + roomId + "/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
+        final Result result = route(request);
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
     public void createSubscriptionUserDoesNotExist() {
+        long roomId = 1;
+        long userId = 2;
+        PublicRoom mockRoom = mock(PublicRoom.class);
+        User mockUser = mock(User.class);
 
+        when(publicRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
+        when(userService.findById(userId)).thenReturn(Optional.empty());
+        when(publicRoomService.subscribe(mockRoom, mockUser)).thenReturn(true);
+
+        FakeRequest request = new FakeRequest(POST, "/publicRooms/" + roomId + "/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
+        final Result result = route(request);
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
     public void createSubscriptionUserIsAlreadySubscribed() {
+        long roomId = 1;
+        long userId = 2;
+        PublicRoom mockRoom = mock(PublicRoom.class);
+        User mockUser = mock(User.class);
 
+        when(publicRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
+        when(userService.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(publicRoomService.subscribe(mockRoom, mockUser)).thenReturn(false);
+
+        FakeRequest request = new FakeRequest(POST, "/publicRooms/" + roomId + "/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
+        final Result result = route(request);
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void createSubscriptionUnauthorizedUser() {
+        long userId = 1;
+        when(securityHelper.isUnauthorized(userId)).thenReturn(true);
+
+        FakeRequest request = new FakeRequest(POST, "/publicRooms/1/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
+        final Result result = route(request);
+
+        assertThat(status(result)).isEqualTo(FORBIDDEN);
+        verifyZeroInteractions(userService, publicRoomService);
     }
 
     @Test
@@ -259,27 +327,94 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     @Test
     public void removeSubscriptionUserIdIsNotALong() {
+        final Result result = route(new FakeRequest(DELETE, "/publicRooms/123/subscriptions/notALong"));
 
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        verifyZeroInteractions(userService, publicRoomService);
     }
 
     @Test
-    public void removeSubscriptionUserMustBePositive() {
+    public void removeSubscriptionUserIdMustBePositive() {
+        long userId = -1;
+        when(securityHelper.isUnauthorized(userId)).thenReturn(false);
 
+        final Result result = route(new FakeRequest(DELETE, "/publicRooms/123/subscriptions/" + userId));
+
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        verifyZeroInteractions(publicRoomService, userService);
+    }
+
+    @Test
+    public void removeSubscriptionRoomIdMustBePositive() {
+        long userId = 1;
+        when(securityHelper.isUnauthorized(userId)).thenReturn(false);
+
+        final Result result = route(new FakeRequest(DELETE, "/publicRooms/-1/subscriptions/" + userId));
+
+        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        verifyZeroInteractions(publicRoomService, userService);
     }
 
     @Test
     public void removeSubscriptionRoomDoesNotExist() {
+        long roomId = 1;
+        long userId = 2;
+        PublicRoom mockRoom = mock(PublicRoom.class);
+        User mockUser = mock(User.class);
 
+        when(securityHelper.isUnauthorized(userId)).thenReturn(false);
+        when(publicRoomService.findById(roomId)).thenReturn(Optional.empty());
+        when(userService.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(publicRoomService.unsubscribe(mockRoom, mockUser)).thenReturn(true);
+
+        final Result result = route(new FakeRequest(DELETE, "/publicRooms/" + roomId + "/subscriptions/" + userId));
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
     public void removeSubscriptionUserDoesNotExist() {
+        long roomId = 1;
+        long userId = 2;
+        PublicRoom mockRoom = mock(PublicRoom.class);
+        User mockUser = mock(User.class);
 
+        when(securityHelper.isUnauthorized(userId)).thenReturn(false);
+        when(publicRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
+        when(userService.findById(userId)).thenReturn(Optional.empty());
+        when(publicRoomService.unsubscribe(mockRoom, mockUser)).thenReturn(true);
+
+        final Result result = route(new FakeRequest(DELETE, "/publicRooms/" + roomId + "/subscriptions/" + userId));
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
     public void removeSubscriptionUserIsNotSubscribed() {
+        long roomId = 1;
+        long userId = 2;
+        PublicRoom mockRoom = mock(PublicRoom.class);
+        User mockUser = mock(User.class);
 
+        when(securityHelper.isUnauthorized(userId)).thenReturn(false);
+        when(publicRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
+        when(userService.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(publicRoomService.unsubscribe(mockRoom, mockUser)).thenReturn(false);
+
+        final Result result = route(new FakeRequest(DELETE, "/publicRooms/" + roomId + "/subscriptions/" + userId));
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    public void removeSubscriptionUnauthorizedUser() {
+        long userId = 1;
+        when(securityHelper.isUnauthorized(userId)).thenReturn(true);
+
+        final Result result = route(new FakeRequest(DELETE, "/publicRooms/2/subscriptions/" + userId));
+
+        assertThat(status(result)).isEqualTo(FORBIDDEN);
+        verifyZeroInteractions(userService, publicRoomService);
     }
 
 }

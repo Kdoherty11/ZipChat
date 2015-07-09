@@ -81,16 +81,7 @@ public class PublicRoomsController extends BaseController {
         Long userId = Longs.tryParse(data.get(userIdKey));
 
         if (userId == null) {
-
-
             return FieldValidator.typeError(userIdKey, Long.class);
-        }
-
-        DataValidator validator = new DataValidator(
-                new FieldValidator<>(userIdKey, userId, Validators.positive()));
-
-        if (validator.hasErrors()) {
-            return badRequest(validator.errorsAsJson());
         }
 
         return publicRoomUserActionHelper(roomId, userId, new PublicRoomUserAction() {
@@ -132,8 +123,16 @@ public class PublicRoomsController extends BaseController {
     }
 
     private Result publicRoomUserActionHelper(long roomId, long userId, PublicRoomUserAction cb) {
-        if (isUnauthorized(userId)) {
+        if (securityHelper.isUnauthorized(userId)) {
             return forbidden();
+        }
+
+        DataValidator validator = new DataValidator(
+                new FieldValidator<>("roomId", roomId, Validators.positive()),
+                new FieldValidator<>("userId", userId, Validators.positive()));
+
+        if (validator.hasErrors()) {
+            return badRequest(validator.errorsAsJson());
         }
 
         Optional<PublicRoom> roomOptional = publicRoomService.findById(roomId);

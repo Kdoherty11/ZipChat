@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.google.common.primitives.Longs;
 import io.jsonwebtoken.*;
 import play.Logger;
+import play.Play;
+import play.mvc.Http;
 
 import java.util.Date;
 import java.util.Optional;
@@ -21,6 +23,14 @@ public class SecurityHelper {
 
     // 1 day in millis
     private static final long EXPIRATION_TIME_MILLIS = 1000L * 60L * 60L * 24L;
+
+    public boolean isUnauthorized(long userId) {
+        return userId != getTokenUserId() && Play.isProd();
+    }
+
+    public long getTokenUserId() {
+        return Play.isProd() ? (long) Http.Context.current().args.get(Secured.USER_ID_KEY) : 1;
+    }
 
     public String generateAuthToken(long userId) {
         long issuedMillis = System.currentTimeMillis();

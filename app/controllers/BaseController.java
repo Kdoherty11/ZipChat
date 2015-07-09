@@ -31,7 +31,7 @@ public class BaseController extends Controller {
         return Play.isProd() ? (long) Http.Context.current().args.get(Secured.USER_ID_KEY) : 1;
     }
 
-    public static boolean isUnauthorized(long userId) {
+    protected boolean isUnauthorized(long userId) {
         return userId != getTokenUserId() && Play.isProd();
     }
 
