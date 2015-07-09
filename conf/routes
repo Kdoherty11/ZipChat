@@ -33,5 +33,5 @@ GET           /requests                                         @controllers.Req
 GET           /requests/status                                  @controllers.RequestsController.getStatus(senderId: Long, receiverId: Long)
 PUT           /requests/:requestId                              @controllers.RequestsController.handleResponse(requestId: Long)
 
-GET           /status                                           @controllers.BaseController.status()
+GET           /status                                           @controllers.StatusController.status()
 GET           /test                                             @controllers.PublicRoomsController.getRooms()

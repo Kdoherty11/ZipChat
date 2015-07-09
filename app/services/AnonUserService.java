@@ -14,5 +14,4 @@ import services.impl.AnonUserServiceImpl;
 public interface AnonUserService extends AnonUserDao {
 
     AnonUser getOrCreateAnonUser(User actual, PublicRoom room);
-
 }

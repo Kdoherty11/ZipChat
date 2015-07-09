@@ -9,10 +9,8 @@ import play.mvc.Results;
 import play.mvc.Security;
 import security.Secured;
 import services.MessageService;
+import services.SecurityService;
 import services.UserService;
-import validation.DataValidator;
-import validation.FieldValidator;
-import validation.validators.Validators;
 
 import java.util.Optional;
 
@@ -21,29 +19,19 @@ public class MessagesController extends BaseController {
 
     private final MessageService messageService;
     private final UserService userService;
+    private final SecurityService securityService;
 
     @Inject
-    public MessagesController(final MessageService messageService, final UserService userService) {
+    public MessagesController(final MessageService messageService, final UserService userService, final SecurityService securityService) {
         this.messageService = messageService;
         this.userService = userService;
+        this.securityService = securityService;
     }
 
     // Public due to http://stackoverflow.com/a/21442580/3258892
     public interface UserMessageAction {
         boolean messageAction(Message message, User user);
         String onActionFailed(User user);
-    }
-
-    public Result getMessages(long roomId, int limit, int offset) {
-        DataValidator validator = new DataValidator(
-                new FieldValidator<>("limit", limit, Validators.min(0)),
-                new FieldValidator<>("offset", offset, Validators.min(0)));
-
-        if (validator.hasErrors()) {
-            return badRequest(validator.errorsAsJson());
-        }
-
-        return okJson(messageService.getMessages(roomId, limit, offset));
     }
 
     @Transactional
@@ -107,7 +95,7 @@ public class MessagesController extends BaseController {
     }
 
     public Result messageActionHelper(long messageId, long userId, UserMessageAction cb) {
-        if (isUnauthorized(userId)) {
+        if (securityService.isUnauthorized(userId)) {
             return Results.forbidden();
         }
         Optional<Message> messageOptional = messageService.findById(messageId);

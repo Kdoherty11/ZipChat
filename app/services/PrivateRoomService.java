@@ -13,5 +13,4 @@ public interface PrivateRoomService extends PrivateRoomDao {
 
     boolean removeUser(PrivateRoom room, long userId);
     boolean isUserInRoom(PrivateRoom room, long userId);
-
 }

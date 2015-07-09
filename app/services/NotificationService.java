@@ -13,5 +13,4 @@ import java.util.List;
 public interface NotificationService {
 
     void send(List<String> androidRegIds, List<String> iosRegIds, AbstractNotification notification);
-
 }

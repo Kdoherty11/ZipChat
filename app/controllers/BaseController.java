@@ -1,82 +1,24 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.Logger;
-import play.Play;
 import play.data.Form;
 import play.db.jpa.JPA;
-import play.libs.Json;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
-import security.Secured;
-import services.impl.GenericServiceImpl;
 import utils.DbUtils;
 
-import javax.persistence.Id;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.lang.reflect.Field;
-import java.util.Arrays;
 
 import static play.libs.Json.toJson;
 
-public class BaseController extends Controller {
+public abstract class BaseController extends Controller {
 
-    public static final String OK_STRING = "OK";
-    public static final Result OK_RESULT = okJson(OK_STRING);
+    public final String OK_STRING = "OK";
+    public final Result OK_RESULT = okJson(OK_STRING);
 
-    public static long getTokenUserId() {
-        return Play.isProd() ? (long) Http.Context.current().args.get(Secured.USER_ID_KEY) : 1;
-    }
-
-    protected boolean isUnauthorized(long userId) {
-        return userId != getTokenUserId() && Play.isProd();
-    }
-
-    public static Result okJson(Object obj) {
-        return ok(toJson(obj));
-    }
-
-    public static Result badRequestJson(Object obj) {
-        return badRequest(toJson(obj));
-    }
-
-    // Pinged to check server status
-    public Result status() {
-        return OK_RESULT;
-    }
-
-    protected static <T> Result create(Class<T> clazz, GenericServiceImpl<T> service) {
-        Form<T> form = Form.form(clazz).bindFromRequest();
-        if (form.hasErrors()) {
-            return badRequest(form.errorsAsJson());
-        } else {
-            T entity = form.get();
-            service.save(entity);
-            ObjectNode jsonResponse = getIdField(entity);
-            return created(jsonResponse);
-        }
-    }
-
-    public static ObjectNode getIdField(Object createdObject) {
-        Class<?> clazz = createdObject.getClass();
-
-        Field idField = Arrays.asList(clazz.getFields())
-                .stream()
-                .filter(field -> field.isAnnotationPresent(Id.class))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No ID for entity " + clazz));
-
-        try {
-            return Json.newObject().put(idField.getName(), idField.getLong(createdObject));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Id field must be public");
-        }
-    }
-
-    public static <T> Result create(Class<T> clazz) {
+    protected <T> Result create(Class<T> clazz) {
         Logger.debug("Creating a " + clazz.getSimpleName());
 
         Form<T> form = Form.form(clazz).bindFromRequest();
@@ -89,7 +31,7 @@ public class BaseController extends Controller {
         }
     }
 
-    public static <T> Result read(Class<T> clazz) {
+    protected <T> Result read(Class<T> clazz) {
         Logger.debug("Getting all " + clazz.getSimpleName() + "s");
 
         CriteriaQuery<T> cq = JPA.em().getCriteriaBuilder().createQuery(clazz);
@@ -100,20 +42,15 @@ public class BaseController extends Controller {
         return okJson(allQuery.getResultList());
     }
 
-    public static Result entityNotFound(Class clazz, long id) {
-        return notFound(toJson(DbUtils.buildEntityNotFoundString(clazz, id)));
+    public static Result okJson(Object obj) {
+        return ok(toJson(obj));
     }
 
-//    public static long getId(Object entity) {
-//        try {
-//            return Arrays.asList(entity.getClass().getFields())
-//                    .stream()
-//                    .filter(field -> field.isAnnotationPresent(Id.class))
-//                    .findFirst()
-//                    .orElseThrow(() -> new RuntimeException("No ID for entity " + entity))
-//                    .getLong(entity);
-//        } catch (IllegalAccessException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public static Result badRequestJson(Object obj) {
+        return badRequest(toJson(obj));
+    }
+
+    protected Result entityNotFound(Class clazz, long id) {
+        return notFound(toJson(DbUtils.buildEntityNotFoundString(clazz, id)));
+    }
 }

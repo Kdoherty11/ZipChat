@@ -11,6 +11,7 @@ import play.mvc.Security;
 import security.Secured;
 import services.AbstractUserService;
 import services.RequestService;
+import services.SecurityService;
 import services.UserService;
 import validation.DataValidator;
 import validation.FieldValidator;
@@ -24,17 +25,20 @@ import static play.data.Form.form;
 @Security.Authenticated(Secured.class)
 public class RequestsController extends BaseController {
 
-    private RequestService requestService;
-    private UserService userService;
-    private AbstractUserService abstractUserService;
+    private final RequestService requestService;
+    private final UserService userService;
+    private final AbstractUserService abstractUserService;
+    private final SecurityService securityService;
 
     @Inject
     public RequestsController(final RequestService requestService,
                               final AbstractUserService abstractUserService,
-                              final UserService userService) {
+                              final UserService userService,
+                              final SecurityService securityService) {
         this.requestService = requestService;
         this.abstractUserService = abstractUserService;
         this.userService = userService;
+        this.securityService = securityService;
     }
 
     @Transactional
@@ -55,7 +59,7 @@ public class RequestsController extends BaseController {
             return badRequestJson(FieldValidator.typeError(receiverKey, Long.class));
         }
 
-        if (isUnauthorized(senderId)) {
+        if (securityService.isUnauthorized(senderId)) {
             return forbidden();
         }
 
@@ -75,7 +79,7 @@ public class RequestsController extends BaseController {
 
     @Transactional(readOnly = true)
     public Result getRequestsByReceiver(long receiverId) {
-        if (isUnauthorized(receiverId)) {
+        if (securityService.isUnauthorized(receiverId)) {
             return forbidden();
         }
         return okJson(requestService.findPendingRequestsByReceiver(receiverId));
@@ -100,7 +104,7 @@ public class RequestsController extends BaseController {
         if (requestOptional.isPresent()) {
 
             Request request = requestOptional.get();
-            if (isUnauthorized(request.receiver.userId)) {
+            if (securityService.isUnauthorized(request.receiver.userId)) {
                 return forbidden();
             }
 

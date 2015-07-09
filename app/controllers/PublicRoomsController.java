@@ -15,8 +15,9 @@ import play.mvc.Result;
 import play.mvc.Security;
 import play.mvc.WebSocket;
 import security.Secured;
-import security.SecurityHelper;
+import services.MessageService;
 import services.PublicRoomService;
+import services.SecurityService;
 import services.UserService;
 import validation.DataValidator;
 import validation.FieldValidator;
@@ -30,19 +31,18 @@ import static play.libs.Json.toJson;
 
 @Singleton
 @Security.Authenticated(Secured.class)
-public class PublicRoomsController extends BaseController {
+public class PublicRoomsController extends AbstractRoomController {
 
     private final PublicRoomService publicRoomService;
-    private final MessagesController messagesController;
-    private final SecurityHelper securityHelper;
+    private final SecurityService securityService;
     private final UserService userService;
 
     @Inject
-    public PublicRoomsController(final PublicRoomService publicRoomService, final MessagesController messagesController,
-                                 final SecurityHelper securityHelper, final UserService userService) {
+    public PublicRoomsController(final PublicRoomService publicRoomService, final MessageService messageService,
+                                 final SecurityService securityService, final UserService userService) {
+        super(messageService);
         this.publicRoomService = publicRoomService;
-        this.messagesController = messagesController;
-        this.securityHelper = securityHelper;
+        this.securityService = securityService;
         this.userService = userService;
     }
 
@@ -123,7 +123,7 @@ public class PublicRoomsController extends BaseController {
     }
 
     private Result publicRoomUserActionHelper(long roomId, long userId, PublicRoomUserAction cb) {
-        if (securityHelper.isUnauthorized(userId)) {
+        if (securityService.isUnauthorized(userId)) {
             return forbidden();
         }
 
@@ -165,7 +165,7 @@ public class PublicRoomsController extends BaseController {
 
     @Transactional
     public WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) {
-        Optional<Long> userIdOptional = securityHelper.getUserId(authToken);
+        Optional<Long> userIdOptional = securityService.getUserId(authToken);
         if ((!userIdOptional.isPresent() || userIdOptional.get() != userId) && Play.isProd()) {
             return WebSocket.reject(forbidden());
         }
@@ -190,6 +190,6 @@ public class PublicRoomsController extends BaseController {
             return entityNotFound(PublicRoom.class, roomId);
         }
 
-        return messagesController.getMessages(roomId, limit, offset);
+        return getMessagesHelper(roomId, limit, offset);
     }
 }

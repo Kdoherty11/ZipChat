@@ -13,29 +13,29 @@ import play.mvc.Result;
 import play.mvc.Security;
 import play.mvc.WebSocket;
 import security.Secured;
-import security.SecurityHelper;
+import services.MessageService;
 import services.PrivateRoomService;
+import services.SecurityService;
 
 import java.util.Optional;
 
 @Security.Authenticated(Secured.class)
-public class PrivateRoomsController extends BaseController {
+public class PrivateRoomsController extends AbstractRoomController {
 
-    private PrivateRoomService privateRoomService;
-    private SecurityHelper securityHelper;
-    private MessagesController messagesController;
+    private final PrivateRoomService privateRoomService;
+    private final SecurityService securityService;
 
     @Inject
-    public PrivateRoomsController(final PrivateRoomService privateRoomService, final MessagesController messagesController,
-                                  final SecurityHelper securityHelper) {
+    public PrivateRoomsController(final PrivateRoomService privateRoomService, final MessageService messageService,
+                                  final SecurityService securityService) {
+        super(messageService);
         this.privateRoomService = privateRoomService;
-        this.messagesController = messagesController;
-        this.securityHelper = securityHelper;
+        this.securityService = securityService;
     }
 
     @Transactional(readOnly = true)
     public Result getRoomsByUserId(long userId) {
-        if (isUnauthorized(userId)) {
+        if (securityService.isUnauthorized(userId)) {
             return forbidden();
         }
         Logger.debug("Getting Private Rooms by userId: " + userId);
@@ -44,7 +44,7 @@ public class PrivateRoomsController extends BaseController {
 
     @Transactional
     public Result leaveRoom(long roomId, long userId) {
-        if (isUnauthorized(userId)) {
+        if (securityService.isUnauthorized(userId)) {
             return forbidden();
         }
 
@@ -68,7 +68,7 @@ public class PrivateRoomsController extends BaseController {
 
     @Transactional
     public WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) throws Throwable {
-        Optional<Long> userIdOptional = securityHelper.getUserId(authToken);
+        Optional<Long> userIdOptional = securityService.getUserId(authToken);
         if (!userIdOptional.isPresent()) {
             return WebSocket.reject(entityNotFound(User.class, userId));
         }
@@ -109,10 +109,10 @@ public class PrivateRoomsController extends BaseController {
             return entityNotFound(PrivateRoom.class, roomId);
         }
 
-        return messagesController.getMessages(roomId, limit, offset);
+        return getMessagesHelper(roomId, limit, offset);
     }
 
     private boolean isForbidden(PrivateRoom room) {
-        return !privateRoomService.isUserInRoom(room, getTokenUserId()) && Play.isProd();
+        return !privateRoomService.isUserInRoom(room, securityService.getTokenUserId()) && Play.isProd();
     }
 }

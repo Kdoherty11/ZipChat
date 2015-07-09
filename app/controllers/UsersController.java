@@ -9,7 +9,7 @@ import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Result;
-import security.SecurityHelper;
+import services.SecurityService;
 import services.UserService;
 import validation.DataValidator;
 import validation.FieldValidator;
@@ -23,12 +23,12 @@ import static play.data.Form.form;
 public class UsersController extends BaseController {
 
     private final UserService userService;
-    private SecurityHelper securityHelper;
+    private SecurityService securityService;
 
     @Inject
-    public UsersController(final UserService userService, SecurityHelper securityHelper) {
+    public UsersController(final UserService userService, SecurityService securityService) {
         this.userService = userService;
-        this.securityHelper = securityHelper;
+        this.securityService = securityService;
     }
 
     @Transactional
@@ -80,7 +80,7 @@ public class UsersController extends BaseController {
         response.put("userId", user.userId);
         response.put("facebookId", facebookId);
         response.put("name", name);
-        response.put("authToken", securityHelper.generateAuthToken(user.userId));
+        response.put("authToken", securityService.generateAuthToken(user.userId));
 
         if (existingUserOptional.isPresent()) {
             return ok(response);
@@ -103,7 +103,7 @@ public class UsersController extends BaseController {
 
         if (existingUserOptional.isPresent()) {
             ObjectNode response = Json.newObject();
-            response.put("authToken", securityHelper.generateAuthToken(existingUserOptional.get().userId));
+            response.put("authToken", securityService.generateAuthToken(existingUserOptional.get().userId));
             return ok(response);
         } else {
             return badRequest(Json.toJson("facebook access token doesn't match any users"));

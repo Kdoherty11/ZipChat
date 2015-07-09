@@ -12,6 +12,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 import security.Secured;
 import services.DeviceService;
+import services.SecurityService;
 import services.UserService;
 import validation.DataValidator;
 import validation.FieldValidator;
@@ -30,11 +31,13 @@ public class DevicesController extends BaseController {
 
     private final UserService userService;
     private final DeviceService deviceService;
+    private final SecurityService securityService;
 
     @Inject
-    public DevicesController(final DeviceService deviceService, final UserService userService) {
+    public DevicesController(final DeviceService deviceService, final UserService userService, final SecurityService securityService) {
         this.deviceService = deviceService;
         this.userService = userService;
+        this.securityService = securityService;
     }
 
     @Transactional
@@ -47,7 +50,7 @@ public class DevicesController extends BaseController {
             return FieldValidator.typeError(userIdKey, Long.class);
         }
 
-        if (isUnauthorized(userId)) {
+        if (securityService.isUnauthorized(userId)) {
             return forbidden();
         }
 
@@ -86,7 +89,7 @@ public class DevicesController extends BaseController {
             Device device = deviceOptional.get();
 
             long userId = device.user.userId;
-            if (isUnauthorized(userId)) {
+            if (securityService.isUnauthorized(userId)) {
                 return forbidden();
             }
 

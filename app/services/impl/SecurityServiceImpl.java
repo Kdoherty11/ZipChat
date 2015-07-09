@@ -1,4 +1,4 @@
-package security;
+package services.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.primitives.Longs;
@@ -6,6 +6,8 @@ import io.jsonwebtoken.*;
 import play.Logger;
 import play.Play;
 import play.mvc.Http;
+import security.Secured;
+import services.SecurityService;
 
 import java.util.Date;
 import java.util.Optional;
@@ -13,25 +15,18 @@ import java.util.Optional;
 /**
  * Created by kevin on 6/3/15.
  */
-public class SecurityHelper {
+public class SecurityServiceImpl implements SecurityService {
 
-    // TODO Read from ENV?
+    // TODO Read from ENV
     private static final String SIGNING_KEY = "myKey";
     private static final String ISSUER = "ZipChat";
 
-    public SecurityHelper() { }
+    public SecurityServiceImpl() { }
 
     // 1 day in millis
     private static final long EXPIRATION_TIME_MILLIS = 1000L * 60L * 60L * 24L;
 
-    public boolean isUnauthorized(long userId) {
-        return userId != getTokenUserId() && Play.isProd();
-    }
-
-    public long getTokenUserId() {
-        return Play.isProd() ? (long) Http.Context.current().args.get(Secured.USER_ID_KEY) : 1;
-    }
-
+    @Override
     public String generateAuthToken(long userId) {
         long issuedMillis = System.currentTimeMillis();
         long expMillis = issuedMillis + EXPIRATION_TIME_MILLIS;
@@ -45,6 +40,7 @@ public class SecurityHelper {
                 .compact();
     }
 
+    @Override
     public Optional<Long> getUserId(String jwt) {
         if (Strings.isNullOrEmpty(jwt)) {
             return Optional.empty();
@@ -79,5 +75,15 @@ public class SecurityHelper {
         }
 
         return userIdOptional;
+    }
+
+    @Override
+    public boolean isUnauthorized(long userId) {
+        return userId != getTokenUserId() && Play.isProd();
+    }
+
+    @Override
+    public long getTokenUserId() {
+        return Play.isProd() ? (long) Http.Context.current().args.get(Secured.USER_ID_KEY) : 1;
     }
 }

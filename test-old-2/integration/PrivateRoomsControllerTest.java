@@ -16,7 +16,7 @@ import play.GlobalSettings;
 import play.mvc.Action;
 import play.mvc.Result;
 import play.test.WithApplication;
-import security.SecurityHelper;
+import services.impl.SecurityServiceImpl;
 import services.PrivateRoomService;
 import utils.JsonArrayIterator;
 import utils.JsonValidator;
@@ -43,13 +43,13 @@ public class PrivateRoomsControllerTest extends WithApplication {
     private MessagesController messagesController;
 
     @Mock
-    private SecurityHelper securityHelper;
+    private SecurityServiceImpl securityServiceImpl;
 
     @Before
     public void setUp() throws Exception {
         privateRoomFactory = new ObjectFactory<>(PrivateRoom.class);
         controller = new PrivateRoomsController(privateRoomService, messagesController,
-                securityHelper);
+                securityServiceImpl);
 
         final GlobalSettings global = new GlobalSettings() {
 

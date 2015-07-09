@@ -57,6 +57,8 @@ public class RoomSocket extends UntypedActor {
 
     static final Map<Long, SocketKeepAlive> clientHeartbeats = new ConcurrentHashMap<>();
 
+
+    // TODO: FIGURE OUT DI FOR ACTORS!!!
     private static final AbstractUserDao abstractUserDao = new AbstractUserDaoImpl();
     private static final UserDao userDao = new UserDaoImpl();
     private static final AnonUserDao anonUserDao = new AnonUserDaoImpl();
