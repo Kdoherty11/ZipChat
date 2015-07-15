@@ -1,19 +1,14 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Longs;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import models.entities.PublicRoom;
 import models.entities.User;
-import models.sockets.RoomSocket;
-import play.Logger;
-import play.Play;
 import play.data.Form;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
-import play.mvc.WebSocket;
 import security.Secured;
 import services.MessageService;
 import services.PublicRoomService;
@@ -161,26 +156,6 @@ public class PublicRoomsController extends AbstractRoomController {
         boolean publicRoomAction(PublicRoom publicRoom, User user);
         Result onActionSuccess();
         Result onActionFailed(User user);
-    }
-
-    @Transactional
-    public WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) {
-        Optional<Long> userIdOptional = securityService.getUserId(authToken);
-        if ((!userIdOptional.isPresent() || userIdOptional.get() != userId) && Play.isProd()) {
-            return WebSocket.reject(forbidden());
-        }
-
-        return new WebSocket<JsonNode>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-                try {
-                    RoomSocket.join(roomId, userId, in, out);
-                } catch (Exception ex) {
-                    Logger.error("Problem joining the RoomSocket: " + ex.getMessage());
-                }
-            }
-        };
     }
 
     @Transactional(readOnly = true)

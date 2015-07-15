@@ -23,8 +23,8 @@ import play.test.FakeRequest;
 import play.test.WithApplication;
 import services.MessageService;
 import services.PublicRoomService;
+import services.SecurityService;
 import services.UserService;
-import services.impl.SecurityServiceImpl;
 import utils.AbstractResultSender;
 import utils.JsonArrayIterator;
 import utils.JsonValidator;
@@ -34,7 +34,6 @@ import java.util.*;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyDouble;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static play.test.Helpers.*;
 
@@ -52,7 +51,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     private MessageService messageService;
 
     @Mock
-    private SecurityServiceImpl securityServiceImpl;
+    private SecurityService securityService;
 
     @Mock
     private UserService userService;
@@ -63,7 +62,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         publicRoomFactory = new PublicRoomFactory();
         messageFactory = new MessageFactory();
         controller = new PublicRoomsController(publicRoomService, messageService,
-                securityServiceImpl, userService);
+                securityService, userService);
 
         final GlobalSettings global = new GlobalSettings() {
 
@@ -134,7 +133,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         assertThat(room.latitude).isEqualTo(Double.parseDouble(latitude));
         assertThat(room.longitude).isEqualTo(Double.parseDouble(longitude));
         assertThat(room.radius).isEqualTo(Integer.parseInt(radius));
-        verify(publicRoomService).save(eq(room));
+        verify(publicRoomService).save(any(PublicRoom.class));
     }
 
     @Test
@@ -307,7 +306,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     @Test
     public void createSubscriptionUnauthorizedUser() {
         long userId = 1;
-        when(securityServiceImpl.isUnauthorized(userId)).thenReturn(true);
+        when(securityService.isUnauthorized(userId)).thenReturn(true);
 
         FakeRequest request = new FakeRequest(POST, "/publicRooms/1/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
         final Result result = route(request);
@@ -342,7 +341,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     @Test
     public void removeSubscriptionUserIdMustBePositive() {
         long userId = -1;
-        when(securityServiceImpl.isUnauthorized(userId)).thenReturn(false);
+        when(securityService.isUnauthorized(userId)).thenReturn(false);
 
         final Result result = route(new FakeRequest(DELETE, "/publicRooms/123/subscriptions/" + userId));
 
@@ -353,7 +352,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     @Test
     public void removeSubscriptionRoomIdMustBePositive() {
         long userId = 1;
-        when(securityServiceImpl.isUnauthorized(userId)).thenReturn(false);
+        when(securityService.isUnauthorized(userId)).thenReturn(false);
 
         final Result result = route(new FakeRequest(DELETE, "/publicRooms/-1/subscriptions/" + userId));
 
@@ -368,7 +367,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         PublicRoom mockRoom = mock(PublicRoom.class);
         User mockUser = mock(User.class);
 
-        when(securityServiceImpl.isUnauthorized(userId)).thenReturn(false);
+        when(securityService.isUnauthorized(userId)).thenReturn(false);
         when(publicRoomService.findById(roomId)).thenReturn(Optional.empty());
         when(userService.findById(userId)).thenReturn(Optional.of(mockUser));
         when(publicRoomService.unsubscribe(mockRoom, mockUser)).thenReturn(true);
@@ -385,7 +384,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         PublicRoom mockRoom = mock(PublicRoom.class);
         User mockUser = mock(User.class);
 
-        when(securityServiceImpl.isUnauthorized(userId)).thenReturn(false);
+        when(securityService.isUnauthorized(userId)).thenReturn(false);
         when(publicRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
         when(userService.findById(userId)).thenReturn(Optional.empty());
         when(publicRoomService.unsubscribe(mockRoom, mockUser)).thenReturn(true);
@@ -402,7 +401,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         PublicRoom mockRoom = mock(PublicRoom.class);
         User mockUser = mock(User.class);
 
-        when(securityServiceImpl.isUnauthorized(userId)).thenReturn(false);
+        when(securityService.isUnauthorized(userId)).thenReturn(false);
         when(publicRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
         when(userService.findById(userId)).thenReturn(Optional.of(mockUser));
         when(publicRoomService.unsubscribe(mockRoom, mockUser)).thenReturn(false);
@@ -415,13 +414,23 @@ public class PublicRoomsControllerTest extends WithApplication {
     @Test
     public void removeSubscriptionUnauthorizedUser() {
         long userId = 1;
-        when(securityServiceImpl.isUnauthorized(userId)).thenReturn(true);
+        when(securityService.isUnauthorized(userId)).thenReturn(true);
 
         final Result result = route(new FakeRequest(DELETE, "/publicRooms/2/subscriptions/" + userId));
 
         assertThat(status(result)).isEqualTo(FORBIDDEN);
         verifyZeroInteractions(userService, publicRoomService);
     }
+
+//    @Test
+//    public void joinRoomNoUserIdIsUnauthorized() {
+//        String authToken = "ThisIsAnAuthToken";
+//        when(securityService.getUserId(eq(authToken))).thenReturn(Optional.empty());
+//
+//        final Result result = route(new FakeRequest(GET, "/publicRooms/2/join?userId=1&authToken=" + authToken));
+//
+//        assertThat(status(result)).isEqualTo(FORBIDDEN);
+//    }
 
     private class GetMessagesRequestSender extends AbstractResultSender {
 

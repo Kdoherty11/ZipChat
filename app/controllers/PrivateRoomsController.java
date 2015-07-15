@@ -1,17 +1,12 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import models.entities.PrivateRoom;
-import models.entities.User;
-import models.sockets.RoomSocket;
 import play.Logger;
 import play.Play;
-import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
-import play.mvc.WebSocket;
 import security.Secured;
 import services.MessageService;
 import services.PrivateRoomService;
@@ -64,38 +59,6 @@ public class PrivateRoomsController extends AbstractRoomController {
         } else {
             return entityNotFound(PrivateRoom.class, roomId);
         }
-    }
-
-    @Transactional
-    public WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) throws Throwable {
-        Optional<Long> userIdOptional = securityService.getUserId(authToken);
-        if (!userIdOptional.isPresent()) {
-            return WebSocket.reject(entityNotFound(User.class, userId));
-        }
-        if (userIdOptional.get() != userId && Play.isProd()) {
-            return WebSocket.reject(forbidden());
-        }
-
-        Optional<PrivateRoom> privateRoomOptional = JPA.withTransaction(() -> privateRoomService.findById(roomId));
-        if (privateRoomOptional.isPresent()) {
-            if (isForbidden(privateRoomOptional.get())) {
-                return WebSocket.reject(forbidden());
-            }
-        } else {
-            return WebSocket.reject(entityNotFound(PrivateRoom.class, roomId));
-        }
-
-        return new WebSocket<JsonNode>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-                try {
-                    RoomSocket.join(roomId, userId, in, out);
-                } catch (Exception ex) {
-                    Logger.error("Problem joining the RoomSocket: " + ex.getMessage());
-                }
-            }
-        };
     }
 
     @Transactional(readOnly = true)

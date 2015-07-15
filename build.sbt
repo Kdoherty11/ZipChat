@@ -1,4 +1,3 @@
-import play.PlayJava
 
 name := """ZipChat"""
 
@@ -6,25 +5,24 @@ version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava)
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.6"
 
 
 libraryDependencies ++= Seq(
   javaJdbc,
-  cache,
   javaWs,
   javaJpa,
+  cache,
   "org.hibernate" % "hibernate-entitymanager" % "3.6.9.Final",
-  "redis.clients" % "jedis" % "2.6.0"
+  "com.typesafe.play.modules" %% "play-modules-redis" % "2.4.0"
 )
 
 resolvers ++= Seq(
-  "pk11 repo" at "http://pk11-scratch.googlecode.com/svn/trunk"
+  "pk11 repo" at "http://pk11-scratch.googlecode.com/svn/trunk",
+  "google-sedis-fix" at "http://pk11-scratch.googlecode.com/svn/trunk"
 )
 
 libraryDependencies += "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
-
-libraryDependencies += "com.typesafe.play.plugins" %% "play-plugins-redis" % "2.3.1"
 
 libraryDependencies += "com.notnoop.apns" % "apns" % "0.1.6"
 
@@ -38,7 +36,7 @@ libraryDependencies += "com.github.javafaker" % "javafaker" % "0.5"
 
 libraryDependencies += "org.mockito" % "mockito-core" % "2.0.21-beta"
 
-libraryDependencies += "com.google.inject" % "guice" % "3.0"
+libraryDependencies += "com.google.inject" % "guice" % "4.0"
 
 libraryDependencies += "com.google.code.gson" % "gson" % "2.3.1"
 
