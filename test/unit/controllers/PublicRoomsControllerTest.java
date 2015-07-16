@@ -8,16 +8,14 @@ import factories.PublicRoomFactory;
 import models.entities.Message;
 import models.entities.PublicRoom;
 import models.entities.User;
-import org.json.JSONArray;
-import org.json.JSONException;
+import org.json.simple.JSONArray;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import play.GlobalSettings;
 import play.Logger;
-import play.mvc.Action;
+import play.mvc.Http.RequestBuilder;
 import play.mvc.Result;
 import play.test.FakeRequest;
 import play.test.WithApplication;
@@ -32,7 +30,7 @@ import utils.TestUtils;
 
 import java.util.*;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Mockito.*;
 import static play.test.Helpers.*;
@@ -57,28 +55,13 @@ public class PublicRoomsControllerTest extends WithApplication {
     private UserService userService;
 
     @Before
-    @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
         publicRoomFactory = new PublicRoomFactory();
         messageFactory = new MessageFactory();
         controller = new PublicRoomsController(publicRoomService, messageService,
                 securityService, userService);
 
-        final GlobalSettings global = new GlobalSettings() {
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T getControllerInstance(Class<T> clazz) {
-                if (clazz.getSuperclass() == Action.class) {
-                    return null;
-                }
-
-                return (T) controller;
-            }
-
-        };
-
-        start(fakeApplication(global));
+        start(fakeApplication());
     }
 
     private class CreateResultSender extends AbstractResultSender {
@@ -111,28 +94,32 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         @Override
         public Result send() {
-            FakeRequest request = getFakeRequest().withFormUrlEncodedBody(params);
-            return route(request);
+            return route(getRequestBuilder().bodyForm(params));
         }
     }
 
     @Test
-    public void createRoomSuccess() throws JSONException, InstantiationException, IllegalAccessException {
+    public void createRoomSuccess() {
+        Double latitude = 10.0;
+        Double longitude = 12.0;
+        Integer radius = 5;
+
         String roomName = "roomName";
-        String latitude = "10.0";
-        String longitude = "12.0";
-        String radius = "5";
+        String latitudeStr = latitude.toString();
+        String longitudeStr = longitude.toString();
+        String radiusStr = radius.toString();
 
         Result createResult = new CreateResultSender()
-                .setName(roomName).setLatitude(latitude).setLongitude(longitude).setRadius(radius).send();
+                .setName(roomName).setLatitude(latitudeStr).setLongitude(longitudeStr).setRadius(radiusStr).send();
 
-        assertThat(status(createResult)).isEqualTo(CREATED);
+
+        assertEquals(createResult.status(), CREATED);
         Gson gson = new Gson();
         PublicRoom room = gson.fromJson(contentAsString(createResult), PublicRoom.class);
-        assertThat(room.name).isEqualTo(roomName);
-        assertThat(room.latitude).isEqualTo(Double.parseDouble(latitude));
-        assertThat(room.longitude).isEqualTo(Double.parseDouble(longitude));
-        assertThat(room.radius).isEqualTo(Integer.parseInt(radius));
+        assertEquals(room.name, roomName);
+        assertEquals(room.latitude, latitude);
+        assertEquals(room.longitude, longitude);
+        assertEquals(room.radius, radius);
         verify(publicRoomService).save(any(PublicRoom.class));
     }
 
@@ -140,7 +127,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     public void createRoomNoName() {
         Result noNameResult = new CreateResultSender().setLatitude("2.0").setLongitude("4.0").setRadius("1").send();
 
-        assertThat(status(noNameResult)).isEqualTo(BAD_REQUEST);
+        assertEquals(noNameResult.status(), BAD_REQUEST);
         verifyZeroInteractions(publicRoomService);
     }
 
@@ -148,7 +135,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     public void createRoomNoLatitude() {
         Result noLatResult = new CreateResultSender().setName("name").setLongitude("4.0").setRadius("1").send();
 
-        assertThat(status(noLatResult)).isEqualTo(BAD_REQUEST);
+        assertEquals(noLatResult.status(), BAD_REQUEST);
         verifyZeroInteractions(publicRoomService);
     }
 
@@ -156,7 +143,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     public void createRoomNoLongitude() {
         Result noLonResult = new CreateResultSender().setName("name").setLatitude("4.0").setRadius("1").send();
 
-        assertThat(status(noLonResult)).isEqualTo(BAD_REQUEST);
+        assertEquals(noLonResult.status(), BAD_REQUEST);
         verifyZeroInteractions(publicRoomService);
     }
 
@@ -164,7 +151,7 @@ public class PublicRoomsControllerTest extends WithApplication {
     public void createRoomNoRadius() {
         Result noRadiusResult = new CreateResultSender().setName("name").setLatitude("4.0").setLongitude("3.0").send();
 
-        assertThat(status(noRadiusResult)).isEqualTo(BAD_REQUEST);
+        assertEquals(noRadiusResult.status(), BAD_REQUEST);
         verifyZeroInteractions(publicRoomService);
     }
 
@@ -175,40 +162,40 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
 
-        assertThat(status(result)).isEqualTo(OK);
+        assertEquals(result.status(), OK);
         JSONArray resultRooms = TestUtils.parseJsonArray(result);
-        assertThat(resultRooms.length()).isEqualTo(3);
+        assertEquals(resultRooms.length()).isEqualTo(3);
         new JsonArrayIterator(resultRooms).forEach(JsonValidator::validatePublicRoom);
     }
 
     @Test
-    public void getGeoRoomsEmpty() throws JSONException {
+    public void getGeoRoomsEmpty() {
         List<PublicRoom> rooms = new ArrayList<>();
         when(publicRoomService.allInGeoRange(anyDouble(), anyDouble())).thenReturn(rooms);
 
         final Result result = route(fakeRequest(GET, "/publicRooms?lat=2.0&lon=43.0"));
 
-        assertThat(status(result)).isEqualTo(OK);
+        assertEquals(result.status(), OK);
         JSONArray resultRooms = TestUtils.parseJsonArray(result);
-        assertThat(resultRooms.length()).isZero();
+        assertEquals(resultRooms.length()).isZero();
     }
 
     @Test
     public void getGeoRoomsNoLat() {
         final Result result = route(fakeRequest(GET, "/publicRooms?lon=43.0"));
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(result.status(), BAD_REQUEST);
     }
 
     @Test
     public void getGeoRoomsNoLon() {
         final Result result = route(fakeRequest(GET, "/publicRooms?lat=43.0"));
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(result.status(), BAD_REQUEST);
     }
 
     @Test
     public void geoRoomsNoParams() {
         final Result result = route(fakeRequest(GET, "/publicRooms"));
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(result.status(), BAD_REQUEST);
     }
 
     @Test
@@ -222,16 +209,18 @@ public class PublicRoomsControllerTest extends WithApplication {
         when(userService.findById(userId)).thenReturn(Optional.of(mockUser));
         when(publicRoomService.subscribe(mockRoom, mockUser)).thenReturn(true);
 
+
+        RequestBuilder requestBuilder = new RequestBuilder().uri()
         FakeRequest request = new FakeRequest(POST, "/publicRooms/" + roomId + "/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
-        final Result result = route(request);
-        assertThat(status(result)).isEqualTo(CREATED);
+        final Result result = route();
+        assertEquals(status(result)).isEqualTo(CREATED);
     }
 
     @Test
     public void createSubscriptionNoUserId() {
         final Result result = route(new FakeRequest(POST, "/publicRooms/1/subscriptions"));
 
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(status(result)).isEqualTo(BAD_REQUEST);
         verifyZeroInteractions(userService, publicRoomService);
     }
 
@@ -241,7 +230,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = route(fakeRequest);
 
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(status(result)).isEqualTo(BAD_REQUEST);
         verifyZeroInteractions(userService, publicRoomService);
     }
 
@@ -251,7 +240,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = route(fakeRequest);
 
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(status(result)).isEqualTo(BAD_REQUEST);
         verifyZeroInteractions(userService, publicRoomService);
     }
 
@@ -268,7 +257,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         FakeRequest request = new FakeRequest(POST, "/publicRooms/" + roomId + "/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
         final Result result = route(request);
-        assertThat(status(result)).isEqualTo(NOT_FOUND);
+        assertEquals(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -284,7 +273,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         FakeRequest request = new FakeRequest(POST, "/publicRooms/" + roomId + "/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
         final Result result = route(request);
-        assertThat(status(result)).isEqualTo(NOT_FOUND);
+        assertEquals(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -300,7 +289,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         FakeRequest request = new FakeRequest(POST, "/publicRooms/" + roomId + "/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
         final Result result = route(request);
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(status(result)).isEqualTo(BAD_REQUEST);
     }
 
     @Test
@@ -311,7 +300,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         FakeRequest request = new FakeRequest(POST, "/publicRooms/1/subscriptions").withFormUrlEncodedBody(ImmutableMap.of("userId", Long.toString(userId)));
         final Result result = route(request);
 
-        assertThat(status(result)).isEqualTo(FORBIDDEN);
+        assertEquals(status(result)).isEqualTo(FORBIDDEN);
         verifyZeroInteractions(userService, publicRoomService);
     }
 
@@ -327,14 +316,14 @@ public class PublicRoomsControllerTest extends WithApplication {
         when(publicRoomService.unsubscribe(mockRoom, mockUser)).thenReturn(true);
 
         final Result result = route(new FakeRequest(DELETE, "/publicRooms/" + roomId + "/subscriptions/" + userId));
-        assertThat(status(result)).isEqualTo(OK);
+        assertEquals(status(result)).isEqualTo(OK);
     }
 
     @Test
     public void removeSubscriptionUserIdIsNotALong() {
         final Result result = route(new FakeRequest(DELETE, "/publicRooms/123/subscriptions/notALong"));
 
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(status(result)).isEqualTo(BAD_REQUEST);
         verifyZeroInteractions(userService, publicRoomService);
     }
 
@@ -345,7 +334,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = route(new FakeRequest(DELETE, "/publicRooms/123/subscriptions/" + userId));
 
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(status(result)).isEqualTo(BAD_REQUEST);
         verifyZeroInteractions(publicRoomService, userService);
     }
 
@@ -356,7 +345,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = route(new FakeRequest(DELETE, "/publicRooms/-1/subscriptions/" + userId));
 
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(status(result)).isEqualTo(BAD_REQUEST);
         verifyZeroInteractions(publicRoomService, userService);
     }
 
@@ -374,7 +363,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = route(new FakeRequest(DELETE, "/publicRooms/" + roomId + "/subscriptions/" + userId));
 
-        assertThat(status(result)).isEqualTo(NOT_FOUND);
+        assertEquals(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -391,7 +380,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = route(new FakeRequest(DELETE, "/publicRooms/" + roomId + "/subscriptions/" + userId));
 
-        assertThat(status(result)).isEqualTo(NOT_FOUND);
+        assertEquals(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -408,7 +397,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = route(new FakeRequest(DELETE, "/publicRooms/" + roomId + "/subscriptions/" + userId));
 
-        assertThat(status(result)).isEqualTo(NOT_FOUND);
+        assertEquals(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -416,9 +405,11 @@ public class PublicRoomsControllerTest extends WithApplication {
         long userId = 1;
         when(securityService.isUnauthorized(userId)).thenReturn(true);
 
-        final Result result = route(new FakeRequest(DELETE, "/publicRooms/2/subscriptions/" + userId));
+        final Result result = route(new RequestBuilder().uri("/publicRooms/2/subscriptions/" + userId));
 
-        assertThat(status(result)).isEqualTo(FORBIDDEN);
+        //final Result result = route(new FakeRequest(DELETE, "/publicRooms/2/subscriptions/" + userId));
+
+        assertEquals(status(result)).isEqualTo(FORBIDDEN);
         verifyZeroInteractions(userService, publicRoomService);
     }
 
@@ -429,7 +420,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 //
 //        final Result result = route(new FakeRequest(GET, "/publicRooms/2/join?userId=1&authToken=" + authToken));
 //
-//        assertThat(status(result)).isEqualTo(FORBIDDEN);
+//        assertEquals(status(result)).isEqualTo(FORBIDDEN);
 //    }
 
     private class GetMessagesRequestSender extends AbstractResultSender {
@@ -464,7 +455,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
             Logger.error("URL: " + url);
 
-            return route(getFakeRequest());
+            return route(getRequestBuilder());
         }
     }
 
@@ -475,7 +466,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = new GetMessagesRequestSender(roomId).setOffset(0).setLimit(25).send();
 
-        assertThat(status(result)).isEqualTo(NOT_FOUND);
+        assertEquals(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
@@ -486,7 +477,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = new GetMessagesRequestSender(roomId).setOffset(-1).setLimit(25).send();
 
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(status(result)).isEqualTo(BAD_REQUEST);
         verifyZeroInteractions(messageService);
     }
 
@@ -498,7 +489,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = new GetMessagesRequestSender(roomId).setOffset(0).setLimit(-10).send();
 
-        assertThat(status(result)).isEqualTo(BAD_REQUEST);
+        assertEquals(status(result)).isEqualTo(BAD_REQUEST);
         verifyZeroInteractions(messageService);
     }
 
@@ -514,12 +505,12 @@ public class PublicRoomsControllerTest extends WithApplication {
 
         final Result result = new GetMessagesRequestSender(roomId).setOffset(offset).setLimit(limit).send();
 
-        assertThat(status(result)).isEqualTo(OK);
+        assertEquals(status(result)).isEqualTo(OK);
         Gson gson = new Gson();
         Message[] returnedMessages = gson.fromJson(contentAsString(result), Message[].class);
-        assertThat(returnedMessages).hasSize(3);
+        assertEquals(returnedMessages).hasSize(3);
         for (int i = 0; i < returnedMessages.length; i++) {
-            assertThat(returnedMessages[i]).isEqualTo(messages.get(i));
+            assertEquals(returnedMessages[i]).isEqualTo(messages.get(i));
         }
     }
 

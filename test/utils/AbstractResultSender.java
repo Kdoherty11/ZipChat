@@ -1,7 +1,7 @@
 package utils;
 
+import play.mvc.Http;
 import play.mvc.Result;
-import play.test.FakeRequest;
 
 /**
  * Created by kdoherty on 7/8/15.
@@ -33,7 +33,7 @@ public abstract class AbstractResultSender {
         return this;
     }
 
-    protected FakeRequest getFakeRequest() {
-        return new FakeRequest(restAction, url);
+    protected Http.RequestBuilder getRequestBuilder() {
+        return new Http.RequestBuilder().uri(url).method(restAction);
     }
 }

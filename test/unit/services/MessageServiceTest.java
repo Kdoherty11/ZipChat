@@ -18,7 +18,7 @@ import services.impl.MessageServiceImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;
@@ -53,7 +53,7 @@ public class MessageServiceTest {
         User favoritor = userFactory.create();
         messageService.favorite(message, favoritor);
 
-        assertThat(message.score).isEqualTo(1);
+        assertEquals(message.score).isEqualTo(1);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class MessageServiceTest {
 
         messageService.favorite(message, favoritor);
 
-        assertThat(message.favorites).contains(favoritor);
+        assertEquals(message.favorites).contains(favoritor);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class MessageServiceTest {
 
         boolean added = messageService.favorite(message, favoritor);
 
-        assertThat(added).isTrue();
+        assertEquals(added).isTrue();
     }
 
     @Test
@@ -120,7 +120,7 @@ public class MessageServiceTest {
         messageService.favorite(message, favoritor);
         messageService.favorite(message, favoritor);
 
-        assertThat(message.favorites).hasSize(1);
+        assertEquals(message.favorites).hasSize(1);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class MessageServiceTest {
         messageService.favorite(message, favoritor);
         boolean added = messageService.favorite(message, favoritor);
 
-        assertThat(added).isFalse();
+        assertEquals(added).isFalse();
     }
 
     @Test
@@ -144,7 +144,7 @@ public class MessageServiceTest {
         messageService.favorite(message, user);
         boolean removed = messageService.removeFavorite(message, user);
 
-        assertThat(removed).isTrue();
+        assertEquals(removed).isTrue();
     }
 
     @Test
@@ -155,7 +155,7 @@ public class MessageServiceTest {
 
         boolean removed = messageService.removeFavorite(message, user);
 
-        assertThat(removed).isFalse();
+        assertEquals(removed).isFalse();
     }
 
     @Test
@@ -167,8 +167,8 @@ public class MessageServiceTest {
         messageService.favorite(message, user);
         messageService.removeFavorite(message, user);
 
-        assertThat(message.favorites).hasSize(0);
-        assertThat(message.favorites.contains(user)).isFalse();
+        assertEquals(message.favorites).hasSize(0);
+        assertEquals(message.favorites.contains(user)).isFalse();
     }
 
     @Test
@@ -180,7 +180,7 @@ public class MessageServiceTest {
         messageService.favorite(message, user);
         messageService.removeFavorite(message, user);
 
-        assertThat(message.score).isZero();
+        assertEquals(message.score).isZero();
     }
 
     @Test
@@ -191,7 +191,7 @@ public class MessageServiceTest {
 
         messageService.removeFavorite(message, user);
 
-        assertThat(message.score).isZero();
+        assertEquals(message.score).isZero();
     }
 
     @Test
@@ -201,7 +201,7 @@ public class MessageServiceTest {
 
         boolean didFlag = messageService.flag(message, flagger);
 
-        assertThat(didFlag).isTrue();
+        assertEquals(didFlag).isTrue();
     }
 
     @Test
@@ -212,7 +212,7 @@ public class MessageServiceTest {
 
         boolean didFlag = messageService.flag(message, flagger);
 
-        assertThat(didFlag).isFalse();
+        assertEquals(didFlag).isFalse();
     }
 
     @Test
@@ -222,7 +222,7 @@ public class MessageServiceTest {
 
         messageService.flag(message, flagger);
 
-        assertThat(message.flags).contains(flagger);
+        assertEquals(message.flags).contains(flagger);
     }
 
     @Test
@@ -233,7 +233,7 @@ public class MessageServiceTest {
         messageService.flag(message, flagger);
         messageService.flag(message, flagger);
 
-        assertThat(message.flags).hasSize(1);
+        assertEquals(message.flags).hasSize(1);
     }
 
     @Test
@@ -244,7 +244,7 @@ public class MessageServiceTest {
         messageService.flag(message, flagger);
         boolean didRemove = messageService.removeFlag(message, flagger);
 
-        assertThat(didRemove).isTrue();
+        assertEquals(didRemove).isTrue();
     }
 
     @Test
@@ -254,7 +254,7 @@ public class MessageServiceTest {
 
         boolean didRemove = messageService.removeFlag(message, flagger);
 
-        assertThat(didRemove).isFalse();
+        assertEquals(didRemove).isFalse();
     }
 
     @Test
@@ -265,7 +265,7 @@ public class MessageServiceTest {
         messageService.flag(message, flagger);
         messageService.removeFlag(message, flagger);
 
-        assertThat(message.flags.contains(flagger)).isFalse();
+        assertEquals(message.flags.contains(flagger)).isFalse();
     }
 
     @Test
@@ -278,7 +278,7 @@ public class MessageServiceTest {
 
         List<Message> actual = messageService.getMessages(roomId, limit, offset);
 
-        assertThat(actual == expected).isTrue();
+        assertEquals(actual == expected).isTrue();
     }
 
 

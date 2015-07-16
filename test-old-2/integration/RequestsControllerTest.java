@@ -20,32 +20,32 @@ public class RequestsControllerTest extends AbstractTest {
 //        long receiverId = receiverCreateJson.getLong(UsersControllerAdapter.ID_KEY);
 //
 //        Result createResult = adapter.createRequest(senderId, receiverId, MESSAGE);
-//        assertThat(status(createResult)).isEqualTo(CREATED);
+//        assertEquals(status(createResult)).isEqualTo(CREATED);
 //
 //        JSONObject createJson = new JSONObject(contentAsString(createResult));
-//        assertThat(createJson.getLong(ID_KEY)).isPositive();
-//        assertThat(createJson.getJSONObject(SENDER_KEY).toString()).isEqualTo(senderCreateJson.toString());
-//        assertThat(createJson.getJSONObject(RECEIVER_KEY).toString()).isEqualTo(receiverCreateJson.toString());
-//        assertThat(createJson.getString(MESSAGE_KEY)).isEqualTo(MESSAGE);
-//        assertThat(createJson.getString(STATUS_KEY)).isEqualTo(Request.Status.pending.toString());
+//        assertEquals(createJson.getLong(ID_KEY)).isPositive();
+//        assertEquals(createJson.getJSONObject(SENDER_KEY).toString()).isEqualTo(senderCreateJson.toString());
+//        assertEquals(createJson.getJSONObject(RECEIVER_KEY).toString()).isEqualTo(receiverCreateJson.toString());
+//        assertEquals(createJson.getString(MESSAGE_KEY)).isEqualTo(MESSAGE);
+//        assertEquals(createJson.getString(STATUS_KEY)).isEqualTo(Request.Status.pending.toString());
 //        long timeStamp = createJson.getLong(TIMESTAMP_KEY);
-//        assertThat(timeStamp).isPositive();
-//        assertThat(createJson.getLong(RESPONDED_TIMESTAMP_KEY)).isZero();
+//        assertEquals(timeStamp).isPositive();
+//        assertEquals(createJson.getLong(RESPONDED_TIMESTAMP_KEY)).isZero();
 //
 //        Result getRequestByReceiverResult = adapter.getRequestsByReceiver(receiverId);
-//        assertThat(status(getRequestByReceiverResult)).isEqualTo(OK);
+//        assertEquals(status(getRequestByReceiverResult)).isEqualTo(OK);
 //
 //        JSONArray getJson = new JSONArray(contentAsString(getRequestByReceiverResult));
-//        assertThat(getJson.length()).isEqualTo(1);
+//        assertEquals(getJson.length()).isEqualTo(1);
 //
 //        JSONObject requestJson = getJson.getJSONObject(0);
-//        assertThat(requestJson.getLong(ID_KEY)).isPositive();
-//        assertThat(requestJson.getJSONObject(SENDER_KEY).toString()).isEqualTo(senderCreateJson.toString());
-//        assertThat(requestJson.getJSONObject(RECEIVER_KEY).toString()).isEqualTo(receiverCreateJson.toString());
-//        assertThat(requestJson.getString(MESSAGE_KEY)).isEqualTo(MESSAGE);
-//        assertThat(requestJson.getString(STATUS_KEY)).isEqualTo(STATUS);
-//        assertThat(requestJson.getLong(TIMESTAMP_KEY)).isEqualTo(timeStamp);
-//        assertThat(requestJson.getLong(RESPONDED_TIMESTAMP_KEY)).isZero();
+//        assertEquals(requestJson.getLong(ID_KEY)).isPositive();
+//        assertEquals(requestJson.getJSONObject(SENDER_KEY).toString()).isEqualTo(senderCreateJson.toString());
+//        assertEquals(requestJson.getJSONObject(RECEIVER_KEY).toString()).isEqualTo(receiverCreateJson.toString());
+//        assertEquals(requestJson.getString(MESSAGE_KEY)).isEqualTo(MESSAGE);
+//        assertEquals(requestJson.getString(STATUS_KEY)).isEqualTo(STATUS);
+//        assertEquals(requestJson.getLong(TIMESTAMP_KEY)).isEqualTo(timeStamp);
+//        assertEquals(requestJson.getLong(RESPONDED_TIMESTAMP_KEY)).isZero();
 //    }
 //
 //    @Test
@@ -57,47 +57,47 @@ public class RequestsControllerTest extends AbstractTest {
 //        adapter.createRequest(senderId, receiverId, null);
 //
 //        Result duplicateResult = adapter.createRequest(senderId, receiverId, null);
-//        assertThat(status(duplicateResult)).isEqualTo(BAD_REQUEST);
+//        assertEquals(status(duplicateResult)).isEqualTo(BAD_REQUEST);
 //
 //        String expectedMessage = "A request with sender " + senderId + " and receiver " + receiverId + " already exists";
-//        assertThat(contentAsString(duplicateResult)).isEqualTo("{\"\":[\"" + expectedMessage + "\"]}");
+//        assertEquals(contentAsString(duplicateResult)).isEqualTo("{\"\":[\"" + expectedMessage + "\"]}");
 //    }
 //
 //    @Test
 //    public void createRequestNoSender() throws JSONException {
 //        Result noSenderResult = adapter.createRequest(null, SENDER_KEY);
-//        assertThat(status(noSenderResult)).isEqualTo(BAD_REQUEST);
-//        assertThat(contentAsString(noSenderResult)).isEqualTo(TestUtils.withQuotes("Request.sender is required!"));
+//        assertEquals(status(noSenderResult)).isEqualTo(BAD_REQUEST);
+//        assertEquals(contentAsString(noSenderResult)).isEqualTo(TestUtils.withQuotes("Request.sender is required!"));
 //    }
 //
 //    @Test
 //    public void createRequestNoReceiver() throws JSONException {
 //        Result noReceiverResult = adapter.createRequest(null, RECEIVER_KEY);
-//        assertThat(status(noReceiverResult)).isEqualTo(BAD_REQUEST);
-//        assertThat(contentAsString(noReceiverResult)).isEqualTo(TestUtils.withQuotes("Request.receiver is required!"));
+//        assertEquals(status(noReceiverResult)).isEqualTo(BAD_REQUEST);
+//        assertEquals(contentAsString(noReceiverResult)).isEqualTo(TestUtils.withQuotes("Request.receiver is required!"));
 //    }
 //
 //    @Test
 //    public void createRequestBadSender() throws JSONException {
 //        long senderId = 500;
 //        Result badSenderResult = adapter.createRequest(senderId, null, MESSAGE);
-//        assertThat(status(badSenderResult)).isEqualTo(NOT_FOUND);
-//        assertThat(contentAsString(badSenderResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.class, senderId)));
+//        assertEquals(status(badSenderResult)).isEqualTo(NOT_FOUND);
+//        assertEquals(contentAsString(badSenderResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.class, senderId)));
 //    }
 //
 //    @Test
 //    public void createRequestBadReceiver() throws JSONException {
 //        long receiverId = 500;
 //        Result badReceiverResult = adapter.createRequest(null, receiverId, MESSAGE);
-//        assertThat(status(badReceiverResult)).isEqualTo(NOT_FOUND);
-//        assertThat(contentAsString(badReceiverResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.class, receiverId)));
+//        assertEquals(status(badReceiverResult)).isEqualTo(NOT_FOUND);
+//        assertEquals(contentAsString(badReceiverResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(User.class, receiverId)));
 //    }
 //
 //    @Test
 //    public void createRequestNegativeId() throws JSONException {
 //        Result negativeIdResult = adapter.createRequest(null, -1L, MESSAGE);
-//        assertThat(status(negativeIdResult)).isEqualTo(BAD_REQUEST);
-//        assertThat(contentAsString(negativeIdResult)).isEqualTo(TestUtils.withQuotes("receiver must be a positive long"));
+//        assertEquals(status(negativeIdResult)).isEqualTo(BAD_REQUEST);
+//        assertEquals(contentAsString(negativeIdResult)).isEqualTo(TestUtils.withQuotes("receiver must be a positive long"));
 //
 //    }
 //
@@ -106,8 +106,8 @@ public class RequestsControllerTest extends AbstractTest {
 //        Map<String, String> formData = new HashMap<>();
 //        formData.put(SENDER_KEY, "NotALong");
 //        Result notNumericIdResult = adapter.createRequest(formData);
-//        assertThat(status(notNumericIdResult)).isEqualTo(BAD_REQUEST);
-//        assertThat(contentAsString(notNumericIdResult)).isEqualTo(TestUtils.withQuotes("sender must be a positive long"));
+//        assertEquals(status(notNumericIdResult)).isEqualTo(BAD_REQUEST);
+//        assertEquals(contentAsString(notNumericIdResult)).isEqualTo(TestUtils.withQuotes("sender must be a positive long"));
 //    }
 //
 //    @Test
@@ -117,10 +117,10 @@ public class RequestsControllerTest extends AbstractTest {
 //        long receiverId = receiverJson.getLong(UsersControllerAdapter.ID_KEY);
 //
 //        Result requestsByReceiverId = adapter.getRequestsByReceiver(receiverId);
-//        assertThat(status(requestsByReceiverId)).isEqualTo(OK);
+//        assertEquals(status(requestsByReceiverId)).isEqualTo(OK);
 //
 //        JSONArray requestsByReceiverJson = new JSONArray(contentAsString(requestsByReceiverId));
-//        assertThat(requestsByReceiverJson.length()).isEqualTo(1);
+//        assertEquals(requestsByReceiverJson.length()).isEqualTo(1);
 //    }
 //
 //    @Test
@@ -128,16 +128,16 @@ public class RequestsControllerTest extends AbstractTest {
 //        long createdResultId = adapter.getCreateRequestId();
 //
 //        Result handleResponseResult = adapter.handleResponse(createdResultId, Request.Status.accepted.toString());
-//        assertThat(status(handleResponseResult)).isEqualTo(OK);
-//        assertThat(contentAsString(handleResponseResult)).isEqualTo("\"" + BaseController.OK_STRING + "\"");
+//        assertEquals(status(handleResponseResult)).isEqualTo(OK);
+//        assertEquals(contentAsString(handleResponseResult)).isEqualTo("\"" + BaseController.OK_STRING + "\"");
 //
 //        JPA.withTransaction(() -> {
 //            Optional<Request> requestOptional = DbUtils.findEntityById(Request.class, createdResultId);
-//            assertThat(requestOptional.isPresent()).isTrue();
+//            assertEquals(requestOptional.isPresent()).isTrue();
 //
 //            Request request = requestOptional.get();
-//            assertThat(request.status).isEqualTo(Request.Status.accepted);
-//            assertThat(request.respondedTimeStamp).isPositive();
+//            assertEquals(request.status).isEqualTo(Request.Status.accepted);
+//            assertEquals(request.respondedTimeStamp).isPositive();
 //
 //            long senderId = request.sender.userId;
 //            long receiverId = request.receiver.userId;
@@ -149,17 +149,17 @@ public class RequestsControllerTest extends AbstractTest {
 //                    .setParameter("receiverId", receiverId);
 //
 //            List<PrivateRoom> privateRoomList = query.getResultList();
-//            assertThat(privateRoomList).hasSize(1);
+//            assertEquals(privateRoomList).hasSize(1);
 //
 //            PrivateRoom privateRoom = privateRoomList.get(0);
 //
-//            assertThat(privateRoom.roomId).isPositive();
-//            assertThat(privateRoom.messages).isEmpty();
-//            assertThat(privateRoom.request.equals(request));
-//            assertThat(privateRoom.sender).isEqualTo(request.sender);
-//            assertThat(privateRoom.receiver).isEqualTo(request.receiver);
-//            assertThat(privateRoom.timeStamp).isPositive();
-//            assertThat(privateRoom.lastActivity).isEqualTo(privateRoom.timeStamp);
+//            assertEquals(privateRoom.roomId).isPositive();
+//            assertEquals(privateRoom.messages).isEmpty();
+//            assertEquals(privateRoom.request.equals(request));
+//            assertEquals(privateRoom.sender).isEqualTo(request.sender);
+//            assertEquals(privateRoom.receiver).isEqualTo(request.receiver);
+//            assertEquals(privateRoom.timeStamp).isPositive();
+//            assertEquals(privateRoom.lastActivity).isEqualTo(privateRoom.timeStamp);
 //        });
 //    }
 //
@@ -168,16 +168,16 @@ public class RequestsControllerTest extends AbstractTest {
 //        long createdResultId = adapter.getCreateRequestId();
 //
 //        Result handleResponseResult = adapter.handleResponse(createdResultId, Request.Status.denied.toString());
-//        assertThat(status(handleResponseResult)).isEqualTo(OK);
-//        assertThat(contentAsString(handleResponseResult)).isEqualTo("\"" + BaseController.OK_STRING + "\"");
+//        assertEquals(status(handleResponseResult)).isEqualTo(OK);
+//        assertEquals(contentAsString(handleResponseResult)).isEqualTo("\"" + BaseController.OK_STRING + "\"");
 //
 //        JPA.withTransaction(() -> {
 //            Optional<Request> requestOptional = DbUtils.findEntityById(Request.class, createdResultId);
-//            assertThat(requestOptional.isPresent()).isTrue();
+//            assertEquals(requestOptional.isPresent()).isTrue();
 //
 //            Request request = requestOptional.get();
-//            assertThat(request.status).isEqualTo(Request.Status.denied);
-//            assertThat(request.respondedTimeStamp).isPositive();
+//            assertEquals(request.status).isEqualTo(Request.Status.denied);
+//            assertEquals(request.respondedTimeStamp).isPositive();
 //
 //            long senderId = request.sender.userId;
 //            long receiverId = request.receiver.userId;
@@ -189,7 +189,7 @@ public class RequestsControllerTest extends AbstractTest {
 //                    .setParameter("receiverId", receiverId);
 //
 //            List<PrivateRoom> privateRoomList = query.getResultList();
-//            assertThat(privateRoomList).isEmpty();
+//            assertEquals(privateRoomList).isEmpty();
 //        });
 //    }
 //
@@ -197,8 +197,8 @@ public class RequestsControllerTest extends AbstractTest {
 //    public void handleResponseBadRequestId() {
 //        int badId = 1;
 //        Result badIdResult = adapter.handleResponse(badId, Request.Status.accepted.toString());
-//        assertThat(status(badIdResult)).isEqualTo(NOT_FOUND);
-//        assertThat(contentAsString(badIdResult).contains(DbUtils.buildEntityNotFoundString(Request.class, badId)));
+//        assertEquals(status(badIdResult)).isEqualTo(NOT_FOUND);
+//        assertEquals(contentAsString(badIdResult).contains(DbUtils.buildEntityNotFoundString(Request.class, badId)));
 //    }
 //
 //    @Test
@@ -206,8 +206,8 @@ public class RequestsControllerTest extends AbstractTest {
 //        long createdRequestId = adapter.getCreateRequestId();
 //
 //        Result noStatusResult = adapter.handleResponse(createdRequestId, null);
-//        assertThat(status(noStatusResult)).isEqualTo(BAD_REQUEST);
-//        assertThat(contentAsString(noStatusResult)).contains("This field is required");
+//        assertEquals(status(noStatusResult)).isEqualTo(BAD_REQUEST);
+//        assertEquals(contentAsString(noStatusResult)).contains("This field is required");
 //    }
 //
 //    @Test
@@ -215,8 +215,8 @@ public class RequestsControllerTest extends AbstractTest {
 //        long createdRequestId = adapter.getCreateRequestId();
 //
 //        Result noStatusResult = adapter.handleResponse(createdRequestId, Request.Status.pending.toString());
-//        assertThat(status(noStatusResult)).isEqualTo(BAD_REQUEST);
-//        assertThat(contentAsString(noStatusResult)).contains("Invalid value");
+//        assertEquals(status(noStatusResult)).isEqualTo(BAD_REQUEST);
+//        assertEquals(contentAsString(noStatusResult)).contains("Invalid value");
 //    }
 //
 //    @Test
@@ -224,8 +224,8 @@ public class RequestsControllerTest extends AbstractTest {
 //        long createdRequestId = adapter.getCreateRequestId();
 //
 //        Result noStatusResult = adapter.handleResponse(createdRequestId, "mayonnaise");
-//        assertThat(status(noStatusResult)).isEqualTo(BAD_REQUEST);
-//        assertThat(contentAsString(noStatusResult)).contains("Invalid value");
+//        assertEquals(status(noStatusResult)).isEqualTo(BAD_REQUEST);
+//        assertEquals(contentAsString(noStatusResult)).contains("Invalid value");
 //    }
 //
 //    @Test
@@ -238,20 +238,20 @@ public class RequestsControllerTest extends AbstractTest {
 //        adapter.createRequest(senderId, receiverId, null);
 //
 //        Result getStatusResult = adapter.getStatus(senderId, receiverId);
-//        assertThat(status(getStatusResult)).isEqualTo(OK);
-//        assertThat(contentAsString(getStatusResult)).isEqualTo(TestUtils.withQuotes(Request.Status.pending.toString()));
+//        assertEquals(status(getStatusResult)).isEqualTo(OK);
+//        assertEquals(contentAsString(getStatusResult)).isEqualTo(TestUtils.withQuotes(Request.Status.pending.toString()));
 //    }
 //
 //    @Test
 //    public void getStatusNone() {
 //        Result noRequestResult = adapter.getStatus(1, 2);
-//        assertThat(status(noRequestResult)).isEqualTo(OK);
-//        assertThat(contentAsString(noRequestResult)).isEqualTo(TestUtils.withQuotes("none"));
+//        assertEquals(status(noRequestResult)).isEqualTo(OK);
+//        assertEquals(contentAsString(noRequestResult)).isEqualTo(TestUtils.withQuotes("none"));
 //    }
 //
 //    @Test
 //    public void testConstructor() {
 //        RequestsController controller = new RequestsController();
-//        assertThat(controller).isNotNull();
+//        assertEquals(controller).isNotNull();
 //    }
 }

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -59,7 +59,7 @@ public class AnonUserServiceTest {
 
         AnonUser result = anonUserService.getOrCreateAnonUser(mockActual, mockRoom);
 
-        assertThat(result).isEqualTo(existing.get());
+        assertEquals(result).isEqualTo(existing.get());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class AnonUserServiceTest {
 
         AnonUser result = anonUserService.getOrCreateAnonUser(mockActual, mockRoom);
 
-        assertThat(result).isNotNull();
+        assertEquals(result).isNotNull();
         verify(anonUserDao).save(any(AnonUser.class));
     }
 
@@ -100,7 +100,7 @@ public class AnonUserServiceTest {
 
         AnonUser anonUser = anonUserService.getOrCreateAnonUser(user, room);
 
-        assertThat(usedAliases.contains(anonUser.name)).isFalse();
+        assertEquals(usedAliases.contains(anonUser.name)).isFalse();
     }
 
     @Test
@@ -123,11 +123,11 @@ public class AnonUserServiceTest {
         try {
             anonUserService.getOrCreateAnonUser(user, room);
         } catch (IllegalStateException e) {
-            assertThat(e.getMessage()).contains("There are no more available aliases");
+            assertEquals(e.getMessage()).contains("There are no more available aliases");
             illegalStateExceptionThrown = true;
         }
 
-        assertThat(illegalStateExceptionThrown).isTrue();
+        assertEquals(illegalStateExceptionThrown).isTrue();
     }
 
 

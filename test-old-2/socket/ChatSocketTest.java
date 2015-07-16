@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 
 /**
  * Created by kdoherty on 6/27/15.
@@ -31,7 +31,7 @@ public class ChatSocketTest extends AbstractTest {
     private static <T> T readPojo(MockWebSocket socket, Class<T> clazz) throws JsonProcessingException,
             InterruptedException {
         JsonNode data = socket.read();
-        assertThat(data).isNotNull();
+        assertEquals(data).isNotNull();
 
         try {
             return objectMapper.convertValue(data, clazz);

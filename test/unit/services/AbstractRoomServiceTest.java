@@ -23,7 +23,7 @@ import utils.TestUtils;
 import java.util.Collections;
 import java.util.Set;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.verify;
@@ -66,9 +66,9 @@ public class AbstractRoomServiceTest {
 
         abstractRoomService.addMessage(room, mockMessage, userIdsInRoom);
 
-        assertThat(room.messages).hasSize(1);
-        assertThat(room.messages).contains(mockMessage);
-        assertThat(room.lastActivity).isPositive();
+        assertEquals(room.messages).hasSize(1);
+        assertEquals(room.messages).contains(mockMessage);
+        assertEquals(room.lastActivity).isPositive();
         verify(publicRoomService).sendNotification(
                 refEq(room), any(MessageNotification.class), refEq(userIdsInRoom));
     }
@@ -80,8 +80,8 @@ public class AbstractRoomServiceTest {
 
         abstractRoomService.addMessage(room, message, Collections.emptySet());
 
-        assertThat(room.messages).hasSize(1);
-        assertThat(room.messages).contains(message);
+        assertEquals(room.messages).hasSize(1);
+        assertEquals(room.messages).contains(message);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class AbstractRoomServiceTest {
 
         abstractRoomService.addMessage(room, message, Collections.emptySet());
 
-        assertThat(room.lastActivity).isPositive();
+        assertEquals(room.lastActivity).isPositive();
     }
 
     @Test
@@ -101,8 +101,8 @@ public class AbstractRoomServiceTest {
 
         abstractRoomService.addMessage(room, message, Collections.emptySet());
 
-        assertThat(room.messages).hasSize(1);
-        assertThat(room.messages).contains(message);
+        assertEquals(room.messages).hasSize(1);
+        assertEquals(room.messages).contains(message);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class AbstractRoomServiceTest {
 
         abstractRoomService.addMessage(room, message, Collections.emptySet());
 
-        assertThat(room.lastActivity).isPositive();
+        assertEquals(room.lastActivity).isPositive();
     }
 
     @Test

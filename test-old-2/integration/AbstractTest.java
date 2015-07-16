@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import play.test.FakeApplication;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 import static play.test.Helpers.*;
 
 public abstract class AbstractTest {
@@ -24,8 +24,8 @@ public abstract class AbstractTest {
     }
 
     protected void testAbstractRoom(AbstractRoom room) {
-        assertThat(room).isNotNull();
-        assertThat(room.roomId).isPositive();
+        assertEquals(room).isNotNull();
+        assertEquals(room.roomId).isPositive();
     }
 
     protected void testPersistedPublicRoom(PublicRoom room) {
@@ -39,8 +39,8 @@ public abstract class AbstractTest {
     }
 
     protected void testPersistedRequest(Request request) {
-        assertThat(request).isNotNull();
-        assertThat(request.requestId).isPositive();
+        assertEquals(request).isNotNull();
+        assertEquals(request.requestId).isPositive();
         testPersistedUser(request.sender);
         testPersistedUser(request.receiver);
     }
@@ -50,8 +50,8 @@ public abstract class AbstractTest {
     }
 
     protected void testAbstractUser(AbstractUser user) {
-        assertThat(user).isNotNull();
-        assertThat(user.userId).isPositive();
+        assertEquals(user).isNotNull();
+        assertEquals(user.userId).isPositive();
     }
 
     protected void testAnonUser(AnonUser anonUser) {
@@ -61,14 +61,14 @@ public abstract class AbstractTest {
     }
 
     protected void testDevice(Device device) {
-        assertThat(device).isNotNull();
-        assertThat(device.deviceId).isPositive();
+        assertEquals(device).isNotNull();
+        assertEquals(device.deviceId).isPositive();
         testPersistedUser(device.user);
     }
 
     protected void testMessage(Message message) {
-        assertThat(message).isNotNull();
-        assertThat(message.messageId).isPositive();
+        assertEquals(message).isNotNull();
+        assertEquals(message.messageId).isPositive();
         testAbstractRoom(message.room);
         testAbstractUser(message.sender);
     }

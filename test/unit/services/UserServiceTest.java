@@ -31,7 +31,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -187,7 +187,7 @@ public class UserServiceTest {
         when(mockResponse.asJson()).thenReturn(expectedResult);
 
         JsonNode response = userService.getFacebookInformation(fbAccessToken);
-        assertThat(response == expectedResult).isTrue();
+        assertEquals(response == expectedResult).isTrue();
     }
 
     @Test
@@ -196,7 +196,7 @@ public class UserServiceTest {
         when(userDao.findById(userId)).thenReturn(Optional.empty());
 
         Optional<User> userOptional = userService.findById(userId);
-        assertThat(userOptional.isPresent()).isFalse();;
+        assertEquals(userOptional.isPresent()).isFalse();;
 
         verify(userDao).findById(userId);
     }
@@ -209,7 +209,7 @@ public class UserServiceTest {
         Optional<User> userOptional = userService.findByFacebookId(facebookId);
 
         verify(userDao).findByFacebookId(facebookId);
-        assertThat(userOptional.isPresent()).isFalse();;
+        assertEquals(userOptional.isPresent()).isFalse();;
     }
 
     @Test
@@ -220,7 +220,7 @@ public class UserServiceTest {
 
         List<Device> actual = userService.getDevices(mockUser);
 
-        assertThat(actual == expected).isTrue();
+        assertEquals(actual == expected).isTrue();
     }
 
 }

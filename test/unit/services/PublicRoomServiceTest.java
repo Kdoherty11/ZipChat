@@ -23,7 +23,7 @@ import utils.TestUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -129,8 +129,8 @@ public class PublicRoomServiceTest {
 
         boolean result = publicRoomService.subscribe(mockRoom, user);
 
-        assertThat(result).isFalse();
-        assertThat(subscribers).hasSize(1);
+        assertEquals(result).isFalse();
+        assertEquals(subscribers).hasSize(1);
     }
 
     @Test
@@ -144,8 +144,8 @@ public class PublicRoomServiceTest {
 
         boolean result = publicRoomService.subscribe(mockRoom, subscribeUser);
 
-        assertThat(result).isTrue();
-        assertThat(subscribers).hasSize(2);
+        assertEquals(result).isTrue();
+        assertEquals(subscribers).hasSize(2);
     }
 
     @Test
@@ -159,8 +159,8 @@ public class PublicRoomServiceTest {
 
         boolean result = publicRoomService.unsubscribe(mockRoom, unsubscribingUser);
 
-        assertThat(result).isFalse();
-        assertThat(subscribers).hasSize(1);
+        assertEquals(result).isFalse();
+        assertEquals(subscribers).hasSize(1);
     }
 
     @Test
@@ -172,8 +172,8 @@ public class PublicRoomServiceTest {
 
         boolean result = publicRoomService.unsubscribe(mockRoom, user);
 
-        assertThat(result).isTrue();
-        assertThat(subscribers).isEmpty();
+        assertEquals(result).isTrue();
+        assertEquals(subscribers).isEmpty();
     }
 
     @Test
@@ -185,7 +185,7 @@ public class PublicRoomServiceTest {
 
         boolean isSubscribed = publicRoomService.isSubscribed(mockRoom, user.userId);
 
-        assertThat(isSubscribed).isTrue();
+        assertEquals(isSubscribed).isTrue();
     }
 
     @Test
@@ -197,7 +197,7 @@ public class PublicRoomServiceTest {
 
         boolean isSubscribed = publicRoomService.isSubscribed(mockRoom, TestUtils.getUniqueId(user));
 
-        assertThat(isSubscribed).isFalse();
+        assertEquals(isSubscribed).isFalse();
     }
 
     @Test
@@ -208,7 +208,7 @@ public class PublicRoomServiceTest {
         when(publicRoomDao.allInGeoRange(lat, lon)).thenReturn(expected);
         List<PublicRoom> actual = publicRoomService.allInGeoRange(lat, lon);
 
-        assertThat(actual == expected).isTrue();
+        assertEquals(actual == expected).isTrue();
     }
 
     @Test
@@ -218,7 +218,7 @@ public class PublicRoomServiceTest {
         when(publicRoomDao.getSubscribers(mockRoom)).thenReturn(expected);
         Set<User> actual = publicRoomService.getSubscribers(mockRoom);
 
-        assertThat(actual == expected).isTrue();
+        assertEquals(actual == expected).isTrue();
     }
 
 

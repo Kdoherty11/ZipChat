@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 
 /**
  * Created by kevin on 6/22/15.
@@ -27,7 +27,7 @@ public class FactoryTest extends AbstractTest {
         ObjectFactory<User> userObjectFactory = new ObjectFactory<>(User.class);
         User user = userObjectFactory.create();
         testPersistedUser(user);
-        assertThat(user.devices).isNull();
+        assertEquals(user.devices).isNull();
         userObjectFactory.cleanUp();
     }
 
@@ -39,9 +39,9 @@ public class FactoryTest extends AbstractTest {
         ObjectFactory<User> userObjectFactory = new ObjectFactory<>(User.class);
         User user = userObjectFactory.create(ImmutableMap.of("devices", new IncludeEntity<>(Device.class, 2, deviceOverrides)));
         testPersistedUser(user);
-        assertThat(user.devices).hasSize(numDevices);
-        assertThat(user.devices.get(0).user).isEqualTo(user);
-        assertThat(user.devices.get(0).deviceId).isPositive();
+        assertEquals(user.devices).hasSize(numDevices);
+        assertEquals(user.devices.get(0).user).isEqualTo(user);
+        assertEquals(user.devices.get(0).deviceId).isPositive();
         userObjectFactory.cleanUp();
     }
 
@@ -60,7 +60,7 @@ public class FactoryTest extends AbstractTest {
         user.devices = allDevices;
 
         testPersistedUser(user);
-        assertThat(user.devices).hasSize(allDevices.size());
+        assertEquals(user.devices).hasSize(allDevices.size());
         testDevice(user.devices.get(0));
     }
 
@@ -95,8 +95,8 @@ public class FactoryTest extends AbstractTest {
         int numMessages = 2;
         PrivateRoom room = factory.create(ImmutableMap.of("messages", new IncludeEntity<>(Message.class, numMessages)));
         testPersistedPrivateRoom(room);
-        assertThat(room.messages.get(0).room).isEqualTo(room);
-        assertThat(room.messages.get(0).messageId).isPositive();
+        assertEquals(room.messages.get(0).room).isEqualTo(room);
+        assertEquals(room.messages.get(0).messageId).isPositive();
         factory.cleanUp();
     }
 
@@ -114,9 +114,9 @@ public class FactoryTest extends AbstractTest {
         int numMessages = 2;
         PublicRoom room = factory.create(ImmutableMap.of("messages", new IncludeEntity<>(Message.class, numMessages)));
         testPersistedPublicRoom(room);
-        assertThat(room.messages).hasSize(numMessages);
-        assertThat(room.messages.get(0).room).isEqualTo(room);
-        assertThat(room.messages.get(0).messageId).isPositive();
+        assertEquals(room.messages).hasSize(numMessages);
+        assertEquals(room.messages.get(0).room).isEqualTo(room);
+        assertEquals(room.messages.get(0).messageId).isPositive();
         factory.cleanUp();
     }
 
@@ -126,7 +126,7 @@ public class FactoryTest extends AbstractTest {
         int numSubscribers = 2;
         PublicRoom room = factory.create(ImmutableMap.of("subscribers", new IncludeEntity<>(User.class, numSubscribers)));
         testPersistedPublicRoom(room);
-        assertThat(room.subscribers).hasSize(numSubscribers);
+        assertEquals(room.subscribers).hasSize(numSubscribers);
         factory.cleanUp();
     }
 
@@ -136,8 +136,8 @@ public class FactoryTest extends AbstractTest {
         int numAnonUsers = 2;
         PublicRoom room = factory.create(ImmutableMap.of("anonUsers", new IncludeEntity<>(AnonUser.class, numAnonUsers)));
         testPersistedPublicRoom(room);
-        assertThat(room.anonUsers).hasSize(numAnonUsers);
-        assertThat(room.anonUsers.get(0).room).isEqualTo(room);
+        assertEquals(room.anonUsers).hasSize(numAnonUsers);
+        assertEquals(room.anonUsers.get(0).room).isEqualTo(room);
         factory.cleanUp();
     }
 
@@ -179,7 +179,7 @@ public class FactoryTest extends AbstractTest {
         int numFavorites = 2;
         Message message = factory.create(ImmutableMap.of("favorites", new IncludeEntity<>(User.class, numFavorites)));
         testMessage(message);
-        assertThat(message.favorites).hasSize(numFavorites);
+        assertEquals(message.favorites).hasSize(numFavorites);
 
         factory.cleanUp();
     }
@@ -191,7 +191,7 @@ public class FactoryTest extends AbstractTest {
         int numFavorites = 2;
         Message message = factory.create(ImmutableMap.of("flags", new IncludeEntity<>(User.class, numFavorites)));
         testMessage(message);
-        assertThat(message.flags).hasSize(numFavorites);
+        assertEquals(message.flags).hasSize(numFavorites);
 
         factory.cleanUp();
     }

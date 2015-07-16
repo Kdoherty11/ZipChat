@@ -9,7 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import services.DeviceService;
 import services.impl.DeviceServiceImpl;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 
 /**
  * Created by kdoherty on 7/8/15.
@@ -29,6 +29,6 @@ public class DeviceServiceTest {
 
     @Test
     public void testConstructor() {
-        assertThat(deviceService).isNotNull();
+        assertEquals(deviceService).isNotNull();
     }
 }

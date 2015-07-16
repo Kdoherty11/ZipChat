@@ -4,7 +4,7 @@ import models.entities.PublicRoom;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 
 /**
  * Created by kdoherty on 7/2/15.
@@ -17,11 +17,11 @@ public class JsonValidator {
             final String facebookId = userJson.getString("facebookId");
             final String name = userJson.getString("name");
 
-            assertThat(userId).isPositive();
-            assertThat(facebookId).isNotNull();
-            assertThat(facebookId).isNotEmpty();
-            assertThat(name).isNotNull();
-            assertThat(name).isNotEmpty();
+            assertEquals(userId).isPositive();
+            assertEquals(facebookId).isNotNull();
+            assertEquals(facebookId).isNotEmpty();
+            assertEquals(name).isNotNull();
+            assertEquals(name).isNotEmpty();
         } catch (JSONException e) {
             throw new RuntimeException("Problem parsing user json", e);
         }
@@ -35,10 +35,10 @@ public class JsonValidator {
 
             final long lastActivity = privateRoomJson.getLong("lastActivity");
 
-            assertThat(roomId).isPositive();
+            assertEquals(roomId).isPositive();
             validateUserJson(sender);
             validateUserJson(receiver);
-            assertThat(lastActivity).isPositive();
+            assertEquals(lastActivity).isPositive();
         } catch (JSONException e) {
             throw new RuntimeException("Problem parsing public room json", e);
         }
@@ -48,12 +48,12 @@ public class JsonValidator {
 
             PublicRoom publicRoom = parsePublicRoom(publicRoomJson);
 
-            assertThat(publicRoom.roomId).isPositive();
-            assertThat(publicRoom.name).isNotEmpty();
-            assertThat(publicRoom.latitude).isGreaterThanOrEqualTo(-90.0).isLessThanOrEqualTo(90.0);
-            assertThat(publicRoom.longitude).isGreaterThanOrEqualTo(-180.0).isLessThanOrEqualTo(180.0);
-            assertThat(publicRoom.radius).isPositive();
-            assertThat(publicRoom.lastActivity).isPositive();
+            assertEquals(publicRoom.roomId).isPositive();
+            assertEquals(publicRoom.name).isNotEmpty();
+            assertEquals(publicRoom.latitude).isGreaterThanOrEqualTo(-90.0).isLessThanOrEqualTo(90.0);
+            assertEquals(publicRoom.longitude).isGreaterThanOrEqualTo(-180.0).isLessThanOrEqualTo(180.0);
+            assertEquals(publicRoom.radius).isPositive();
+            assertEquals(publicRoom.lastActivity).isPositive();
     }
 
     // Not using Gson because we want the test to fail if a variable name changes
@@ -85,15 +85,15 @@ public class JsonValidator {
         final String message = messageJson.getString("message");
         final long createdAt = messageJson.getLong("createdAt");
 
-        assertThat(messageId).isPositive();
+        assertEquals(messageId).isPositive();
         validateUserJson(senderJson);
-        assertThat(message).isNotNull();
-        assertThat(message).isNotEmpty();
-        assertThat(createdAt).isPositive();
+        assertEquals(message).isNotNull();
+        assertEquals(message).isNotEmpty();
+        assertEquals(createdAt).isPositive();
     }
 
     public static void validateCreateJson(JSONObject createJson, String idKey) throws JSONException {
-        assertThat(createJson.getLong(idKey)).isPositive();
+        assertEquals(createJson.getLong(idKey)).isPositive();
     }
 
 

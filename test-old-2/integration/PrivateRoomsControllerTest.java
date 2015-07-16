@@ -24,7 +24,7 @@ import utils.JsonValidator;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.*;
@@ -73,10 +73,10 @@ public class PrivateRoomsControllerTest extends WithApplication {
         when(privateRoomService.findByUserId(1l)).thenReturn(rooms);
 
         Result result = route(fakeRequest(GET, "/privateRooms?userId=1"));
-        assertThat(status(result)).isEqualTo(OK);
+        assertEquals(status(result)).isEqualTo(OK);
 
         JSONArray resultRooms = new JSONArray(contentAsString(result));
-        assertThat(resultRooms.length()).isZero();
+        assertEquals(resultRooms.length()).isZero();
     }
 
     @Test
@@ -86,10 +86,10 @@ public class PrivateRoomsControllerTest extends WithApplication {
         when(privateRoomService.findByUserId(1l)).thenReturn(rooms);
 
         Result result = route(fakeRequest(GET, "/privateRooms?userId=1"));
-        assertThat(status(result)).isEqualTo(OK);
+        assertEquals(status(result)).isEqualTo(OK);
 
         JSONArray resultRooms = new JSONArray(contentAsString(result));
-        assertThat(resultRooms.length()).isEqualTo(3);
+        assertEquals(resultRooms.length()).isEqualTo(3);
         new JsonArrayIterator(resultRooms).forEach(JsonValidator::validatePrivateRoom);
     }
 
@@ -113,9 +113,9 @@ public class PrivateRoomsControllerTest extends WithApplication {
 //            final long senderId = request.sender.userId;
 //            final long receiverId = request.receiver.userId;
 //
-//            assertThat(adapter.getRoomCountByUserId(senderId)).isEqualTo(1);
-//            assertThat(adapter.getRoomCountByUserId(receiverId)).isEqualTo(1);
-//            assertThat(adapter.getRoomCountByUserId(findUnusedId(senderId, receiverId))).isZero();
+//            assertEquals(adapter.getRoomCountByUserId(senderId)).isEqualTo(1);
+//            assertEquals(adapter.getRoomCountByUserId(receiverId)).isEqualTo(1);
+//            assertEquals(adapter.getRoomCountByUserId(findUnusedId(senderId, receiverId))).isZero();
 //        });
 //    }
 //
@@ -126,8 +126,8 @@ public class PrivateRoomsControllerTest extends WithApplication {
 //            Logger.debug("HERE: " + room);
 //
 //            Result leaveRoomSuccess = adapter.leaveRoom(room.roomId, room.sender.userId);
-//            assertThat(status(leaveRoomSuccess)).isEqualTo(OK);
-//            assertThat(contentAsString(leaveRoomSuccess)).isEqualTo(BaseController.OK_STRING);
+//            assertEquals(status(leaveRoomSuccess)).isEqualTo(OK);
+//            assertEquals(contentAsString(leaveRoomSuccess)).isEqualTo(BaseController.OK_STRING);
 //            Logger.debug("PASSED!!!!");
 //        });
 //
@@ -138,8 +138,8 @@ public class PrivateRoomsControllerTest extends WithApplication {
 //    public void testLeaveRoomBadRoomId() {
 //        long badId = 10;
 //        Result badRoomIdResult = adapter.leaveRoom(badId, 1);
-//        assertThat(status(badRoomIdResult)).isEqualTo(NOT_FOUND);
-//        assertThat(contentAsString(badRoomIdResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(PrivateRoom.class, badId)));
+//        assertEquals(status(badRoomIdResult)).isEqualTo(NOT_FOUND);
+//        assertEquals(contentAsString(badRoomIdResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(PrivateRoom.class, badId)));
 //    }
 //
 //    @Test
@@ -150,8 +150,8 @@ public class PrivateRoomsControllerTest extends WithApplication {
 //
 //        long otherId = findUnusedId(senderId, receiverId);
 //        Result userNotInRoomResult = adapter.leaveRoom(privateRoom.roomId, otherId);
-//        assertThat(status(userNotInRoomResult)).isEqualTo(BAD_REQUEST);
-//        assertThat(contentAsString(userNotInRoomResult)).isEqualTo(
+//        assertEquals(status(userNotInRoomResult)).isEqualTo(BAD_REQUEST);
+//        assertEquals(contentAsString(userNotInRoomResult)).isEqualTo(
 //                TestUtils.withQuotes("Unable to remove user with ID " + otherId + " from the room because they are not in it"));
 //    }
 //
