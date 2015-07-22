@@ -9,7 +9,7 @@ import play.mvc.Result;
 public abstract class AbstractResultSender {
 
     private String restAction;
-    protected String url;
+    private String url;
 
     private boolean hasAddedParams = false;
 

@@ -40,7 +40,7 @@ public class FactoryTest extends AbstractTest {
         User user = userObjectFactory.create(ImmutableMap.of("devices", new IncludeEntity<>(Device.class, 2, deviceOverrides)));
         testPersistedUser(user);
         assertEquals(user.devices).hasSize(numDevices);
-        assertEquals(user.devices.get(0).user).isEqualTo(user);
+        assertEquals(user.devices.get(0).user, user);
         assertEquals(user.devices.get(0).deviceId).isPositive();
         userObjectFactory.cleanUp();
     }
@@ -95,7 +95,7 @@ public class FactoryTest extends AbstractTest {
         int numMessages = 2;
         PrivateRoom room = factory.create(ImmutableMap.of("messages", new IncludeEntity<>(Message.class, numMessages)));
         testPersistedPrivateRoom(room);
-        assertEquals(room.messages.get(0).room).isEqualTo(room);
+        assertEquals(room.messages.get(0).room, room);
         assertEquals(room.messages.get(0).messageId).isPositive();
         factory.cleanUp();
     }
@@ -115,7 +115,7 @@ public class FactoryTest extends AbstractTest {
         PublicRoom room = factory.create(ImmutableMap.of("messages", new IncludeEntity<>(Message.class, numMessages)));
         testPersistedPublicRoom(room);
         assertEquals(room.messages).hasSize(numMessages);
-        assertEquals(room.messages.get(0).room).isEqualTo(room);
+        assertEquals(room.messages.get(0).room, room);
         assertEquals(room.messages.get(0).messageId).isPositive();
         factory.cleanUp();
     }
@@ -137,7 +137,7 @@ public class FactoryTest extends AbstractTest {
         PublicRoom room = factory.create(ImmutableMap.of("anonUsers", new IncludeEntity<>(AnonUser.class, numAnonUsers)));
         testPersistedPublicRoom(room);
         assertEquals(room.anonUsers).hasSize(numAnonUsers);
-        assertEquals(room.anonUsers.get(0).room).isEqualTo(room);
+        assertEquals(room.anonUsers.get(0).room, room);
         factory.cleanUp();
     }
 

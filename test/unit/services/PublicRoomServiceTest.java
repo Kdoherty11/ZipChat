@@ -23,7 +23,7 @@ import utils.TestUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -129,23 +129,19 @@ public class PublicRoomServiceTest {
 
         boolean result = publicRoomService.subscribe(mockRoom, user);
 
-        assertEquals(result).isFalse();
-        assertEquals(subscribers).hasSize(1);
+        assertFalse(result);
+        assertEquals(1, subscribers.size());
     }
 
     @Test
     public void subscribeNotYetSubscribed() throws IllegalAccessException, InstantiationException {
         PublicRoom mockRoom = mock(PublicRoom.class);
-        User user = userFactory.create();
-        Set<User> subscribers = TestUtils.setOf(user);
-        when(mockRoom.subscribers).thenReturn(subscribers);
+        when(mockRoom.subscribers).thenReturn(new HashSet<>());
 
-        User subscribeUser = userFactory.create(UserFactory.Trait.UNIQUE_NAME);
+        boolean result = publicRoomService.subscribe(mockRoom, mock(User.class));
 
-        boolean result = publicRoomService.subscribe(mockRoom, subscribeUser);
-
-        assertEquals(result).isTrue();
-        assertEquals(subscribers).hasSize(2);
+        assertTrue(result);
+        assertEquals(1, mockRoom.subscribers.size());
     }
 
     @Test
@@ -159,8 +155,8 @@ public class PublicRoomServiceTest {
 
         boolean result = publicRoomService.unsubscribe(mockRoom, unsubscribingUser);
 
-        assertEquals(result).isFalse();
-        assertEquals(subscribers).hasSize(1);
+        assertFalse(result);
+        assertEquals(1, subscribers.size());
     }
 
     @Test
@@ -172,8 +168,8 @@ public class PublicRoomServiceTest {
 
         boolean result = publicRoomService.unsubscribe(mockRoom, user);
 
-        assertEquals(result).isTrue();
-        assertEquals(subscribers).isEmpty();
+        assertTrue(result);
+        assertTrue(subscribers.isEmpty());
     }
 
     @Test
@@ -185,7 +181,7 @@ public class PublicRoomServiceTest {
 
         boolean isSubscribed = publicRoomService.isSubscribed(mockRoom, user.userId);
 
-        assertEquals(isSubscribed).isTrue();
+        assertTrue(isSubscribed);
     }
 
     @Test
@@ -197,7 +193,7 @@ public class PublicRoomServiceTest {
 
         boolean isSubscribed = publicRoomService.isSubscribed(mockRoom, TestUtils.getUniqueId(user));
 
-        assertEquals(isSubscribed).isFalse();
+        assertFalse(isSubscribed);
     }
 
     @Test
@@ -208,7 +204,7 @@ public class PublicRoomServiceTest {
         when(publicRoomDao.allInGeoRange(lat, lon)).thenReturn(expected);
         List<PublicRoom> actual = publicRoomService.allInGeoRange(lat, lon);
 
-        assertEquals(actual == expected).isTrue();
+        assertSame(expected, actual);
     }
 
     @Test
@@ -218,7 +214,7 @@ public class PublicRoomServiceTest {
         when(publicRoomDao.getSubscribers(mockRoom)).thenReturn(expected);
         Set<User> actual = publicRoomService.getSubscribers(mockRoom);
 
-        assertEquals(actual == expected).isTrue();
+        assertSame(expected, actual);
     }
 
 

@@ -23,7 +23,7 @@ public class ObjectFactoryTest extends AbstractTest {
 //        Logger.debug("AFTER OneToMany CREATE: " + user);
 //        assertEquals(user.devices).isNotNull();
 //        assertEquals(user.devices).isNotEmpty();
-//        assertEquals(user.devices.get(0)).isEqualTo(user);
+//        assertEquals(user.devices.get(0),user);
 //        //userObjectFactory.cleanUp();
 //        //Logger.debug("CLEANED UP OneToMany");
 //    }

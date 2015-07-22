@@ -9,7 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import services.GenericService;
 import services.impl.GenericServiceImpl;
 
-import static org.fest.assertions.Assertions.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.verify;
 
@@ -37,7 +37,7 @@ public class GenericServiceTest<T> {
         } catch (NullPointerException npe) {
             nullPointerThrown = true;
         }
-        assertEquals(nullPointerThrown).isTrue();
+        assertTrue(nullPointerThrown);
     }
 
     @Test

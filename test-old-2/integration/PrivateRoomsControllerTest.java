@@ -16,8 +16,8 @@ import play.GlobalSettings;
 import play.mvc.Action;
 import play.mvc.Result;
 import play.test.WithApplication;
-import services.impl.SecurityServiceImpl;
 import services.PrivateRoomService;
+import services.impl.SecurityServiceImpl;
 import utils.JsonArrayIterator;
 import utils.JsonValidator;
 
@@ -73,7 +73,7 @@ public class PrivateRoomsControllerTest extends WithApplication {
         when(privateRoomService.findByUserId(1l)).thenReturn(rooms);
 
         Result result = route(fakeRequest(GET, "/privateRooms?userId=1"));
-        assertEquals(status(result)).isEqualTo(OK);
+        assertEquals(result.status(), OK);
 
         JSONArray resultRooms = new JSONArray(contentAsString(result));
         assertEquals(resultRooms.length()).isZero();
@@ -86,10 +86,10 @@ public class PrivateRoomsControllerTest extends WithApplication {
         when(privateRoomService.findByUserId(1l)).thenReturn(rooms);
 
         Result result = route(fakeRequest(GET, "/privateRooms?userId=1"));
-        assertEquals(status(result)).isEqualTo(OK);
+        assertEquals(result.status(), OK);
 
         JSONArray resultRooms = new JSONArray(contentAsString(result));
-        assertEquals(resultRooms.length()).isEqualTo(3);
+        assertEquals(resultRooms.length(), 3);
         new JsonArrayIterator(resultRooms).forEach(JsonValidator::validatePrivateRoom);
     }
 
@@ -113,8 +113,8 @@ public class PrivateRoomsControllerTest extends WithApplication {
 //            final long senderId = request.sender.userId;
 //            final long receiverId = request.receiver.userId;
 //
-//            assertEquals(adapter.getRoomCountByUserId(senderId)).isEqualTo(1);
-//            assertEquals(adapter.getRoomCountByUserId(receiverId)).isEqualTo(1);
+//            assertEquals(adapter.getRoomCountByUserId(senderId), 1);
+//            assertEquals(adapter.getRoomCountByUserId(receiverId), 1);
 //            assertEquals(adapter.getRoomCountByUserId(findUnusedId(senderId, receiverId))).isZero();
 //        });
 //    }
@@ -126,8 +126,8 @@ public class PrivateRoomsControllerTest extends WithApplication {
 //            Logger.debug("HERE: " + room);
 //
 //            Result leaveRoomSuccess = adapter.leaveRoom(room.roomId, room.sender.userId);
-//            assertEquals(status(leaveRoomSuccess)).isEqualTo(OK);
-//            assertEquals(contentAsString(leaveRoomSuccess)).isEqualTo(BaseController.OK_STRING);
+//            assertEquals(status(leaveRoomSuccess), OK);
+//            assertEquals(contentAsString(leaveRoomSuccess), BaseController.OK_STRING);
 //            Logger.debug("PASSED!!!!");
 //        });
 //
@@ -138,8 +138,8 @@ public class PrivateRoomsControllerTest extends WithApplication {
 //    public void testLeaveRoomBadRoomId() {
 //        long badId = 10;
 //        Result badRoomIdResult = adapter.leaveRoom(badId, 1);
-//        assertEquals(status(badRoomIdResult)).isEqualTo(NOT_FOUND);
-//        assertEquals(contentAsString(badRoomIdResult)).isEqualTo(TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(PrivateRoom.class, badId)));
+//        assertEquals(status(badRoomIdResult), NOT_FOUND);
+//        assertEquals(contentAsString(badRoomIdResult), TestUtils.withQuotes(DbUtils.buildEntityNotFoundString(PrivateRoom.class, badId)));
 //    }
 //
 //    @Test
@@ -150,8 +150,8 @@ public class PrivateRoomsControllerTest extends WithApplication {
 //
 //        long otherId = findUnusedId(senderId, receiverId);
 //        Result userNotInRoomResult = adapter.leaveRoom(privateRoom.roomId, otherId);
-//        assertEquals(status(userNotInRoomResult)).isEqualTo(BAD_REQUEST);
-//        assertEquals(contentAsString(userNotInRoomResult)).isEqualTo(
+//        assertEquals(status(userNotInRoomResult), BAD_REQUEST);
+//        assertEquals(contentAsString(userNotInRoomResult),
 //                TestUtils.withQuotes("Unable to remove user with ID " + otherId + " from the room because they are not in it"));
 //    }
 //

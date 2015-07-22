@@ -2,7 +2,6 @@ package unit.services;
 
 import daos.PrivateRoomDao;
 import daos.RequestDao;
-import factories.PrivateRoomFactory;
 import models.entities.PrivateRoom;
 import models.entities.Request;
 import models.entities.User;
@@ -12,14 +11,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import services.PrivateRoomService;
-import services.UserService;
 import services.impl.PrivateRoomServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.fest.assertions.Assertions.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -30,21 +28,15 @@ public class PrivateRoomServiceTest {
 
     private PrivateRoomService privateRoomService;
 
-    private PrivateRoomFactory privateRoomFactory;
-
     @Mock
     private PrivateRoomDao privateRoomDao;
 
     @Mock
     private RequestDao requestDao;
 
-    @Mock
-    private UserService userService;
-
     @Before
     public void setUp() {
-        privateRoomService = spy(new PrivateRoomServiceImpl(privateRoomDao, requestDao, userService));
-        privateRoomFactory = new PrivateRoomFactory();
+        privateRoomService = spy(new PrivateRoomServiceImpl(privateRoomDao, requestDao));
     }
 
     @Test
@@ -59,11 +51,11 @@ public class PrivateRoomServiceTest {
 
         boolean removed = privateRoomService.removeUser(privateRoom, 3l);
 
-        assertEquals(removed).isFalse();
-        assertEquals(privateRoom.senderInRoom).isTrue();
-        assertEquals(privateRoom.receiverInRoom).isTrue();
+        assertFalse(removed);
+        assertTrue(privateRoom.senderInRoom);
+        assertTrue(privateRoom.receiverInRoom);
         verifyZeroInteractions(requestDao, privateRoomDao);
-        assertEquals(privateRoom.request).isNotNull();
+        assertNotNull(privateRoom.request);
     }
 
     @Test
@@ -80,12 +72,12 @@ public class PrivateRoomServiceTest {
 
         boolean removed = privateRoomService.removeUser(privateRoom, senderId);
 
-        assertEquals(removed).isTrue();
-        assertEquals(privateRoom.senderInRoom).isFalse();
-        assertEquals(privateRoom.receiverInRoom).isTrue();
+        assertTrue(removed);
+        assertFalse(privateRoom.senderInRoom);
+        assertTrue(privateRoom.receiverInRoom);
         verifyZeroInteractions(privateRoomDao);
         verify(requestDao).remove(request);
-        assertEquals(privateRoom.request).isNull();
+        assertNull(privateRoom.request);
     }
 
     @Test
@@ -102,12 +94,12 @@ public class PrivateRoomServiceTest {
 
         boolean removed = privateRoomService.removeUser(privateRoom, receiverId);
 
-        assertEquals(removed).isTrue();
-        assertEquals(privateRoom.senderInRoom).isTrue();
-        assertEquals(privateRoom.receiverInRoom).isFalse();
+        assertTrue(removed);
+        assertTrue(privateRoom.senderInRoom);
+        assertFalse(privateRoom.receiverInRoom);
         verifyZeroInteractions(privateRoomDao);
         verify(requestDao).remove(request);
-        assertEquals(privateRoom.request).isNull();
+        assertNull(privateRoom.request);
     }
 
     @Test
@@ -125,7 +117,7 @@ public class PrivateRoomServiceTest {
 
         boolean removed = privateRoomService.removeUser(privateRoom, senderId);
 
-        assertEquals(removed).isTrue();
+        assertTrue(removed);
         verify(privateRoomDao).remove(privateRoom);
         verify(requestDao).remove(request);
     }
@@ -144,7 +136,7 @@ public class PrivateRoomServiceTest {
         privateRoomService.removeUser(privateRoom, senderId);
         boolean removed = privateRoomService.removeUser(privateRoom, receiverId);
 
-        assertEquals(removed).isTrue();
+        assertTrue(removed);
         verify(privateRoomDao).remove(privateRoom);
         verify(requestDao).remove(request);
     }
@@ -161,7 +153,7 @@ public class PrivateRoomServiceTest {
         PrivateRoom room = new PrivateRoom(request);
 
         boolean isUserInRoom = privateRoomService.isUserInRoom(room, senderId);
-        assertEquals(isUserInRoom).isTrue();
+        assertTrue(isUserInRoom);
     }
 
     @Test
@@ -176,7 +168,7 @@ public class PrivateRoomServiceTest {
         PrivateRoom room = new PrivateRoom(request);
 
         boolean isUserInRoom = privateRoomService.isUserInRoom(room, receiverId);
-        assertEquals(isUserInRoom).isTrue();
+        assertTrue(isUserInRoom);
     }
 
     @Test
@@ -192,7 +184,7 @@ public class PrivateRoomServiceTest {
         room.receiverInRoom = false;
 
         boolean isUserInRoom = privateRoomService.isUserInRoom(room, receiverId);
-        assertEquals(isUserInRoom).isFalse();
+        assertFalse(isUserInRoom);
     }
 
     @Test
@@ -208,7 +200,7 @@ public class PrivateRoomServiceTest {
         room.senderInRoom = false;
 
         boolean isUserInRoom = privateRoomService.isUserInRoom(room, senderId);
-        assertEquals(isUserInRoom).isFalse();
+        assertFalse(isUserInRoom);
     }
 
     @Test
@@ -217,7 +209,7 @@ public class PrivateRoomServiceTest {
         List<PrivateRoom> expected = new ArrayList<>();
         when(privateRoomDao.findByUserId(userId)).thenReturn(expected);
         List<PrivateRoom> actual = privateRoomService.findByUserId(userId);
-        assertEquals(actual == expected).isTrue();
+        assertSame(expected, actual);
     }
 
     @Test
@@ -230,6 +222,6 @@ public class PrivateRoomServiceTest {
 
         Optional<PrivateRoom> actual = privateRoomService.findBySenderAndReceiver(senderId, receiverId);
 
-        assertEquals(actual == expected).isTrue();
+        assertSame(expected, actual);
     }
 }

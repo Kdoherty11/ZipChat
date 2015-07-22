@@ -46,7 +46,7 @@ public class UserTest extends AbstractTest {
     @Test
     public void byFacebookIdNoUser() throws Throwable {
         //Optional<User> userOptional = JPA.withTransaction(() -> User.byFacebookId("NoUserWithThisFbId"));
-        //assertEquals(userOptional).isEqualTo(Optional.empty());
+        //assertEquals(userOptional, Optional.empty());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class UserTest extends AbstractTest {
         //userFactory.create(ImmutableMap.of("facebookId", facebookId));
         //Optional<User> userOptional = JPA.withTransaction(() -> User.byFacebookId(facebookId));
         //assertEquals(userOptional.isPresent()).isTrue();
-        //assertEquals(userOptional.get().facebookId).isEqualTo(facebookId);
+        //assertEquals(userOptional.get().facebookId, facebookId);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class UserTest extends AbstractTest {
     @Test
     public void getActual() throws Throwable {
         User user = userFactory.create();
-        assertEquals(user.getActual()).isEqualTo(user);
+        assertEquals(user.getActual(), user);
     }
 
     @Test

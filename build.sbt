@@ -44,3 +44,4 @@ jacoco.settings
 
 herokuAppName in Compile := "zipchatapp"
 
+

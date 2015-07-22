@@ -5,7 +5,6 @@ import daos.PrivateRoomDao;
 import daos.RequestDao;
 import models.entities.PrivateRoom;
 import services.PrivateRoomService;
-import services.UserService;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,14 +16,12 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
 
     private final PrivateRoomDao privateRoomDao;
     private final RequestDao requestDao;
-    private final UserService userService;
 
     @Inject
-    public PrivateRoomServiceImpl(final PrivateRoomDao privateRoomDao, final RequestDao requestDao, final UserService userService) {
+    public PrivateRoomServiceImpl(final PrivateRoomDao privateRoomDao, final RequestDao requestDao) {
         super(privateRoomDao);
         this.privateRoomDao = privateRoomDao;
         this.requestDao = requestDao;
-        this.userService = userService;
     }
 
     @Override

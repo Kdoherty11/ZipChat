@@ -18,7 +18,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import play.libs.F;
 import play.libs.Json;
 import play.libs.ws.WSClient;
-import play.libs.ws.WSRequestHolder;
+import play.libs.ws.WSRequest;
 import play.libs.ws.WSResponse;
 import services.NotificationService;
 import services.UserService;
@@ -31,7 +31,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -172,8 +173,8 @@ public class UserServiceTest {
     @Test
     public void testGetFacebookInformation() {
         String fbAccessToken = "testFbAccessToken";
-        WSRequestHolder mockRequestHolder = mock(WSRequestHolder.class);
-        WSRequestHolder mockSecondRequestHolder = mock(WSRequestHolder.class);
+        WSRequest mockRequestHolder = mock(WSRequest.class);
+        WSRequest mockSecondRequestHolder = mock(WSRequest.class);
         WSResponse mockResponse = mock(WSResponse.class);
         @SuppressWarnings("unchecked") F.Promise<WSResponse> mockResponsePromise =
                 (F.Promise<WSResponse>) mock(F.Promise.class);
@@ -187,7 +188,7 @@ public class UserServiceTest {
         when(mockResponse.asJson()).thenReturn(expectedResult);
 
         JsonNode response = userService.getFacebookInformation(fbAccessToken);
-        assertEquals(response == expectedResult).isTrue();
+        assertSame(expectedResult, response);
     }
 
     @Test
@@ -196,7 +197,7 @@ public class UserServiceTest {
         when(userDao.findById(userId)).thenReturn(Optional.empty());
 
         Optional<User> userOptional = userService.findById(userId);
-        assertEquals(userOptional.isPresent()).isFalse();;
+        assertFalse(userOptional.isPresent());
 
         verify(userDao).findById(userId);
     }
@@ -209,7 +210,7 @@ public class UserServiceTest {
         Optional<User> userOptional = userService.findByFacebookId(facebookId);
 
         verify(userDao).findByFacebookId(facebookId);
-        assertEquals(userOptional.isPresent()).isFalse();;
+        assertFalse(userOptional.isPresent());
     }
 
     @Test
@@ -220,7 +221,7 @@ public class UserServiceTest {
 
         List<Device> actual = userService.getDevices(mockUser);
 
-        assertEquals(actual == expected).isTrue();
+        assertSame(expected, actual);
     }
 
 }

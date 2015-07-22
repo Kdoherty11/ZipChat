@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.fest.assertions.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -56,8 +58,8 @@ public class RequestServiceTest {
 
         requestService.handleResponse(request, status);
 
-        assertEquals(request.status).isEqualTo(status);
-        assertEquals(request.respondedTimeStamp).isPositive();
+        assertEquals(status, request.status);
+        assertTrue(request.respondedTimeStamp > 0);
         verify(userService).sendNotification(refEq(mockSender), any(ChatResponseNotification.class));
         verify(privateRoomDao).save(argThat(new ArgumentMatcher<PrivateRoom>() {
             @Override
@@ -78,8 +80,8 @@ public class RequestServiceTest {
 
         requestService.handleResponse(request, status);
 
-        assertEquals(request.status).isEqualTo(status);
-        assertEquals(request.respondedTimeStamp).isPositive();
+        assertEquals(request.status, status);
+        assertTrue(request.respondedTimeStamp > 0);
         verify(userService).sendNotification(refEq(mockSender), any(ChatResponseNotification.class));
         verify(privateRoomDao, never()).save(any(PrivateRoom.class));
     }
@@ -94,7 +96,7 @@ public class RequestServiceTest {
         when(privateRoomDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.of(mockRoom));
         String status = requestService.getStatus(senderId, receiverId);
 
-        assertEquals(status).isEqualTo(Long.toString(roomId));
+        assertEquals(status, Long.toString(roomId));
     }
 
     @Test
@@ -109,7 +111,7 @@ public class RequestServiceTest {
         when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.of(mockRequest));
         String status = requestService.getStatus(senderId, receiverId);
 
-        assertEquals(status).isEqualTo(requestStatus.name());
+        assertEquals(status, requestStatus.name());
     }
 
     @Test
@@ -120,7 +122,7 @@ public class RequestServiceTest {
         when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
         String status = requestService.getStatus(senderId, receiverId);
 
-        assertEquals(status).isEqualTo("none");
+        assertEquals(status, "none");
     }
 
     @Test
@@ -130,7 +132,7 @@ public class RequestServiceTest {
         when(requestDao.findPendingRequestsByReceiver(receiverId)).thenReturn(expectedResults);
         List<Request> requests = requestService.findPendingRequestsByReceiver(receiverId);
         verify(requestDao).findPendingRequestsByReceiver(receiverId);
-        assertEquals(requests == expectedResults).isTrue();
+        assertSame(expectedResults, requests);
     }
 
     @Test
@@ -141,6 +143,6 @@ public class RequestServiceTest {
         when(requestDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(expected);
         Optional<Request> requestOptional = requestService.findBySenderAndReceiver(senderId, receiverId);
         verify(requestDao).findBySenderAndReceiver(senderId, receiverId);
-        assertEquals(requestOptional == expected).isTrue();
+        assertSame(expected, requestOptional);
     }
 }
