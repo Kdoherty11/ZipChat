@@ -1,6 +1,7 @@
 package models.sockets;
 
 import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,7 +13,6 @@ import play.api.Play;
 import play.api.inject.Injector;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
-import play.libs.Akka;
 import play.libs.Json;
 import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
@@ -44,12 +44,25 @@ public class RoomSocket extends UntypedActor {
     public static final String MESSAGE_KEY = "message";
     public static final String USER_KEY = "user";
 
-    public static final ActorRef defaultRoom = Akka.system().actorOf(Props.create(RoomSocket.class));
+    public static final ActorRef defaultRoom = Play.current().actorSystem().actorOf(Props.create(RoomSocket.class));
 
     // Key is roomId, value is the users connected to that room
     static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new ConcurrentHashMap<>();
 
     static final Map<Long, SocketKeepAlive> clientHeartbeats = new ConcurrentHashMap<>();
+
+    static {
+        //subscribe to the message channel
+        ActorSystem actorSystem = Play.current().actorSystem();
+        actorSystem.scheduler().scheduleOnce(
+                Duration.create(10, TimeUnit.MILLISECONDS),
+                () -> {
+                    JedisPool jedisPool = Play.current().injector().instanceOf(JedisPool.class);
+                    useJedisResource(jedisPool, jedis -> jedis.subscribe(new MessageListener(), CHANNEL));
+                },
+                actorSystem.dispatcher()
+        );
+    }
 
     private static final boolean VERBOSE = true;
 
@@ -68,20 +81,6 @@ public class RoomSocket extends UntypedActor {
         this.anonUserService = injector.instanceOf(AnonUserService.class);
         this.messageService = injector.instanceOf(MessageService.class);
         this.jedisPool = injector.instanceOf(JedisPool.class);
-    }
-
-    static {
-
-        //subscribe to the message channel
-        Akka.system().scheduler().scheduleOnce(
-                Duration.create(10, TimeUnit.MILLISECONDS),
-                () -> {
-                    JedisPool jedisPool = Play.current().injector().instanceOf(JedisPool.class);
-                    Logger.error("FIRST POOL : " + jedisPool);
-                    useJedisResource(jedisPool, jedis -> jedis.subscribe(new MessageListener(), CHANNEL));
-                },
-                Akka.system().dispatcher()
-        );
     }
 
     public static Optional<WebSocket.Out<JsonNode>> getWebSocket(long roomId, long userId) {
@@ -156,7 +155,7 @@ public class RoomSocket extends UntypedActor {
                 }
             });
         } else {
-            Logger.error("Unhandled message received");
+            Logger.error("Unhandled message received: " + message);
             unhandled(message);
         }
     }
@@ -201,15 +200,14 @@ public class RoomSocket extends UntypedActor {
             return;
         }
 
-        Message message;
         try {
-            message = JPA.withTransaction(() -> storeMessage(talk, jedis));
+            Message message = JPA.withTransaction(() -> storeMessage(talk, jedis));
+            notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
         } catch (Throwable throwable) {
             Logger.error("Problem storing the message", throwable);
             throw new RuntimeException("Problem storing the message: " + throwable.getMessage());
         }
 
-        notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
     }
 
     private void notifyUser(long roomId, long userId, JsonNode message) {
