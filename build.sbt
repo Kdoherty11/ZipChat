@@ -14,7 +14,7 @@ libraryDependencies ++= Seq(
   javaJpa,
   cache,
   "org.hibernate" % "hibernate-entitymanager" % "3.6.9.Final",
-  "com.typesafe.play.modules" %% "play-modules-redis" % "2.4.0"
+  "com.typesafe.play.modules" %% "play-modules-redis" % "2.4.1"
 )
 
 resolvers ++= Seq(
@@ -43,5 +43,7 @@ libraryDependencies += "com.google.code.gson" % "gson" % "2.3.1"
 jacoco.settings
 
 herokuAppName in Compile := "zipchatapp"
+
+routesGenerator := InjectedRoutesGenerator
 
 
