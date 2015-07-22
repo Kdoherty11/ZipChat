@@ -5,23 +5,23 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.inject.Guice;
-import com.google.inject.Inject;
 import models.entities.*;
 import models.sockets.events.*;
 import play.Logger;
+import play.api.Play;
+import play.api.inject.Injector;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Akka;
 import play.libs.Json;
 import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.duration.Duration;
 import services.AbstractRoomService;
 import services.AnonUserService;
 import services.MessageService;
-import services.PublicRoomService;
 import utils.DbUtils;
 
 import java.util.*;
@@ -53,20 +53,22 @@ public class RoomSocket extends UntypedActor {
 
     private static final boolean VERBOSE = true;
 
-    @Inject
-    private PublicRoomService publicRoomService;
+    private final AbstractRoomService abstractRoomService;
 
-    @Inject
-    private MessageService messageService;
+    private final AnonUserService anonUserService;
 
-    @Inject
-    private AbstractRoomService abstractRoomService;
+    private final MessageService messageService;
 
-    @Inject
-    private AnonUserService anonUserService;
+    private final JedisPool jedisPool;
 
-    @Inject
-    private Jedis jedis;
+    public RoomSocket() {
+        // Override abstract module instead
+        Injector injector = Play.current().injector();
+        this.abstractRoomService = injector.instanceOf(AbstractRoomService.class);
+        this.anonUserService = injector.instanceOf(AnonUserService.class);
+        this.messageService = injector.instanceOf(MessageService.class);
+        this.jedisPool = injector.instanceOf(JedisPool.class);
+    }
 
     static {
 
@@ -74,8 +76,9 @@ public class RoomSocket extends UntypedActor {
         Akka.system().scheduler().scheduleOnce(
                 Duration.create(10, TimeUnit.MILLISECONDS),
                 () -> {
-                    Jedis jedis = Guice.createInjector().getInstance(Jedis.class);
-                    jedis.subscribe(new MessageListener(), CHANNEL);
+                    JedisPool jedisPool = Play.current().injector().instanceOf(JedisPool.class);
+                    Logger.error("FIRST POOL : " + jedisPool);
+                    useJedisResource(jedisPool, jedis -> jedis.subscribe(new MessageListener(), CHANNEL));
                 },
                 Akka.system().dispatcher()
         );
@@ -118,13 +121,13 @@ public class RoomSocket extends UntypedActor {
 
         if (message instanceof Join) {
             try {
-                receiveJoin((Join) message);
+                useJedisResource(jedisPool, jedis -> receiveJoin((Join) message, jedis));
             } catch (Exception e) {
                 Logger.error("Error receiving join", e);
             }
         } else if (message instanceof Quit) {
             try {
-                receiveQuit((Quit) message);
+                useJedisResource(jedisPool, jedis -> receiveQuit((Quit) message, jedis));
             } catch (Exception e) {
                 Logger.error("Error receiving quit", e);
             }
@@ -139,7 +142,7 @@ public class RoomSocket extends UntypedActor {
         } else if (message instanceof Talk) {
             JPA.withTransaction(() -> {
                 try {
-                    receiveTalk((Talk) message);
+                    useJedisResource(jedisPool, jedis -> receiveTalk((Talk) message, jedis));
                 } catch (Exception e) {
                     Logger.error("Error receiving talk", e);
                 }
@@ -186,7 +189,7 @@ public class RoomSocket extends UntypedActor {
     }
 
 
-    private void receiveTalk(Talk talk) {
+    private void receiveTalk(Talk talk, Jedis jedis) {
         Logger.debug("receiveTalk: " + talk);
 
         long roomId = talk.getRoomId();
@@ -200,7 +203,7 @@ public class RoomSocket extends UntypedActor {
 
         Message message;
         try {
-            message = JPA.withTransaction(() -> storeMessage(talk));
+            message = JPA.withTransaction(() -> storeMessage(talk, jedis));
         } catch (Throwable throwable) {
             Logger.error("Problem storing the message", throwable);
             throw new RuntimeException("Problem storing the message: " + throwable.getMessage());
@@ -221,7 +224,7 @@ public class RoomSocket extends UntypedActor {
         }
     }
 
-    private Message storeMessage(Talk talk) {
+    private Message storeMessage(Talk talk, Jedis jedis) {
         final long senderId = talk.getUserId();
         final long roomId = talk.getRoomId();
         final boolean isAnon = talk.isAnon();
@@ -244,7 +247,23 @@ public class RoomSocket extends UntypedActor {
         return message;
     }
 
-    private void receiveJoin(Join join) {
+    private interface JedisCb {
+        public void useResource(Jedis jedis);
+    }
+
+    public static void useJedisResource(JedisPool jedisPool, JedisCb jedisCb) {
+        final Jedis redisResource = jedisPool.getResource();
+        try {
+            jedisCb.useResource(redisResource);
+        } catch (Exception e) {
+            jedisPool.returnBrokenResource(redisResource);
+            throw new RuntimeException(e);
+        } finally {
+            jedisPool.returnResource(redisResource);
+        }
+    }
+
+    private void receiveJoin(Join join, Jedis jedis) {
         Logger.debug("receiveJoin: " + join);
         long roomId = join.getRoomId();
         long userId = join.getUserId();
@@ -277,7 +296,7 @@ public class RoomSocket extends UntypedActor {
         clientHeartbeats.put(roomId, socketKeepAlive);
     }
 
-    private void receiveQuit(Quit quit) {
+    private void receiveQuit(Quit quit, Jedis jedis) {
         Logger.debug("receiveQuit: " + quit);
         long roomId = quit.getRoomId();
         long userId = quit.getUserId();
@@ -290,7 +309,7 @@ public class RoomSocket extends UntypedActor {
         String roomIdStr = Long.toString(roomId);
         jedis.srem(roomIdStr, Long.toString(userId));
 
-        Set<String> roomMembers = jedis .smembers(roomIdStr);
+        Set<String> roomMembers = jedis.smembers(roomIdStr);
 
         // For the robot
         if (roomMembers.size() == 1) {

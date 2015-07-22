@@ -26,6 +26,7 @@ import utils.AbstractResultSender;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Mockito.*;
 import static play.test.Helpers.*;
@@ -96,7 +97,7 @@ public class PublicRoomsControllerTest extends WithApplication {
             if (!params.isEmpty()) {
                 requestBuilder.bodyForm(params);
             }
-            return helpers.invokeWithContext(requestBuilder, () -> controller.createRoom());
+            return helpers.invokeWithContext(requestBuilder, controller::createRoom);
         }
     }
 
@@ -382,7 +383,23 @@ public class PublicRoomsControllerTest extends WithApplication {
         when(userService.findById(userId)).thenReturn(Optional.of(mockUser));
         when(publicRoomService.unsubscribe(mockRoom, mockUser)).thenReturn(false);
 
-        final Result result = route(new RequestBuilder().method(DELETE).uri("/publicRooms/" + roomId + "/subscriptions/" + userId));
+        final Result result = controller.removeSubscription(roomId, userId);
+
+        assertEquals(NOT_FOUND, result.status());
+        assertTrue(contentAsString(result).contains("not subscribed"));
+    }
+
+    @Test
+    public void removeSubscriptionUserNotFound() {
+        long roomId = 1;
+        long userId = 2;
+        PublicRoom mockRoom = mock(PublicRoom.class);
+
+        when(securityService.isUnauthorized(userId)).thenReturn(false);
+        when(publicRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
+        when(userService.findById(userId)).thenReturn(Optional.empty());
+
+        final Result result = controller.removeSubscription(roomId, userId);
 
         assertEquals(NOT_FOUND, result.status());
     }
@@ -397,16 +414,6 @@ public class PublicRoomsControllerTest extends WithApplication {
         assertEquals(FORBIDDEN, result.status());
         verifyZeroInteractions(userService, publicRoomService);
     }
-
-//    @Test
-//    public void joinRoomNoUserIdIsUnauthorized() {
-//        String authToken = "ThisIsAnAuthToken";
-//        when(securityService.getUserId(eq(authToken))).thenReturn(Optional.empty());
-//
-//        final Result result = route(new FakeRequest(GET, "/publicRooms/2/join?userId=1&authToken=" + authToken));
-//
-//        assertEquals(result.status(), FORBIDDEN);
-//    }
 
     private class GetMessagesRequestSender extends AbstractResultSender {
 

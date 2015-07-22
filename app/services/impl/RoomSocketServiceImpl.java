@@ -11,6 +11,7 @@ import models.sockets.events.FavoriteNotification;
 import models.sockets.events.Join;
 import models.sockets.events.Quit;
 import models.sockets.events.Talk;
+import play.Logger;
 import play.db.jpa.JPA;
 import play.libs.Json;
 import play.mvc.WebSocket;
@@ -79,6 +80,8 @@ public class RoomSocketServiceImpl implements RoomSocketService {
                 // For each event received on the socket,
                 in.onMessage(message -> {
 
+                    Logger.error("Received message: " + message);
+
                     final String event = message.get("event").asText();
 
                     Object messageObject;
@@ -88,6 +91,7 @@ public class RoomSocketServiceImpl implements RoomSocketService {
                                 messageObject = new Talk(roomId, userId, message.get("message").asText(), true);
                             } else {
                                 messageObject = new Talk(roomId, userId, message.get("message").asText());
+                                Logger.error("!!! Received talk with message: " + message.get("message").asText());
                             }
                             break;
                         case FavoriteNotification.TYPE:
