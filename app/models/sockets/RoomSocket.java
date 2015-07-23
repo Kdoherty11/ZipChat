@@ -1,162 +1,86 @@
 package models.sockets;
 
 import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.typesafe.plugin.RedisPlugin;
 import models.entities.*;
-import models.sockets.messages.*;
+import models.sockets.events.*;
 import play.Logger;
+import play.api.Play;
+import play.api.inject.Injector;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
-import play.libs.Akka;
 import play.libs.Json;
 import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
-import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
+import services.AbstractRoomService;
+import services.AnonUserService;
+import services.MessageService;
 import utils.DbUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static akka.pattern.Patterns.ask;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static play.libs.Json.toJson;
 import static utils.DbUtils.findExistingEntityById;
 
 public class RoomSocket extends UntypedActor {
 
-    private static final boolean VERBOSE = true;
 
-    private static final String CHANNEL = "messages";
+    public static final String CHANNEL = "messages";
 
-    private static final String OK_JOIN_RESULT = "OK";
+    public static final String OK_JOIN_RESULT = "OK";
 
-    private static final String EVENT_KEY = "event";
-    private static final String MESSAGE_KEY = "message";
-    private static final String USER_KEY = "user";
+    public static final String EVENT_KEY = "event";
+    public static final String MESSAGE_KEY = "message";
+    public static final String USER_KEY = "user";
 
-    static final ActorRef defaultRoom = Akka.system().actorOf(Props.create(RoomSocket.class));
+    public static final ActorRef defaultRoom = Play.current().actorSystem().actorOf(Props.create(RoomSocket.class));
 
     // Key is roomId, value is the users connected to that room
-    static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new HashMap<>();
+    static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new ConcurrentHashMap<>();
 
-    static final Map<Long, SocketKeepAlive> clientHeartbeats = new HashMap<>();
+    static final Map<Long, SocketKeepAlive> clientHeartbeats = new ConcurrentHashMap<>();
 
     static {
-
         //subscribe to the message channel
-        Akka.system().scheduler().scheduleOnce(
+        ActorSystem actorSystem = Play.current().actorSystem();
+        actorSystem.scheduler().scheduleOnce(
                 Duration.create(10, TimeUnit.MILLISECONDS),
                 () -> {
-                    Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                    try {
-                        j.subscribe(new MessageListener(), CHANNEL);
-                    } finally {
-                        play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
-                    }
+                    JedisPool jedisPool = Play.current().injector().instanceOf(JedisPool.class);
+                    useJedisResource(jedisPool, jedis -> jedis.subscribe(new MessageListener(), CHANNEL));
                 },
-                Akka.system().dispatcher()
+                actorSystem.dispatcher()
         );
     }
 
-    public static void join(final long roomId, final long userId, WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) throws Exception {
-        Logger.debug("User " + userId + " is joining " + roomId);
-        // Join the default room. Timeout should be longer than the Redis connect timeout (2 seconds)
-        String result = (String) Await.result(ask(defaultRoom, new Join(roomId, userId, out), 3000), Duration.create(3, SECONDS));
+    private static final boolean VERBOSE = true;
 
-        if (OK_JOIN_RESULT.equals(result)) {
+    private final AbstractRoomService abstractRoomService;
 
-            Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-            try {
-                JPA.withTransaction(() -> {
+    private final AnonUserService anonUserService;
 
-                    Object[] roomMembers = j.smembers(String.valueOf(roomId))
-                            .stream()
-                            .mapToLong(Long::parseLong)
-                            .filter(id -> id != userId && id != SocketKeepAlive.USER_ID)
-                            .mapToObj(id -> findExistingEntityById(User.class, id))
-                            .toArray();
+    private final MessageService messageService;
 
-                    ObjectNode event = Json.newObject();
-                    event.put(EVENT_KEY, "joinSuccess");
+    private final JedisPool jedisPool;
 
-                    ObjectNode message = Json.newObject();
-                    message.put("roomMembers", toJson(roomMembers));
-
-                    AbstractRoom room = findExistingEntityById(AbstractRoom.class, roomId);
-                    if (room instanceof PublicRoom) {
-                        boolean isSubscribed = ((PublicRoom) room).isSubscribed(userId);
-                        logV("Join is subscribed: " + isSubscribed);
-                        message.put("isSubscribed", isSubscribed);
-                    }
-
-                    event.put(MESSAGE_KEY, message);
-
-                    logV("join JSON response: " + event);
-
-                    out.write(event);
-                });
-            } finally {
-                play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
-            }
-
-            // For each event received on the socket,
-            in.onMessage(message -> {
-
-                logV("onMessage message: " + message);
-
-                final String event = message.get("event").asText();
-
-                Object messageObject;
-                switch (event) {
-                    case Talk.TYPE:
-                        if (message.has("isAnon") && message.get("isAnon").asBoolean()) {
-                            messageObject = new Talk(roomId, userId, message.get("message").asText(), message.get("isAnon").asBoolean());
-                        } else {
-                            messageObject = new Talk(roomId, userId, message.get("message").asText());
-                        }
-                        break;
-                    case FavoriteNotification.TYPE:
-                        messageObject = new FavoriteNotification(userId, Long.parseLong(message.get("messageId").asText()), message.get("action").asText());
-                        break;
-                    default:
-                        throw new RuntimeException("Event: " + event + " is not supported");
-                }
-
-                logV("onMessage object: " + messageObject);
-
-                Jedis jedis = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-                try {
-                    jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(messageObject)));
-                } finally {
-                    play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
-                }
-            });
-
-            // When the socket is closed.
-            in.onClose(() -> {
-                logV("Closing socket for user: " + userId);
-                defaultRoom.tell(new Quit(roomId, userId), null);
-            });
-
-        } else {
-            // Cannot connect, create a Json error.
-            ObjectNode error = Json.newObject();
-            error.put(EVENT_KEY, "error");
-            error.put(MESSAGE_KEY, result);
-
-            logV("Error: Could not connect: " + error);
-
-            // Send the error to the socket.
-            out.write(error);
-        }
-
+    public RoomSocket() {
+        // Override abstract module instead
+        Injector injector = Play.current().injector();
+        this.abstractRoomService = injector.instanceOf(AbstractRoomService.class);
+        this.anonUserService = injector.instanceOf(AnonUserService.class);
+        this.messageService = injector.instanceOf(MessageService.class);
+        this.jedisPool = injector.instanceOf(JedisPool.class);
     }
 
     public static Optional<WebSocket.Out<JsonNode>> getWebSocket(long roomId, long userId) {
@@ -168,6 +92,23 @@ public class RoomSocket extends UntypedActor {
         return Optional.ofNullable(room.get(userId));
     }
 
+    public static List<User> getRoomMembers(long roomId, Jedis j) {
+        return getUserIdsInRoomStream(roomId, j)
+                .filter(id -> id != SocketKeepAlive.USER_ID)
+                .map(id -> DbUtils.findExistingEntityById(User.class, id))
+                .collect(Collectors.<User>toList());
+    }
+
+    private Set<Long> getUserIdsInRoom(long roomId, Jedis j) {
+        return getUserIdsInRoomStream(roomId, j).collect(Collectors.toSet());
+    }
+
+    private static Stream<Long> getUserIdsInRoomStream(long roomId, Jedis j) {
+        return j.smembers(Long.toString(roomId))
+                .stream()
+                .map(Long::parseLong);
+    }
+
     public static void remoteMessage(Object message) {
         defaultRoom.tell(message, null);
     }
@@ -175,26 +116,47 @@ public class RoomSocket extends UntypedActor {
     @Override
     @Transactional
     public void onReceive(Object message) {
-        Jedis j = play.Play.application().plugin(RedisPlugin.class).jedisPool().getResource();
-
         logV("onReceive: " + message);
 
-        try {
-            if (message instanceof Join) {
-                receiveJoin(j, (Join) message);
-            } else if (message instanceof Quit) {
-                receiveQuit(j, (Quit) message);
-            } else if (message instanceof RosterNotification) {
-                JPA.withTransaction(() -> receiveRosterNotification((RosterNotification) message));
-            } else if (message instanceof Talk) {
-                JPA.withTransaction(() -> receiveTalk(j, (Talk) message));
-            } else if (message instanceof FavoriteNotification) {
-                JPA.withTransaction(() -> receiveFavoriteNotification((FavoriteNotification) message));
-            } else {
-                unhandled(message);
+        if (message instanceof Join) {
+            try {
+                useJedisResource(jedisPool, jedis -> receiveJoin((Join) message, jedis));
+            } catch (Exception e) {
+                Logger.error("Error receiving join", e);
             }
-        } finally {
-            play.Play.application().plugin(RedisPlugin.class).jedisPool().returnResource(j);
+        } else if (message instanceof Quit) {
+            try {
+                useJedisResource(jedisPool, jedis -> receiveQuit((Quit) message, jedis));
+            } catch (Exception e) {
+                Logger.error("Error receiving quit", e);
+            }
+        } else if (message instanceof RosterNotification) {
+            JPA.withTransaction(() -> {
+                try {
+                    receiveRosterNotification((RosterNotification) message);
+                } catch (Exception e) {
+                    Logger.error("Error receiving roster notification", e);
+                }
+            });
+        } else if (message instanceof Talk) {
+            JPA.withTransaction(() -> {
+                try {
+                    useJedisResource(jedisPool, jedis -> receiveTalk((Talk) message, jedis));
+                } catch (Exception e) {
+                    Logger.error("Error receiving talk", e);
+                }
+            });
+        } else if (message instanceof FavoriteNotification) {
+            JPA.withTransaction(() -> {
+                try {
+                    receiveFavoriteNotification((FavoriteNotification) message);
+                } catch (Exception e) {
+                    Logger.error("Error receiving favorite notification", e);
+                }
+            });
+        } else {
+            Logger.error("Unhandled message received: " + message);
+            unhandled(message);
         }
     }
 
@@ -209,9 +171,9 @@ public class RoomSocket extends UntypedActor {
 
         boolean success;
         if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
-            success = message.favorite(user);
+            success = messageService.favorite(message, user);
         } else {
-            success = message.removeFavorite(user);
+            success = messageService.removeFavorite(message, user);
         }
 
         if (success) {
@@ -226,7 +188,7 @@ public class RoomSocket extends UntypedActor {
     }
 
 
-    private void receiveTalk(Jedis j, Talk talk) {
+    private void receiveTalk(Talk talk, Jedis jedis) {
         Logger.debug("receiveTalk: " + talk);
 
         long roomId = talk.getRoomId();
@@ -238,15 +200,14 @@ public class RoomSocket extends UntypedActor {
             return;
         }
 
-        Message message;
         try {
-            message = JPA.withTransaction(() -> storeMessage(talk, j));
+            Message message = JPA.withTransaction(() -> storeMessage(talk, jedis));
+            notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
         } catch (Throwable throwable) {
             Logger.error("Problem storing the message", throwable);
             throw new RuntimeException("Problem storing the message: " + throwable.getMessage());
         }
 
-        notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
     }
 
     private void notifyUser(long roomId, long userId, JsonNode message) {
@@ -261,7 +222,7 @@ public class RoomSocket extends UntypedActor {
         }
     }
 
-    private Message storeMessage(Talk talk, Jedis j) {
+    private Message storeMessage(Talk talk, Jedis jedis) {
         final long senderId = talk.getUserId();
         final long roomId = talk.getRoomId();
         final boolean isAnon = talk.isAnon();
@@ -271,7 +232,7 @@ public class RoomSocket extends UntypedActor {
         AbstractUser messageSender;
         if (isAnon) {
             if (room instanceof PublicRoom) {
-                messageSender = AnonUser.getOrCreateAnonUser(sender, ((PublicRoom) room));
+                messageSender = anonUserService.getOrCreateAnonUser(sender, (PublicRoom) room);
             } else {
                 throw new RuntimeException("Trying to store an anon message in a private room");
             }
@@ -280,18 +241,27 @@ public class RoomSocket extends UntypedActor {
         }
 
         Message message = new Message(room, messageSender, talk.getText());
-        room.addMessage(message, getUserIdsInRoom(roomId, j));
+        abstractRoomService.addMessage(room, message, getUserIdsInRoom(roomId, jedis));
         return message;
     }
 
-    private Set<Long> getUserIdsInRoom(long roomId, Jedis j) {
-        return j.smembers(Long.toString(roomId))
-                .stream()
-                .map(Long::parseLong)
-                .collect(Collectors.toSet());
+    private interface JedisCb {
+        public void useResource(Jedis jedis);
     }
 
-    private void receiveJoin(Jedis j, Join join) {
+    public static void useJedisResource(JedisPool jedisPool, JedisCb jedisCb) {
+        final Jedis redisResource = jedisPool.getResource();
+        try {
+            jedisCb.useResource(redisResource);
+        } catch (Exception e) {
+            jedisPool.returnBrokenResource(redisResource);
+            throw new RuntimeException(e);
+        } finally {
+            jedisPool.returnResource(redisResource);
+        }
+    }
+
+    private void receiveJoin(Join join, Jedis jedis) {
         Logger.debug("receiveJoin: " + join);
         long roomId = join.getRoomId();
         long userId = join.getUserId();
@@ -303,18 +273,18 @@ public class RoomSocket extends UntypedActor {
             addKeepAlive(roomId);
         }
 
-        if (j.sismember(Long.toString(roomId), Long.toString(userId))) {
+        if (jedis.sismember(Long.toString(roomId), Long.toString(userId))) {
             Logger.error("User " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
         } else {
             //Add the member to this node and the global roster
-            j.sadd(String.valueOf(roomId), String.valueOf(userId));
+            jedis.sadd(String.valueOf(roomId), String.valueOf(userId));
         }
 
         rooms.get(roomId).put(userId, join.getChannel());
 
         //Publish the join notification to all nodes
         RosterNotification rosterNotify = new RosterNotification(roomId, userId, Join.TYPE);
-        j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
+        jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
 
         getSender().tell(OK_JOIN_RESULT, getSelf());
     }
@@ -324,7 +294,7 @@ public class RoomSocket extends UntypedActor {
         clientHeartbeats.put(roomId, socketKeepAlive);
     }
 
-    private void receiveQuit(Jedis j, Quit quit) {
+    private void receiveQuit(Quit quit, Jedis jedis) {
         Logger.debug("receiveQuit: " + quit);
         long roomId = quit.getRoomId();
         long userId = quit.getUserId();
@@ -335,9 +305,9 @@ public class RoomSocket extends UntypedActor {
         }
 
         String roomIdStr = Long.toString(roomId);
-        j.srem(roomIdStr, Long.toString(userId));
+        jedis.srem(roomIdStr, Long.toString(userId));
 
-        Set<String> roomMembers = j.smembers(roomIdStr);
+        Set<String> roomMembers = jedis.smembers(roomIdStr);
 
         // For the robot
         if (roomMembers.size() == 1) {
@@ -345,7 +315,7 @@ public class RoomSocket extends UntypedActor {
             if (roomMembers.contains(String.valueOf(SocketKeepAlive.USER_ID))) {
                 Logger.debug("Removing robot from room " + roomId);
 
-                j.srem(String.valueOf(roomId), String.valueOf(SocketKeepAlive.USER_ID));
+                jedis.srem(String.valueOf(roomId), String.valueOf(SocketKeepAlive.USER_ID));
 
                 rooms.remove(roomId);
 
@@ -368,7 +338,7 @@ public class RoomSocket extends UntypedActor {
         } else {
             //Publish the quit notification to all nodes
             RosterNotification rosterNotify = new RosterNotification(roomId, userId, Quit.TYPE);
-            j.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
+            jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
         }
     }
 
@@ -399,7 +369,7 @@ public class RoomSocket extends UntypedActor {
         // If its not a talk or keepalive add the user to the message
         if (!Talk.TYPE.equals(kind) && userId != SocketKeepAlive.USER_ID) {
             User sender = findExistingEntityById(User.class, userId);
-            message.put(USER_KEY, toJson(sender));
+            message.set(USER_KEY, toJson(sender));
         }
 
         logV("About to notify room with: " + message);
@@ -409,7 +379,7 @@ public class RoomSocket extends UntypedActor {
         Logger.debug("Notified users: " + userSocketsInRoom.keySet());
     }
 
-    // -- Messages
+// -- Messages
 
     public static class MessageListener extends JedisPubSub {
 
@@ -454,19 +424,25 @@ public class RoomSocket extends UntypedActor {
         }
 
         @Override
-        public void onPMessage(String arg0, String arg1, String arg2) { }
+        public void onPMessage(String arg0, String arg1, String arg2) {
+        }
 
         @Override
-        public void onPSubscribe(String arg0, int arg1) { }
+        public void onPSubscribe(String arg0, int arg1) {
+        }
 
         @Override
-        public void onPUnsubscribe(String arg0, int arg1) { }
+        public void onPUnsubscribe(String arg0, int arg1) {
+        }
 
         @Override
-        public void onSubscribe(String arg0, int arg1) { }
+        public void onSubscribe(String arg0, int arg1) {
+        }
 
         @Override
-        public void onUnsubscribe(String arg0, int arg1) { }
+        public void onUnsubscribe(String arg0, int arg1) {
+        }
+
     }
 
     private static void logV(String msg) {

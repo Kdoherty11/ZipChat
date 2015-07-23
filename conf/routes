@@ -8,14 +8,13 @@ POST          /publicRooms                                      controllers.Publ
 GET           /publicRooms                                      controllers.PublicRoomsController.getGeoRooms(lat: Double, lon: Double)
 POST          /publicRooms/:roomId/subscriptions                controllers.PublicRoomsController.createSubscription(roomId: Long)
 DELETE        /publicRooms/:roomId/subscriptions/:userId        controllers.PublicRoomsController.removeSubscription(roomId: Long, userId: Long)
-GET           /publicRooms/:roomId/subscriptions/exists         controllers.PublicRoomsController.isSubscribed(roomId: Long, userId: Long)
-GET           /publicRooms/:roomId/join                         controllers.PublicRoomsController.joinRoom(roomId: Long, userId: Long, authToken: String)
 GET           /publicRooms/:roomId/messages                     controllers.PublicRoomsController.getMessages(roomId: Long, limit: Int, offset: Int)
+GET           /publicRooms/:roomId/join                         controllers.RoomSocketsController.joinPublicRoom(roomId: Long, userId: Long, authToken: String)
 
 GET           /privateRooms                                     controllers.PrivateRoomsController.getRoomsByUserId(userId: Long)
-GET           /privateRooms/:roomId/join                        controllers.PrivateRoomsController.joinRoom(roomId: Long, userId: Long, authToken: String)
 PUT           /privateRooms/:roomId/leave                       controllers.PrivateRoomsController.leaveRoom(roomId: Long, userId: Long)
 GET           /privateRooms/:roomId/messages                    controllers.PrivateRoomsController.getMessages(roomId: Long, limit: Int, offset: Int)
+GET           /privateRooms/:roomId/join                        controllers.RoomSocketsController.joinPrivateRoom(roomId: Long, userId: Long, authToken: String)
 
 PUT           /messages/:messageId/favorite                     controllers.MessagesController.favorite(messageId: Long, userId: Long)
 DELETE        /messages/:messageId/favorite                     controllers.MessagesController.removeFavorite(messageId: Long, userId: Long)
@@ -23,6 +22,7 @@ PUT           /messages/:messageId/flag                         controllers.Mess
 DELETE        /messages/:messageId/flag                         controllers.MessagesController.removeFlag(messageId: Long, userId: Long)
 
 PUT           /users                                            controllers.UsersController.createUser()
+POST          /users                                            controllers.UsersController.testCreate()
 GET           /auth                                             controllers.UsersController.auth(fbAccessToken: String)
 
 POST          /devices                                          controllers.DevicesController.createDevice()
@@ -33,5 +33,5 @@ GET           /requests                                         controllers.Requ
 GET           /requests/status                                  controllers.RequestsController.getStatus(senderId: Long, receiverId: Long)
 PUT           /requests/:requestId                              controllers.RequestsController.handleResponse(requestId: Long)
 
-GET           /status                                           controllers.BaseController.status()
+GET           /status                                           controllers.StatusController.status()
 GET           /test                                             controllers.PublicRoomsController.getRooms()

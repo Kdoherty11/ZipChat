@@ -1,14 +1,10 @@
 package models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
-import notifications.AbstractNotification;
 import play.data.validation.Constraints;
-import play.db.jpa.JPA;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Entity
 @Table(name = "private_rooms")
@@ -24,9 +20,13 @@ public class PrivateRoom extends AbstractRoom {
     @Constraints.Required
     public User receiver;
 
+    @JsonIgnore
     public boolean senderInRoom = true;
+
+    @JsonIgnore
     public boolean receiverInRoom = true;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "requestId")
     public Request request;
@@ -39,71 +39,6 @@ public class PrivateRoom extends AbstractRoom {
         this.request = request;
         this.sender = request.sender;
         this.receiver = request.receiver;
-    }
-
-    public static List<PrivateRoom> getRoomsByUserId(long userId) {
-        String queryString = "select p from PrivateRoom p where (p.sender.userId = :userId and p.senderInRoom = true) or (p.receiver.userId = :userId and p.receiverInRoom = true)";
-
-        TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
-                .setParameter("userId", userId);
-
-        return query.getResultList();
-    }
-
-    public boolean removeUser(long userId) {
-        if (userId == sender.userId) {
-            if (!receiverInRoom) {
-                JPA.em().remove(this);
-            } else {
-                senderInRoom = false;
-            }
-        } else if (userId == receiver.userId) {
-            if (!senderInRoom) {
-                JPA.em().remove(this);
-            } else {
-                receiverInRoom = false;
-            }
-        } else {
-            return false;
-        }
-
-        // Allow both users to request each other again
-        JPA.em().remove(request);
-        return true;
-    }
-
-    public boolean isUserInRoom(long userId) {
-        return (sender.userId == userId && senderInRoom) ||
-                (receiver.userId == userId && receiverInRoom);
-    }
-
-    public static Optional<PrivateRoom> getRoom(long senderId, long receiverId) {
-
-        String queryString = "select p from PrivateRoom p where " +
-                "((p.sender.userId = :senderId and p.receiver.userId = :receiverId)" +
-                " or (p.receiver.userId = :senderId and p.sender.userId = :receiverId))" +
-                " and p.senderInRoom = true and p.receiverInRoom = true";
-
-        TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
-                .setParameter("senderId", senderId)
-                .setParameter("receiverId", receiverId);
-
-        List<PrivateRoom> rooms = query.getResultList();
-
-        if (rooms.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(rooms.get(0));
-    }
-
-    @Override
-    void sendNotification(AbstractNotification notification, Set<Long> userIdsInRoom) {
-        if (senderInRoom && !userIdsInRoom.contains(sender.userId)) {
-            sender.sendNotification(notification);
-        } else if (receiverInRoom && !userIdsInRoom.contains(receiver.userId)) {
-            receiver.sendNotification(notification);
-        }
     }
 
     @Override
@@ -127,11 +62,11 @@ public class PrivateRoom extends AbstractRoom {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("senderId", sender.userId)
-                .add("receiverId", receiver.userId)
+                .add("senderId", AbstractUser.getId(sender))
+                .add("receiverId", AbstractUser.getId(receiver))
                 .add("senderInRoom", senderInRoom)
                 .add("receiverInRoom", receiverInRoom)
-                .add("request", request)
+                .add("requestId", request == null ? -1 : request.requestId)
                 .toString();
     }
 }

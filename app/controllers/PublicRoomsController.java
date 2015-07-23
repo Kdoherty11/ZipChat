@@ -1,18 +1,19 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Longs;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import models.entities.PublicRoom;
 import models.entities.User;
-import models.sockets.RoomSocket;
-import play.Logger;
+import play.data.Form;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
-import play.mvc.WebSocket;
 import security.Secured;
-import security.SecurityHelper;
-import utils.DbUtils;
+import services.MessageService;
+import services.PublicRoomService;
+import services.SecurityService;
+import services.UserService;
 import validation.DataValidator;
 import validation.FieldValidator;
 import validation.validators.Validators;
@@ -21,30 +22,56 @@ import java.util.Map;
 import java.util.Optional;
 
 import static play.data.Form.form;
+import static play.libs.Json.toJson;
 
+@Singleton
 @Security.Authenticated(Secured.class)
-public class PublicRoomsController extends BaseController {
+public class PublicRoomsController extends AbstractRoomController {
 
-    @Transactional
-    public static Result createRoom() {
-        return create(PublicRoom.class);
+    private final PublicRoomService publicRoomService;
+    private final SecurityService securityService;
+    private final UserService userService;
+
+    @Inject
+    public PublicRoomsController(final PublicRoomService publicRoomService, final MessageService messageService,
+                                 final SecurityService securityService, final UserService userService) {
+        super(messageService);
+        this.publicRoomService = publicRoomService;
+        this.securityService = securityService;
+        this.userService = userService;
     }
 
     @Transactional
-    public static Result getRooms() {
+    public Result createRoom() {
+        Form<PublicRoom> form = Form.form(PublicRoom.class).bindFromRequest();
+        if (form.hasErrors()) {
+            return badRequest(form.errorsAsJson());
+        } else {
+            PublicRoom room = form.get();
+            publicRoomService.save(room);
+            return created(toJson(room));
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Result getRooms() {
         return read(PublicRoom.class);
     }
 
-    @Transactional
-    public static Result getGeoRooms(double lat, double lon) {
-        return okJson(PublicRoom.allInGeoRange(lat, lon));
+    @Transactional(readOnly = true)
+    public Result getGeoRooms(double lat, double lon) {
+        return okJson(publicRoomService.allInGeoRange(lat, lon));
     }
 
     @Transactional
-    public static Result createSubscription(long roomId) {
+    public Result createSubscription(long roomId) {
         Map<String, String> data = form().bindFromRequest().data();
 
         String userIdKey = "userId";
+
+        if (!data.containsKey(userIdKey)) {
+            return badRequestJson(userIdKey + " is required");
+        }
 
         Long userId = Longs.tryParse(data.get(userIdKey));
 
@@ -52,84 +79,92 @@ public class PublicRoomsController extends BaseController {
             return FieldValidator.typeError(userIdKey, Long.class);
         }
 
-        if (isUnauthorized(userId)) {
+        return publicRoomUserActionHelper(roomId, userId, new PublicRoomUserAction() {
+            @Override
+            public boolean publicRoomAction(PublicRoom publicRoom, User user) {
+                return publicRoomService.subscribe(publicRoom, user);
+            }
+
+            @Override
+            public Result onActionSuccess() {
+                return created();
+            }
+
+            @Override
+            public Result onActionFailed(User user) {
+                return badRequest("User " + user.userId + " is already subscribed");
+            }
+        });
+    }
+
+    @Transactional
+    public Result removeSubscription(long roomId, long userId) {
+        return publicRoomUserActionHelper(roomId, userId, new PublicRoomUserAction() {
+            @Override
+            public boolean publicRoomAction(PublicRoom publicRoom, User user) {
+                return publicRoomService.unsubscribe(publicRoom, user);
+            }
+
+            @Override
+            public Result onActionSuccess() {
+                return OK_RESULT;
+            }
+
+            @Override
+            public Result onActionFailed(User user) {
+                return notFound("User " + user.userId + " is not subscribed to the room");
+            }
+        });
+    }
+
+    private Result publicRoomUserActionHelper(long roomId, long userId, PublicRoomUserAction cb) {
+        if (securityService.isUnauthorized(userId)) {
             return forbidden();
         }
 
         DataValidator validator = new DataValidator(
-                new FieldValidator<>(userIdKey, userId, Validators.positive()));
+                new FieldValidator<>("roomId", roomId, Validators.positive()),
+                new FieldValidator<>("userId", userId, Validators.positive()));
 
         if (validator.hasErrors()) {
             return badRequest(validator.errorsAsJson());
         }
 
-        Optional<PublicRoom> roomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
+        Optional<PublicRoom> roomOptional = publicRoomService.findById(roomId);
         if (roomOptional.isPresent()) {
+            Optional<User> userOptional = userService.findById(userId);
 
-            Optional<User> userOptional = DbUtils.findEntityById(User.class, userId);
             if (userOptional.isPresent()) {
-                roomOptional.get().addSubscription(userOptional.get());
-                return OK_RESULT;
-            } else {
-                return DbUtils.getNotFoundResult(User.class, userId);
-            }
-        } else {
-            return DbUtils.getNotFoundResult(PublicRoom.class, roomId);
-        }
-    }
+                boolean result = cb.publicRoomAction(roomOptional.get(), userOptional.get());
 
-    @Transactional
-    public static Result removeSubscription(long roomId, long userId) {
-        if (isUnauthorized(userId)) {
-            return forbidden();
-        }
-
-        Optional<PublicRoom> roomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
-        if (roomOptional.isPresent()) {
-            roomOptional.get().removeSubscription(userId);
-            return OK_RESULT;
-        } else {
-            return DbUtils.getNotFoundResult(PublicRoom.class, roomId);
-        }
-    }
-
-    @Transactional
-    public static Result isSubscribed(long roomId, long userId) {
-        Optional<PublicRoom> roomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
-        if (roomOptional.isPresent()) {
-            return okJson(roomOptional.get().isSubscribed(userId));
-        } else {
-            return DbUtils.getNotFoundResult(PublicRoom.class, roomId);
-        }
-    }
-
-    @Transactional
-    public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) {
-        Optional<Long> userIdOptional = SecurityHelper.getUserId(authToken);
-        if (!userIdOptional.isPresent() || userIdOptional.get() != userId) {
-            return WebSocket.reject(forbidden());
-        }
-
-        return new WebSocket<JsonNode>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-                try {
-                    RoomSocket.join(roomId, userId, in, out);
-                } catch (Exception ex) {
-                    Logger.error("Problem joining the RoomSocket: " + ex.getMessage());
+                if (!result) {
+                    return cb.onActionFailed(userOptional.get());
                 }
+
+                return cb.onActionSuccess();
+            } else {
+                return entityNotFound(User.class, roomId);
             }
-        };
+
+        } else {
+            return entityNotFound(PublicRoom.class, roomId);
+        }
     }
 
-    @Transactional
-    public static Result getMessages(long roomId, int limit, int offset) {
-        Optional<PublicRoom> publicRoomOptional = DbUtils.findEntityById(PublicRoom.class, roomId);
+    // Public due to http://stackoverflow.com/a/21442580/3258892
+    public interface PublicRoomUserAction {
+        boolean publicRoomAction(PublicRoom publicRoom, User user);
+        Result onActionSuccess();
+        Result onActionFailed(User user);
+    }
+
+    @Transactional(readOnly = true)
+    public Result getMessages(long roomId, int limit, int offset) {
+        Optional<PublicRoom> publicRoomOptional = publicRoomService.findById(roomId);
         if (!publicRoomOptional.isPresent()) {
-            return DbUtils.getNotFoundResult(PublicRoom.class, roomId);
+            return entityNotFound(PublicRoom.class, roomId);
         }
 
-        return MessagesController.getMessages(roomId, limit, offset);
+        return getMessagesHelper(roomId, limit, offset);
     }
 }

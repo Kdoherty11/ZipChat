@@ -3,18 +3,15 @@ package models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import notifications.MessageFavoritedNotification;
 import org.hibernate.annotations.GenericGenerator;
-import play.Logger;
 import play.data.validation.Constraints;
-import play.db.jpa.JPA;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "messages")
@@ -31,24 +28,26 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "roomId")
     @JsonIgnore
+    @Constraints.Required
     public AbstractRoom room;
 
     @ManyToOne
     @JoinColumn(name = "userId")
+    @Constraints.Required
     public AbstractUser sender;
 
     @Constraints.Required
     public String message;
 
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "message_favorites", joinColumns = @JoinColumn(name = "userId"),
-            inverseJoinColumns = @JoinColumn(name = "messageId"))
-    public List<User> favorites = new ArrayList<>();
+    @JoinTable(name = "message_favorites", joinColumns = @JoinColumn(name = "messageId"),
+            inverseJoinColumns = @JoinColumn(name = "userId"))
+    public Set<User> favorites = new HashSet<>();
 
     @ManyToMany(targetEntity = User.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "message_flags", joinColumns = @JoinColumn(name = "userId"),
-            inverseJoinColumns = @JoinColumn(name = "messageId"))
-    public List<User> flags = new ArrayList<>();
+    @JoinTable(name = "message_flags", joinColumns = @JoinColumn(name = "messageId"),
+            inverseJoinColumns = @JoinColumn(name = "userId"))
+    public Set<User> flags = new HashSet<>();
 
     public int score;
 
@@ -62,64 +61,6 @@ public class Message {
         this.room = Preconditions.checkNotNull(room);
         this.sender = Preconditions.checkNotNull(sender);
         this.message = Preconditions.checkNotNull(message);
-    }
-
-    public boolean favorite(User user) {
-        if (favorites.contains(user)) {
-            Logger.error(user + " is attempting to favorite " + this + " but has already favorited it");
-            return false;
-        }
-        favorites.add(user);
-        score++;
-        User actual = sender.getActual();
-        if (!user.equals(actual)) {
-            actual.sendNotification(new MessageFavoritedNotification(this, user));
-        }
-        return true;
-    }
-
-    public boolean removeFavorite(User user) {
-        boolean didDeleteUser = favorites.remove(user);
-        if (didDeleteUser) {
-            score--;
-        } else {
-            Logger.warn(user + " attempted to remove favorite from " + this + " but has not favorited it");
-        }
-        return didDeleteUser;
-    }
-
-    public static List<Message> getMessages(long roomId, int limit, int offset) {
-
-        String queryString = "select m from Message m where m.room.roomId = :roomId order by m.createdAt DESC";
-
-        TypedQuery<Message> limitOffsetQuery = JPA.em().createQuery(queryString, Message.class)
-                .setParameter("roomId", roomId)
-                .setMaxResults(limit)
-                .setFirstResult(offset);
-
-        List<Message> messages = limitOffsetQuery.getResultList();
-
-        Collections.reverse(messages);
-
-        return messages;
-    }
-
-    public boolean flag(User user) {
-        if (flags.contains(user)) {
-            Logger.error(user + " is attempting to flag " + this + " but has already flagged it");
-            return false;
-        }
-
-        flags.add(user);
-        return true;
-    }
-
-    public boolean removeFlag(User user) {
-        boolean didDeleteUser = flags.remove(user);
-        if (!didDeleteUser) {
-            Logger.warn(user + " attempted to remove a flag from " + this + " but has not flagged it");
-        }
-        return didDeleteUser;
     }
 
     @Override
@@ -145,8 +86,8 @@ public class Message {
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("messageId", messageId)
-                .add("roomId", room.roomId)
-                .add("senderId", sender.userId)
+                .add("roomId", AbstractRoom.getId(room))
+                .add("senderId", AbstractUser.getId(sender))
                 .add("message", message)
                 .add("favorites", favorites)
                 .add("flags", flags)

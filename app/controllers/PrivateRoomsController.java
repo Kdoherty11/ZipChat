@@ -1,45 +1,54 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.google.inject.Inject;
 import models.entities.PrivateRoom;
-import models.entities.User;
-import models.sockets.RoomSocket;
 import play.Logger;
 import play.Play;
-import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
-import play.mvc.WebSocket;
 import security.Secured;
-import security.SecurityHelper;
-import utils.DbUtils;
+import services.MessageService;
+import services.PrivateRoomService;
+import services.SecurityService;
 
 import java.util.Optional;
 
 @Security.Authenticated(Secured.class)
-public class PrivateRoomsController extends BaseController {
+public class PrivateRoomsController extends AbstractRoomController {
 
-    @Transactional
-    public static Result getRoomsByUserId(long userId) {
-        if (isUnauthorized(userId)) {
+    private final PrivateRoomService privateRoomService;
+    private final SecurityService securityService;
+
+    @Inject
+    public PrivateRoomsController(final PrivateRoomService privateRoomService, final MessageService messageService,
+                                  final SecurityService securityService) {
+        super(messageService);
+        this.privateRoomService = privateRoomService;
+        this.securityService = securityService;
+    }
+
+    @Transactional(readOnly = true)
+    public Result getRoomsByUserId(long userId) {
+        if (securityService.isUnauthorized(userId)) {
             return forbidden();
         }
         Logger.debug("Getting Private Rooms by userId: " + userId);
-        return okJson(PrivateRoom.getRoomsByUserId(userId));
+        return okJson(privateRoomService.findByUserId(userId));
     }
 
     @Transactional
-    public static Result leaveRoom(long roomId, long userId) {
-        if (isUnauthorized(userId)) {
+    public Result leaveRoom(long roomId, long userId) {
+        if (securityService.isUnauthorized(userId)) {
             return forbidden();
         }
 
-        Optional<PrivateRoom> roomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
+        Optional<PrivateRoom> roomOptional = privateRoomService.findById(roomId);
 
         if (roomOptional.isPresent()) {
             PrivateRoom room = roomOptional.get();
-            boolean removed = room.removeUser(userId);
+
+            boolean removed = privateRoomService.removeUser(room, userId);
 
             if (removed) {
                 return OK_RESULT;
@@ -48,53 +57,25 @@ public class PrivateRoomsController extends BaseController {
             }
 
         } else {
-            return DbUtils.getNotFoundResult(PrivateRoom.class, roomId);
+            return entityNotFound(PrivateRoom.class, roomId);
         }
     }
 
-    @Transactional
-    public static WebSocket<JsonNode> joinRoom(final long roomId, final long userId, String authToken) throws Throwable {
-        Optional<Long> userIdOptional = SecurityHelper.getUserId(authToken);
-        if (!userIdOptional.isPresent()) {
-            return WebSocket.reject(DbUtils.getNotFoundResult(User.class, userId));
-        }
-        if (userIdOptional.get() != userId && !Play.isDev()) {
-            return WebSocket.reject(forbidden());
-        }
-
-        Optional<PrivateRoom> privateRoomOptional = JPA.withTransaction(() -> DbUtils.findEntityById(PrivateRoom.class, roomId));
+    @Transactional(readOnly = true)
+    public Result getMessages(long roomId, int limit, int offset) {
+        Optional<PrivateRoom> privateRoomOptional = privateRoomService.findById(roomId);
         if (privateRoomOptional.isPresent()) {
-            if (!privateRoomOptional.get().isUserInRoom(userId) && !Play.isDev()) {
-                return WebSocket.reject(forbidden());
-            }
-        } else {
-            return WebSocket.reject(DbUtils.getNotFoundResult(PrivateRoom.class, roomId));
-        }
-
-        return new WebSocket<JsonNode>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-                try {
-                    RoomSocket.join(roomId, userId, in, out);
-                } catch (Exception ex) {
-                    Logger.error("Problem joining the RoomSocket: " + ex.getMessage());
-                }
-            }
-        };
-    }
-
-    @Transactional
-    public static Result getMessages(long roomId, int limit, int offset) {
-        Optional<PrivateRoom> privateRoomOptional = DbUtils.findEntityById(PrivateRoom.class, roomId);
-        if (privateRoomOptional.isPresent()) {
-            if (!privateRoomOptional.get().isUserInRoom(getTokenUserId()) && !Play.isDev()) {
+            if (isForbidden(privateRoomOptional.get())) {
                 return forbidden();
             }
         } else {
-            return DbUtils.getNotFoundResult(PrivateRoom.class, roomId);
+            return entityNotFound(PrivateRoom.class, roomId);
         }
 
-        return MessagesController.getMessages(roomId, limit, offset);
+        return getMessagesHelper(roomId, limit, offset);
+    }
+
+    private boolean isForbidden(PrivateRoom room) {
+        return !privateRoomService.isUserInRoom(room, securityService.getTokenUserId()) && Play.isProd();
     }
 }

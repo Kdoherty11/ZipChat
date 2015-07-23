@@ -22,6 +22,7 @@ public abstract class AbstractRoom {
     @GeneratedValue(strategy = GenerationType.TABLE)
     public long roomId;
 
+    @JsonIgnore
     public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     public long lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
@@ -30,27 +31,18 @@ public abstract class AbstractRoom {
     @OneToMany(targetEntity = Message.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Message> messages = new ArrayList<>();
 
-    public void addMessage(Message message, Set<Long> userIdsInRoom) {
-        messages.add(message);
-        lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-        sendNotification(new MessageNotification(message), userIdsInRoom);
-    }
-
-    abstract void sendNotification(AbstractNotification notification, Set<Long> userIdsInRoom);
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractRoom that = (AbstractRoom) o;
         return Objects.equal(createdAt, that.createdAt) &&
-                Objects.equal(lastActivity, that.lastActivity) &&
-                Objects.equal(messages, that.messages);
+                Objects.equal(lastActivity, that.lastActivity);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(createdAt, lastActivity, messages);
+        return Objects.hashCode(createdAt, lastActivity);
     }
 
     @Override
@@ -61,5 +53,9 @@ public abstract class AbstractRoom {
                 .add("lastActivity", lastActivity)
                 .add("messages", messages)
                 .toString();
+    }
+
+    public static long getId(AbstractRoom room) {
+        return room == null ? -1 : room.roomId;
     }
 }

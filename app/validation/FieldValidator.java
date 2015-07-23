@@ -3,10 +3,11 @@ package validation;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
-import controllers.BaseController;
 import play.mvc.Result;
 
 import java.util.Optional;
+
+import static controllers.BaseController.badRequestJson;
 
 public class FieldValidator<T> {
 
@@ -34,6 +35,6 @@ public class FieldValidator<T> {
     }
 
     public static Result typeError(String fieldName, Class<?> expectedType) {
-        return BaseController.badRequestJson(ImmutableMap.of(fieldName, "Expected type " + expectedType.getSimpleName()));
+        return badRequestJson(ImmutableMap.of(fieldName, "Expected type " + expectedType.getSimpleName()));
     }
 }
