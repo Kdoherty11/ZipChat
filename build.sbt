@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   javaWs,
   javaJpa,
   cache,
+  "org.hibernate" % "hibernate-entitymanager" % "3.6.9.Final",
   "com.typesafe.play.modules" %% "play-modules-redis" % "2.4.1"
 )
 
@@ -22,8 +23,6 @@ resolvers ++= Seq(
 )
 
 libraryDependencies += "org.postgresql" % "postgresql" % "9.4-1201-jdbc41"
-
-libraryDependencies += "org.hibernate" % "hibernate-entitymanager" % "4.3.10.Final"
 
 libraryDependencies += "com.notnoop.apns" % "apns" % "0.1.6"
 
