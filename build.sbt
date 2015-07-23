@@ -14,15 +14,14 @@ libraryDependencies ++= Seq(
   javaJpa,
   cache,
   "org.hibernate" % "hibernate-entitymanager" % "3.6.9.Final",
-  "com.typesafe.play.modules" %% "play-modules-redis" % "2.4.1"
+  "com.typesafe.play.modules" %% "play-modules-redis" % "2.4.1",
+  "org.postgresql" % "postgresql" % "9.3-1100-jdbc41"
 )
 
 resolvers ++= Seq(
   "pk11 repo" at "http://pk11-scratch.googlecode.com/svn/trunk",
   "google-sedis-fix" at "http://pk11-scratch.googlecode.com/svn/trunk"
 )
-
-libraryDependencies += "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
 
 libraryDependencies += "com.notnoop.apns" % "apns" % "0.1.6"
 
@@ -46,4 +45,4 @@ herokuAppName in Compile := "zipchatapp"
 
 routesGenerator := InjectedRoutesGenerator
 
-
+fork in run := true
