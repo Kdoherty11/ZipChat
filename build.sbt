@@ -22,7 +22,7 @@ resolvers ++= Seq(
   "google-sedis-fix" at "http://pk11-scratch.googlecode.com/svn/trunk"
 )
 
-libraryDependencies += "org.postgresql" % "postgresql" % "9.4-1201-jdbc41"
+libraryDependencies += "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
 
 libraryDependencies += "com.notnoop.apns" % "apns" % "0.1.6"
 

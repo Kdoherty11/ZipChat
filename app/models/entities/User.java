@@ -1,18 +1,11 @@
 package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
-import models.Platform;
-import notifications.AbstractNotification;
-import notifications.ChatRequestNotification;
-import play.db.jpa.JPA;
-import play.libs.ws.WS;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Entity
 @Table(name = "users")
