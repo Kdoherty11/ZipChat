@@ -21,9 +21,9 @@ public class ObjectFactoryTest extends AbstractTest {
 //        Logger.debug("STARTING OneToMany CREATE");
 //        User user = userFactory.create();
 //        Logger.debug("AFTER OneToMany CREATE: " + user);
-//        assertThat(user.devices).isNotNull();
-//        assertThat(user.devices).isNotEmpty();
-//        assertThat(user.devices.get(0)).isEqualTo(user);
+//        assertEquals(user.devices).isNotNull();
+//        assertEquals(user.devices).isNotEmpty();
+//        assertEquals(user.devices.get(0),user);
 //        //userObjectFactory.cleanUp();
 //        //Logger.debug("CLEANED UP OneToMany");
 //    }
@@ -33,10 +33,10 @@ public class ObjectFactoryTest extends AbstractTest {
 //        Logger.debug("STARTING ManyToOne CREATE");
 //        Device device = deviceFactory.create();
 //        Logger.debug("AFTER ManyToOne CREATE: " + device);
-//        assertThat(device.user).isNotNull();
-//        assertThat(device.user.devices).isNotNull();
-//        assertThat(device.user.devices).isNotEmpty();
-//        assertThat(device.user.devices).containsExactly(device);
+//        assertEquals(device.user).isNotNull();
+//        assertEquals(device.user.devices).isNotNull();
+//        assertEquals(device.user.devices).isNotEmpty();
+//        assertEquals(device.user.devices).containsExactly(device);
 //
 //        //deviceFactory.cleanUp();
 //        //Logger.debug("CLEANED UP ManyToOne");
@@ -47,10 +47,10 @@ public class ObjectFactoryTest extends AbstractTest {
 //        Logger.debug("STARTING ManyToMany CREATE");
 //        Message message = messageFactory.create();
 //        Logger.debug("AFTER ManyToMany CREATE: " + message);
-//        assertThat(message.favorites).isNotNull();
-//        assertThat(message.favorites).isNotEmpty();
-//        assertThat(message.flags).isNotNull();
-//        assertThat(message.flags).isNotEmpty();
+//        assertEquals(message.favorites).isNotNull();
+//        assertEquals(message.favorites).isNotEmpty();
+//        assertEquals(message.flags).isNotNull();
+//        assertEquals(message.flags).isNotEmpty();
 //
 //        //messageFactory.cleanUp();
 //        //Logger.debug("CLEANED UP ManyToOne");

@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -46,7 +46,7 @@ public class UserTest extends AbstractTest {
     @Test
     public void byFacebookIdNoUser() throws Throwable {
         //Optional<User> userOptional = JPA.withTransaction(() -> User.byFacebookId("NoUserWithThisFbId"));
-        //assertThat(userOptional).isEqualTo(Optional.empty());
+        //assertEquals(userOptional, Optional.empty());
     }
 
     @Test
@@ -54,8 +54,8 @@ public class UserTest extends AbstractTest {
         String facebookId = "UserFacebookId";
         //userFactory.create(ImmutableMap.of("facebookId", facebookId));
         //Optional<User> userOptional = JPA.withTransaction(() -> User.byFacebookId(facebookId));
-        //assertThat(userOptional.isPresent()).isTrue();
-        //assertThat(userOptional.get().facebookId).isEqualTo(facebookId);
+        //assertEquals(userOptional.isPresent()).isTrue();
+        //assertEquals(userOptional.get().facebookId, facebookId);
     }
 
     @Test
@@ -109,13 +109,13 @@ public class UserTest extends AbstractTest {
 
     @Test
     public void isAnon() throws Throwable {
-        assertThat(userFactory.create().isAnon()).isFalse();
+        assertEquals(userFactory.create().isAnon()).isFalse();
     }
 
     @Test
     public void getActual() throws Throwable {
         User user = userFactory.create();
-        assertThat(user.getActual()).isEqualTo(user);
+        assertEquals(user.getActual(), user);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class UserTest extends AbstractTest {
 //        when(receiverMock.userId).thenReturn(receiverId);
             //JPA.withTransaction(() -> sender.sendChatRequest(receiver));
 
-            //assertThat(Request.getRequest(sender.userId, receiver.userId).isPresent()).isTrue();
+            //assertEquals(Request.getRequest(sender.userId, receiver.userId).isPresent()).isTrue();
             //verify(receiverMock).sendNotification(new ChatRequestNotification(sender));
         });
     }

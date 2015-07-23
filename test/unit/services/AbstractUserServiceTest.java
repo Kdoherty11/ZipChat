@@ -11,7 +11,7 @@ import services.AnonUserService;
 import services.UserService;
 import services.impl.AbstractUserServiceImpl;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by kdoherty on 7/8/15.
@@ -37,7 +37,7 @@ public class AbstractUserServiceTest {
 
     @Test
     public void testConstructor() {
-        assertThat(abstractUserService).isNotNull();
+        assertNotNull(abstractUserService);
     }
 
 
