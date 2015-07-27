@@ -48,3 +48,5 @@ herokuAppName in Compile := "zipchatapp"
 routesGenerator := InjectedRoutesGenerator
 
 fork in run := true
+
+PlayKeys.externalizeResources := false
