@@ -28,12 +28,6 @@ public class MessagesController extends BaseController {
         this.securityService = securityService;
     }
 
-    // Public due to http://stackoverflow.com/a/21442580/3258892
-    public interface UserMessageAction {
-        boolean messageAction(Message message, User user);
-        String onActionFailed(User user);
-    }
-
     @Transactional
     public Result favorite(long messageId, long userId) {
         return messageActionHelper(messageId, userId, new UserMessageAction() {
@@ -94,7 +88,13 @@ public class MessagesController extends BaseController {
         });
     }
 
-    public Result messageActionHelper(long messageId, long userId, UserMessageAction cb) {
+    // Public due to http://stackoverflow.com/a/21442580/3258892
+    public interface UserMessageAction {
+        boolean messageAction(Message message, User user);
+        String onActionFailed(User user);
+    }
+
+    private Result messageActionHelper(long messageId, long userId, UserMessageAction cb) {
         if (securityService.isUnauthorized(userId)) {
             return Results.forbidden();
         }

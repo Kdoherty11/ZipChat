@@ -117,6 +117,13 @@ public class PublicRoomsController extends AbstractRoomController {
         });
     }
 
+    // Public due to http://stackoverflow.com/a/21442580/3258892
+    public interface PublicRoomUserAction {
+        boolean publicRoomAction(PublicRoom publicRoom, User user);
+        Result onActionSuccess();
+        Result onActionFailed(User user);
+    }
+
     private Result publicRoomUserActionHelper(long roomId, long userId, PublicRoomUserAction cb) {
         if (securityService.isUnauthorized(userId)) {
             return forbidden();
@@ -149,13 +156,6 @@ public class PublicRoomsController extends AbstractRoomController {
         } else {
             return entityNotFound(PublicRoom.class, roomId);
         }
-    }
-
-    // Public due to http://stackoverflow.com/a/21442580/3258892
-    public interface PublicRoomUserAction {
-        boolean publicRoomAction(PublicRoom publicRoom, User user);
-        Result onActionSuccess();
-        Result onActionFailed(User user);
     }
 
     @Transactional(readOnly = true)
