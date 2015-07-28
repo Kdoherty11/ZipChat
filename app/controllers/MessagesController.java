@@ -37,8 +37,8 @@ public class MessagesController extends BaseController {
             }
 
             @Override
-            public String onActionFailed(User user) {
-                return "User " + userId + " has already favorited this message";
+            public Result onActionFailed(User user) {
+                return badRequest("User " + userId + " has already favorited this message");
             }
         });
     }
@@ -52,8 +52,8 @@ public class MessagesController extends BaseController {
             }
 
             @Override
-            public String onActionFailed(User user) {
-                return "User " + userId + " has not favorited this message";
+            public Result onActionFailed(User user) {
+                return notFound("User " + userId + " has not favorited this message");
             }
         });
     }
@@ -67,8 +67,8 @@ public class MessagesController extends BaseController {
             }
 
             @Override
-            public String onActionFailed(User user) {
-                return "User " + user.userId + " has already flagged this message";
+            public Result onActionFailed(User user) {
+                return badRequest("User " + user.userId + " has already flagged this message");
             }
         });
     }
@@ -82,8 +82,8 @@ public class MessagesController extends BaseController {
             }
 
             @Override
-            public String onActionFailed(User user) {
-                return "User " + user.userId + " has not flagged this message";
+            public Result onActionFailed(User user) {
+                return notFound("User " + user.userId + " has not flagged this message");
             }
         });
     }
@@ -91,7 +91,7 @@ public class MessagesController extends BaseController {
     // Public due to http://stackoverflow.com/a/21442580/3258892
     public interface UserMessageAction {
         boolean messageAction(Message message, User user);
-        String onActionFailed(User user);
+        Result onActionFailed(User user);
     }
 
     private Result messageActionHelper(long messageId, long userId, UserMessageAction cb) {
@@ -101,14 +101,13 @@ public class MessagesController extends BaseController {
         Optional<Message> messageOptional = messageService.findById(messageId);
 
         if (messageOptional.isPresent()) {
-            Message message = messageOptional.get();
 
             Optional<User> userOptional = userService.findById(userId);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-                boolean success = cb.messageAction(message, user);
+                boolean success = cb.messageAction(messageOptional.get(), user);
                 if (!success) {
-                    return notFound(cb.onActionFailed(user));
+                    return cb.onActionFailed(user);
                 }
                 return OK_RESULT;
             } else {
