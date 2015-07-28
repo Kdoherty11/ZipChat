@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import controllers.BaseController;
 import controllers.PrivateRoomsController;
 import factories.MessageFactory;
-import factories.PrivateRoomFactory;
 import models.entities.Message;
 import models.entities.PrivateRoom;
 import org.junit.Before;
@@ -36,11 +35,9 @@ import static play.test.Helpers.*;
  * Created by kdoherty on 7/9/15.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class PrivateRoomControllerTest {
+public class PrivateRoomsControllerTest {
 
     private PrivateRoomsController controller;
-    private PrivateRoomFactory privateRoomFactory;
-    private MessageFactory messageFactory;
     private Gson gson;
 
     @Mock
@@ -57,11 +54,9 @@ public class PrivateRoomControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        privateRoomFactory = new PrivateRoomFactory();
-        messageFactory = new MessageFactory();
         gson = new Gson();
-        controller = spy(new PrivateRoomsController(privateRoomService, messageService,
-                securityService));
+        controller = new PrivateRoomsController(privateRoomService, messageService,
+                securityService);
 
         start(fakeApplication());
     }
@@ -204,6 +199,7 @@ public class PrivateRoomControllerTest {
         int offset = 0;
         PrivateRoom mockRoom = mock(PrivateRoom.class);
         when(privateRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
+        MessageFactory messageFactory = new MessageFactory();
         List<Message> messages = messageFactory.createList(3);
         when(messageService.getMessages(roomId, limit, offset)).thenReturn(messages);
 

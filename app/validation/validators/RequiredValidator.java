@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public class RequiredValidator implements Validator<Object> {
 
+    public static final String ERROR_MESSAGE = "This field is required";
+
     RequiredValidator() {}
 
     @Override
@@ -15,6 +17,6 @@ public class RequiredValidator implements Validator<Object> {
 
     @Override
     public String getErrorMessage() {
-        return "This field is required";
+        return ERROR_MESSAGE;
     }
 }

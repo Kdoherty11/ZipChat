@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Longs;
 import com.google.inject.Inject;
 import models.Platform;
@@ -45,7 +46,13 @@ public class DevicesController extends BaseController {
         Map<String, String> data = form().bindFromRequest().data();
         String userIdKey = "userId";
 
-        Long userId = Longs.tryParse(data.get(userIdKey));
+        String userIdStr = data.get(userIdKey);
+
+        if (userIdStr == null) {
+            return badRequestJson(ImmutableMap.of(userIdKey, "This field is required"));
+        }
+
+        Long userId = Longs.tryParse(userIdStr);
         if (userId == null) {
             return FieldValidator.typeError(userIdKey, Long.class);
         }

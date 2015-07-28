@@ -36,7 +36,6 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     private PublicRoomsController controller;
     private PublicRoomFactory publicRoomFactory;
-    private MessageFactory messageFactory;
     private Gson gson;
     private Helpers helpers;
 
@@ -55,7 +54,6 @@ public class PublicRoomsControllerTest extends WithApplication {
     @Before
     public void setUp() throws Exception {
         publicRoomFactory = new PublicRoomFactory();
-        messageFactory = new MessageFactory();
         gson = new Gson();
         helpers = new Helpers();
         controller = new PublicRoomsController(publicRoomService, messageService,
@@ -457,6 +455,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         int offset = 0;
         PublicRoom mockRoom = mock(PublicRoom.class);
         when(publicRoomService.findById(roomId)).thenReturn(Optional.of(mockRoom));
+        MessageFactory messageFactory = new MessageFactory();
         List<Message> messages = messageFactory.createList(3);
         when(messageService.getMessages(roomId, limit, offset)).thenReturn(messages);
 
