@@ -2,11 +2,14 @@ package services.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.primitives.Longs;
+import com.google.inject.Inject;
 import io.jsonwebtoken.*;
+import models.entities.PrivateRoom;
 import play.Logger;
 import play.Play;
 import play.mvc.Http;
 import security.Secured;
+import services.PrivateRoomService;
 import services.SecurityService;
 
 import java.util.Date;
@@ -17,11 +20,16 @@ import java.util.Optional;
  */
 public class SecurityServiceImpl implements SecurityService {
 
+    private final PrivateRoomService privateRoomService;
+
     // TODO Read from ENV
     private static final String SIGNING_KEY = "myKey";
     private static final String ISSUER = "ZipChat";
 
-    public SecurityServiceImpl() { }
+    @Inject
+    public SecurityServiceImpl(final PrivateRoomService privateRoomService) {
+        this.privateRoomService = privateRoomService;
+    }
 
     // 1 day in millis
     private static final long EXPIRATION_TIME_MILLIS = 1000L * 60L * 60L * 24L;
@@ -80,6 +88,11 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public boolean isUnauthorized(long userId) {
         return userId != getTokenUserId() && Play.isProd();
+    }
+
+    @Override
+    public boolean isUnauthorized(PrivateRoom privateRoom) {
+        return !privateRoomService.isUserInRoom(privateRoom, getTokenUserId()) && Play.isProd();
     }
 
     @Override

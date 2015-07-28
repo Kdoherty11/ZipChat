@@ -69,7 +69,7 @@ public class RoomSocketsController extends BaseController {
 
         Optional<PrivateRoom> privateRoomOptional = JPA.withTransaction(() -> privateRoomService.findById(roomId));
         if (privateRoomOptional.isPresent()) {
-            if (!privateRoomService.isUserInRoom(privateRoomOptional.get(), securityService.getTokenUserId()) && Play.isProd()) {
+            if (securityService.isUnauthorized(privateRoomOptional.get())) {
                 return WebSocket.reject(forbidden());
             }
         } else {

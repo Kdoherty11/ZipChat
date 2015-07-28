@@ -415,48 +415,15 @@ public class PublicRoomsControllerTest extends WithApplication {
         verifyZeroInteractions(userService, publicRoomService);
     }
 
-    private class GetMessagesRequestSender extends AbstractResultSender {
-
-        private Integer limit;
-        private Integer offset;
-
-
-        protected GetMessagesRequestSender(long roomId) {
-            super(GET, "/publicRooms/" + roomId + "/messages");
-        }
-
-        public GetMessagesRequestSender setLimit(int limit) {
-            this.limit = limit;
-            return this;
-        }
-
-        public GetMessagesRequestSender setOffset(int offset) {
-            this.offset = offset;
-            return this;
-        }
-
-        @Override
-        public Result send() {
-            if (limit != null) {
-                addQueryParam("limit", limit);
-            }
-
-            if (offset != null) {
-                addQueryParam("offset", offset);
-            }
-
-            return route(getRequestBuilder());
-        }
-    }
-
     @Test
     public void getMessagesRoomNotFound() {
         long roomId = 1;
         when(publicRoomService.findById(roomId)).thenReturn(Optional.empty());
 
-        final Result result = new GetMessagesRequestSender(roomId).setOffset(0).setLimit(25).send();
+        Result result = controller.getMessages(roomId, 1, 1);
 
         assertEquals(NOT_FOUND, result.status());
+        verifyZeroInteractions(messageService);
     }
 
     @Test
@@ -493,7 +460,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         List<Message> messages = messageFactory.createList(3);
         when(messageService.getMessages(roomId, limit, offset)).thenReturn(messages);
 
-        final Result result = controller.getMessages(roomId, limit, offset);
+        Result result = controller.getMessages(roomId, limit, offset);
 
         assertEquals(OK, result.status());
         Message[] returnedMessages = gson.fromJson(contentAsString(result), Message[].class);

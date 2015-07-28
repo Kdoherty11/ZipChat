@@ -15,8 +15,8 @@ import static play.libs.Json.toJson;
 
 public abstract class BaseController extends Controller {
 
-    public final String OK_STRING = "OK";
-    public final Result OK_RESULT = okJson(OK_STRING);
+    public static final String OK_STRING = "OK";
+    public static final Result OK_RESULT = okJson(OK_STRING);
 
     protected <T> Result create(Class<T> clazz) {
         Logger.debug("Creating a " + clazz.getSimpleName());

@@ -2,8 +2,6 @@ package controllers;
 
 import com.google.inject.Inject;
 import models.entities.PrivateRoom;
-import play.Logger;
-import play.Play;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -33,7 +31,6 @@ public class PrivateRoomsController extends AbstractRoomController {
         if (securityService.isUnauthorized(userId)) {
             return forbidden();
         }
-        Logger.debug("Getting Private Rooms by userId: " + userId);
         return okJson(privateRoomService.findByUserId(userId));
     }
 
@@ -65,7 +62,7 @@ public class PrivateRoomsController extends AbstractRoomController {
     public Result getMessages(long roomId, int limit, int offset) {
         Optional<PrivateRoom> privateRoomOptional = privateRoomService.findById(roomId);
         if (privateRoomOptional.isPresent()) {
-            if (isForbidden(privateRoomOptional.get())) {
+            if (securityService.isUnauthorized(privateRoomOptional.get())) {
                 return forbidden();
             }
         } else {
@@ -73,9 +70,5 @@ public class PrivateRoomsController extends AbstractRoomController {
         }
 
         return getMessagesHelper(roomId, limit, offset);
-    }
-
-    private boolean isForbidden(PrivateRoom room) {
-        return !privateRoomService.isUserInRoom(room, securityService.getTokenUserId()) && Play.isProd();
     }
 }

@@ -1,11 +1,11 @@
 package security;
 
+import com.google.inject.Inject;
 import play.Play;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 import services.SecurityService;
-import services.impl.SecurityServiceImpl;
 
 import java.util.Optional;
 
@@ -14,7 +14,8 @@ public class Secured extends Security.Authenticator {
     private static final String AUTH_TOKEN_HEADER = "X-Auth-Token";
     public static final String USER_ID_KEY = "userId";
 
-    private final SecurityService securityService = new SecurityServiceImpl();
+    @Inject
+    private SecurityService securityService;
 
     @Override
     public String getUsername(Http.Context ctx) {
