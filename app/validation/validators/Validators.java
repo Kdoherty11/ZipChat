@@ -38,4 +38,8 @@ public class Validators {
         return new WhiteListValidator<>(Sets.newHashSet(whiteList));
     }
 
+    public static Validator<String> stringToLong() {
+        return new StringToLongValidator();
+    }
+
 }

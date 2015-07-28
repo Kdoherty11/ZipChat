@@ -1,8 +1,6 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.primitives.Longs;
 import com.google.inject.Inject;
 import models.Platform;
 import models.entities.Device;
@@ -44,36 +42,29 @@ public class DevicesController extends BaseController {
     @Transactional
     public Result createDevice() {
         Map<String, String> data = form().bindFromRequest().data();
+
         String userIdKey = "userId";
-
-        String userIdStr = data.get(userIdKey);
-
-        if (userIdStr == null) {
-            return badRequestJson(ImmutableMap.of(userIdKey, "This field is required"));
-        }
-
-        Long userId = Longs.tryParse(userIdStr);
-        if (userId == null) {
-            return FieldValidator.typeError(userIdKey, Long.class);
-        }
-
-        if (securityService.isUnauthorized(userId)) {
-            return forbidden();
-        }
-
         String regIdKey = "regId";
         String platformKey = "platform";
 
+        String userIdStr = data.get(userIdKey);
         String regId = data.get(regIdKey);
         String platform = data.get(platformKey);
 
         DataValidator validator = new DataValidator(
+                new FieldValidator<>(userIdKey, userIdStr, Validators.required(), Validators.stringToLong()),
                 new FieldValidator<>(regIdKey, regId, Validators.required()),
                 new FieldValidator<>(platformKey, platform, Validators.required(), Validators.enumValue(Platform.class))
         );
 
         if (validator.hasErrors()) {
             return badRequest(validator.errorsAsJson());
+        }
+
+        long userId = Long.parseLong(userIdStr);
+
+        if (securityService.isUnauthorized(userId)) {
+            return forbidden();
         }
 
         Optional<User> userOptional = userService.findById(userId);

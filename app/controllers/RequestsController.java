@@ -1,6 +1,5 @@
 package controllers;
 
-import com.google.common.primitives.Longs;
 import com.google.inject.Inject;
 import models.entities.AbstractUser;
 import models.entities.Request;
@@ -48,16 +47,20 @@ public class RequestsController extends BaseController {
         String senderKey = "sender";
         String receiverKey = "receiver";
 
-        Long senderId = Longs.tryParse(data.get(senderKey));
-        Long receiverId = Longs.tryParse(data.get(receiverKey));
+        String senderIdStr = data.get(senderKey);
+        String receiverIdStr = data.get(receiverKey);
+        
+        DataValidator validator = new DataValidator(
+                new FieldValidator<>(senderKey, senderIdStr, Validators.required(), Validators.stringToLong()),
+                new FieldValidator<>(receiverKey, receiverIdStr, Validators.required(), Validators.stringToLong())
+        );
 
-        if (senderId == null) {
-            return badRequestJson(FieldValidator.typeError(senderKey, Long.class));
+        if (validator.hasErrors()) {
+            return badRequest(validator.errorsAsJson());
         }
 
-        if (receiverId == null) {
-            return badRequestJson(FieldValidator.typeError(receiverKey, Long.class));
-        }
+        long senderId = Long.parseLong(senderIdStr);
+        long receiverId = Long.parseLong(receiverIdStr);
 
         if (securityService.isUnauthorized(senderId)) {
             return forbidden();

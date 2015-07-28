@@ -7,6 +7,8 @@ import java.util.Set;
 
 public class WhiteListValidator<T> implements Validator<T> {
 
+    public static final String ERROR_MESSAGE = "Invalid value. Must be one of ";
+
     private Set<T> whiteList;
 
     WhiteListValidator(Set<T> whiteList) {
@@ -20,6 +22,6 @@ public class WhiteListValidator<T> implements Validator<T> {
 
     @Override
     public String getErrorMessage() {
-        return "Invalid value. Must be one of " + whiteList;
+        return ERROR_MESSAGE + whiteList;
     }
 }

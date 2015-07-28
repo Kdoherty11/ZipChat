@@ -18,6 +18,7 @@ import services.SecurityService;
 import services.UserService;
 import utils.DbUtils;
 import validation.validators.RequiredValidator;
+import validation.validators.StringToLongValidator;
 
 import java.util.Collections;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class DevicesControllerTest {
         Result result = helpers.invokeWithContext(builder, controller::createDevice);
 
         assertEquals(BAD_REQUEST, result.status());
-        assertTrue(contentAsString(result).contains("Expected type Long"));
+        assertTrue(contentAsString(result).contains(StringToLongValidator.ERROR_MESSAGE));
         verifyZeroInteractions(userService, deviceService);
     }
 
@@ -85,7 +86,7 @@ public class DevicesControllerTest {
     public void createDeviceIsSecured() {
         long userId = 1;
         when(securityService.isUnauthorized(userId)).thenReturn(true);
-        Map<String, String> requestBody = ImmutableMap.of("userId", Long.toString(userId));
+        Map<String, String> requestBody = ImmutableMap.of("userId", Long.toString(userId), "regId", "myRegId", "platform", Platform.android.name());
         Http.RequestBuilder builder = new Http.RequestBuilder().bodyForm(requestBody);
 
         Result result = helpers.invokeWithContext(builder, controller::createDevice);
