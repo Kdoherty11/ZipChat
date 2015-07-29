@@ -1,5 +1,6 @@
 package models.sockets.events;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -65,7 +66,7 @@ public class FavoriteNotification {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("messageId", messageId)
                 .add("userId", userId)
                 .add("action", action)

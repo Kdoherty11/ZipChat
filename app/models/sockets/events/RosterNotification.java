@@ -1,5 +1,6 @@
 package models.sockets.events;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class RosterNotification {
@@ -37,7 +38,7 @@ public class RosterNotification {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("roomId", roomId)
                 .add("userId", userId)
                 .add("direction", direction)

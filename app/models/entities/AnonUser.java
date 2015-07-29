@@ -1,6 +1,7 @@
 package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -68,7 +69,7 @@ public class AnonUser extends AbstractUser {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", super.name)
                 .add("actualId", User.getId(actual))
                 .add("roomId", PublicRoom.getId(room))

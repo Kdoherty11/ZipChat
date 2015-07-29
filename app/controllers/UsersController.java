@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import models.entities.User;
 import play.Logger;
 import play.db.jpa.JPA;
+import play.db.jpa.JPAApi;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Result;
@@ -23,7 +24,7 @@ import static play.data.Form.form;
 public class UsersController extends BaseController {
 
     private final UserService userService;
-    private SecurityService securityService;
+    private final SecurityService securityService;
 
     @Inject
     public UsersController(final UserService userService, SecurityService securityService) {
@@ -71,7 +72,7 @@ public class UsersController extends BaseController {
             User existing = existingUserOptional.get();
             user.userId = existing.userId;
 
-            JPA.em().merge(user);
+            userService.merge(user);
         } else {
             userService.save(user);
         }
@@ -106,7 +107,7 @@ public class UsersController extends BaseController {
             response.put("authToken", securityService.generateAuthToken(existingUserOptional.get().userId));
             return ok(response);
         } else {
-            return badRequest(Json.toJson("facebook access token doesn't match any users"));
+            return notFound("facebook access token doesn't match any users");
         }
     }
 }

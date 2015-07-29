@@ -2,6 +2,7 @@ package models.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import models.Platform;
 import notifications.AbstractNotification;
@@ -63,7 +64,7 @@ public class PublicRoom extends AbstractRoom {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", name)
                 .add("latitude", latitude)
                 .add("longitude", longitude)

@@ -37,4 +37,9 @@ public class UserDaoImpl extends GenericDaoImpl<User> implements UserDao {
     public List<Device> getDevices(User user) {
         return user.devices;
     }
+
+    @Override
+    public void merge(User user) {
+        JPA.em().merge(user);
+    }
 }

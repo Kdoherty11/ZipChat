@@ -90,4 +90,9 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     public List<Device> getDevices(User user) {
         return userDao.getDevices(user);
     }
+
+    @Override
+    public void merge(User user) {
+        userDao.merge(user);
+    }
 }

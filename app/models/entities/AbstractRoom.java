@@ -2,6 +2,7 @@ package models.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import notifications.AbstractNotification;
 import notifications.MessageNotification;
@@ -47,7 +48,7 @@ public abstract class AbstractRoom {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("roomId", roomId)
                 .add("createdAt", createdAt)
                 .add("lastActivity", lastActivity)

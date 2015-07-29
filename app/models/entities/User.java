@@ -1,6 +1,7 @@
 package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import javax.persistence.*;
@@ -43,7 +44,7 @@ public class User extends AbstractUser {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("userId", userId)
                 .add("facebookId", facebookId)
                 .add("gender", gender)

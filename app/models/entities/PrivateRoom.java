@@ -1,6 +1,7 @@
 package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import play.data.validation.Constraints;
 
@@ -61,7 +62,7 @@ public class PrivateRoom extends AbstractRoom {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("senderId", AbstractUser.getId(sender))
                 .add("receiverId", AbstractUser.getId(receiver))
                 .add("senderInRoom", senderInRoom)

@@ -1,6 +1,7 @@
 package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import org.hibernate.annotations.GenericGenerator;
@@ -75,7 +76,7 @@ public class Request {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("requestId", requestId)
                 .add("sender", AbstractUser.getId(sender))
                 .add("receiver", AbstractUser.getId(receiver))

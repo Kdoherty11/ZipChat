@@ -52,14 +52,15 @@ public class PublicRoomsControllerTest extends WithApplication {
     private UserService userService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         publicRoomFactory = new PublicRoomFactory();
         gson = new Gson();
         helpers = new Helpers();
         controller = new PublicRoomsController(publicRoomService, messageService,
                 securityService, userService);
 
-        start(fakeApplication());    }
+        start(fakeApplication());
+    }
 
     private class CreateResultSender extends AbstractResultSender {
 

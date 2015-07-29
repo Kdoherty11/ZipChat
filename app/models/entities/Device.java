@@ -1,6 +1,7 @@
 package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import models.Platform;
@@ -63,7 +64,7 @@ public class Device {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("deviceId", deviceId)
                 .add("regId", regId)
                 .add("platform", platform)

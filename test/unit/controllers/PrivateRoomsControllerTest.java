@@ -53,7 +53,7 @@ public class PrivateRoomsControllerTest {
     private UserService userService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         gson = new Gson();
         controller = new PrivateRoomsController(privateRoomService, messageService,
                 securityService);

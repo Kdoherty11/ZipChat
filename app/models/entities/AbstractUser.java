@@ -1,6 +1,7 @@
 package models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import notifications.AbstractNotification;
 import play.data.validation.Constraints;
@@ -57,7 +58,7 @@ public abstract class AbstractUser {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("userId", userId)
                 .add("facebookId", facebookId)
                 .add("gender", gender)
