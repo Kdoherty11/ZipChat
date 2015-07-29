@@ -1,8 +1,8 @@
 package daos;
 
 import com.google.inject.ImplementedBy;
-import models.entities.Device;
 import daos.impl.DeviceDaoImpl;
+import models.entities.Device;
 
 import java.util.Optional;
 

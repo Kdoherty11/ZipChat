@@ -1,9 +1,9 @@
 package daos.impl;
 
+import daos.PublicRoomDao;
 import models.entities.PublicRoom;
 import models.entities.User;
 import play.db.jpa.JPA;
-import daos.PublicRoomDao;
 
 import javax.persistence.TypedQuery;
 import java.util.List;

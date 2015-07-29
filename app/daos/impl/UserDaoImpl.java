@@ -1,9 +1,9 @@
 package daos.impl;
 
+import daos.UserDao;
 import models.entities.Device;
 import models.entities.User;
 import play.db.jpa.JPA;
-import daos.UserDao;
 
 import javax.persistence.TypedQuery;
 import java.util.List;

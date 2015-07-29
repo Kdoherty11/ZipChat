@@ -1,8 +1,8 @@
 package services.impl;
 
 import com.google.inject.Inject;
-import models.entities.Device;
 import daos.DeviceDao;
+import models.entities.Device;
 import services.DeviceService;
 
 /**

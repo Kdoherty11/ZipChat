@@ -2,7 +2,6 @@ package models.sockets.events;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import play.mvc.WebSocket;
 
 public class Join {

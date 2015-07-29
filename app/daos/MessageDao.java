@@ -1,8 +1,8 @@
 package daos;
 
 import com.google.inject.ImplementedBy;
-import models.entities.Message;
 import daos.impl.MessageDaoImpl;
+import models.entities.Message;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,7 +1,7 @@
 package daos.impl;
 
-import models.entities.Device;
 import daos.DeviceDao;
+import models.entities.Device;
 
 /**
  * Created by kdoherty on 6/30/15.

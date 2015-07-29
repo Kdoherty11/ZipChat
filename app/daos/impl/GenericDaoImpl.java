@@ -1,7 +1,7 @@
 package daos.impl;
 
-import play.db.jpa.JPA;
 import daos.GenericDao;
+import play.db.jpa.JPA;
 
 import java.util.Optional;
 

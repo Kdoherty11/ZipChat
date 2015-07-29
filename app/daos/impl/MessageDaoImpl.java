@@ -1,8 +1,8 @@
 package daos.impl;
 
+import daos.MessageDao;
 import models.entities.Message;
 import play.db.jpa.JPA;
-import daos.MessageDao;
 
 import javax.persistence.TypedQuery;
 import java.util.Collections;

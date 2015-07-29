@@ -1,7 +1,7 @@
 package daos.impl;
 
-import models.entities.AbstractRoom;
 import daos.AbstractRoomDao;
+import models.entities.AbstractRoom;
 
 /**
  * Created by kdoherty on 7/4/15.

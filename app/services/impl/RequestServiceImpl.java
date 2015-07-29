@@ -1,11 +1,11 @@
 package services.impl;
 
 import com.google.inject.Inject;
+import daos.PrivateRoomDao;
+import daos.RequestDao;
 import models.entities.PrivateRoom;
 import models.entities.Request;
 import notifications.ChatResponseNotification;
-import daos.PrivateRoomDao;
-import daos.RequestDao;
 import services.RequestService;
 import services.UserService;
 

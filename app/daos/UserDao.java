@@ -1,9 +1,9 @@
 package daos;
 
 import com.google.inject.ImplementedBy;
+import daos.impl.UserDaoImpl;
 import models.entities.Device;
 import models.entities.User;
-import daos.impl.UserDaoImpl;
 
 import java.util.List;
 import java.util.Optional;

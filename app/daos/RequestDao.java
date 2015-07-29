@@ -1,8 +1,8 @@
 package daos;
 
 import com.google.inject.ImplementedBy;
-import models.entities.Request;
 import daos.impl.RequestDaoImpl;
+import models.entities.Request;
 
 import java.util.List;
 import java.util.Optional;

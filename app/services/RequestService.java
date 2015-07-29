@@ -1,8 +1,8 @@
 package services;
 
 import com.google.inject.ImplementedBy;
-import models.entities.Request;
 import daos.RequestDao;
+import models.entities.Request;
 import services.impl.RequestServiceImpl;
 
 /**

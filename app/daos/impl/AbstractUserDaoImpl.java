@@ -1,7 +1,7 @@
 package daos.impl;
 
-import models.entities.AbstractUser;
 import daos.AbstractUserDao;
+import models.entities.AbstractUser;
 
 /**
  * Created by kdoherty on 6/30/15.

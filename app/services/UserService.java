@@ -2,10 +2,10 @@ package services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.ImplementedBy;
+import daos.UserDao;
 import models.entities.AbstractUser;
 import models.entities.User;
 import notifications.AbstractNotification;
-import daos.UserDao;
 import services.impl.UserServiceImpl;
 
 /**

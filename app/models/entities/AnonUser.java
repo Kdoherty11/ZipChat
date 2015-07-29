@@ -3,15 +3,12 @@ package models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import notifications.AbstractNotification;
 import play.data.validation.Constraints;
-import play.db.jpa.JPA;
 
-import javax.persistence.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Created by kevin on 6/10/15.

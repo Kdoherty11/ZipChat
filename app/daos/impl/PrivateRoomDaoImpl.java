@@ -1,8 +1,8 @@
 package daos.impl;
 
+import daos.PrivateRoomDao;
 import models.entities.PrivateRoom;
 import play.db.jpa.JPA;
-import daos.PrivateRoomDao;
 
 import javax.persistence.TypedQuery;
 import java.util.List;

@@ -1,7 +1,6 @@
 package models.sockets.events;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 /**
  * Created by kevin on 5/10/15.

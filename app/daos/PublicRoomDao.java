@@ -1,9 +1,9 @@
 package daos;
 
 import com.google.inject.ImplementedBy;
+import daos.impl.PublicRoomDaoImpl;
 import models.entities.PublicRoom;
 import models.entities.User;
-import daos.impl.PublicRoomDaoImpl;
 
 import java.util.List;
 import java.util.Set;

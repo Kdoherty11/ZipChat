@@ -1,8 +1,8 @@
 package daos;
 
 import com.google.inject.ImplementedBy;
-import models.entities.AbstractRoom;
 import daos.impl.AbstractRoomDaoImpl;
+import models.entities.AbstractRoom;
 
 /**
  * Created by kdoherty on 7/4/15.

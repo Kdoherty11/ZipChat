@@ -3,7 +3,6 @@ package models.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import notifications.AbstractNotification;
 import play.data.validation.Constraints;
 
 import javax.persistence.*;
