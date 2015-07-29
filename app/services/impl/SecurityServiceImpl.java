@@ -26,13 +26,15 @@ public class SecurityServiceImpl implements SecurityService {
     private static final String SIGNING_KEY = "myKey";
     private static final String ISSUER = "ZipChat";
 
+    // 1 day in millis
+    private static final long EXPIRATION_TIME_MILLIS = 1000L * 60L * 60L * 24L;
+
     @Inject
     public SecurityServiceImpl(final PrivateRoomService privateRoomService) {
         this.privateRoomService = privateRoomService;
     }
 
-    // 1 day in millis
-    private static final long EXPIRATION_TIME_MILLIS = 1000L * 60L * 60L * 24L;
+
 
     @Override
     public String generateAuthToken(long userId) {
@@ -40,7 +42,7 @@ public class SecurityServiceImpl implements SecurityService {
         long expMillis = issuedMillis + EXPIRATION_TIME_MILLIS;
 
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .setSubject(Long.toString(userId))
                 .setIssuer(ISSUER)
                 .setIssuedAt(new Date(issuedMillis))
                 .setExpiration(new Date(expMillis))
@@ -63,7 +65,7 @@ public class SecurityServiceImpl implements SecurityService {
             Logger.debug("JWT is expired");
             return Optional.empty();
         } catch (MalformedJwtException e) {
-            Logger.debug("JWT is malformed", e);
+            Logger.warn("JWT is malformed", e);
             return Optional.empty();
         } catch (UnsupportedJwtException e) {
             Logger.debug("JWT is unsupported", e);

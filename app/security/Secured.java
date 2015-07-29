@@ -15,7 +15,11 @@ public class Secured extends Security.Authenticator {
     public static final String USER_ID_KEY = "userId";
 
     @Inject
-    private SecurityService securityService;
+    private final SecurityService securityService;
+
+    public Secured() {
+        this.securityService = Play.application().injector().instanceOf(SecurityService.class);
+    }
 
     @Override
     public String getUsername(Http.Context ctx) {
