@@ -23,24 +23,23 @@ import java.util.Optional;
 @Security.Authenticated(Secured.class)
 public class RoomSocketsController extends BaseController {
 
-    private final SecurityService securityService;
+    private final RoomSocketService roomSocketService;
 
     private final PrivateRoomService privateRoomService;
 
-    private final RoomSocketService roomSocketService;
+    private final SecurityService securityService;
 
     @Inject
-    public RoomSocketsController(final SecurityService securityService, final PrivateRoomService privateRoomService,
-                                 final RoomSocketService roomSocketService) {
-        this.securityService = securityService;
-        this.privateRoomService = privateRoomService;
+    public RoomSocketsController(final RoomSocketService roomSocketService, final PrivateRoomService privateRoomService,
+                                 final SecurityService securityService) {
         this.roomSocketService = roomSocketService;
+        this.privateRoomService = privateRoomService;
+        this.securityService = securityService;
     }
 
     @Transactional
     public WebSocket<JsonNode> joinPublicRoom(final long roomId, final long userId, String authToken) {
-        Optional<Long> userIdOptional = securityService.getUserId(authToken);
-        if ((!userIdOptional.isPresent() || userIdOptional.get() != userId) && Play.isProd()) {
+        if (securityService.isUnauthorized(authToken, userId)) {
             return WebSocket.reject(forbidden());
         }
 
@@ -51,7 +50,7 @@ public class RoomSocketsController extends BaseController {
                 try {
                     roomSocketService.join(roomId, userId, in, out);
                 } catch (Exception ex) {
-                    Logger.error("Problem joining the RoomSocket", ex.getMessage());
+                    Logger.error("Problem joining the RoomSocket", ex);
                 }
             }
         };
@@ -59,17 +58,13 @@ public class RoomSocketsController extends BaseController {
 
     @Transactional
     public WebSocket<JsonNode> joinPrivateRoom(final long roomId, final long userId, String authToken) throws Throwable {
-        Optional<Long> userIdOptional = securityService.getUserId(authToken);
-        if (!userIdOptional.isPresent()) {
-            return WebSocket.reject(entityNotFound(User.class, userId));
-        }
-        if (userIdOptional.get() != userId && Play.isProd()) {
+        if (securityService.isUnauthorized(authToken, userId)) {
             return WebSocket.reject(forbidden());
         }
 
         Optional<PrivateRoom> privateRoomOptional = JPA.withTransaction(() -> privateRoomService.findById(roomId));
         if (privateRoomOptional.isPresent()) {
-            if (securityService.isUnauthorized(privateRoomOptional.get())) {
+            if (securityService.isUnauthorized(authToken, privateRoomOptional.get())) {
                 return WebSocket.reject(forbidden());
             }
         } else {
@@ -83,7 +78,7 @@ public class RoomSocketsController extends BaseController {
                 try {
                     roomSocketService.join(roomId, userId, in, out);
                 } catch (Exception ex) {
-                    Logger.error("Problem joining the RoomSocket: " + ex.getMessage());
+                    Logger.error("Problem joining the RoomSocket", ex);
                 }
             }
         };

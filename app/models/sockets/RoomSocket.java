@@ -205,7 +205,7 @@ public class RoomSocket extends UntypedActor {
             notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
         } catch (Throwable throwable) {
             Logger.error("Problem storing the message", throwable);
-            throw new RuntimeException("Problem storing the message: " + throwable.getMessage());
+            throw new RuntimeException("Problem storing the message", throwable);
         }
 
     }

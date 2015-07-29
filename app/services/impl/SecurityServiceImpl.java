@@ -57,16 +57,16 @@ public class SecurityServiceImpl implements SecurityService {
         try {
             claims = Jwts.parser().setSigningKey(SIGNING_KEY).parseClaimsJws(jwt).getBody();
         } catch (SignatureException signatureException) {
-            Logger.error("JWT has a different signing key " + signatureException.getMessage());
+            Logger.error("JWT has a different signing key", signatureException);
             return Optional.empty();
         } catch (ExpiredJwtException expiredJwtException) {
             Logger.debug("JWT is expired");
             return Optional.empty();
         } catch (MalformedJwtException e) {
-            Logger.debug("JWT is malformed: " + e.getMessage());
+            Logger.debug("JWT is malformed", e);
             return Optional.empty();
         } catch (UnsupportedJwtException e) {
-            Logger.debug("JWT is unsupported: " + e);
+            Logger.debug("JWT is unsupported", e);
             return Optional.empty();
         }
 
@@ -93,6 +93,21 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public boolean isUnauthorized(PrivateRoom privateRoom) {
         return !privateRoomService.isUserInRoom(privateRoom, getTokenUserId()) && Play.isProd();
+    }
+
+    @Override
+    public boolean isUnauthorized(String authToken, long userId) {
+        Optional<Long> userIdOptional = getUserId(authToken);
+        return (!userIdOptional.isPresent() || userIdOptional.get() != userId)
+                && Play.isProd();
+    }
+
+    @Override
+    public boolean isUnauthorized(String authToken, PrivateRoom privateRoom) {
+        Optional<Long> userIdOptional = getUserId(authToken);
+
+        return (!userIdOptional.isPresent() || !privateRoomService.isUserInRoom(privateRoom, userIdOptional.get()))
+                && Play.isProd();
     }
 
     @Override

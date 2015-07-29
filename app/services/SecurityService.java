@@ -16,5 +16,7 @@ public interface SecurityService {
     Optional<Long> getUserId(String jwt);
     boolean isUnauthorized(long userId);
     boolean isUnauthorized(PrivateRoom privateRoom);
+    boolean isUnauthorized(String authToken, long userId);
+    boolean isUnauthorized(String authToken, PrivateRoom privateRoom);
     long getTokenUserId();
 }
