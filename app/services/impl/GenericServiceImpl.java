@@ -23,6 +23,11 @@ public class GenericServiceImpl<T> implements GenericService<T> {
     }
 
     @Override
+    public void merge(Object entity) {
+        tDao.merge(entity);
+    }
+
+    @Override
     public Optional<T> findById(long id) {
         return tDao.findById(id);
     }
@@ -31,6 +36,5 @@ public class GenericServiceImpl<T> implements GenericService<T> {
     public void remove(Object entity) {
         tDao.remove(entity);
     }
-
 
 }

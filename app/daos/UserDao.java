@@ -15,6 +15,5 @@ import java.util.Optional;
 public interface UserDao extends GenericDao<User> {
     Optional<User> findByFacebookId(String facebookId);
     List<Device> getDevices(User user);
-    void merge(User user);
 
 }

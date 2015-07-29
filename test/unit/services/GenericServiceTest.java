@@ -50,6 +50,15 @@ public class GenericServiceTest<T> {
     }
 
     @Test
+    public void mergeCallsThroughToDao() {
+        Object mergeObj = new Object();
+
+        genericService.merge(mergeObj);
+
+        verify(genericDao).merge(refEq(mergeObj));
+    }
+
+    @Test
     public void findByIdCallsThroughToDao() {
         long id = 11;
 

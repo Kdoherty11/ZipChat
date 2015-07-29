@@ -22,6 +22,11 @@ public class GenericDaoImpl<T> implements GenericDao<T> {
     }
 
     @Override
+    public void merge(Object entity) {
+        JPA.em().merge(entity);
+    }
+
+    @Override
     public Optional<T> findById(long id) {
         T entity = JPA.em().find(entityClazz, id);
         return Optional.ofNullable(entity);
@@ -31,4 +36,5 @@ public class GenericDaoImpl<T> implements GenericDao<T> {
     public void remove(Object entity) {
         JPA.em().remove(entity);
     }
+
 }

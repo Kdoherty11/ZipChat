@@ -29,11 +29,13 @@ public class AnonUserServiceImpl extends GenericServiceImpl<AnonUser> implements
     }
 
     private final AnonUserDao anonUserDao;
+    private final Random random;
 
     @Inject
-    public AnonUserServiceImpl(final AnonUserDao anonUserDao) {
+    public AnonUserServiceImpl(final AnonUserDao anonUserDao, final Random random) {
         super(anonUserDao);
         this.anonUserDao = anonUserDao;
+        this.random = random;
     }
 
     @Override
@@ -67,7 +69,7 @@ public class AnonUserServiceImpl extends GenericServiceImpl<AnonUser> implements
         }
 
         // Pick a random alias from the set
-        int randomIndex = new Random().nextInt(availableAliases.size());
+        int randomIndex = random.nextInt(availableAliases.size());
         int i = 0;
         for (String alias : availableAliases) {
             if (i++ == randomIndex) {

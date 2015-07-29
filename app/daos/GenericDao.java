@@ -7,6 +7,7 @@ import java.util.Optional;
  */
 public interface GenericDao<T> {
     void save(Object entity);
+    void merge(Object entity);
     Optional<T> findById(long id);
     void remove(Object entity);
 

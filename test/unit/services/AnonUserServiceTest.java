@@ -16,10 +16,7 @@ import services.AnonUserService;
 import services.impl.AnonUserServiceImpl;
 import utils.TestUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -35,14 +32,16 @@ public class AnonUserServiceTest {
     @Mock
     private AnonUserDao anonUserDao;
 
+    @Mock
+    private Random random;
+
     private PublicRoomFactory publicRoomFactory;
     private UserFactory userFactory;
     private AnonUserFactory anonUserFactory;
 
-
     @Before
     public void setUp() {
-        anonUserService = spy(new AnonUserServiceImpl(anonUserDao));
+        anonUserService = spy(new AnonUserServiceImpl(anonUserDao, random));
         publicRoomFactory = new PublicRoomFactory();
         userFactory = new UserFactory();
         anonUserFactory = new AnonUserFactory();
@@ -126,6 +125,26 @@ public class AnonUserServiceTest {
             assertTrue(e.getMessage().contains("There are no more available aliases"));
         }
 
+    }
+
+    @Test
+    public void getOrCreateAnonUsersImpossiblyThrowsAnException() throws InstantiationException, IllegalAccessException, NoSuchFieldException {
+        PublicRoom room = mock(PublicRoom.class);
+        User user = mock(User.class);
+        when(anonUserService.getAnonUser(user, room)).thenReturn(Optional.empty());
+
+        @SuppressWarnings("unchecked") Set<String> fullNames =
+                (Set<String>) TestUtils.getPrivateStaticField(AnonUserServiceImpl.class, "FULL_NAMES");
+        int numPossibleAliasNames = fullNames.size();
+        when(room.anonUsers).thenReturn(Collections.emptyList());
+        when(random.nextInt(numPossibleAliasNames)).thenReturn(numPossibleAliasNames + 1);
+
+        try {
+            anonUserService.getOrCreateAnonUser(user, room);
+            fail();
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains("Random index was not in set... Should never get here"));
+        }
     }
 
 
