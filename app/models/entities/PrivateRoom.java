@@ -44,7 +44,7 @@ public class PrivateRoom extends AbstractRoom {
 
     @Override
     public boolean canEqual(Object other) {
-        return other instanceof PublicRoom;
+        return other instanceof PrivateRoom;
     }
 
     @Override
@@ -68,11 +68,14 @@ public class PrivateRoom extends AbstractRoom {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("roomId", roomId)
                 .add("senderId", AbstractUser.getId(sender))
                 .add("receiverId", AbstractUser.getId(receiver))
                 .add("senderInRoom", senderInRoom)
                 .add("receiverInRoom", receiverInRoom)
-                .add("requestId", request == null ? -1 : request.requestId)
+                .add("requestId", Request.getId(request))
+                .add("createdAt", createdAt)
+                .add("lastActivity", lastActivity)
                 .toString();
     }
 }

@@ -1,7 +1,6 @@
 package unit.models;
 
 import factories.PrivateRoomFactory;
-import models.entities.AbstractRoom;
 import models.entities.PrivateRoom;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
@@ -15,8 +14,15 @@ public class PrivateRoomTest {
 
     @Test
     public void equalsContract() {
-        EqualsVerifier.forClass(AbstractRoom.class)
-                .withRedefinedSubclass(PrivateRoom.class)
+        class LeafNodeRoom extends PrivateRoom {
+            @Override
+            public boolean canEqual(Object other) {
+                return false;
+            }
+        }
+        EqualsVerifier.forClass(PrivateRoom.class)
+                .withRedefinedSuperclass()
+                .withRedefinedSubclass(LeafNodeRoom.class)
                 .verify();
     }
 

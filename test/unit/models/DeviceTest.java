@@ -6,12 +6,21 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by kdoherty on 7/29/15.
  */
 public class DeviceTest {
+
+    @Test
+    public void setDeviceId() {
+        long deviceId = 1;
+        Device device = new Device();
+        device.deviceId = deviceId;
+        assertEquals(deviceId, device.deviceId);
+    }
 
     @Test
     public void equalsContract() {

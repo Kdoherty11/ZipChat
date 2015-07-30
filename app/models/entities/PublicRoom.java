@@ -69,12 +69,15 @@ public class PublicRoom extends AbstractRoom {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("roomId", roomId)
                 .add("name", name)
                 .add("latitude", latitude)
                 .add("longitude", longitude)
                 .add("radius", radius)
                 .add("anonUsers", anonUsers)
                 .add("subscribers", subscribers)
+                .add("createdAt", createdAt)
+                .add("lastActivity", lastActivity)
                 .toString();
     }
 }

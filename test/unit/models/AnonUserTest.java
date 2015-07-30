@@ -1,7 +1,6 @@
 package unit.models;
 
 import factories.AnonUserFactory;
-import models.entities.AbstractUser;
 import models.entities.AnonUser;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
@@ -15,8 +14,15 @@ public class AnonUserTest {
 
     @Test
     public void equalsContract() {
-        EqualsVerifier.forClass(AbstractUser.class)
-                .withRedefinedSubclass(AnonUser.class)
+        class LeafNodeAnonUser extends AnonUser {
+            @Override
+            public boolean canEqual(Object other) {
+                return false;
+            }
+        }
+        EqualsVerifier.forClass(AnonUser.class)
+                .withRedefinedSuperclass()
+                .withRedefinedSubclass(LeafNodeAnonUser.class)
                 .verify();
     }
 

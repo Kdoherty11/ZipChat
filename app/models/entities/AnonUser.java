@@ -67,9 +67,12 @@ public class AnonUser extends AbstractUser {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("name", super.name)
+                .add("userId", userId)
+                .add("name", name)
+                .add("gender", gender)
                 .add("actualId", User.getId(actual))
                 .add("roomId", PublicRoom.getId(room))
+                .add("createdAt", createdAt)
                 .toString();
     }
 }

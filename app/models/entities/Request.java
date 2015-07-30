@@ -57,6 +57,10 @@ public class Request {
         this.receiver = Preconditions.checkNotNull(receiver);
     }
 
+    public static long getId(Request request) {
+        return request != null ? request.requestId : -1;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;

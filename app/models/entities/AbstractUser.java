@@ -57,15 +57,4 @@ public abstract class AbstractUser {
     public int hashCode() {
         return Objects.hashCode(facebookId, gender, name, createdAt);
     }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("userId", userId)
-                .add("facebookId", facebookId)
-                .add("gender", gender)
-                .add("name", name)
-                .add("createdAt", createdAt)
-                .toString();
-    }
 }

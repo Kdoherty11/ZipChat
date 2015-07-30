@@ -1,11 +1,11 @@
 package unit.models;
 
 import factories.PublicRoomFactory;
-import models.entities.AbstractRoom;
 import models.entities.PublicRoom;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -14,9 +14,24 @@ import static org.junit.Assert.assertNotNull;
 public class PublicRoomTest {
 
     @Test
+    public void setRoomId() {
+        long roomId = 1;
+        PublicRoom room = new PublicRoom();
+        room.roomId = roomId;
+        assertEquals(roomId, room.roomId);
+    }
+
+    @Test
     public void equalsContract() {
-        EqualsVerifier.forClass(AbstractRoom.class)
-                .withRedefinedSubclass(PublicRoom.class)
+        class LeafNodeRoom extends PublicRoom {
+            @Override
+            public boolean canEqual(Object other) {
+                return false;
+            }
+        }
+        EqualsVerifier.forClass(PublicRoom.class)
+                .withRedefinedSuperclass()
+                .withRedefinedSubclass(LeafNodeRoom.class)
                 .verify();
     }
 

@@ -49,16 +49,6 @@ public abstract class AbstractRoom {
         return Objects.hashCode(createdAt, lastActivity);
     }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("roomId", roomId)
-                .add("createdAt", createdAt)
-                .add("lastActivity", lastActivity)
-                .add("messages", messages)
-                .toString();
-    }
-
     public static long getId(AbstractRoom room) {
         return room == null ? -1 : room.roomId;
     }

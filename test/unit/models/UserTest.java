@@ -1,7 +1,6 @@
 package unit.models;
 
 import factories.UserFactory;
-import models.entities.AbstractUser;
 import models.entities.User;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
@@ -15,8 +14,15 @@ public class UserTest {
 
     @Test
     public void equalsContract() {
-        EqualsVerifier.forClass(AbstractUser.class)
-                .withRedefinedSubclass(User.class)
+        class LeafNodeUser extends User {
+            @Override
+            public boolean canEqual(Object other) {
+                return false;
+            }
+        }
+        EqualsVerifier.forClass(User.class)
+                .withRedefinedSuperclass()
+                .withRedefinedSubclass(LeafNodeUser.class)
                 .verify();
     }
 

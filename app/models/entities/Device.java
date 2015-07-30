@@ -6,6 +6,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import models.Platform;
 import org.hibernate.annotations.GenericGenerator;
+import play.Logger;
 import play.data.validation.Constraints;
 
 import javax.persistence.*;
@@ -68,7 +69,7 @@ public class Device {
                 .add("deviceId", deviceId)
                 .add("regId", regId)
                 .add("platform", platform)
-                .add("userId", user == null ? -1 : user.userId)
+                .add("userId", AbstractUser.getId(user))
                 .toString();
     }
 }
