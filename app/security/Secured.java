@@ -17,8 +17,13 @@ public class Secured extends Security.Authenticator {
     @Inject
     private final SecurityService securityService;
 
+    @SuppressWarnings("unused") // Used in annotations
     public Secured() {
         this.securityService = Play.application().injector().instanceOf(SecurityService.class);
+    }
+
+    public Secured(SecurityService securityService) {
+        this.securityService = securityService;
     }
 
     @Override

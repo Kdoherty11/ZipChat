@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
  * Created by kdoherty on 7/29/15.
  */
 @RunWith(Enclosed.class)
-public class SecurityServiceTest extends WithApplication {
+public class SecurityServiceTest {
 
     private static final String SIGNING_KEY;
     private static final long EXPIRATION_TIME_MILLIS;
