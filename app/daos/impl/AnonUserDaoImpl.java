@@ -27,11 +27,11 @@ public class AnonUserDaoImpl extends GenericDaoImpl<AnonUser> implements AnonUse
                 .setParameter("userId", actual.userId)
                 .setParameter("roomId", room.roomId);
 
-        List<AnonUser> aliases = query.getResultList();
-        if (aliases.isEmpty()) {
+        List<AnonUser> anonUsers = query.getResultList();
+        if (anonUsers.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of(aliases.get(0));
+            return Optional.of(anonUsers.get(0));
         }
     }
 }
