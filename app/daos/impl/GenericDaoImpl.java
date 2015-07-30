@@ -1,5 +1,6 @@
 package daos.impl;
 
+import com.google.common.base.Preconditions;
 import daos.GenericDao;
 import play.db.jpa.JPA;
 
@@ -13,7 +14,7 @@ public class GenericDaoImpl<T> implements GenericDao<T> {
     private Class<T> entityClazz;
 
     public GenericDaoImpl(final Class<T> entityClazz) {
-        this.entityClazz = entityClazz;
+        this.entityClazz = Preconditions.checkNotNull(entityClazz);
     }
 
     @Override
