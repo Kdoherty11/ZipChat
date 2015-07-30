@@ -42,10 +42,10 @@ public abstract class AbstractUser {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AbstractUser)) return false;
-        AbstractUser that = (AbstractUser) o;
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof AbstractUser)) return false;
+        AbstractUser that = (AbstractUser) other;
         return that.canEqual(this) &&
                 Objects.equal(createdAt, that.createdAt) &&
                 Objects.equal(facebookId, that.facebookId) &&

@@ -64,17 +64,17 @@ public class Message {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Message)) return false;
-        Message message1 = (Message) o;
-        return Objects.equal(score, message1.score) &&
-                Objects.equal(createdAt, message1.createdAt) &&
-                Objects.equal(room, message1.room) &&
-                Objects.equal(sender, message1.sender) &&
-                Objects.equal(message, message1.message) &&
-                Objects.equal(favorites, message1.favorites) &&
-                Objects.equal(flags, message1.flags);
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Message)) return false;
+        Message that = (Message) other;
+        return Objects.equal(score, that.score) &&
+                Objects.equal(createdAt, that.createdAt) &&
+                Objects.equal(room, that.room) &&
+                Objects.equal(sender, that.sender) &&
+                Objects.equal(message, that.message) &&
+                Objects.equal(favorites, that.favorites) &&
+                Objects.equal(flags, that.flags);
     }
 
     @Override

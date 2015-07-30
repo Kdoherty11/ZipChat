@@ -49,7 +49,7 @@ public class MessageServiceTest {
     @Test
     public void favoriteIncrementsScore() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User favoritor = userFactory.create();
         messageService.favorite(message, favoritor);
 
@@ -59,7 +59,7 @@ public class MessageServiceTest {
     @Test
     public void favoriteSendsNotificationToMessageSender() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User favoritor = userFactory.create();
 
         messageService.favorite(message, favoritor);
@@ -70,7 +70,7 @@ public class MessageServiceTest {
     @Test
     public void favoriteSendsNotificationToAnonSender() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_ANON_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_ANON_SENDER);
         User favoritor = userFactory.create();
 
         messageService.favorite(message, favoritor);
@@ -81,7 +81,7 @@ public class MessageServiceTest {
     @Test
     public void favoritingOwnMessageNoNotificationIsSent() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User favoritor = (User) message.sender;
 
         messageService.favorite(message, favoritor);
@@ -92,7 +92,7 @@ public class MessageServiceTest {
     @Test
     public void favoriteCorrectlyAddsUserToFavoriteSet() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User favoritor = userFactory.create();
 
         messageService.favorite(message, favoritor);
@@ -103,7 +103,7 @@ public class MessageServiceTest {
     @Test
     public void favoriteReturnsTrueWhenFavoriteIsAdded() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User favoritor = userFactory.create();
 
         boolean added = messageService.favorite(message, favoritor);
@@ -114,7 +114,7 @@ public class MessageServiceTest {
     @Test
     public void favoriteDuplicatesAreNotAdded() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User favoritor = userFactory.create();
 
         messageService.favorite(message, favoritor);
@@ -126,7 +126,7 @@ public class MessageServiceTest {
     @Test
     public void favoriteReturnsFalseWhenNotAdded() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User favoritor = userFactory.create();
 
         messageService.favorite(message, favoritor);
@@ -138,7 +138,7 @@ public class MessageServiceTest {
     @Test
     public void removeFavoriteReturnsTrueWhenFavoriteIsRemoved() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User user = userFactory.create();
 
         messageService.favorite(message, user);
@@ -150,7 +150,7 @@ public class MessageServiceTest {
     @Test
     public void removeFavoriteReturnsFalseWhenFavoriteIsNotRemoved() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User user = userFactory.create();
 
         boolean removed = messageService.removeFavorite(message, user);
@@ -161,7 +161,7 @@ public class MessageServiceTest {
     @Test
     public void removeFavoriteRemovesUserFromMessageFavoritesSet() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User user = userFactory.create();
 
         messageService.favorite(message, user);
@@ -173,7 +173,7 @@ public class MessageServiceTest {
     @Test
     public void messageScoreIsDecrementedWhenFavoriteIsRemoved() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User user = userFactory.create();
 
         messageService.favorite(message, user);
@@ -185,7 +185,7 @@ public class MessageServiceTest {
     @Test
     public void messageScoreIsNotDecrementedWhenFavoriteIsNotRemoved() throws InstantiationException, IllegalAccessException {
         Message message = messageFactory.create(
-                MessageFactory.FactoryTrait.WITH_PUBLIC_ROOM, MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_PUBLIC_ROOM, MessageFactory.Trait.WITH_SENDER);
         User user = userFactory.create();
 
         messageService.removeFavorite(message, user);

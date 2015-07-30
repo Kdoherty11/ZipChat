@@ -50,11 +50,11 @@ public class AnonUser extends AbstractUser {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AnonUser)) return false;
-        AnonUser that = (AnonUser) o;
-        return that.canEqual(this) && super.equals(o) &&
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof AnonUser)) return false;
+        AnonUser that = (AnonUser) other;
+        return that.canEqual(this) && super.equals(other) &&
                 Objects.equal(actual, that.actual) &&
                 Objects.equal(room, that.room);
     }

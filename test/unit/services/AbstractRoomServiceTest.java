@@ -62,7 +62,7 @@ public class AbstractRoomServiceTest {
     public void addMessageToPublicRoom() throws InstantiationException, IllegalAccessException {
         PublicRoom room = publicRoomFactory.create(PropOverride.of("lastActivity", -1));
         Message mockMessage = messageFactory.create(PropOverride.of("room", room),
-                MessageFactory.FactoryTrait.WITH_SENDER);
+                MessageFactory.Trait.WITH_SENDER);
         Set<Long> userIdsInRoom = Collections.emptySet();
 
         abstractRoomService.addMessage(room, mockMessage, userIdsInRoom);
@@ -77,7 +77,7 @@ public class AbstractRoomServiceTest {
     @Test
     public void addMessageToPublicRoomAddsToRoomMessages() throws InstantiationException, IllegalAccessException {
         PublicRoom room = publicRoomFactory.create();
-        Message message = messageFactory.create(PropOverride.of("room", room), MessageFactory.FactoryTrait.WITH_SENDER);
+        Message message = messageFactory.create(PropOverride.of("room", room), MessageFactory.Trait.WITH_SENDER);
 
         abstractRoomService.addMessage(room, message, Collections.emptySet());
 
@@ -88,7 +88,7 @@ public class AbstractRoomServiceTest {
     @Test
     public void addMessageToPublicRoomSetsRoomLastActivity() throws InstantiationException, IllegalAccessException {
         PublicRoom room = publicRoomFactory.create(PropOverride.of("lastActivity", -1));
-        Message message = messageFactory.create(PropOverride.of("room", room), MessageFactory.FactoryTrait.WITH_SENDER);
+        Message message = messageFactory.create(PropOverride.of("room", room), MessageFactory.Trait.WITH_SENDER);
 
         abstractRoomService.addMessage(room, message, Collections.emptySet());
 

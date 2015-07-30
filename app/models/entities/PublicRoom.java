@@ -50,10 +50,10 @@ public class PublicRoom extends AbstractRoom {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PublicRoom)) return false;
-        PublicRoom that = (PublicRoom) o;
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof PublicRoom)) return false;
+        PublicRoom that = (PublicRoom) other;
         return that.canEqual(this) && super.equals(that) &&
                 Objects.equal(name, that.name) &&
                 Objects.equal(latitude, that.latitude) &&

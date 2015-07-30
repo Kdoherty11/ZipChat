@@ -58,15 +58,15 @@ public class Request {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Request)) return false;
-        Request request = (Request) o;
-        return Objects.equal(createdAt, request.createdAt) &&
-                Objects.equal(respondedTimeStamp, request.respondedTimeStamp) &&
-                Objects.equal(sender, request.sender) &&
-                Objects.equal(receiver, request.receiver) &&
-                Objects.equal(status, request.status);
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Request)) return false;
+        Request that = (Request) other;
+        return Objects.equal(createdAt, that.createdAt) &&
+                Objects.equal(respondedTimeStamp, that.respondedTimeStamp) &&
+                Objects.equal(sender, that.sender) &&
+                Objects.equal(receiver, that.receiver) &&
+                Objects.equal(status, that.status);
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class MessageFactory extends GenericFactory<Message> {
 
-    public enum FactoryTrait implements ObjectMutator<Message> {
+    public enum Trait implements ObjectMutator<Message> {
         WITH_SENDER {
             @Override
             public void apply(Message msg) throws IllegalAccessException, InstantiationException {

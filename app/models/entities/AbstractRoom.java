@@ -35,10 +35,10 @@ public abstract class AbstractRoom {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AbstractRoom)) return false;
-        AbstractRoom that = (AbstractRoom) o;
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof AbstractRoom)) return false;
+        AbstractRoom that = (AbstractRoom) other;
         return that.canEqual(this) &&
                 Objects.equal(createdAt, that.createdAt) &&
                 Objects.equal(lastActivity, that.lastActivity);

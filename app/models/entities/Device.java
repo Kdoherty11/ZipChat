@@ -48,10 +48,10 @@ public class Device {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Device)) return false;
-        Device device = (Device) o;
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Device)) return false;
+        Device device = (Device) other;
         return Objects.equal(regId, device.regId) &&
                 Objects.equal(platform, device.platform) &&
                 Objects.equal(user, device.user);

@@ -48,10 +48,10 @@ public class PrivateRoom extends AbstractRoom {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PrivateRoom)) return false;
-        PrivateRoom that = (PrivateRoom) o;
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof PrivateRoom)) return false;
+        PrivateRoom that = (PrivateRoom) other;
         return that.canEqual(this) && super.equals(that) &&
                 Objects.equal(senderInRoom, that.senderInRoom) &&
                 Objects.equal(receiverInRoom, that.receiverInRoom) &&

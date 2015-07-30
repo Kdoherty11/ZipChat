@@ -29,11 +29,12 @@ public class User extends AbstractUser {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User that = (User) o;
-        return that.canEqual(this) && super.equals(o) && Objects.equal(devices, that.devices);
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof User)) return false;
+        User that = (User) other;
+        return that.canEqual(this) && super.equals(other)
+                && Objects.equal(devices, that.devices);
     }
 
     @Override
