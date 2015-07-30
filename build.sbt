@@ -41,6 +41,8 @@ libraryDependencies += "com.google.inject" % "guice" % "4.0"
 
 libraryDependencies += "com.google.code.gson" % "gson" % "2.3.1"
 
+libraryDependencies += "nl.jqno.equalsverifier" % "equalsverifier" % "1.7.3"
+
 jacoco.settings
 
 herokuAppName in Compile := "zipchatapp"

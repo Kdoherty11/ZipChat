@@ -19,22 +19,21 @@ public class User extends AbstractUser {
     public List<Device> devices = new ArrayList<>();
 
     @Override
-    public boolean isAnon() {
-        return false;
-    }
-
-    @Override
     public User getActual() {
         return this;
     }
 
     @Override
+    public boolean canEqual(Object other) {
+        return other instanceof User;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        User user = (User) o;
-        return Objects.equal(devices, user.devices);
+        if (!(o instanceof User)) return false;
+        User that = (User) o;
+        return that.canEqual(this) && super.equals(o) && Objects.equal(devices, that.devices);
     }
 
     @Override

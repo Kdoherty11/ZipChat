@@ -29,12 +29,18 @@ public abstract class AbstractRoom {
     @OneToMany(targetEntity = Message.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Message> messages = new ArrayList<>();
 
+    // http://www.artima.com/lejava/articles/equality.html
+    public boolean canEqual(Object other) {
+        return other instanceof AbstractRoom;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof AbstractRoom)) return false;
         AbstractRoom that = (AbstractRoom) o;
-        return Objects.equal(createdAt, that.createdAt) &&
+        return that.canEqual(this) &&
+                Objects.equal(createdAt, that.createdAt) &&
                 Objects.equal(lastActivity, that.lastActivity);
     }
 

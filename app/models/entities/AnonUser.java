@@ -40,23 +40,23 @@ public class AnonUser extends AbstractUser {
     }
 
     @Override
-    public boolean isAnon() {
-        return false;
-    }
-
-    @Override
     public User getActual() {
         return actual;
     }
 
     @Override
+    public boolean canEqual(Object other) {
+        return other instanceof AnonUser;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        AnonUser anonUser = (AnonUser) o;
-        return Objects.equal(actual, anonUser.actual) &&
-                Objects.equal(room, anonUser.room);
+        if (!(o instanceof AnonUser)) return false;
+        AnonUser that = (AnonUser) o;
+        return that.canEqual(this) && super.equals(o) &&
+                Objects.equal(actual, that.actual) &&
+                Objects.equal(room, that.room);
     }
 
     @Override

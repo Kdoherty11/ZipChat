@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import play.Logger;
 import services.NotificationService;
 import services.PublicRoomService;
 import services.impl.PublicRoomServiceImpl;
@@ -97,6 +98,7 @@ public class PublicRoomServiceTest {
         when(userDao.getDevices(mockUser2)).thenReturn(user2Devices);
 
         Set<User> subscribers = ImmutableSet.of(mockUser1, mockUser2);
+        Logger.error("A: " + subscribers.size());
         when(publicRoomService.getSubscribers(mockRoom)).thenReturn(subscribers);
 
         publicRoomService.sendNotification(mockRoom, mockNotification, Collections.emptySet());
@@ -115,9 +117,7 @@ public class PublicRoomServiceTest {
                 .map(device -> device.regId)
                 .collect(Collectors.toList());
 
-
         verify(notificationService).send(androidRegIds, iosRegIds, mockNotification);
-        //verify(mockNotification).send(androidRegIds, iosRegIds);
     }
 
     @Test

@@ -45,12 +45,17 @@ public class PublicRoom extends AbstractRoom {
     public Set<User> subscribers = new LinkedHashSet<>();
 
     @Override
+    public boolean canEqual(Object other) {
+        return other instanceof PublicRoom;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof PublicRoom)) return false;
         PublicRoom that = (PublicRoom) o;
-        return Objects.equal(name, that.name) &&
+        return that.canEqual(this) && super.equals(that) &&
+                Objects.equal(name, that.name) &&
                 Objects.equal(latitude, that.latitude) &&
                 Objects.equal(longitude, that.longitude) &&
                 Objects.equal(radius, that.radius);

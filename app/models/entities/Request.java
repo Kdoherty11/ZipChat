@@ -60,7 +60,7 @@ public class Request {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Request)) return false;
         Request request = (Request) o;
         return Objects.equal(createdAt, request.createdAt) &&
                 Objects.equal(respondedTimeStamp, request.respondedTimeStamp) &&

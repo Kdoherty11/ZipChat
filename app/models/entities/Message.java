@@ -66,7 +66,7 @@ public class Message {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Message)) return false;
         Message message1 = (Message) o;
         return Objects.equal(score, message1.score) &&
                 Objects.equal(createdAt, message1.createdAt) &&

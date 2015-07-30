@@ -34,17 +34,20 @@ public abstract class AbstractUser {
     }
 
     @JsonIgnore
-    public abstract boolean isAnon();
-
-    @JsonIgnore
     public abstract User getActual();
+
+    // http://www.artima.com/lejava/articles/equality.html
+    public boolean canEqual(Object other) {
+        return other instanceof AbstractUser;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof AbstractUser)) return false;
         AbstractUser that = (AbstractUser) o;
-        return Objects.equal(createdAt, that.createdAt) &&
+        return that.canEqual(this) &&
+                Objects.equal(createdAt, that.createdAt) &&
                 Objects.equal(facebookId, that.facebookId) &&
                 Objects.equal(gender, that.gender) &&
                 Objects.equal(name, that.name);
