@@ -33,7 +33,7 @@ public class PublicRoom extends AbstractRoom {
     public Double longitude;
 
     @Constraints.Required
-    public Integer radius;
+    public Integer radius; // in meters
 
     @JsonIgnore
     @OneToMany(targetEntity = AnonUser.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
