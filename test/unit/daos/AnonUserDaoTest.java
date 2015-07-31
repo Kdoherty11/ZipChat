@@ -11,7 +11,6 @@ import models.entities.User;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.jpa.JPA;
-import play.test.WithApplication;
 import utils.TestUtils;
 
 import java.util.Optional;
@@ -21,7 +20,7 @@ import static org.junit.Assert.*;
 /**
  * Created by kdoherty on 7/30/15.
  */
-public class AnonUserDaoTest extends WithApplication {
+public class AnonUserDaoTest extends AbstractDaoTest {
 
     private AnonUserDao anonUserDao;
     private AnonUserFactory anonUserFactory;

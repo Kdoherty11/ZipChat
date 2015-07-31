@@ -16,19 +16,16 @@ import models.entities.User;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.jpa.JPA;
-import play.test.WithApplication;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by kdoherty on 7/30/15.
  */
-public class MessageDaoTest extends WithApplication {
+public class MessageDaoTest extends AbstractDaoTest {
 
     private MessageDao messageDao;
     private MessageFactory messageFactory;

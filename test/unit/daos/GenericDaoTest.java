@@ -7,7 +7,6 @@ import models.entities.User;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.jpa.JPA;
-import play.test.WithApplication;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -17,7 +16,7 @@ import static org.junit.Assert.*;
 /**
  * Created by kdoherty on 7/30/15.
  */
-public class GenericDaoTest extends WithApplication {
+public class GenericDaoTest extends AbstractDaoTest {
 
     private GenericDao<User> genericDao;
     private UserFactory userFactory;

@@ -9,7 +9,6 @@ import models.entities.User;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.jpa.JPA;
-import play.test.WithApplication;
 
 import java.util.HashSet;
 import java.util.List;
@@ -22,7 +21,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by kdoherty on 7/30/15.
  */
-public class PublicRoomDaoTest extends WithApplication {
+public class PublicRoomDaoTest extends AbstractDaoTest {
 
     private PublicRoomDao publicRoomDao;
     private PublicRoomFactory publicRoomFactory;

@@ -8,7 +8,6 @@ import models.entities.PrivateRoom;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.jpa.JPA;
-import play.test.WithApplication;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by kdoherty on 7/30/15.
  */
-public class PrivateRoomDaoTest extends WithApplication {
+public class PrivateRoomDaoTest extends AbstractDaoTest {
 
     private PrivateRoomDao privateRoomDao;
     private PrivateRoomFactory privateRoomFactory;

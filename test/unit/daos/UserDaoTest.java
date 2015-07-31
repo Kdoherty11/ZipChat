@@ -10,19 +10,16 @@ import models.entities.User;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.jpa.JPA;
-import play.test.WithApplication;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by kdoherty on 7/30/15.
  */
-public class UserDaoTest extends WithApplication {
+public class UserDaoTest extends AbstractDaoTest {
 
     private UserDao userDao;
     private UserFactory userFactory;

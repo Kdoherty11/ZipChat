@@ -8,19 +8,16 @@ import models.entities.Request;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.jpa.JPA;
-import play.test.WithApplication;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by kdoherty on 7/30/15.
  */
-public class RequestDaoTest extends WithApplication {
+public class RequestDaoTest extends AbstractDaoTest {
 
     private RequestDao requestDao;
     private RequestFactory requestFactory;
@@ -64,8 +61,10 @@ public class RequestDaoTest extends WithApplication {
     @Test
     public void findBySenderAndReceiverReturnsEmptyWhenRequestDoesntExist() {
         JPA.withTransaction(() -> {
-            Optional<Request> optional = requestDao.findBySenderAndReceiver(1, 2);
-            assertFalse(optional.isPresent());
+            long senderId = 100;
+            long receiverId = 150;
+            Optional<Request> optional = requestDao.findBySenderAndReceiver(150, 200);
+            assertFalse("A Request with senderId " + senderId + " and receiverId " + receiverId + " should not be present", optional.isPresent());
         });
     }
 
