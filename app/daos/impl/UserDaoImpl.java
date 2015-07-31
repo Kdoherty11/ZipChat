@@ -22,7 +22,8 @@ public class UserDaoImpl extends GenericDaoImpl<User> implements UserDao {
     public Optional<User> findByFacebookId(String facebookId) {
         String queryString = "select u from User u where u.facebookId = :facebookId";
 
-        TypedQuery<User> query = JPA.em().createQuery(queryString, User.class)
+        TypedQuery<User> query = JPA.em()
+                .createQuery(queryString, User.class)
                 .setParameter("facebookId", facebookId);
 
         List<User> users = query.getResultList();
