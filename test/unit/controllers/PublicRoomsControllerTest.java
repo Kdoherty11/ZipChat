@@ -21,7 +21,7 @@ import services.MessageService;
 import services.PublicRoomService;
 import services.SecurityService;
 import services.UserService;
-import utils.AbstractResultSender;
+import utils.AbstractRequestSender;
 
 import java.util.*;
 
@@ -62,30 +62,30 @@ public class PublicRoomsControllerTest extends WithApplication {
         start(fakeApplication());
     }
 
-    private class CreateResultSender extends AbstractResultSender {
+    private class CreateRequestSender extends AbstractRequestSender {
 
         private Map<String, String> params = new HashMap<>();
 
-        public CreateResultSender() {
+        public CreateRequestSender() {
             super(POST, "/publicRooms");
         }
 
-        public CreateResultSender setName(String roomName) {
+        public CreateRequestSender setName(String roomName) {
             params.put("name", roomName);
             return this;
         }
 
-        public CreateResultSender setLatitude(String latitude) {
+        public CreateRequestSender setLatitude(String latitude) {
             params.put("latitude", latitude);
             return this;
         }
 
-        public CreateResultSender setLongitude(String longitude) {
+        public CreateRequestSender setLongitude(String longitude) {
             params.put("longitude", longitude);
             return this;
         }
 
-        public CreateResultSender setRadius(String radius) {
+        public CreateRequestSender setRadius(String radius) {
             params.put("radius", radius);
             return this;
         }
@@ -111,7 +111,7 @@ public class PublicRoomsControllerTest extends WithApplication {
         String longitudeStr = longitude.toString();
         String radiusStr = radius.toString();
 
-        Result createResult = new CreateResultSender()
+        Result createResult = new CreateRequestSender()
                 .setName(roomName).setLatitude(latitudeStr).setLongitude(longitudeStr).setRadius(radiusStr).send();
 
 
@@ -127,7 +127,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     @Test
     public void createRoomNoName() {
-        Result noNameResult = new CreateResultSender().setLatitude("2.0").setLongitude("4.0").setRadius("1").send();
+        Result noNameResult = new CreateRequestSender().setLatitude("2.0").setLongitude("4.0").setRadius("1").send();
 
         assertEquals(BAD_REQUEST, noNameResult.status());
         verifyZeroInteractions(publicRoomService);
@@ -135,7 +135,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     @Test
     public void createRoomNoLatitude() {
-        Result noLatResult = new CreateResultSender().setName("name").setLongitude("4.0").setRadius("1").send();
+        Result noLatResult = new CreateRequestSender().setName("name").setLongitude("4.0").setRadius("1").send();
 
         assertEquals(BAD_REQUEST, noLatResult.status());
         verifyZeroInteractions(publicRoomService);
@@ -143,7 +143,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     @Test
     public void createRoomNoLongitude() {
-        Result noLonResult = new CreateResultSender().setName("name").setLatitude("4.0").setRadius("1").send();
+        Result noLonResult = new CreateRequestSender().setName("name").setLatitude("4.0").setRadius("1").send();
 
         assertEquals(BAD_REQUEST, noLonResult.status());
         verifyZeroInteractions(publicRoomService);
@@ -151,7 +151,7 @@ public class PublicRoomsControllerTest extends WithApplication {
 
     @Test
     public void createRoomNoRadius() {
-        Result noRadiusResult = new CreateResultSender().setName("name").setLatitude("4.0").setLongitude("3.0").send();
+        Result noRadiusResult = new CreateRequestSender().setName("name").setLatitude("4.0").setLongitude("3.0").send();
 
         assertEquals(BAD_REQUEST, noRadiusResult.status());
         verifyZeroInteractions(publicRoomService);
