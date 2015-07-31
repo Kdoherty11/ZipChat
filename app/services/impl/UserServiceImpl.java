@@ -45,7 +45,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Override
     public void sendChatRequest(User sender, AbstractUser receiver) {
         User actualReceiver = receiver.getActual();
-        if (!privateRoomDao.findBySenderAndReceiver(sender.userId, actualReceiver.userId).isPresent()) {
+        if (!privateRoomDao.findByRoomMembers(sender.userId, actualReceiver.userId).isPresent()) {
             requestDao.save(new Request(sender, actualReceiver));
             sendNotification(actualReceiver, new ChatRequestNotification(sender));
         }

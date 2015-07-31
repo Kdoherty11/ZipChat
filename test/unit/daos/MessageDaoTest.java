@@ -65,15 +65,13 @@ public class MessageDaoTest extends WithApplication {
             userDao.save(sender);
             JPA.em().flush();
 
-            List<Message> roomMessages = messageFactory.createList(3, new ObjectMutator<Message>() {
+            messageFactory.createList(3, new ObjectMutator<Message>() {
                 @Override
                 public void apply(Message message) throws IllegalAccessException, InstantiationException {
                     message.room = room;
                     message.sender = sender;
                 }
-            });
-
-            roomMessages.forEach(messageDao::save);
+            }, MessageFactory.Trait.PERSISTED);
 
             int limit = 2;
             List<Message> messages = messageDao.getMessages(room.roomId, limit, 0);
@@ -92,16 +90,14 @@ public class MessageDaoTest extends WithApplication {
             JPA.em().flush();
 
             final AtomicLong createdAt = new AtomicLong(1);
-            List<Message> roomMessages = messageFactory.createList(3, new ObjectMutator<Message>() {
+            messageFactory.createList(3, new ObjectMutator<Message>() {
                 @Override
                 public void apply(Message message) throws IllegalAccessException, InstantiationException {
                     message.room = room;
                     message.sender = sender;
                     message.createdAt = createdAt.getAndIncrement();
                 }
-            });
-
-            roomMessages.forEach(messageDao::save);
+            }, MessageFactory.Trait.PERSISTED);
 
             // Most recent messages should be at the start of the list
             List<Message> messages = messageDao.getMessages(room.roomId, 3, 0);
@@ -129,9 +125,7 @@ public class MessageDaoTest extends WithApplication {
                     message.sender = sender;
                     message.createdAt = createdAt.getAndIncrement();
                 }
-            });
-
-            roomMessages.forEach(messageDao::save);
+            }, MessageFactory.Trait.PERSISTED);
 
             // Most recent messages should be at the start of the list
             int offset = 1;
@@ -157,14 +151,13 @@ public class MessageDaoTest extends WithApplication {
             JPA.em().flush();
 
             int numRoomMessages = 2;
-            List<Message> roomMessages = messageFactory.createList(numRoomMessages, new ObjectMutator<Message>() {
+            messageFactory.createList(numRoomMessages, new ObjectMutator<Message>() {
                 @Override
                 public void apply(Message message) throws IllegalAccessException, InstantiationException {
                     message.room = room;
                     message.sender = sender;
                 }
-            });
-            roomMessages.forEach(messageDao::save);
+            }, MessageFactory.Trait.PERSISTED);
 
             Message notInRoomMsg = messageFactory.create(new ObjectMutator<Message>() {
                 @Override
@@ -172,8 +165,7 @@ public class MessageDaoTest extends WithApplication {
                     message.room = other;
                     message.sender = sender;
                 }
-            });
-            messageDao.save(notInRoomMsg);
+            }, MessageFactory.Trait.PERSISTED);
 
             List<Message> messages = messageDao.getMessages(room.roomId, 5, 0);
             assertEquals(numRoomMessages, messages.size());

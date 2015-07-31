@@ -55,7 +55,7 @@ public class UserServiceTest {
         when(mockSender.name).thenReturn("TestName");
         when(mockSender.facebookId).thenReturn("TestFbId");
 
-        when(privateRoomDao.findBySenderAndReceiver(anyLong(), anyLong())).thenReturn(Optional.empty());
+        when(privateRoomDao.findByRoomMembers(anyLong(), anyLong())).thenReturn(Optional.empty());
 
         doNothing().when(requestDao).save(any(Request.class));
         // TODO doNothing().when(mockActualReceiver).sendNotification(any(ChatRequestNotification.class));
@@ -79,7 +79,7 @@ public class UserServiceTest {
         when(mockSender.name).thenReturn("TestName");
         when(mockSender.facebookId).thenReturn("TestFbId");
 
-        when(privateRoomDao.findBySenderAndReceiver(anyLong(), anyLong())).thenReturn(Optional.of(new PrivateRoom()));
+        when(privateRoomDao.findByRoomMembers(anyLong(), anyLong())).thenReturn(Optional.of(new PrivateRoom()));
 
         doThrow(MethodShouldNotBeCalled.class).when(requestDao).save(any());
         // TODO doThrow(MethodShouldNotBeCalled.class).when(mockActualReceiver).sendNotification(any());

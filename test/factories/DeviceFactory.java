@@ -2,6 +2,7 @@ package factories;
 
 import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
+import daos.impl.DeviceDaoImpl;
 import models.Platform;
 import models.entities.Device;
 
@@ -24,6 +25,12 @@ public class DeviceFactory extends GenericFactory<Device> {
             @Override
             public void apply(Device device) {
                 device.platform = Platform.ios;
+            }
+        },
+        PERSISTED {
+            @Override
+            public void apply(Device device) throws IllegalAccessException, InstantiationException {
+                new DeviceDaoImpl().save(device);
             }
         }
     }

@@ -77,7 +77,7 @@ public class UserServiceTest {
         when(mockSender.name).thenReturn("TestName");
         when(mockSender.facebookId).thenReturn("TestFbId");
 
-        when(privateRoomDao.findBySenderAndReceiver(anyLong(), anyLong())).thenReturn(Optional.empty());
+        when(privateRoomDao.findByRoomMembers(anyLong(), anyLong())).thenReturn(Optional.empty());
 
         doNothing().when(requestDao).save(any(Request.class));
         doNothing().when(userService).sendNotification(refEq(mockActualReceiver), any(ChatRequestNotification.class));
@@ -98,7 +98,7 @@ public class UserServiceTest {
         when(mockSender.name).thenReturn("TestName");
         when(mockSender.facebookId).thenReturn("TestFbId");
 
-        when(privateRoomDao.findBySenderAndReceiver(anyLong(), anyLong())).thenReturn(Optional.of(new PrivateRoom()));
+        when(privateRoomDao.findByRoomMembers(anyLong(), anyLong())).thenReturn(Optional.of(new PrivateRoom()));
 
         verify(requestDao, never()).save(any());
         verify(userService, never()).sendNotification(any(), any());

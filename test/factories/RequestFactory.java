@@ -1,5 +1,6 @@
 package factories;
 
+import daos.impl.RequestDaoImpl;
 import models.entities.Request;
 
 /**
@@ -17,7 +18,7 @@ public class RequestFactory extends GenericFactory<Request> {
         WITH_RECEIVER {
             @Override
             public void apply(Request request) throws IllegalAccessException, InstantiationException {
-                request.sender = new UserFactory().create();
+                request.receiver = new UserFactory().create();
             }
         },
         WITH_SENDER_AND_RECEIVER {
@@ -25,6 +26,21 @@ public class RequestFactory extends GenericFactory<Request> {
             public void apply(Request request) throws IllegalAccessException, InstantiationException {
                 WITH_SENDER.apply(request);
                 WITH_RECEIVER.apply(request);
+            }
+        },
+        PERSISTED {
+            @Override
+            public void apply(Request request) throws IllegalAccessException, InstantiationException {
+                new RequestDaoImpl().save(request);
+            }
+        },
+        PERSISTED_WITH_SENDER_AND_RECEIVER {
+            @Override
+            public void apply(Request request) throws IllegalAccessException, InstantiationException {
+                UserFactory userFactory = new UserFactory();
+                request.sender = userFactory.create(UserFactory.Trait.PERSISTED);
+                request.receiver = userFactory.create(UserFactory.Trait.PERSISTED);
+                PERSISTED.apply(request);
             }
         }
     }

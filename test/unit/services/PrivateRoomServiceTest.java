@@ -218,9 +218,9 @@ public class PrivateRoomServiceTest {
         long receiverId = 2;
         Optional<PrivateRoom> expected = Optional.empty();
 
-        when(privateRoomDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(expected);
+        when(privateRoomDao.findByRoomMembers(senderId, receiverId)).thenReturn(expected);
 
-        Optional<PrivateRoom> actual = privateRoomService.findBySenderAndReceiver(senderId, receiverId);
+        Optional<PrivateRoom> actual = privateRoomService.findByRoomMembers(senderId, receiverId);
 
         assertSame(expected, actual);
     }

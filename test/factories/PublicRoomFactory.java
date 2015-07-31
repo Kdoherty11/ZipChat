@@ -2,6 +2,7 @@ package factories;
 
 import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
+import daos.impl.PublicRoomDaoImpl;
 import models.entities.PublicRoom;
 
 import java.util.Map;
@@ -10,6 +11,16 @@ import java.util.Map;
  * Created by kevin on 6/23/15.
  */
 public class PublicRoomFactory extends GenericFactory<PublicRoom> {
+
+    public enum Trait implements ObjectMutator<PublicRoom>{
+
+        PERSISTED {
+            @Override
+            public void apply(PublicRoom publicRoom) throws IllegalAccessException, InstantiationException {
+                new PublicRoomDaoImpl().save(publicRoom);
+            }
+        }
+    }
 
     public PublicRoomFactory() {
         super(PublicRoom.class);

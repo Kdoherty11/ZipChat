@@ -2,6 +2,7 @@ package factories;
 
 import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
+import daos.impl.AnonUserDaoImpl;
 import models.entities.AnonUser;
 
 import java.util.Map;
@@ -29,6 +30,20 @@ public class AnonUserFactory extends GenericFactory<AnonUser> {
             public void apply(AnonUser anonUser) throws IllegalAccessException, InstantiationException {
                 WITH_ACTUAL.apply(anonUser);
                 WITH_ROOM.apply(anonUser);
+            }
+        },
+        PERSISTED {
+            @Override
+            public void apply(AnonUser anonUser) throws IllegalAccessException, InstantiationException {
+                new AnonUserDaoImpl().save(anonUser);
+            }
+        },
+        PERSISTED_WITH_ACTUAL_AND_ROOM {
+            @Override
+            public void apply(AnonUser anonUser) throws IllegalAccessException, InstantiationException {
+                anonUser.room = new PublicRoomFactory().create(PublicRoomFactory.Trait.PERSISTED);
+                anonUser.actual = new UserFactory().create(UserFactory.Trait.PERSISTED);
+                PERSISTED.apply(anonUser);
             }
         }
     }

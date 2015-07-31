@@ -2,6 +2,7 @@ package factories;
 
 import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
+import daos.impl.MessageDaoImpl;
 import models.entities.Message;
 
 import java.util.Map;
@@ -34,6 +35,12 @@ public class MessageFactory extends GenericFactory<Message> {
             @Override
             public void apply(Message msg) throws InstantiationException, IllegalAccessException {
                 msg.room = new PrivateRoomFactory().create();
+            }
+        },
+        PERSISTED {
+            @Override
+            public void apply(Message message) throws IllegalAccessException, InstantiationException {
+                new MessageDaoImpl().save(message);
             }
         }
     }

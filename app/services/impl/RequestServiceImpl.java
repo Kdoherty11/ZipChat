@@ -47,7 +47,7 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
     @Override
     public String getStatus(long senderId, long receiverId) {
 
-        Optional<PrivateRoom> privateRoomOptional = privateRoomDao.findBySenderAndReceiver(senderId, receiverId);
+        Optional<PrivateRoom> privateRoomOptional = privateRoomDao.findByRoomMembers(senderId, receiverId);
 
         if (privateRoomOptional.isPresent()) {
             return Long.toString(privateRoomOptional.get().roomId);

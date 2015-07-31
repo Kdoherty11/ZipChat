@@ -13,5 +13,5 @@ import java.util.Optional;
 @ImplementedBy(PrivateRoomDaoImpl.class)
 public interface PrivateRoomDao extends GenericDao<PrivateRoom> {
     List<PrivateRoom> findByUserId(long userId);
-    Optional<PrivateRoom> findBySenderAndReceiver(long senderId, long receiverId);
+    Optional<PrivateRoom> findByRoomMembers(long senderId, long receiverId);
 }

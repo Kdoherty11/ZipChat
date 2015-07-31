@@ -63,7 +63,7 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
     }
 
     @Override
-    public Optional<PrivateRoom> findBySenderAndReceiver(long senderId, long receiverId) {
-        return privateRoomDao.findBySenderAndReceiver(senderId, receiverId);
+    public Optional<PrivateRoom> findByRoomMembers(long senderId, long receiverId) {
+        return privateRoomDao.findByRoomMembers(senderId, receiverId);
     }
 }

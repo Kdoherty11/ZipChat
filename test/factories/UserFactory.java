@@ -2,6 +2,7 @@ package factories;
 
 import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
+import daos.impl.UserDaoImpl;
 import models.entities.User;
 
 import java.util.Map;
@@ -17,6 +18,12 @@ public class UserFactory extends GenericFactory<User> {
             @Override
             public void apply(User user) throws IllegalAccessException, InstantiationException {
                 user.name = UUID.randomUUID().toString();
+            }
+        },
+        PERSISTED {
+            @Override
+            public void apply(User user) throws IllegalAccessException, InstantiationException {
+                new UserDaoImpl().save(user);
             }
         }
 

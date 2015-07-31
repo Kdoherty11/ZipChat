@@ -93,7 +93,7 @@ public class RequestServiceTest {
         long roomId = 3;
         PrivateRoom mockRoom = mock(PrivateRoom.class);
         when(mockRoom.roomId).thenReturn(roomId);
-        when(privateRoomDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.of(mockRoom));
+        when(privateRoomDao.findByRoomMembers(senderId, receiverId)).thenReturn(Optional.of(mockRoom));
         String status = requestService.getStatus(senderId, receiverId);
 
         assertEquals(status, Long.toString(roomId));
@@ -103,7 +103,7 @@ public class RequestServiceTest {
     public void getStatusNoPrivateRoomWithRequest() {
         long senderId = 1;
         long receiverId = 2;
-        when(privateRoomDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
+        when(privateRoomDao.findByRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
 
         Request mockRequest = mock(Request.class);
         Request.Status requestStatus = Request.Status.denied;
@@ -118,7 +118,7 @@ public class RequestServiceTest {
     public void getStatusNoPrivateRoomNoRequest() {
         long senderId = 1;
         long receiverId = 2;
-        when(privateRoomDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
+        when(privateRoomDao.findByRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
         when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
         String status = requestService.getStatus(senderId, receiverId);
 

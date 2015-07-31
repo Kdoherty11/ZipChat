@@ -1,11 +1,7 @@
 package unit.daos;
 
 import daos.AnonUserDao;
-import daos.PublicRoomDao;
-import daos.UserDao;
 import daos.impl.AnonUserDaoImpl;
-import daos.impl.PublicRoomDaoImpl;
-import daos.impl.UserDaoImpl;
 import factories.AnonUserFactory;
 import factories.PublicRoomFactory;
 import factories.UserFactory;
@@ -31,8 +27,6 @@ public class AnonUserDaoTest extends WithApplication {
     private AnonUserFactory anonUserFactory;
     private UserFactory userFactory;
     private PublicRoomFactory publicRoomFactory;
-    private UserDao userDao;
-    private PublicRoomDao publicRoomDao;
 
     @Before
     public void setUp() {
@@ -40,8 +34,6 @@ public class AnonUserDaoTest extends WithApplication {
         this.anonUserFactory = new AnonUserFactory();
         this.userFactory = new UserFactory();
         this.publicRoomFactory = new PublicRoomFactory();
-        this.userDao = new UserDaoImpl();
-        this.publicRoomDao = new PublicRoomDaoImpl();
     }
 
     @Test
@@ -55,10 +47,7 @@ public class AnonUserDaoTest extends WithApplication {
     @Test
     public void getAnonUserReturnsEmptyIfOnlyRoomMatches() {
         JPA.withTransaction(() -> {
-            AnonUser anonUser = anonUserFactory.create(AnonUserFactory.Trait.WITH_ACTUAL_AND_ROOM);
-            publicRoomDao.save(anonUser.room);
-            userDao.save(anonUser.actual);
-            anonUserDao.save(anonUser);
+            AnonUser anonUser = anonUserFactory.create(AnonUserFactory.Trait.PERSISTED_WITH_ACTUAL_AND_ROOM);
             User other = userFactory.create();
             other.userId = TestUtils.getUniqueId(anonUser, anonUser.actual);
             Optional<AnonUser> anonUserOptional = anonUserDao.getAnonUser(other, anonUser.room);
@@ -69,10 +58,7 @@ public class AnonUserDaoTest extends WithApplication {
     @Test
     public void getAnonUserReturnsEmptyIfOnlyActualMatches() {
         JPA.withTransaction(() -> {
-            AnonUser anonUser = anonUserFactory.create(AnonUserFactory.Trait.WITH_ACTUAL_AND_ROOM);
-            publicRoomDao.save(anonUser.room);
-            userDao.save(anonUser.actual);
-            anonUserDao.save(anonUser);
+            AnonUser anonUser = anonUserFactory.create(AnonUserFactory.Trait.PERSISTED_WITH_ACTUAL_AND_ROOM);
             PublicRoom other = publicRoomFactory.create();
             other.roomId = TestUtils.getUniqueId(anonUser.room);
 
@@ -84,10 +70,7 @@ public class AnonUserDaoTest extends WithApplication {
     @Test
     public void getAnonUserReturnsAnonUserIfRoomAndActualMatch() {
         JPA.withTransaction(() -> {
-            AnonUser anonUser = anonUserFactory.create(AnonUserFactory.Trait.WITH_ACTUAL_AND_ROOM);
-            publicRoomDao.save(anonUser.room);
-            userDao.save(anonUser.actual);
-            anonUserDao.save(anonUser);
+            AnonUser anonUser = anonUserFactory.create(AnonUserFactory.Trait.PERSISTED_WITH_ACTUAL_AND_ROOM);
             Optional<AnonUser> anonUserOptional = anonUserDao.getAnonUser(anonUser.actual, anonUser.room);
             assertTrue(anonUserOptional.isPresent());
             assertEquals(anonUser, anonUserOptional.get());
