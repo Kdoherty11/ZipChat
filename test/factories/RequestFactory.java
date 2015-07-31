@@ -28,6 +28,14 @@ public class RequestFactory extends GenericFactory<Request> {
                 WITH_RECEIVER.apply(request);
             }
         },
+        WITH_PERSISTED_SENDER_AND_RECEIVER {
+            @Override
+            public void apply(Request request) throws IllegalAccessException, InstantiationException {
+                UserFactory userFactory = new UserFactory();
+                request.sender = userFactory.create(UserFactory.Trait.PERSISTED);
+                request.receiver = userFactory.create(UserFactory.Trait.PERSISTED);
+            }
+        },
         PERSISTED {
             @Override
             public void apply(Request request) throws IllegalAccessException, InstantiationException {
@@ -37,9 +45,7 @@ public class RequestFactory extends GenericFactory<Request> {
         PERSISTED_WITH_SENDER_AND_RECEIVER {
             @Override
             public void apply(Request request) throws IllegalAccessException, InstantiationException {
-                UserFactory userFactory = new UserFactory();
-                request.sender = userFactory.create(UserFactory.Trait.PERSISTED);
-                request.receiver = userFactory.create(UserFactory.Trait.PERSISTED);
+                WITH_PERSISTED_SENDER_AND_RECEIVER.apply(request);
                 PERSISTED.apply(request);
             }
         }
