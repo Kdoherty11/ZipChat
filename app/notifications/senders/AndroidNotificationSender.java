@@ -15,7 +15,7 @@ import java.util.Map;
 @Singleton
 public class AndroidNotificationSender implements NotificationSender {
 
-    public static final String GCM_API_KEY = "AIzaSyC45QxNleXmw_Nf2L2m3bWDoLiTjpTE9wA";
+    private static final String GCM_API_KEY = "AIzaSyC45QxNleXmw_Nf2L2m3bWDoLiTjpTE9wA";
     private static final Sender GCM_SENDER = new Sender(GCM_API_KEY);
 
     private static final int GCM_RETRIES = 3;

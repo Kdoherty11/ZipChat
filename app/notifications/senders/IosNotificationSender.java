@@ -17,7 +17,7 @@ import java.util.Map;
 @Singleton
 public class IosNotificationSender implements NotificationSender {
 
-    public static final ApnsService SERVICE = APNS.newService()
+    private static final ApnsService SERVICE = APNS.newService()
             .withCert("certificates/dev.p12", "password")
             .withSandboxDestination()
             .build();

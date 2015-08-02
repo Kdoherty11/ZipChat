@@ -29,7 +29,7 @@ public class JedisServiceImpl implements JedisService {
                 jedisPool.returnBrokenResource(jedis);
                 jedis = null;
             }
-            throw new RuntimeException(e);
+            throw e;
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         } finally {
