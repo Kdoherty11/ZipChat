@@ -1,8 +1,8 @@
 package factories;
 
 import daos.impl.PrivateRoomDaoImpl;
-import models.entities.PrivateRoom;
-import models.entities.Request;
+import models.PrivateRoom;
+import models.Request;
 
 /**
  * Created by kdoherty on 7/6/15.

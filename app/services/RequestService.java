@@ -2,7 +2,7 @@ package services;
 
 import com.google.inject.ImplementedBy;
 import daos.RequestDao;
-import models.entities.Request;
+import models.Request;
 import services.impl.RequestServiceImpl;
 
 /**

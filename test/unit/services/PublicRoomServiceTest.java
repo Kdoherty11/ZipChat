@@ -5,10 +5,9 @@ import daos.PublicRoomDao;
 import daos.UserDao;
 import factories.DeviceFactory;
 import factories.UserFactory;
-import models.Platform;
-import models.entities.Device;
-import models.entities.PublicRoom;
-import models.entities.User;
+import models.Device;
+import models.PublicRoom;
+import models.User;
 import notifications.AbstractNotification;
 import org.junit.Before;
 import org.junit.Test;
@@ -106,12 +105,12 @@ public class PublicRoomServiceTest {
         allDevices.addAll(user2Devices);
 
         List<String> androidRegIds = allDevices.stream()
-                .filter(device -> device.platform == Platform.android)
+                .filter(device -> device.platform == Device.Platform.android)
                 .map(device -> device.regId)
                 .collect(Collectors.toList());
 
         List<String> iosRegIds = allDevices.stream()
-                .filter(device -> device.platform == Platform.ios)
+                .filter(device -> device.platform == Device.Platform.ios)
                 .map(device -> device.regId)
                 .collect(Collectors.toList());
 

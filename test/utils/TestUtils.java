@@ -1,14 +1,8 @@
 package utils;
 
-import play.Application;
-import play.ApplicationLoader;
-import play.Environment;
-import play.Mode;
-import play.inject.guice.GuiceApplicationLoader;
-
 import javax.persistence.Id;
-import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -79,5 +73,14 @@ public class TestUtils {
         Field f = clazz.getDeclaredField(fieldName); //NoSuchFieldException
         f.setAccessible(true);
         return f.get(null);
+    }
+
+    public static void setPrivateStaticFinalField(Class<?> clazz, String fieldName, Object value) throws IllegalAccessException, NoSuchFieldException {
+        Field field = clazz.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+        field.set(null, value);
     }
 }

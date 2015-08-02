@@ -1,9 +1,9 @@
 package daos.impl;
 
 import daos.AnonUserDao;
-import models.entities.AnonUser;
-import models.entities.PublicRoom;
-import models.entities.User;
+import models.AnonUser;
+import models.PublicRoom;
+import models.User;
 import play.db.jpa.JPA;
 
 import javax.persistence.TypedQuery;

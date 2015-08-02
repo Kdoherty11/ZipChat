@@ -5,11 +5,10 @@ import com.google.inject.Inject;
 import daos.PrivateRoomDao;
 import daos.RequestDao;
 import daos.UserDao;
-import models.Platform;
-import models.entities.AbstractUser;
-import models.entities.Device;
-import models.entities.Request;
-import models.entities.User;
+import models.AbstractUser;
+import models.Device;
+import models.Request;
+import models.User;
 import notifications.AbstractNotification;
 import notifications.ChatRequestNotification;
 import play.libs.ws.WSClient;
@@ -62,7 +61,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         List<String> iosRegIds = new ArrayList<>();
 
         for (Device info : devices) {
-            if (info.platform == Platform.android) {
+            if (info.platform == Device.Platform.android) {
                 androidRegIds.add(info.regId);
             } else {
                 iosRegIds.add(info.regId);

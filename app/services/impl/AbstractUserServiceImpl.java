@@ -2,7 +2,7 @@ package services.impl;
 
 import com.google.inject.Inject;
 import daos.AbstractUserDao;
-import models.entities.AbstractUser;
+import models.AbstractUser;
 import services.AbstractUserService;
 import services.AnonUserService;
 import services.UserService;

@@ -2,9 +2,9 @@ package services;
 
 import com.google.inject.ImplementedBy;
 import daos.AnonUserDao;
-import models.entities.AnonUser;
-import models.entities.PublicRoom;
-import models.entities.User;
+import models.AnonUser;
+import models.PublicRoom;
+import models.User;
 import services.impl.AnonUserServiceImpl;
 
 /**

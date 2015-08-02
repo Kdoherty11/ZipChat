@@ -2,8 +2,8 @@ package unit.controllers;
 
 import controllers.BaseController;
 import controllers.MessagesController;
-import models.entities.Message;
-import models.entities.User;
+import models.Message;
+import models.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

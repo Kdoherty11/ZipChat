@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.primitives.Longs;
 import com.google.inject.Inject;
 import io.jsonwebtoken.*;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 import play.Logger;
 import play.Play;
 import play.mvc.Http;

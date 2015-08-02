@@ -1,9 +1,8 @@
 package unit.models;
 
 import integration.AbstractTest;
-import models.Platform;
-import models.entities.Device;
-import models.entities.User;
+import models.Device;
+import models.User;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -15,12 +14,12 @@ public class DeviceTest extends AbstractTest {
 
     @Test(expected = NullPointerException.class)
     public void constructorNullUser() {
-        new Device(null, "regId", Platform.android);
+        new Device(null, "regId", Device.Platform.android);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructorNullRegId() {
-        new Device(new User(), null, Platform.android);
+        new Device(new User(), null, Device.Platform.android);
     }
 
     @Test(expected = NullPointerException.class)

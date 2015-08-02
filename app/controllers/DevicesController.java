@@ -2,9 +2,8 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import models.Platform;
-import models.entities.Device;
-import models.entities.User;
+import models.Device;
+import models.User;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Result;
@@ -54,7 +53,7 @@ public class DevicesController extends BaseController {
         DataValidator validator = new DataValidator(
                 new FieldValidator<>(userIdKey, userIdStr, Validators.required(), Validators.stringToLong()),
                 new FieldValidator<>(regIdKey, regId, Validators.required()),
-                new FieldValidator<>(platformKey, platform, Validators.required(), Validators.enumValue(Platform.class))
+                new FieldValidator<>(platformKey, platform, Validators.required(), Validators.enumValue(Device.Platform.class))
         );
 
         if (validator.hasErrors()) {
@@ -70,7 +69,7 @@ public class DevicesController extends BaseController {
         Optional<User> userOptional = userService.findById(userId);
 
         if (userOptional.isPresent()) {
-            Device device = new Device(userOptional.get(), regId, Platform.valueOf(platform));
+            Device device = new Device(userOptional.get(), regId, Device.Platform.valueOf(platform));
             deviceService.save(device);
             ObjectNode jsonResponse = Json.newObject().put("deviceId", device.deviceId);
             return created(jsonResponse);

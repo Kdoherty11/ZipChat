@@ -2,20 +2,15 @@ package unit.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import controllers.UsersController;
-import models.entities.User;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
+import models.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -33,11 +28,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
-import static play.libs.Json.fromJson;
-import static play.mvc.Http.Status.*;
-import static play.test.Helpers.contentAsString;
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.start;
+import static play.mvc.Http.Status.BAD_REQUEST;
+import static play.mvc.Http.Status.CREATED;
+import static play.mvc.Http.Status.NOT_FOUND;
+import static play.mvc.Http.Status.OK;
+import static play.test.Helpers.*;
 
 /**
  * Created by kdoherty on 7/28/15.

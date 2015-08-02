@@ -3,7 +3,7 @@ package unit.daos;
 import daos.GenericDao;
 import daos.impl.GenericDaoImpl;
 import factories.UserFactory;
-import models.entities.User;
+import models.User;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.jpa.JPA;

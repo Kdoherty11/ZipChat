@@ -2,7 +2,7 @@ package services;
 
 import com.google.inject.ImplementedBy;
 import daos.PrivateRoomDao;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 import services.impl.PrivateRoomServiceImpl;
 
 /**

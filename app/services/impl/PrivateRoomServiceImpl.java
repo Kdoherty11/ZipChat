@@ -3,7 +3,7 @@ package services.impl;
 import com.google.inject.Inject;
 import daos.PrivateRoomDao;
 import daos.RequestDao;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 import services.PrivateRoomService;
 
 import java.util.List;

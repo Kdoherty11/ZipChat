@@ -2,7 +2,7 @@ package services.impl;
 
 import com.google.inject.Inject;
 import daos.AbstractRoomDao;
-import models.entities.*;
+import models.*;
 import notifications.MessageNotification;
 import services.AbstractRoomService;
 import services.PublicRoomService;

@@ -1,7 +1,7 @@
 package notifications;
 
 import com.google.common.collect.ImmutableMap;
-import models.entities.Request;
+import models.Request;
 
 /**
  * Created by kevin on 6/12/15.

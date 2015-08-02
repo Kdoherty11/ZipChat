@@ -1,7 +1,7 @@
 package unit.models;
 
 import factories.PrivateRoomFactory;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 

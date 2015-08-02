@@ -3,7 +3,7 @@ package factories;
 import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
 import daos.impl.PublicRoomDaoImpl;
-import models.entities.PublicRoom;
+import models.PublicRoom;
 
 import java.util.Map;
 

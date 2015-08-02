@@ -4,9 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import factories.IncludeEntity;
 import factories.ObjectFactory;
 import integration.AbstractTest;
-import models.Platform;
-import models.entities.Device;
-import models.entities.User;
+import models.Device;
+import models.User;
 import notifications.AbstractNotification;
 import org.junit.After;
 import org.junit.Before;
@@ -65,7 +64,7 @@ public class UserTest extends AbstractTest {
 
     @Test
     public void sendSingleAndroidNotification() throws Throwable {
-        User user = userFactory.create(ImmutableMap.of("devices", new IncludeEntity<>(Device.class, 1, TestUtils.mapOf("platform", Platform.android))));
+        User user = userFactory.create(ImmutableMap.of("devices", new IncludeEntity<>(Device.class, 1, TestUtils.mapOf("platform", Device.Platform.android))));
 
         AbstractNotification mockNotification = mock(AbstractNotification.class);
         // TODO user.sendNotification(mockNotification);
@@ -75,7 +74,7 @@ public class UserTest extends AbstractTest {
 
     @Test
     public void sendSingleIosNotification() throws Throwable {
-        User user = userFactory.create(ImmutableMap.of("devices", new IncludeEntity<>(Device.class, 1, TestUtils.mapOf("platform", Platform.ios))));
+        User user = userFactory.create(ImmutableMap.of("devices", new IncludeEntity<>(Device.class, 1, TestUtils.mapOf("platform", Device.Platform.ios))));
 
         AbstractNotification mockNotification = mock(AbstractNotification.class);
         // TODO user.sendNotification(mockNotification);
@@ -88,8 +87,8 @@ public class UserTest extends AbstractTest {
         User user = userFactory.create();
 
         ObjectFactory<Device> deviceFactory = new ObjectFactory<>(Device.class);
-        List<Device> androidDevices = deviceFactory.createList(3, ImmutableMap.of("platform", Platform.android, "user", user));
-        List<Device> iosDevices = deviceFactory.createList(2, ImmutableMap.of("platform", Platform.ios, "user", user));
+        List<Device> androidDevices = deviceFactory.createList(3, ImmutableMap.of("platform", Device.Platform.android, "user", user));
+        List<Device> iosDevices = deviceFactory.createList(2, ImmutableMap.of("platform", Device.Platform.ios, "user", user));
         List<Device> allDevices = new ArrayList<>();
         allDevices.addAll(androidDevices);
         allDevices.addAll(iosDevices);

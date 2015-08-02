@@ -1,7 +1,7 @@
 package daos.impl;
 
 import daos.RequestDao;
-import models.entities.Request;
+import models.Request;
 import play.db.jpa.JPA;
 
 import javax.persistence.TypedQuery;

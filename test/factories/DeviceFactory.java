@@ -3,8 +3,7 @@ package factories;
 import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
 import daos.impl.DeviceDaoImpl;
-import models.Platform;
-import models.entities.Device;
+import models.Device;
 
 import java.util.Map;
 import java.util.Random;
@@ -18,13 +17,13 @@ public class DeviceFactory extends GenericFactory<Device> {
         ANDROID {
             @Override
             public void apply(Device device) {
-                device.platform = Platform.android;
+                device.platform = Device.Platform.android;
             }
         },
         IOS {
             @Override
             public void apply(Device device) {
-                device.platform = Platform.ios;
+                device.platform = Device.Platform.ios;
             }
         },
         PERSISTED {
@@ -43,7 +42,7 @@ public class DeviceFactory extends GenericFactory<Device> {
     Map<String, Object> getDefaultProperties() {
         Faker faker = new Faker();
 
-        Platform[] platforms = Platform.class.getEnumConstants();
+        Device.Platform[] platforms = Device.Platform.class.getEnumConstants();
         return new ImmutableMap.Builder<String, Object>()
                 .put("regId", faker.lorem().fixedString(20))
                 .put("platform", platforms[new Random().nextInt(platforms.length)])

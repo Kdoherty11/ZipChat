@@ -2,9 +2,8 @@ package unit.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import controllers.DevicesController;
-import models.Platform;
-import models.entities.Device;
-import models.entities.User;
+import models.Device;
+import models.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,7 +85,7 @@ public class DevicesControllerTest {
     public void createDeviceIsSecured() {
         long userId = 1;
         when(securityService.isUnauthorized(userId)).thenReturn(true);
-        Map<String, String> requestBody = ImmutableMap.of("userId", Long.toString(userId), "regId", "myRegId", "platform", Platform.android.name());
+        Map<String, String> requestBody = ImmutableMap.of("userId", Long.toString(userId), "regId", "myRegId", "platform", Device.Platform.android.name());
         Http.RequestBuilder builder = new Http.RequestBuilder().bodyForm(requestBody);
 
         Result result = helpers.invokeWithContext(builder, controller::createDevice);
@@ -99,7 +98,7 @@ public class DevicesControllerTest {
     public void createDeviceWithoutRegId() {
         long userId = 1;
         when(securityService.isUnauthorized(userId)).thenReturn(false);
-        Map<String, String> requestBody = ImmutableMap.of("userId", Long.toString(userId), "platform", Platform.android.name());
+        Map<String, String> requestBody = ImmutableMap.of("userId", Long.toString(userId), "platform", Device.Platform.android.name());
         Http.RequestBuilder builder = new Http.RequestBuilder().bodyForm(requestBody);
 
         Result result = helpers.invokeWithContext(builder, controller::createDevice);
@@ -133,7 +132,7 @@ public class DevicesControllerTest {
         when(securityService.isUnauthorized(userId)).thenReturn(false);
         when(userService.findById(userId)).thenReturn(Optional.empty());
         Map<String, String> requestBody = ImmutableMap.of("userId", Long.toString(userId), "regId", "myRegId",
-                "platform", Platform.android.name());
+                "platform", Device.Platform.android.name());
         Http.RequestBuilder builder = new Http.RequestBuilder().bodyForm(requestBody);
 
         Result result = helpers.invokeWithContext(builder, controller::createDevice);
@@ -149,7 +148,7 @@ public class DevicesControllerTest {
         when(securityService.isUnauthorized(userId)).thenReturn(false);
         User user = mock(User.class);
         String regId = "myRegId";
-        Platform platform = Platform.android;
+        Device.Platform platform = Device.Platform.android;
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         Map<String, String> requestBody = ImmutableMap.of("userId", Long.toString(userId), "regId", regId,
                 "platform", platform.name());
@@ -168,7 +167,7 @@ public class DevicesControllerTest {
         when(securityService.isUnauthorized(userId)).thenReturn(false);
         User user = mock(User.class);
         String regId = "myRegId";
-        Platform platform = Platform.android;
+        Device.Platform platform = Device.Platform.android;
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         Map<String, String> requestBody = ImmutableMap.of("userId", Long.toString(userId), "regId", regId,
                 "platform", platform.name());
@@ -214,7 +213,7 @@ public class DevicesControllerTest {
         long userId = 2;
         User user = mock(User.class);
         when(user.userId).thenReturn(userId);
-        Device device = new Device(user, "regId", Platform.android);
+        Device device = new Device(user, "regId", Device.Platform.android);
         when(deviceService.findById(deviceId)).thenReturn(Optional.of(device));
         when(securityService.isUnauthorized(userId)).thenReturn(false);
 
@@ -232,7 +231,7 @@ public class DevicesControllerTest {
         when(user.userId).thenReturn(userId);
         String regId = "regId";
 
-        Device device = new Device(user, regId, Platform.android);
+        Device device = new Device(user, regId, Device.Platform.android);
         when(deviceService.findById(deviceId)).thenReturn(Optional.of(device));
         when(securityService.isUnauthorized(userId)).thenReturn(false);
 
@@ -247,7 +246,7 @@ public class DevicesControllerTest {
         long userId = 2;
         User user = mock(User.class);
         when(user.userId).thenReturn(userId);
-        Device device = new Device(user, "regId", Platform.android);
+        Device device = new Device(user, "regId", Device.Platform.android);
         when(deviceService.findById(deviceId)).thenReturn(Optional.of(device));
         when(securityService.isUnauthorized(userId)).thenReturn(false);
 

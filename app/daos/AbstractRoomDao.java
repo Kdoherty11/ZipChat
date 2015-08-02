@@ -2,7 +2,7 @@ package daos;
 
 import com.google.inject.ImplementedBy;
 import daos.impl.AbstractRoomDaoImpl;
-import models.entities.AbstractRoom;
+import models.AbstractRoom;
 
 /**
  * Created by kdoherty on 7/4/15.

@@ -3,8 +3,8 @@ package services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.ImplementedBy;
 import daos.UserDao;
-import models.entities.AbstractUser;
-import models.entities.User;
+import models.AbstractUser;
+import models.User;
 import notifications.AbstractNotification;
 import services.impl.UserServiceImpl;
 

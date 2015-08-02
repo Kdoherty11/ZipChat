@@ -1,9 +1,9 @@
 package notifications;
 
 import com.google.common.collect.ImmutableMap;
-import models.entities.AbstractRoom;
-import models.entities.PrivateRoom;
-import models.entities.PublicRoom;
+import models.AbstractRoom;
+import models.PrivateRoom;
+import models.PublicRoom;
 
 import java.util.Map;
 

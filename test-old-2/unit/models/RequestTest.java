@@ -2,7 +2,7 @@ package unit.models;
 
 import factories.ObjectFactory;
 import integration.AbstractTest;
-import models.entities.Request;
+import models.Request;
 import org.junit.Ignore;
 import org.junit.Test;
 import play.Logger;

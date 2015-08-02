@@ -3,7 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import models.entities.User;
+import models.User;
 import play.Logger;
 import play.db.jpa.Transactional;
 import play.libs.Json;

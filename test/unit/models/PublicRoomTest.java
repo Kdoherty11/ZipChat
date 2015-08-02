@@ -1,7 +1,7 @@
 package unit.models;
 
 import factories.PublicRoomFactory;
-import models.entities.PublicRoom;
+import models.PublicRoom;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 

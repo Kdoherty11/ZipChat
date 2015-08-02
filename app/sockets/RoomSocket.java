@@ -1,4 +1,4 @@
-package models.sockets;
+package sockets;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -6,8 +6,8 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import models.entities.*;
-import models.sockets.events.*;
+import com.google.common.base.MoreObjects;
+import models.*;
 import play.Logger;
 import play.api.Play;
 import play.api.inject.Injector;
@@ -16,11 +16,11 @@ import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.duration.Duration;
 import services.AbstractRoomService;
 import services.AnonUserService;
+import services.JedisService;
 import services.MessageService;
 import utils.DbUtils;
 
@@ -35,7 +35,6 @@ import static utils.DbUtils.findExistingEntityById;
 
 public class RoomSocket extends UntypedActor {
 
-
     public static final String CHANNEL = "messages";
 
     public static final String OK_JOIN_RESULT = "OK";
@@ -49,7 +48,7 @@ public class RoomSocket extends UntypedActor {
     // Key is roomId, value is the users connected to that room
     static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new ConcurrentHashMap<>();
 
-    static final Map<Long, SocketKeepAlive> clientHeartbeats = new ConcurrentHashMap<>();
+    static final Map<Long, KeepAlive> clientHeartbeats = new ConcurrentHashMap<>();
 
     static {
         //subscribe to the message channel
@@ -57,8 +56,8 @@ public class RoomSocket extends UntypedActor {
         actorSystem.scheduler().scheduleOnce(
                 Duration.create(10, TimeUnit.MILLISECONDS),
                 () -> {
-                    JedisPool jedisPool = Play.current().injector().instanceOf(JedisPool.class);
-                    useJedisResource(jedisPool, jedis -> jedis.subscribe(new MessageListener(), CHANNEL));
+                    JedisService service = Play.current().injector().instanceOf(JedisService.class);
+                    service.useJedisResource(jedis -> jedis.subscribe(new MessageListener(), CHANNEL));
                 },
                 actorSystem.dispatcher()
         );
@@ -72,7 +71,7 @@ public class RoomSocket extends UntypedActor {
 
     private final MessageService messageService;
 
-    private final JedisPool jedisPool;
+    private final JedisService jedisService;
 
     public RoomSocket() {
         // Override abstract module instead
@@ -80,7 +79,7 @@ public class RoomSocket extends UntypedActor {
         this.abstractRoomService = injector.instanceOf(AbstractRoomService.class);
         this.anonUserService = injector.instanceOf(AnonUserService.class);
         this.messageService = injector.instanceOf(MessageService.class);
-        this.jedisPool = injector.instanceOf(JedisPool.class);
+        this.jedisService = injector.instanceOf(JedisService.class);
     }
 
     public static Optional<WebSocket.Out<JsonNode>> getWebSocket(long roomId, long userId) {
@@ -94,7 +93,7 @@ public class RoomSocket extends UntypedActor {
 
     public static List<User> getRoomMembers(long roomId, Jedis j) {
         return getUserIdsInRoomStream(roomId, j)
-                .filter(id -> id != SocketKeepAlive.USER_ID)
+                .filter(id -> id != KeepAlive.USER_ID)
                 .map(id -> DbUtils.findExistingEntityById(User.class, id))
                 .collect(Collectors.<User>toList());
     }
@@ -119,14 +118,15 @@ public class RoomSocket extends UntypedActor {
         logV("onReceive: " + message);
 
         if (message instanceof Join) {
+
             try {
-                useJedisResource(jedisPool, jedis -> receiveJoin((Join) message, jedis));
+                jedisService.useJedisResource(jedis -> receiveJoin((Join) message, jedis));
             } catch (Exception e) {
                 Logger.error("Error receiving join", e);
             }
         } else if (message instanceof Quit) {
             try {
-                useJedisResource(jedisPool, jedis -> receiveQuit((Quit) message, jedis));
+                jedisService.useJedisResource(jedis -> receiveQuit((Quit) message, jedis));
             } catch (Exception e) {
                 Logger.error("Error receiving quit", e);
             }
@@ -141,7 +141,7 @@ public class RoomSocket extends UntypedActor {
         } else if (message instanceof Talk) {
             JPA.withTransaction(() -> {
                 try {
-                    useJedisResource(jedisPool, jedis -> receiveTalk((Talk) message, jedis));
+                    jedisService.useJedisResource(jedis -> receiveTalk((Talk) message, jedis));
                 } catch (Exception e) {
                     Logger.error("Error receiving talk", e);
                 }
@@ -195,7 +195,7 @@ public class RoomSocket extends UntypedActor {
         long userId = talk.getUserId();
         String messageText = talk.getText();
 
-        if (userId == SocketKeepAlive.USER_ID) {
+        if (userId == KeepAlive.USER_ID) {
             notifyRoom(roomId, Talk.TYPE, userId, messageText);
             return;
         }
@@ -245,22 +245,6 @@ public class RoomSocket extends UntypedActor {
         return message;
     }
 
-    private interface JedisCb {
-        public void useResource(Jedis jedis);
-    }
-
-    public static void useJedisResource(JedisPool jedisPool, JedisCb jedisCb) {
-        final Jedis redisResource = jedisPool.getResource();
-        try {
-            jedisCb.useResource(redisResource);
-        } catch (Exception e) {
-            jedisPool.returnBrokenResource(redisResource);
-            throw new RuntimeException(e);
-        } finally {
-            jedisPool.returnResource(redisResource);
-        }
-    }
-
     private void receiveJoin(Join join, Jedis jedis) {
         Logger.debug("receiveJoin: " + join);
         long roomId = join.getRoomId();
@@ -290,8 +274,8 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void addKeepAlive(long roomId) {
-        SocketKeepAlive socketKeepAlive = new SocketKeepAlive(roomId, defaultRoom);
-        clientHeartbeats.put(roomId, socketKeepAlive);
+        KeepAlive keepAlive = new KeepAlive(roomId, defaultRoom);
+        clientHeartbeats.put(roomId, keepAlive);
     }
 
     private void receiveQuit(Quit quit, Jedis jedis) {
@@ -312,10 +296,10 @@ public class RoomSocket extends UntypedActor {
         // For the robot
         if (roomMembers.size() == 1) {
 
-            if (roomMembers.contains(String.valueOf(SocketKeepAlive.USER_ID))) {
+            if (roomMembers.contains(String.valueOf(KeepAlive.USER_ID))) {
                 Logger.debug("Removing robot from room " + roomId);
 
-                jedis.srem(String.valueOf(roomId), String.valueOf(SocketKeepAlive.USER_ID));
+                jedis.srem(String.valueOf(roomId), String.valueOf(KeepAlive.USER_ID));
 
                 rooms.remove(roomId);
 
@@ -367,7 +351,7 @@ public class RoomSocket extends UntypedActor {
         message.put(MESSAGE_KEY, text);
 
         // If its not a talk or keepalive add the user to the message
-        if (!Talk.TYPE.equals(kind) && userId != SocketKeepAlive.USER_ID) {
+        if (!Talk.TYPE.equals(kind) && userId != KeepAlive.USER_ID) {
             User sender = findExistingEntityById(User.class, userId);
             message.set(USER_KEY, toJson(sender));
         }
@@ -420,7 +404,7 @@ public class RoomSocket extends UntypedActor {
                 default:
                     throw new RuntimeException("Message type " + messageType + " is not supported");
             }
-            RoomSocket.remoteMessage(message);
+            remoteMessage(message);
         }
 
         @Override
@@ -450,5 +434,251 @@ public class RoomSocket extends UntypedActor {
             Logger.debug(msg);
         }
     }
+
+    public static class Join {
+
+        public static final String TYPE = "join";
+
+        private final long roomId;
+        private final long userId;
+        private final WebSocket.Out<JsonNode> channel;
+
+        // For JSON serialization
+        final String type = TYPE;
+
+        public Join(long roomId, long userId, WebSocket.Out<JsonNode> channel) {
+            this.roomId = roomId;
+            this.userId = userId;
+            this.channel = channel;
+        }
+
+        public long getRoomId() {
+            return roomId;
+        }
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public WebSocket.Out<JsonNode> getChannel() {
+            return channel;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("roomId", roomId)
+                    .add("userId", userId)
+                    .toString();
+        }
+    }
+
+    public static class RosterNotification {
+
+        public static final String TYPE = "rosterNotify";
+
+        final long roomId;
+        final long userId;
+        final String direction;
+
+        // For JSON serialization
+        final String type = TYPE;
+
+        public RosterNotification(long roomId, long userId, String direction) {
+            this.roomId = roomId;
+            this.userId = userId;
+            this.direction = direction;
+        }
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public String getDirection() {
+            return direction;
+        }
+
+        public long getRoomId() {
+            return roomId;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("roomId", roomId)
+                    .add("userId", userId)
+                    .add("direction", direction)
+                    .toString();
+        }
+    }
+
+    public static class Talk {
+
+        public static final String TYPE = "talk";
+
+        final long roomId;
+        final long userId;
+        final String text;
+        final boolean isAnon;
+
+        // For JSON serialization
+        final String type = TYPE;
+
+        public Talk(long roomId, long userId, String text, boolean isAnon) {
+            this.roomId = roomId;
+            this.userId = userId;
+            this.text = text;
+            this.isAnon = isAnon;
+        }
+
+        public Talk(long roomId, long userId, String text) {
+            this(roomId, userId, text, false);
+        }
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public long getRoomId() {
+            return roomId;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public boolean isAnon() {
+            return isAnon;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("roomId", roomId)
+                    .add("userId", userId)
+                    .add("text", text)
+                    .add("isAnon", isAnon)
+                    .toString();
+        }
+    }
+
+    public static class FavoriteNotification {
+
+        public static final String TYPE = "FavoriteNotification";
+
+        public enum Action {
+
+            ADD("favorite"),
+            REMOVE("removeFavorite");
+
+            private String type;
+
+            Action(String type) {
+                this.type = type;
+            }
+
+            public String getType() {
+                return type;
+            }
+
+            @Override
+            public String toString() {
+                return name().toLowerCase();
+            }
+        }
+
+        private long messageId;
+        private long userId;
+        private Action action;
+
+        // For JSON serialization
+        final String type = TYPE;
+
+        public FavoriteNotification(long userId, long messageId, Action action) {
+            this.userId = userId;
+            this.messageId = messageId;
+            this.action = action;
+        }
+
+        public FavoriteNotification(long userId, long messageId, String actionString) {
+            this(userId, messageId, Action.valueOf(actionString.toUpperCase()));
+        }
+
+        public long getMessageId() {
+            return messageId;
+        }
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public Action getAction() {
+            return action;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("messageId", messageId)
+                    .add("userId", userId)
+                    .add("action", action)
+                    .add("type", type)
+                    .toString();
+        }
+    }
+
+    public static class Quit {
+
+        public static final String TYPE = "quit";
+
+        private final long roomId;
+        private final long userId;
+
+        // For JSON serialization
+        final String type = TYPE;
+
+        public Quit(long roomId, long userId) {
+            this.roomId = roomId;
+            this.userId = userId;
+        }
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public long getRoomId() {
+            return roomId;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("roomId", roomId)
+                    .add("userId", userId)
+                    .toString();
+        }
+
+    }
+
 
 }

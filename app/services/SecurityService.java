@@ -1,7 +1,7 @@
 package services;
 
 import com.google.inject.ImplementedBy;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 import services.impl.SecurityServiceImpl;
 
 import java.util.Optional;

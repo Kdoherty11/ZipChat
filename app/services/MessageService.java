@@ -2,8 +2,8 @@ package services;
 
 import com.google.inject.ImplementedBy;
 import daos.MessageDao;
-import models.entities.Message;
-import models.entities.User;
+import models.Message;
+import models.User;
 import services.impl.MessageServiceImpl;
 
 /**

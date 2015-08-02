@@ -1,5 +1,6 @@
 package integration;
 
+import models.*;
 import models.entities.*;
 import org.junit.After;
 import org.junit.Before;

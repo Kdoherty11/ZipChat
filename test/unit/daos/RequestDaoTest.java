@@ -4,7 +4,7 @@ import daos.RequestDao;
 import daos.impl.RequestDaoImpl;
 import factories.PropOverride;
 import factories.RequestFactory;
-import models.entities.Request;
+import models.Request;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.jpa.JPA;

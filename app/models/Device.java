@@ -1,12 +1,10 @@
-package models.entities;
+package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import models.Platform;
 import org.hibernate.annotations.GenericGenerator;
-import play.Logger;
 import play.data.validation.Constraints;
 
 import javax.persistence.*;
@@ -17,6 +15,11 @@ import javax.persistence.*;
 @Entity
 @Table(name = "devices")
 public class Device {
+
+    public enum Platform {
+        android,
+        ios
+    }
 
     @Id
     @GenericGenerator(name = "devices_gen", strategy = "sequence", parameters = {

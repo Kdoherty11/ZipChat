@@ -1,7 +1,7 @@
 package factories;
 
 import daos.impl.RequestDaoImpl;
-import models.entities.Request;
+import models.Request;
 
 /**
  * Created by kdoherty on 7/30/15.

@@ -2,8 +2,8 @@ package services.impl;
 
 import com.google.inject.Inject;
 import daos.MessageDao;
-import models.entities.Message;
-import models.entities.User;
+import models.Message;
+import models.User;
 import notifications.MessageFavoritedNotification;
 import services.MessageService;
 import services.UserService;

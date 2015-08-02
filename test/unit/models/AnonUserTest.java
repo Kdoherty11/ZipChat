@@ -1,7 +1,7 @@
 package unit.models;
 
 import factories.AnonUserFactory;
-import models.entities.AnonUser;
+import models.AnonUser;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 

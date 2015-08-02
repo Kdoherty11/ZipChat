@@ -1,7 +1,7 @@
 package unit.models;
 
 import factories.DeviceFactory;
-import models.entities.Device;
+import models.Device;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;

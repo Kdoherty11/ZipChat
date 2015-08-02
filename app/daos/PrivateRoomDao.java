@@ -2,7 +2,7 @@ package daos;
 
 import com.google.inject.ImplementedBy;
 import daos.impl.PrivateRoomDaoImpl;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 
 import java.util.List;
 import java.util.Optional;

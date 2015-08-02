@@ -1,10 +1,8 @@
-package models.sockets;
+package sockets;
 
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import com.fasterxml.jackson.databind.JsonNode;
-import models.sockets.events.Join;
-import models.sockets.events.Talk;
 import play.Logger;
 import play.libs.Akka;
 import play.libs.Json;
@@ -13,7 +11,7 @@ import scala.concurrent.duration.Duration;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-public class SocketKeepAlive {
+public class KeepAlive {
 
     public static final long USER_ID = -10;
     public static final String HEARTBEAT_MESSAGE = "Beat";
@@ -21,7 +19,7 @@ public class SocketKeepAlive {
     Cancellable cancellable;
     long roomId;
 
-    public SocketKeepAlive(long roomId, ActorRef chatRoom) {
+    public KeepAlive(long roomId, ActorRef chatRoom) {
 
         // Create a Fake socket out for the keep alive that log events to the console.
         WebSocket.Out<JsonNode> robotChannel = new WebSocket.Out<JsonNode>() {
@@ -35,7 +33,7 @@ public class SocketKeepAlive {
         };
 
         // Join the room
-        chatRoom.tell(new Join(roomId, USER_ID, robotChannel), null);
+        chatRoom.tell(new RoomSocket.Join(roomId, USER_ID, robotChannel), null);
 
         this.roomId = roomId;
 
@@ -44,7 +42,7 @@ public class SocketKeepAlive {
                 Duration.create(30, SECONDS),
                 Duration.create(30, SECONDS),
                 chatRoom,
-                new Talk(roomId, USER_ID, HEARTBEAT_MESSAGE),
+                new RoomSocket.Talk(roomId, USER_ID, HEARTBEAT_MESSAGE),
                 Akka.system().dispatcher(),
                 /** sender **/ null
         );

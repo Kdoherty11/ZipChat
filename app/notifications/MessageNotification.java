@@ -2,7 +2,7 @@ package notifications;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import models.entities.Message;
+import models.Message;
 
 /**
  * Created by kevin on 6/11/15.

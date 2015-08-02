@@ -2,7 +2,7 @@ package daos;
 
 import com.google.inject.ImplementedBy;
 import daos.impl.DeviceDaoImpl;
-import models.entities.Device;
+import models.Device;
 
 /**
  * Created by kdoherty on 6/30/15.

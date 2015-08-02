@@ -1,7 +1,7 @@
 package controllers;
 
 import com.google.inject.Inject;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;

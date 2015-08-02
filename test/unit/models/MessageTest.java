@@ -1,9 +1,9 @@
 package unit.models;
 
 import factories.MessageFactory;
-import models.entities.Message;
-import models.entities.PublicRoom;
-import models.entities.User;
+import models.Message;
+import models.PublicRoom;
+import models.User;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;

@@ -2,7 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;

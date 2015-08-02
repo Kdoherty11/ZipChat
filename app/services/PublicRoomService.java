@@ -2,8 +2,8 @@ package services;
 
 import com.google.inject.ImplementedBy;
 import daos.PublicRoomDao;
-import models.entities.PublicRoom;
-import models.entities.User;
+import models.PublicRoom;
+import models.User;
 import notifications.AbstractNotification;
 import services.impl.PublicRoomServiceImpl;
 

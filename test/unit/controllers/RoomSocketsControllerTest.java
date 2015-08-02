@@ -2,7 +2,7 @@ package unit.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.RoomSocketsController;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

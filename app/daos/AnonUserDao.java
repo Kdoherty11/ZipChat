@@ -2,9 +2,9 @@ package daos;
 
 import com.google.inject.ImplementedBy;
 import daos.impl.AnonUserDaoImpl;
-import models.entities.AnonUser;
-import models.entities.PublicRoom;
-import models.entities.User;
+import models.AnonUser;
+import models.PublicRoom;
+import models.User;
 
 import java.util.Optional;
 

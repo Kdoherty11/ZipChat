@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import factories.IncludeEntity;
 import factories.ObjectFactory;
 import integration.AbstractTest;
-import models.Platform;
+import models.*;
 import models.entities.*;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,8 +51,8 @@ public class FactoryTest extends AbstractTest {
         User user = userFactory.create();
 
         ObjectFactory<Device> deviceFactory = new ObjectFactory<>(Device.class);
-        List<Device> androidDevices = deviceFactory.createList(3, ImmutableMap.of("platform", Platform.android, "user", user));
-        List<Device> iosDevices = deviceFactory.createList(2, ImmutableMap.of("platform", Platform.ios, "user", user));
+        List<Device> androidDevices = deviceFactory.createList(3, ImmutableMap.of("platform", Device.Platform.android, "user", user));
+        List<Device> iosDevices = deviceFactory.createList(2, ImmutableMap.of("platform", Device.Platform.ios, "user", user));
         List<Device> allDevices = new ArrayList<>();
         allDevices.addAll(androidDevices);
         allDevices.addAll(iosDevices);

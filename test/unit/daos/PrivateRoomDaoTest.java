@@ -4,7 +4,7 @@ import daos.PrivateRoomDao;
 import daos.impl.PrivateRoomDaoImpl;
 import factories.PrivateRoomFactory;
 import factories.PropOverride;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.jpa.JPA;

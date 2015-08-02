@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import daos.AnonUserDao;
-import models.entities.AnonUser;
-import models.entities.PublicRoom;
-import models.entities.User;
+import models.AnonUser;
+import models.PublicRoom;
+import models.User;
 import services.AnonUserService;
 
 import java.util.HashSet;

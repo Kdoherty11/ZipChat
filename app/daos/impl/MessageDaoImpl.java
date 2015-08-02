@@ -1,7 +1,7 @@
 package daos.impl;
 
 import daos.MessageDao;
-import models.entities.Message;
+import models.Message;
 import play.db.jpa.JPA;
 
 import javax.persistence.TypedQuery;

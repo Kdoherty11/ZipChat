@@ -1,7 +1,7 @@
 package unit.models;
 
 import factories.UserFactory;
-import models.entities.User;
+import models.User;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 

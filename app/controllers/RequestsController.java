@@ -1,9 +1,9 @@
 package controllers;
 
 import com.google.inject.Inject;
-import models.entities.AbstractUser;
-import models.entities.Request;
-import models.entities.User;
+import models.AbstractUser;
+import models.Request;
+import models.User;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 import play.mvc.Security;

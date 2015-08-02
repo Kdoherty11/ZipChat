@@ -2,8 +2,8 @@ package services;
 
 import com.google.inject.ImplementedBy;
 import daos.AbstractRoomDao;
-import models.entities.AbstractRoom;
-import models.entities.Message;
+import models.AbstractRoom;
+import models.Message;
 import services.impl.AbstractRoomServiceImpl;
 
 import java.util.Set;

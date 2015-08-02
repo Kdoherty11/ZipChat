@@ -1,7 +1,7 @@
 package unit.models;
 
 import factories.RequestFactory;
-import models.entities.Request;
+import models.Request;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;

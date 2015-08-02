@@ -2,9 +2,9 @@ package unit.services;
 
 import daos.PrivateRoomDao;
 import daos.RequestDao;
-import models.entities.PrivateRoom;
-import models.entities.Request;
-import models.entities.User;
+import models.PrivateRoom;
+import models.Request;
+import models.User;
 import notifications.ChatResponseNotification;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,9 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**

@@ -9,9 +9,7 @@ import play.mvc.Result;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.OK;
-import static play.test.Helpers.contentAsString;
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.start;
+import static play.test.Helpers.*;
 
 /**
  * Created by kdoherty on 7/28/15.

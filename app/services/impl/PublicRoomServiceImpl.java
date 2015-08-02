@@ -3,9 +3,9 @@ package services.impl;
 import com.google.inject.Inject;
 import daos.PublicRoomDao;
 import daos.UserDao;
-import models.Platform;
-import models.entities.PublicRoom;
-import models.entities.User;
+import models.Device;
+import models.PublicRoom;
+import models.User;
 import notifications.AbstractNotification;
 import services.NotificationService;
 import services.PublicRoomService;
@@ -45,7 +45,7 @@ public class PublicRoomServiceImpl extends GenericServiceImpl<PublicRoom> implem
             if (!userIdsInRoom.contains(user.userId)) {
 
                 userDao.getDevices(user).forEach(device -> {
-                    if (device.platform == Platform.android) {
+                    if (device.platform == Device.Platform.android) {
                         androidRegIds.add(device.regId);
                     } else {
                         iosRegIds.add(device.regId);

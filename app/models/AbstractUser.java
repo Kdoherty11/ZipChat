@@ -1,7 +1,6 @@
-package models.entities;
+package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import play.data.validation.Constraints;
 

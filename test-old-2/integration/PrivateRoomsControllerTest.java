@@ -3,7 +3,7 @@ package integration;
 import controllers.MessagesController;
 import controllers.PrivateRoomsController;
 import factories.ObjectFactory;
-import models.entities.PrivateRoom;
+import models.PrivateRoom;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;

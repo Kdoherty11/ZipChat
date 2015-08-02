@@ -1,9 +1,9 @@
 package integration;
 
 import factories.ObjectFactory;
-import models.entities.Device;
-import models.entities.Message;
-import models.entities.User;
+import models.Device;
+import models.Message;
+import models.User;
 import org.junit.Ignore;
 
 /**

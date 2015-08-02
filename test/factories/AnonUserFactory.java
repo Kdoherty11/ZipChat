@@ -3,7 +3,7 @@ package factories;
 import com.github.javafaker.Faker;
 import com.google.common.collect.ImmutableMap;
 import daos.impl.AnonUserDaoImpl;
-import models.entities.AnonUser;
+import models.AnonUser;
 
 import java.util.Map;
 
