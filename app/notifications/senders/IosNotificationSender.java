@@ -17,7 +17,7 @@ import java.util.Map;
 @Singleton
 public class IosNotificationSender implements NotificationSender {
 
-    private static final ApnsService SERVICE = APNS.newService()
+    private static final ApnsService APNS_SERVICE = APNS.newService()
             .withCert("certificates/dev.p12", "password")
             .withSandboxDestination()
             .build();
@@ -33,7 +33,7 @@ public class IosNotificationSender implements NotificationSender {
     public void sendNotification(String regId, Map<String, String> data) {
         String payload = buildAppleMessage(data);
         try {
-            SERVICE.push(regId, payload);
+            APNS_SERVICE.push(regId, payload);
         } catch (NetworkIOException e) {
             Logger.error("Problem sending APN", e);
         }
@@ -43,7 +43,7 @@ public class IosNotificationSender implements NotificationSender {
     public void sendBatchNotification(List<String> regIds, Map<String, String> data) {
         String payload = buildAppleMessage(data);
         try {
-            SERVICE.push(regIds, payload);
+            APNS_SERVICE.push(regIds, payload);
         } catch (NetworkIOException e) {
             Logger.error("Problem sending batch APN", e);
         }

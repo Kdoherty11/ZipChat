@@ -1,4 +1,4 @@
-package unit.models;
+package unit.notifications.senders;
 
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Sender;
@@ -10,6 +10,9 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import utils.TestUtils;
 
 import java.io.IOException;
@@ -23,6 +26,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created by kdoherty on 8/1/15.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class AndroidNotificationSenderTest {
 
     private static final int GCM_RETRIES;
@@ -37,9 +41,14 @@ public class AndroidNotificationSenderTest {
 
     private NotificationSender notificationSender;
 
+    @Mock
+    private Sender sender;
+
     @Before
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         notificationSender = new AndroidNotificationSender();
+
+        TestUtils.setPrivateStaticFinalField(AndroidNotificationSender.class, "GCM_SENDER", sender);
     }
 
     private class NotificationDataMatcher extends TypeSafeMatcher<Message> {
@@ -67,25 +76,21 @@ public class AndroidNotificationSenderTest {
     public void sendNotification() throws IOException, NoSuchFieldException, IllegalAccessException {
         String regId = "myRegId";
         Map<String, String> notificationData = ImmutableMap.of("a", "b", "c", "d");
-        Sender mockSender = mock(Sender.class);
-        TestUtils.setPrivateStaticFinalField(AndroidNotificationSender.class, "GCM_SENDER", mockSender);
-        when(mockSender.send(any(), eq(regId), eq(GCM_RETRIES))).thenReturn(null);
+        when(sender.send(any(), eq(regId), eq(GCM_RETRIES))).thenReturn(null);
 
         notificationSender.sendNotification(regId, notificationData);
 
-        verify(mockSender).send(argThat(new NotificationDataMatcher(notificationData)), eq(regId), eq(GCM_RETRIES));
+        verify(sender).send(argThat(new NotificationDataMatcher(notificationData)), eq(regId), eq(GCM_RETRIES));
     }
 
     @Test
-    public void sendNotificationThrowsException() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void sendNotificationCatchesException() throws IOException, NoSuchFieldException, IllegalAccessException {
         String regId = "myRegId";
         Map<String, String> notificationData = ImmutableMap.of("a", "b", "c", "d");
-        Sender mockSender = mock(Sender.class);
-        TestUtils.setPrivateStaticFinalField(AndroidNotificationSender.class, "GCM_SENDER", mockSender);
-        doThrow(IOException.class).when(mockSender).send(any(), anyString(), anyInt());
+        doThrow(IOException.class).when(sender).send(any(), anyString(), anyInt());
         notificationSender.sendNotification(regId, notificationData);
 
-        verify(mockSender).send(any(), anyString(), anyInt());
+        verify(sender).send(any(), anyString(), anyInt());
         // If we got here an error was not thrown
     }
 
@@ -93,25 +98,21 @@ public class AndroidNotificationSenderTest {
     public void sendBatchNotification() throws NoSuchFieldException, IllegalAccessException, IOException {
         List<String> regIds = ImmutableList.of("myRegId", "yourRegId");
         Map<String, String> notificationData = ImmutableMap.of("a", "b", "c", "d");
-        Sender mockSender = mock(Sender.class);
-        TestUtils.setPrivateStaticFinalField(AndroidNotificationSender.class, "GCM_SENDER", mockSender);
-        when(mockSender.send(any(), eq(regIds), eq(GCM_RETRIES))).thenReturn(null);
+        when(sender.send(any(), eq(regIds), eq(GCM_RETRIES))).thenReturn(null);
 
         notificationSender.sendBatchNotification(regIds, notificationData);
 
-        verify(mockSender).send(argThat(new NotificationDataMatcher(notificationData)), eq(regIds), eq(GCM_RETRIES));
+        verify(sender).send(argThat(new NotificationDataMatcher(notificationData)), eq(regIds), eq(GCM_RETRIES));
     }
 
     @Test
-    public void sendBatchNotificationThrowsException() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void sendBatchNotificationCatchesException() throws IOException, NoSuchFieldException, IllegalAccessException {
         List<String> regIds = ImmutableList.of("myRegId", "yourRegId");
         Map<String, String> notificationData = ImmutableMap.of("a", "b", "c", "d");
-        Sender mockSender = mock(Sender.class);
-        TestUtils.setPrivateStaticFinalField(AndroidNotificationSender.class, "GCM_SENDER", mockSender);
-        doThrow(IOException.class).when(mockSender).send(any(), anyListOf(String.class), anyInt());
+        doThrow(IOException.class).when(sender).send(any(), anyListOf(String.class), anyInt());
         notificationSender.sendBatchNotification(regIds, notificationData);
 
-        verify(mockSender).send(any(), anyListOf(String.class), anyInt());
+        verify(sender).send(any(), anyListOf(String.class), anyInt());
         // If we got here an error was not thrown
     }
 }

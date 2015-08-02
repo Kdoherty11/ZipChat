@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
  */
 public class Validators {
 
-    private Validators() {
-    }
+    private Validators() { }
 
     public static Validator<Number> positive() {
         return new MinValidator(1);
