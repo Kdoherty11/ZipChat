@@ -39,11 +39,11 @@ public class SecurityServiceTest {
 
     static {
         try {
-            SIGNING_KEY = (String) TestUtils.getPrivateStaticField(SecurityServiceImpl.class,
+            SIGNING_KEY = (String) TestUtils.getHiddenField(SecurityServiceImpl.class,
                     "SIGNING_KEY");
-            EXPIRATION_TIME_MILLIS = (long) TestUtils.getPrivateStaticField(SecurityServiceImpl.class,
+            EXPIRATION_TIME_MILLIS = (long) TestUtils.getHiddenField(SecurityServiceImpl.class,
                     "EXPIRATION_TIME_MILLIS");
-            ISSUER = (String) TestUtils.getPrivateStaticField(SecurityServiceImpl.class, "ISSUER");
+            ISSUER = (String) TestUtils.getHiddenField(SecurityServiceImpl.class, "ISSUER");
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

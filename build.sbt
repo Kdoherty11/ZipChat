@@ -21,7 +21,7 @@ resolvers ++= Seq(
   "google-sedis-fix" at "http://pk11-scratch.googlecode.com/svn/trunk"
 )
 
-libraryDependencies += "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
+libraryDependencies += "org.postgresql" % "postgresql" % "9.4-1201-jdbc41"
 
 libraryDependencies += "org.hibernate" % "hibernate-entitymanager" % "4.3.10.Final"
 

@@ -82,7 +82,7 @@ public class AnonUserServiceTest {
         when(anonUserService.getAnonUser(user, room)).thenReturn(Optional.empty());
 
         @SuppressWarnings("unchecked") Set<String> fullNames =
-                (Set<String>) TestUtils.getPrivateStaticField(AnonUserServiceImpl.class, "FULL_NAMES");
+                (Set<String>) TestUtils.getHiddenField(AnonUserServiceImpl.class, "FULL_NAMES");
         int numPossibleAliasNames = fullNames.size();
         int numCreatedAnonUsers = numPossibleAliasNames - 1;
         List<AnonUser> anonUsers = anonUserFactory.createList(numCreatedAnonUsers);
@@ -109,7 +109,7 @@ public class AnonUserServiceTest {
         when(anonUserService.getAnonUser(user, room)).thenReturn(Optional.empty());
 
         @SuppressWarnings("unchecked") Set<String> fullNames =
-                (Set<String>) TestUtils.getPrivateStaticField(AnonUserServiceImpl.class, "FULL_NAMES");
+                (Set<String>) TestUtils.getHiddenField(AnonUserServiceImpl.class, "FULL_NAMES");
         int numPossibleAliasNames = fullNames.size();
         List<AnonUser> anonUsers = anonUserFactory.createList(numPossibleAliasNames);
         int anonUsersIndex = 0;
@@ -134,7 +134,7 @@ public class AnonUserServiceTest {
         when(anonUserService.getAnonUser(user, room)).thenReturn(Optional.empty());
 
         @SuppressWarnings("unchecked") Set<String> fullNames =
-                (Set<String>) TestUtils.getPrivateStaticField(AnonUserServiceImpl.class, "FULL_NAMES");
+                (Set<String>) TestUtils.getHiddenField(AnonUserServiceImpl.class, "FULL_NAMES");
         int numPossibleAliasNames = fullNames.size();
         when(room.anonUsers).thenReturn(Collections.emptyList());
         when(random.nextInt(numPossibleAliasNames)).thenReturn(numPossibleAliasNames + 1);

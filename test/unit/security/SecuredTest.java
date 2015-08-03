@@ -30,7 +30,7 @@ public class SecuredTest {
 
     static {
         try {
-            AUTH_TOKEN_HEADER = (String) TestUtils.getPrivateStaticField(Secured.class, "AUTH_TOKEN_HEADER");
+            AUTH_TOKEN_HEADER = (String) TestUtils.getHiddenField(Secured.class, "AUTH_TOKEN_HEADER");
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

@@ -33,7 +33,7 @@ public class AndroidNotificationSenderTest {
 
     static {
         try {
-            GCM_RETRIES = (int) TestUtils.getPrivateStaticField(AndroidNotificationSender.class, "GCM_RETRIES");
+            GCM_RETRIES = (int) TestUtils.getHiddenField(AndroidNotificationSender.class, "GCM_RETRIES");
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

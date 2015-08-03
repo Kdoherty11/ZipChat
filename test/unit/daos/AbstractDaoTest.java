@@ -17,7 +17,7 @@ class AbstractDaoTest extends WithApplication {
                 "db.default.driver", "org.h2.Driver",
                 "db.default.url", "jdbc:h2:mem:play-test-jpa",
                 "db.default.jndiName", "DefaultDS",
-                "jpa.default", "defaultPersistenceUnit"
+                "jpa.default", "testPersistenceUnit"
         ));
     }
 }
