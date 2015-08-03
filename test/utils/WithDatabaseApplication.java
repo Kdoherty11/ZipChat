@@ -1,4 +1,4 @@
-package unit.daos;
+package utils;
 
 import com.google.common.collect.ImmutableMap;
 import play.Application;
@@ -9,7 +9,7 @@ import static play.test.Helpers.fakeApplication;
 /**
  * Created by kdoherty on 7/31/15.
  */
-class AbstractDaoTest extends WithApplication {
+public class WithDatabaseApplication extends WithApplication {
 
     @Override
     protected Application provideApplication() {
