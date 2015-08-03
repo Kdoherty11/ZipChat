@@ -66,24 +66,24 @@ public class RoomSocketServiceImpl implements RoomSocketService {
 
     private ObjectNode getSuccessfulJoinEvent(long roomId, long userId, Jedis jedis) {
 
-        List<User> roomMembers = RoomSocket.getRoomMembers(roomId, jedis);
-
         ObjectNode event = Json.newObject();
         event.put(RoomSocket.EVENT_KEY, "joinSuccess");
 
-        ObjectNode message = Json.newObject();
-        message.set("roomMembers", toJson(roomMembers));
-
         JPA.withTransaction(() -> {
+            List<User> roomMembers = RoomSocket.getRoomMembers(roomId, jedis);
+
+            ObjectNode message = Json.newObject();
+            message.set("roomMembers", toJson(roomMembers));
+
             Optional<AbstractRoom> roomOptional = abstractRoomService.findById(roomId);
             AbstractRoom room = roomOptional.orElseThrow(RuntimeException::new);
             if (room instanceof PublicRoom) {
                 boolean isSubscribed = publicRoomService.isSubscribed((PublicRoom) room, userId);
                 message.put("isSubscribed", isSubscribed);
             }
-        });
 
-        event.set(RoomSocket.MESSAGE_KEY, message);
+            event.set(RoomSocket.MESSAGE_KEY, message);
+        });
 
         return event;
     }
