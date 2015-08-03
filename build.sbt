@@ -43,6 +43,8 @@ libraryDependencies += "com.google.code.gson" % "gson" % "2.3.1"
 
 libraryDependencies += "nl.jqno.equalsverifier" % "equalsverifier" % "1.7.3"
 
+libraryDependencies += "com.fiftyonred" % "mock-jedis" % "0.1.2"
+
 jacoco.settings
 
 herokuAppName in Compile := "zipchatapp"

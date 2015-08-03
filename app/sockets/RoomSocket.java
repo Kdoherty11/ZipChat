@@ -73,6 +73,13 @@ public class RoomSocket extends UntypedActor {
 
     private final JedisService jedisService;
 
+    public RoomSocket(AbstractRoomService abstractRoomService, AnonUserService anonUserService, MessageService messageService, JedisService jedisService) {
+        this.abstractRoomService = abstractRoomService;
+        this.anonUserService = anonUserService;
+        this.messageService = messageService;
+        this.jedisService = jedisService;
+    }
+
     public RoomSocket() {
         // Override abstract module instead
         Injector injector = Play.current().injector();
@@ -82,7 +89,7 @@ public class RoomSocket extends UntypedActor {
         this.jedisService = injector.instanceOf(JedisService.class);
     }
 
-    public static Optional<WebSocket.Out<JsonNode>> getWebSocket(long roomId, long userId) {
+    private static Optional<WebSocket.Out<JsonNode>> getWebSocket(long roomId, long userId) {
         Map<Long, WebSocket.Out<JsonNode>> room = rooms.get(roomId);
         if (room == null) {
             throw new RuntimeException("Can't notify user because room " + roomId + " does not exist in rooms");
@@ -118,7 +125,6 @@ public class RoomSocket extends UntypedActor {
         logV("onReceive: " + message);
 
         if (message instanceof Join) {
-
             try {
                 jedisService.useJedisResource(jedis -> receiveJoin((Join) message, jedis));
             } catch (Exception e) {
@@ -261,7 +267,7 @@ public class RoomSocket extends UntypedActor {
             Logger.error("User " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
         } else {
             //Add the member to this node and the global roster
-            jedis.sadd(String.valueOf(roomId), String.valueOf(userId));
+            jedis.sadd(Long.toString(roomId), Long.toString(userId));
         }
 
         rooms.get(roomId).put(userId, join.getChannel());
