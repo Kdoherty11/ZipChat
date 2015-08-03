@@ -8,18 +8,8 @@
         <non-jta-data-source>DefaultDS</non-jta-data-source>
         <properties>
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
-            <!--<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>-->
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="testPersistenceUnit" transaction-type="RESOURCE_LOCAL">
-        <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <non-jta-data-source>DefaultDS</non-jta-data-source>
-        <properties>
-            <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <!--<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>-->
             <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
     </persistence-unit>
