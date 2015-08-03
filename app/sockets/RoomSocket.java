@@ -35,6 +35,8 @@ import static utils.DbUtils.findExistingEntityById;
 
 public class RoomSocket extends UntypedActor {
 
+    private static final Logger.ALogger logger = Logger.of(RoomSocket.class);
+
     public static final String CHANNEL = "messages";
 
     public static final String OK_JOIN_RESULT = "OK";
@@ -128,20 +130,20 @@ public class RoomSocket extends UntypedActor {
             try {
                 jedisService.useJedisResource(jedis -> receiveJoin((Join) message, jedis));
             } catch (Exception e) {
-                Logger.error("Error receiving join", e);
+                logger.error("Error receiving join", e);
             }
         } else if (message instanceof Quit) {
             try {
                 jedisService.useJedisResource(jedis -> receiveQuit((Quit) message, jedis));
             } catch (Exception e) {
-                Logger.error("Error receiving quit", e);
+                logger.error("Error receiving quit", e);
             }
         } else if (message instanceof RosterNotification) {
             JPA.withTransaction(() -> {
                 try {
                     receiveRosterNotification((RosterNotification) message);
                 } catch (Exception e) {
-                    Logger.error("Error receiving roster notification", e);
+                    logger.error("Error receiving roster notification", e);
                 }
             });
         } else if (message instanceof Talk) {
@@ -149,7 +151,7 @@ public class RoomSocket extends UntypedActor {
                 try {
                     jedisService.useJedisResource(jedis -> receiveTalk((Talk) message, jedis));
                 } catch (Exception e) {
-                    Logger.error("Error receiving talk", e);
+                    logger.error("Error receiving talk", e);
                 }
             });
         } else if (message instanceof FavoriteNotification) {
@@ -157,17 +159,17 @@ public class RoomSocket extends UntypedActor {
                 try {
                     receiveFavoriteNotification((FavoriteNotification) message);
                 } catch (Exception e) {
-                    Logger.error("Error receiving favorite notification", e);
+                    logger.error("Error receiving favorite notification", e);
                 }
             });
         } else {
-            Logger.error("Unhandled message received: " + message);
+            logger.error("Unhandled message received: " + message);
             unhandled(message);
         }
     }
 
     private void receiveFavoriteNotification(FavoriteNotification favoriteNotification) {
-        Logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
+        logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
 
         long messageId = favoriteNotification.getMessageId();
         Message message = findExistingEntityById(Message.class, messageId);
@@ -195,7 +197,7 @@ public class RoomSocket extends UntypedActor {
 
 
     private void receiveTalk(Talk talk, Jedis jedis) {
-        Logger.debug("receiveTalk: " + talk);
+        logger.debug("receiveTalk: " + talk);
 
         long roomId = talk.getRoomId();
         long userId = talk.getUserId();
@@ -210,21 +212,21 @@ public class RoomSocket extends UntypedActor {
             Message message = JPA.withTransaction(() -> storeMessage(talk, jedis));
             notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
         } catch (Throwable throwable) {
-            Logger.error("Problem storing the message", throwable);
+            logger.error("Problem storing the message", throwable);
             throw new RuntimeException("Problem storing the message", throwable);
         }
 
     }
 
     private void notifyUser(long roomId, long userId, JsonNode message) {
-        Logger.debug("sending " + message + " to user " + userId);
+        logger.debug("sending " + message + " to user " + userId);
         Optional<WebSocket.Out<JsonNode>> outOptional = getWebSocket(roomId, userId);
 
         if (outOptional.isPresent()) {
             outOptional.get().write(message);
             logV("Success notifying user");
         } else {
-            Logger.error("No Out WebSocket for user " + userId + " in room " + roomId);
+            logger.error("No Out WebSocket for user " + userId + " in room " + roomId);
         }
     }
 
@@ -252,19 +254,19 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void receiveJoin(Join join, Jedis jedis) {
-        Logger.debug("receiveJoin: " + join);
+        logger.debug("receiveJoin: " + join);
         long roomId = join.getRoomId();
         long userId = join.getUserId();
 
         if (!rooms.containsKey(roomId)) {
             // Creating a new room
-            Logger.debug("Adding new room " + roomId + " and adding a keep alive");
+            logger.debug("Adding new room " + roomId + " and adding a keep alive");
             rooms.put(roomId, new HashMap<>());
             addKeepAlive(roomId);
         }
 
         if (jedis.sismember(Long.toString(roomId), Long.toString(userId))) {
-            Logger.error("User " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
+            logger.error("User " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
         } else {
             //Add the member to this node and the global roster
             jedis.sadd(Long.toString(roomId), Long.toString(userId));
@@ -285,7 +287,7 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void receiveQuit(Quit quit, Jedis jedis) {
-        Logger.debug("receiveQuit: " + quit);
+        logger.debug("receiveQuit: " + quit);
         long roomId = quit.getRoomId();
         long userId = quit.getUserId();
         Map<Long, WebSocket.Out<JsonNode>> members = rooms.get(roomId);
@@ -303,7 +305,7 @@ public class RoomSocket extends UntypedActor {
         if (roomMembers.size() == 1) {
 
             if (roomMembers.contains(String.valueOf(KeepAlive.USER_ID))) {
-                Logger.debug("Removing robot from room " + roomId);
+                logger.debug("Removing robot from room " + roomId);
 
                 jedis.srem(String.valueOf(roomId), String.valueOf(KeepAlive.USER_ID));
 
@@ -315,16 +317,16 @@ public class RoomSocket extends UntypedActor {
                 }
             } else {
                 // Don't remove the room because there is still a user in it
-                Logger.error("No robot in room " + roomId + " but there is a user in it");
+                logger.error("No robot in room " + roomId + " but there is a user in it");
 
                 if (!rooms.containsKey(roomId)) {
-                    Logger.error("Room " + roomId + " was never created");
+                    logger.error("Room " + roomId + " was never created");
                     rooms.put(roomId, new HashMap<>());
                 }
 
                 addKeepAlive(roomId);
             }
-            Logger.debug("After quit room members are: " + roomMembers);
+            logger.debug("After quit room members are: " + roomMembers);
         } else {
             //Publish the quit notification to all nodes
             RosterNotification rosterNotify = new RosterNotification(roomId, userId, Quit.TYPE);
@@ -333,7 +335,7 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void receiveRosterNotification(RosterNotification rosterNotification) {
-        Logger.debug("receiveRosterNotification: " + rosterNotification);
+        logger.debug("receiveRosterNotification: " + rosterNotification);
         if (Join.TYPE.equals(rosterNotification.getDirection())) {
             notifyRoom(rosterNotification.getRoomId(), Join.TYPE, rosterNotification.getUserId(), "has entered the room");
         } else if (Quit.TYPE.equals(rosterNotification.getDirection())) {
@@ -343,12 +345,12 @@ public class RoomSocket extends UntypedActor {
 
     // Send a Json event to all members connected to this node
     public void notifyRoom(long roomId, String kind, long userId, String text) {
-        Logger.debug("NotifyAll called with kind: " + kind + ", roomId: " + roomId + " and message: " + text);
+        logger.debug("NotifyAll called with kind: " + kind + ", roomId: " + roomId + " and message: " + text);
 
         Map<Long, WebSocket.Out<JsonNode>> userSocketsInRoom = rooms.get(roomId);
 
         if (userSocketsInRoom == null) {
-            Logger.error("Not notifying rooms because rooms map does not contain room " + roomId);
+            logger.error("Not notifying rooms because rooms map does not contain room " + roomId);
             return;
         }
 
@@ -366,7 +368,7 @@ public class RoomSocket extends UntypedActor {
 
         userSocketsInRoom.values().forEach(channel -> channel.write(message));
 
-        Logger.debug("Notified users: " + userSocketsInRoom.keySet());
+        logger.debug("Notified users: " + userSocketsInRoom.keySet());
     }
 
 // -- Messages
@@ -378,7 +380,7 @@ public class RoomSocket extends UntypedActor {
             //Process messages from the pub/sub channel
             JsonNode parsedMessage = Json.parse(messageBody);
 
-            Logger.debug("MessageListener.onMessage: " + parsedMessage);
+            logger.debug("MessageListener.onMessage: " + parsedMessage);
             Object message;
             String messageType = parsedMessage.get("type").asText();
 
@@ -437,7 +439,7 @@ public class RoomSocket extends UntypedActor {
 
     private static void logV(String msg) {
         if (VERBOSE) {
-            Logger.debug(msg);
+            logger.debug(msg);
         }
     }
 
