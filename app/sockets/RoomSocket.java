@@ -18,10 +18,7 @@ import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.duration.Duration;
-import services.AbstractRoomService;
-import services.AnonUserService;
-import services.JedisService;
-import services.MessageService;
+import services.*;
 import utils.DbUtils;
 
 import java.util.*;
@@ -73,8 +70,11 @@ public class RoomSocket extends UntypedActor {
 
     private final JedisService jedisService;
 
-    public RoomSocket(AbstractRoomService abstractRoomService, AnonUserService anonUserService, MessageService messageService, JedisService jedisService) {
+    private final UserService userService;
+
+    public RoomSocket(AbstractRoomService abstractRoomService, UserService userService, AnonUserService anonUserService, MessageService messageService, JedisService jedisService) {
         this.abstractRoomService = abstractRoomService;
+        this.userService = userService;
         this.anonUserService = anonUserService;
         this.messageService = messageService;
         this.jedisService = jedisService;
@@ -84,6 +84,7 @@ public class RoomSocket extends UntypedActor {
         // Override abstract module instead
         Injector injector = Play.current().injector();
         this.abstractRoomService = injector.instanceOf(AbstractRoomService.class);
+        this.userService = injector.instanceOf(UserService.class);
         this.anonUserService = injector.instanceOf(AnonUserService.class);
         this.messageService = injector.instanceOf(MessageService.class);
         this.jedisService = injector.instanceOf(JedisService.class);
@@ -99,9 +100,11 @@ public class RoomSocket extends UntypedActor {
     }
 
     public static List<User> getRoomMembers(long roomId, Jedis j) {
+        UserService userService = Play.current().injector().instanceOf(UserService.class);
         return getUserIdsInRoomStream(roomId, j)
                 .filter(id -> id != KeepAlive.USER_ID)
-                .map(id -> DbUtils.findExistingEntityById(User.class, id))
+                .map(userService::findById)
+                .map(Optional::get)
                 .collect(Collectors.<User>toList());
     }
 
@@ -358,7 +361,7 @@ public class RoomSocket extends UntypedActor {
 
         // If its not a talk or keepalive add the user to the message
         if (!Talk.TYPE.equals(kind) && userId != KeepAlive.USER_ID) {
-            User sender = findExistingEntityById(User.class, userId);
+            User sender = userService.findById(userId).get();
             message.set(USER_KEY, toJson(sender));
         }
 

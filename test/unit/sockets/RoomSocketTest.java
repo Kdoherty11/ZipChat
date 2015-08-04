@@ -3,6 +3,10 @@ package unit.sockets;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import controllers.RoomSocketsController;
+import factories.UserFactory;
+import models.PrivateRoom;
+import models.PublicRoom;
+import models.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,14 +17,16 @@ import play.api.Play;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
 import redis.clients.jedis.Jedis;
-import services.AbstractRoomService;
-import services.AnonUserService;
-import services.JedisService;
-import services.MessageService;
+import services.*;
+import services.impl.RoomSocketServiceImpl;
 import sockets.RoomSocket;
 import utils.TestUtils;
 
+import javax.inject.Provider;
+import java.util.Optional;
+
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 import static play.inject.Bindings.bind;
 
 /**
@@ -33,9 +39,6 @@ public class RoomSocketTest extends WithApplication {
 
     private MockWebSocket webSocket;
 
-    private long roomId = 1;
-    private long userId = 2;
-
     @Mock
     private AbstractRoomService abstractRoomService;
 
@@ -45,26 +48,51 @@ public class RoomSocketTest extends WithApplication {
     @Mock
     private MessageService messageService;
 
-    private MockJedisService jedisService;
+    @Mock
+    private PublicRoomService publicRoomService;
 
     @Mock
+    private UserService userService;
+
+    @Mock
+    private PublicRoom publicRoom;
+
+    @Mock
+    private PrivateRoom privateRoom;
+
+    private MockJedisService jedisService;
+
     private Jedis jedis;
+
+    private RoomSocketService roomSocketService;
+
+    private long roomId = 1;
+
+    private long userId = 2;
+
+    private User user;
 
     @Override
     protected Application provideApplication() {
         return new GuiceApplicationBuilder()
                 .overrides(bind(JedisService.class).to(MockJedisService.class))
+                .overrides(bind(UserService.class).to((Provider<UserService>) () -> userService))
                 .build();
     }
 
     @Before
     public void setUp() {
         MockJedis.clean();
+        try {
+            user = new UserFactory().create();
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(e);
+        }
         jedis = new MockJedis();
         jedisService = new MockJedisService(jedis);
 
         ActorRef defaultRoomWithMockedServices = Play.current().actorSystem().actorOf(Props.create(RoomSocket.class, () -> {
-            return new RoomSocket(abstractRoomService, anonUserService, messageService, jedisService);
+            return new RoomSocket(abstractRoomService, userService, anonUserService, messageService, jedisService);
         }));
 
         try {
@@ -73,7 +101,13 @@ public class RoomSocketTest extends WithApplication {
             throw new RuntimeException(e);
         }
 
-        roomSocketsController = Play.current().injector().instanceOf(RoomSocketsController.class);
+        roomSocketService = new RoomSocketServiceImpl(abstractRoomService, publicRoomService, jedisService);
+        PrivateRoomService privateRoomService = Play.current().injector().instanceOf(PrivateRoomService.class);
+        SecurityService securityService = Play.current().injector().instanceOf(SecurityService.class);
+        roomSocketsController = new RoomSocketsController(roomSocketService, privateRoomService, securityService);
+
+        when(userService.findById(userId)).thenReturn(Optional.of(user));
+        when(abstractRoomService.findById(roomId)).thenReturn(Optional.of(publicRoom));
 
         webSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, userId, ""));
     }

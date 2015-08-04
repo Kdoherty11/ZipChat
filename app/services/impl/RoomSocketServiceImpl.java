@@ -77,6 +77,7 @@ public class RoomSocketServiceImpl implements RoomSocketService {
 
             Optional<AbstractRoom> roomOptional = abstractRoomService.findById(roomId);
             AbstractRoom room = roomOptional.orElseThrow(RuntimeException::new);
+
             if (room instanceof PublicRoom) {
                 boolean isSubscribed = publicRoomService.isSubscribed((PublicRoom) room, userId);
                 message.put("isSubscribed", isSubscribed);
