@@ -269,7 +269,6 @@ public class RoomSocket extends UntypedActor {
         if (jedis.sismember(Long.toString(roomId), Long.toString(userId))) {
             Logger.error("User " + userId + " is trying to join room: " + roomId + " but the userId is already in use");
         } else {
-            //Add the member to this node and the global roster
             jedis.sadd(Long.toString(roomId), Long.toString(userId));
         }
 
@@ -448,12 +447,16 @@ public class RoomSocket extends UntypedActor {
 
         public static final String TYPE = "join";
 
-        private final long roomId;
-        private final long userId;
-        private final WebSocket.Out<JsonNode> channel;
+        private long roomId;
+        private long userId;
+        private WebSocket.Out<JsonNode> channel;
 
         // For JSON serialization
         final String type = TYPE;
+
+        public Join() {
+            // required default constructor
+        }
 
         public Join(long roomId, long userId, WebSocket.Out<JsonNode> channel) {
             this.roomId = roomId;
@@ -490,12 +493,16 @@ public class RoomSocket extends UntypedActor {
 
         public static final String TYPE = "rosterNotify";
 
-        final long roomId;
-        final long userId;
-        final String direction;
+        long roomId;
+        long userId;
+        String direction;
 
         // For JSON serialization
         final String type = TYPE;
+
+        public RosterNotification() {
+
+        }
 
         public RosterNotification(long roomId, long userId, String direction) {
             this.roomId = roomId;
@@ -533,13 +540,17 @@ public class RoomSocket extends UntypedActor {
 
         public static final String TYPE = "talk";
 
-        final long roomId;
-        final long userId;
-        final String text;
-        final boolean isAnon;
+        long roomId;
+        long userId;
+        String text;
+        boolean isAnon;
 
         // For JSON serialization
         final String type = TYPE;
+
+        public Talk() {
+            // required default constructor
+        }
 
         public Talk(long roomId, long userId, String text, boolean isAnon) {
             this.roomId = roomId;
@@ -615,6 +626,10 @@ public class RoomSocket extends UntypedActor {
         // For JSON serialization
         final String type = TYPE;
 
+        public FavoriteNotification() {
+            // required default constructor
+        }
+
         public FavoriteNotification(long userId, long messageId, Action action) {
             this.userId = userId;
             this.messageId = messageId;
@@ -656,11 +671,15 @@ public class RoomSocket extends UntypedActor {
 
         public static final String TYPE = "quit";
 
-        private final long roomId;
-        private final long userId;
+        private long roomId;
+        private long userId;
 
         // For JSON serialization
         final String type = TYPE;
+
+        public Quit() {
+            // required default constructor
+        }
 
         public Quit(long roomId, long userId) {
             this.roomId = roomId;

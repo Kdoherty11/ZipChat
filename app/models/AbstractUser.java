@@ -19,13 +19,11 @@ public abstract class AbstractUser {
 
     public String facebookId;
 
-    @JsonIgnore
     public String gender;
 
     @Constraints.Required
     public String name;
 
-    @JsonIgnore
     public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     public static long getId(AbstractUser user) {

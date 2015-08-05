@@ -26,6 +26,10 @@ public class MockJedis extends Jedis {
         }
     }
 
+    public Collection<JedisPubSub> getSubscribers(final String key) {
+        return channelMap.get(key);
+    }
+
     @Override
     public Long publish(final String channel, final String message) {
         channelMap.get(channel).forEach(jedisPubSub -> jedisPubSub.onMessage(channel, message));
