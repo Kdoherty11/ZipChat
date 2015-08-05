@@ -19,7 +19,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.duration.Duration;
 import services.*;
-import utils.DbUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static play.libs.Json.toJson;
-import static utils.DbUtils.findExistingEntityById;
 
 public class RoomSocket extends UntypedActor {
 
@@ -173,10 +171,10 @@ public class RoomSocket extends UntypedActor {
         Logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
 
         long messageId = favoriteNotification.getMessageId();
-        Message message = findExistingEntityById(Message.class, messageId);
+        Message message = messageService.findById(messageId).get();
 
         long userId = favoriteNotification.getUserId();
-        final User user = findExistingEntityById(User.class, userId);
+        final User user = userService.findById(userId).get();
 
         boolean success;
         if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {
@@ -235,14 +233,19 @@ public class RoomSocket extends UntypedActor {
         final long senderId = talk.getUserId();
         final long roomId = talk.getRoomId();
         final boolean isAnon = talk.isAnon();
-        User sender = DbUtils.findExistingEntityById(User.class, senderId);
-        AbstractRoom room = DbUtils.findExistingEntityById(AbstractRoom.class, roomId);
+        User sender = userService.findById(senderId).get();
+        AbstractRoom room = abstractRoomService.findById(roomId).get();
+
+        if (room instanceof PrivateRoom) {
+            Logger.error("PRIVATE ROOM");
+        }
 
         AbstractUser messageSender;
         if (isAnon) {
             if (room instanceof PublicRoom) {
                 messageSender = anonUserService.getOrCreateAnonUser(sender, (PublicRoom) room);
             } else {
+                Logger.error("HERE");
                 throw new RuntimeException("Trying to store an anon message in a private room");
             }
         } else {
@@ -251,6 +254,7 @@ public class RoomSocket extends UntypedActor {
 
         Message message = new Message(room, messageSender, talk.getText());
         abstractRoomService.addMessage(room, message, getUserIdsInRoom(roomId, jedis));
+
         return message;
     }
 

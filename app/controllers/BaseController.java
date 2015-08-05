@@ -5,7 +5,6 @@ import play.data.Form;
 import play.db.jpa.JPA;
 import play.mvc.Controller;
 import play.mvc.Result;
-import utils.DbUtils;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
@@ -50,7 +49,14 @@ public abstract class BaseController extends Controller {
         return badRequest(toJson(obj));
     }
 
+    public static String buildEntityNotFoundString(Class clazz, long id) {
+        String errorMessage = clazz.getSimpleName() + " with id " + id + " was not found";
+        Logger.warn(errorMessage);
+
+        return errorMessage;
+    }
+
     protected Result entityNotFound(Class clazz, long id) {
-        return notFound(toJson(DbUtils.buildEntityNotFoundString(clazz, id)));
+        return notFound(toJson(buildEntityNotFoundString(clazz, id)));
     }
 }
