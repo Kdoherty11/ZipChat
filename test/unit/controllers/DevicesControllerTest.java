@@ -1,6 +1,7 @@
 package unit.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import controllers.BaseController;
 import controllers.DevicesController;
 import models.Device;
 import models.User;
@@ -15,7 +16,6 @@ import play.test.Helpers;
 import services.DeviceService;
 import services.SecurityService;
 import services.UserService;
-import utils.DbUtils;
 import validation.validators.RequiredValidator;
 import validation.validators.StringToLongValidator;
 
@@ -138,7 +138,7 @@ public class DevicesControllerTest {
         Result result = helpers.invokeWithContext(builder, controller::createDevice);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(User.class, userId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(User.class, userId)));
         verifyZeroInteractions(deviceService);
     }
 
@@ -188,7 +188,7 @@ public class DevicesControllerTest {
 
         assertEquals(NOT_FOUND, result.status());
         assertTrue(contentAsString(result).contains(
-                DbUtils.buildEntityNotFoundString(Device.class, deviceId)));
+                BaseController.buildEntityNotFoundString(Device.class, deviceId)));
     }
 
     @Test

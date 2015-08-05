@@ -13,7 +13,6 @@ import play.mvc.Result;
 import services.MessageService;
 import services.SecurityService;
 import services.UserService;
-import utils.DbUtils;
 
 import java.util.Optional;
 
@@ -70,7 +69,7 @@ public class MessagesControllerTest {
         Result result = controller.favorite(messageId, userId);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(Message.class, messageId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(Message.class, messageId)));
     }
 
     @Test
@@ -85,7 +84,7 @@ public class MessagesControllerTest {
         Result result = controller.favorite(messageId, userId);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(User.class, userId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(User.class, userId)));
     }
 
     @Test
@@ -143,7 +142,7 @@ public class MessagesControllerTest {
         Result result = controller.removeFavorite(messageId, userId);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(Message.class, messageId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(Message.class, messageId)));
     }
 
     @Test
@@ -158,7 +157,7 @@ public class MessagesControllerTest {
         Result result = controller.removeFavorite(messageId, userId);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(User.class, userId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(User.class, userId)));
     }
 
     @Test
@@ -216,7 +215,7 @@ public class MessagesControllerTest {
         Result result = controller.flag(messageId, userId);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(Message.class, messageId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(Message.class, messageId)));
     }
 
     @Test
@@ -231,7 +230,7 @@ public class MessagesControllerTest {
         Result result = controller.flag(messageId, userId);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(User.class, userId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(User.class, userId)));
     }
 
     @Test
@@ -289,7 +288,7 @@ public class MessagesControllerTest {
         Result result = controller.removeFlag(messageId, userId);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(Message.class, messageId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(Message.class, messageId)));
     }
 
     @Test
@@ -304,7 +303,7 @@ public class MessagesControllerTest {
         Result result = controller.removeFlag(messageId, userId);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(User.class, userId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(User.class, userId)));
     }
 
     @Test

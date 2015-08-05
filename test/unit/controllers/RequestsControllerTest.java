@@ -17,7 +17,6 @@ import services.AbstractUserService;
 import services.RequestService;
 import services.SecurityService;
 import services.UserService;
-import utils.DbUtils;
 import validation.validators.RequiredValidator;
 import validation.validators.StringToLongValidator;
 import validation.validators.WhiteListValidator;
@@ -136,7 +135,7 @@ public class RequestsControllerTest {
         Result result = helpers.invokeWithContext(builder, controller::createRequest);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(User.class, senderId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(User.class, senderId)));
     }
 
     @Test
@@ -153,7 +152,7 @@ public class RequestsControllerTest {
         Result result = helpers.invokeWithContext(builder, controller::createRequest);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(User.class, receiverId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(User.class, receiverId)));
     }
 
     @Test
@@ -245,7 +244,7 @@ public class RequestsControllerTest {
         Result result = helpers.invokeWithContext(builder, () -> controller.handleResponse(requestId));
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(Request.class, requestId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(Request.class, requestId)));
     }
 
     @Test

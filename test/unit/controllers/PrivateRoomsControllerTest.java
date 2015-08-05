@@ -16,7 +16,6 @@ import services.MessageService;
 import services.PrivateRoomService;
 import services.SecurityService;
 import services.UserService;
-import utils.DbUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +105,7 @@ public class PrivateRoomsControllerTest {
         Result result = controller.leaveRoom(roomId, userId);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(PrivateRoom.class, roomId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(PrivateRoom.class, roomId)));
     }
 
     @Test
@@ -147,7 +146,7 @@ public class PrivateRoomsControllerTest {
         Result result = controller.getMessages(roomId, 1, 1);
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(PrivateRoom.class, roomId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(PrivateRoom.class, roomId)));
     }
 
     @Test

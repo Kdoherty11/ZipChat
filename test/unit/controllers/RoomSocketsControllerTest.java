@@ -1,6 +1,7 @@
 package unit.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import controllers.BaseController;
 import controllers.RoomSocketsController;
 import models.PrivateRoom;
 import org.junit.Before;
@@ -13,7 +14,6 @@ import play.mvc.WebSocket;
 import services.PrivateRoomService;
 import services.RoomSocketService;
 import services.SecurityService;
-import utils.DbUtils;
 
 import java.util.Optional;
 
@@ -119,7 +119,7 @@ public class RoomSocketsControllerTest {
         Result result = webSocket.rejectWith();
 
         assertEquals(NOT_FOUND, result.status());
-        assertTrue(contentAsString(result).contains(DbUtils.buildEntityNotFoundString(PrivateRoom.class, roomId)));
+        assertTrue(contentAsString(result).contains(BaseController.buildEntityNotFoundString(PrivateRoom.class, roomId)));
     }
 
     @Test
