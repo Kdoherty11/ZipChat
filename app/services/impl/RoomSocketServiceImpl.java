@@ -13,14 +13,13 @@ import play.mvc.WebSocket;
 import redis.clients.jedis.Jedis;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
-import services.AbstractRoomService;
-import services.JedisService;
-import services.PublicRoomService;
-import services.RoomSocketService;
+import services.*;
+import sockets.KeepAlive;
 import sockets.RoomSocket;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static akka.pattern.Patterns.ask;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -34,11 +33,13 @@ public class RoomSocketServiceImpl implements RoomSocketService {
     private final AbstractRoomService abstractRoomService;
     private final PublicRoomService publicRoomService;
     private final JedisService jedisService;
+    private final UserService userService;
 
     @Inject
-    public RoomSocketServiceImpl(AbstractRoomService abstractRoomService, PublicRoomService publicRoomService, JedisService jedisService) {
+    public RoomSocketServiceImpl(AbstractRoomService abstractRoomService, PublicRoomService publicRoomService, UserService userService, JedisService jedisService) {
         this.abstractRoomService = abstractRoomService;
         this.publicRoomService = publicRoomService;
+        this.userService = userService;
         this.jedisService = jedisService;
     }
 
@@ -70,7 +71,12 @@ public class RoomSocketServiceImpl implements RoomSocketService {
         event.put(RoomSocket.EVENT_KEY, "joinSuccess");
 
         JPA.withTransaction(() -> {
-            List<User> roomMembers = RoomSocket.getRoomMembers(roomId, jedis);
+            // All room members not including the user themselves
+            List<User> roomMembers = RoomSocket.getUserIdsInRoomStream(roomId, jedis)
+                    .filter(id -> id != KeepAlive.USER_ID && id != userId)
+                    .map(userService::findById)
+                    .map(Optional::get)
+                    .collect(Collectors.<User>toList());
 
             ObjectNode message = Json.newObject();
             message.set("roomMembers", toJson(roomMembers));

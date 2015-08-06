@@ -121,7 +121,7 @@ public class RoomSocketTest extends WithApplication {
 
         TestUtils.setPrivateStaticFinalField(RoomSocket.class, "defaultRoom", defaultRoomWithMockedServices);
 
-        roomSocketService = new RoomSocketServiceImpl(abstractRoomService, publicRoomService, jedisService);
+        roomSocketService = new RoomSocketServiceImpl(abstractRoomService, publicRoomService, userService, jedisService);
         SecurityService securityService = Play.current().injector().instanceOf(SecurityService.class);
         roomSocketsController = new RoomSocketsController(roomSocketService, privateRoomService, securityService);
 
@@ -163,8 +163,7 @@ public class RoomSocketTest extends WithApplication {
 
         JsonNode message = joinSuccess.get(RoomSocket.MESSAGE_KEY);
         User[] roomMembers = objectMapper.readValue(message.get("roomMembers").toString(), User[].class);
-        assertEquals(1, roomMembers.length);
-        assertEquals(user, roomMembers[0]);
+        assertEquals(0, roomMembers.length);
         assertFalse(message.get("isSubscribed").asBoolean());
     }
 

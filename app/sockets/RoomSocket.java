@@ -110,7 +110,7 @@ public class RoomSocket extends UntypedActor {
         return getUserIdsInRoomStream(roomId, j).collect(Collectors.toSet());
     }
 
-    private static Stream<Long> getUserIdsInRoomStream(long roomId, Jedis j) {
+    public static Stream<Long> getUserIdsInRoomStream(long roomId, Jedis j) {
         return j.smembers(Long.toString(roomId))
                 .stream()
                 .map(Long::parseLong);
