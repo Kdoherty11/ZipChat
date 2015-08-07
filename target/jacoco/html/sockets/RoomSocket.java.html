@@ -1,0 +1,673 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>RoomSocket.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">sockets</a> &gt; <span class="el_source">RoomSocket.java</span></div><h1>RoomSocket.java</h1><pre class="source lang-java linenums">package sockets;
+
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.Props;
+import akka.actor.UntypedActor;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.MoreObjects;
+import models.*;
+import play.Logger;
+import play.api.Play;
+import play.api.inject.Injector;
+import play.db.jpa.JPA;
+import play.libs.Json;
+import play.mvc.WebSocket;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPubSub;
+import scala.concurrent.duration.Duration;
+import services.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static play.libs.Json.toJson;
+
+public class RoomSocket extends UntypedActor {
+
+    public static final String CHANNEL = &quot;messages&quot;;
+
+    public static final String OK_JOIN_RESULT = &quot;OK&quot;;
+
+    public static final String EVENT_KEY = &quot;event&quot;;
+    public static final String MESSAGE_KEY = &quot;message&quot;;
+    public static final String USER_KEY = &quot;user&quot;;
+
+<span class="fc" id="L43">    public static final ActorRef defaultRoom = Play.current().actorSystem().actorOf(Props.create(RoomSocket.class));</span>
+
+    // Key is roomId, value is the users connected to that room
+<span class="fc" id="L46">    static final Map&lt;Long, Map&lt;Long, WebSocket.Out&lt;JsonNode&gt;&gt;&gt; rooms = new ConcurrentHashMap&lt;&gt;();</span>
+
+    static {
+        //subscribe to the message channel
+<span class="fc" id="L50">        ActorSystem actorSystem = Play.current().actorSystem();</span>
+<span class="fc" id="L51">        actorSystem.scheduler().scheduleOnce(</span>
+<span class="fc" id="L52">                Duration.create(10, TimeUnit.MILLISECONDS),</span>
+                () -&gt; {
+                    JedisService service = Play.current().injector().instanceOf(JedisService.class);
+                    service.useJedisResource(jedis -&gt; jedis.subscribe(new MessageListener(), CHANNEL));
+                },
+<span class="fc" id="L57">                actorSystem.dispatcher()</span>
+        );
+<span class="fc" id="L59">    }</span>
+
+    private static final boolean VERBOSE = true;
+
+    private final AbstractRoomService abstractRoomService;
+
+    private final AnonUserService anonUserService;
+
+    private final MessageService messageService;
+
+    private final JedisService jedisService;
+
+    private final UserService userService;
+
+    private final KeepAliveService keepAliveService;
+
+<span class="fc" id="L75">    public RoomSocket(AbstractRoomService abstractRoomService, UserService userService, AnonUserService anonUserService, MessageService messageService, JedisService jedisService, KeepAliveService keepAliveService) {</span>
+<span class="fc" id="L76">        this.abstractRoomService = abstractRoomService;</span>
+<span class="fc" id="L77">        this.userService = userService;</span>
+<span class="fc" id="L78">        this.anonUserService = anonUserService;</span>
+<span class="fc" id="L79">        this.messageService = messageService;</span>
+<span class="fc" id="L80">        this.jedisService = jedisService;</span>
+<span class="fc" id="L81">        this.keepAliveService = keepAliveService;</span>
+<span class="fc" id="L82">    }</span>
+
+<span class="fc" id="L84">    public RoomSocket() {</span>
+        // Override abstract module instead
+<span class="fc" id="L86">        Injector injector = Play.current().injector();</span>
+<span class="fc" id="L87">        this.abstractRoomService = injector.instanceOf(AbstractRoomService.class);</span>
+<span class="fc" id="L88">        this.userService = injector.instanceOf(UserService.class);</span>
+<span class="fc" id="L89">        this.anonUserService = injector.instanceOf(AnonUserService.class);</span>
+<span class="fc" id="L90">        this.messageService = injector.instanceOf(MessageService.class);</span>
+<span class="fc" id="L91">        this.jedisService = injector.instanceOf(JedisService.class);</span>
+<span class="fc" id="L92">        this.keepAliveService = injector.instanceOf(KeepAliveService.class);</span>
+<span class="fc" id="L93">    }</span>
+
+    public static Stream&lt;Long&gt; getUserIdsInRoomStream(long roomId, Jedis j) {
+<span class="fc" id="L96">        return j.smembers(Long.toString(roomId))</span>
+<span class="fc" id="L97">                .stream()</span>
+<span class="fc" id="L98">                .map(Long::parseLong);</span>
+    }
+
+    private Set&lt;Long&gt; getUserIdsInRoom(long roomId, Jedis j) {
+<span class="fc" id="L102">        return getUserIdsInRoomStream(roomId, j).collect(Collectors.toSet());</span>
+    }
+
+    public static void remoteMessage(Object message) {
+<span class="fc" id="L106">        defaultRoom.tell(message, null);</span>
+<span class="fc" id="L107">    }</span>
+
+    @Override
+    public void onReceive(Object message) {
+<span class="fc" id="L111">        logV(&quot;onReceive: &quot; + message);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (message instanceof Join) {</span>
+<span class="fc" id="L113">            jedisService.useJedisResource(jedis -&gt; receiveJoin((Join) message, jedis));</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        } else if (message instanceof Quit) {</span>
+<span class="fc" id="L115">            jedisService.useJedisResource(jedis -&gt; receiveQuit((Quit) message, jedis));</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        } else if (message instanceof RosterNotification) {</span>
+<span class="fc" id="L117">            JPA.withTransaction(() -&gt; {</span>
+                receiveRosterNotification((RosterNotification) message);
+            });
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        } else if (message instanceof Talk) {</span>
+<span class="fc" id="L121">            JPA.withTransaction(() -&gt; {</span>
+                jedisService.useJedisResource(jedis -&gt; receiveTalk((Talk) message, jedis));
+
+            });
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        } else if (message instanceof FavoriteNotification) {</span>
+<span class="fc" id="L126">            JPA.withTransaction(() -&gt; {</span>
+                receiveFavoriteNotification((FavoriteNotification) message);
+            });
+        } else {
+<span class="nc" id="L130">            Logger.error(&quot;Unhandled message received: &quot; + message);</span>
+<span class="nc" id="L131">            unhandled(message);</span>
+        }
+<span class="fc" id="L133">    }</span>
+
+    private void receiveTalk(Talk talk, Jedis jedis) {
+<span class="fc" id="L136">        Logger.debug(&quot;receiveTalk: &quot; + talk);</span>
+
+<span class="fc" id="L138">        long roomId = talk.getRoomId();</span>
+<span class="fc" id="L139">        long userId = talk.getUserId();</span>
+<span class="fc" id="L140">        String messageText = talk.getText();</span>
+
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        if (userId == KeepAliveService.ID) {</span>
+<span class="fc" id="L143">            notifyRoom(roomId, Talk.TYPE, userId, messageText);</span>
+<span class="fc" id="L144">            return;</span>
+        }
+
+        try {
+<span class="fc" id="L148">            Message message = JPA.withTransaction(() -&gt; storeMessage(talk, jedis));</span>
+<span class="fc" id="L149">            notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));</span>
+<span class="nc" id="L150">        } catch (Throwable throwable) {</span>
+<span class="nc" id="L151">            Logger.error(&quot;Problem storing the message&quot;, throwable);</span>
+<span class="nc" id="L152">            throw new RuntimeException(&quot;Problem storing the message&quot;, throwable);</span>
+<span class="fc" id="L153">        }</span>
+<span class="fc" id="L154">    }</span>
+
+    private void receiveFavoriteNotification(FavoriteNotification favoriteNotification) {
+<span class="fc" id="L157">        Logger.debug(&quot;ReceiveFavoriteNotification: &quot; + favoriteNotification);</span>
+
+<span class="fc" id="L159">        long messageId = favoriteNotification.getMessageId();</span>
+<span class="fc" id="L160">        Message message = messageService.findById(messageId).get();</span>
+
+<span class="fc" id="L162">        long userId = favoriteNotification.getUserId();</span>
+<span class="fc" id="L163">        final User user = userService.findById(userId).get();</span>
+
+        boolean success;
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        if (favoriteNotification.getAction() == FavoriteNotification.Action.ADD) {</span>
+<span class="fc" id="L167">            success = messageService.favorite(message, user);</span>
+        } else {
+<span class="fc" id="L169">            success = messageService.removeFavorite(message, user);</span>
+        }
+
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        if (success) {</span>
+<span class="fc" id="L173">            notifyRoom(message.room.roomId, favoriteNotification.getAction().getType(), userId, Long.toString(messageId));</span>
+        } else {
+<span class="fc" id="L175">            ObjectNode error = Json.newObject();</span>
+<span class="fc" id="L176">            error.put(EVENT_KEY, &quot;error&quot;);</span>
+<span class="fc" id="L177">            error.put(MESSAGE_KEY, &quot;Problem &quot; + favoriteNotification.getAction() + &quot;ing a favorite&quot;);</span>
+
+<span class="fc" id="L179">            notifyUser(message.room.roomId, userId, error);</span>
+        }
+<span class="fc" id="L181">    }</span>
+
+    private void notifyUser(long roomId, long userId, JsonNode message) {
+<span class="fc" id="L184">        Logger.debug(&quot;sending &quot; + message + &quot; to user &quot; + userId);</span>
+<span class="fc" id="L185">        Optional&lt;WebSocket.Out&lt;JsonNode&gt;&gt; outOptional = getWebSocket(roomId, userId);</span>
+
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">        if (outOptional.isPresent()) {</span>
+<span class="fc" id="L188">            outOptional.get().write(message);</span>
+        } else {
+<span class="nc" id="L190">            Logger.error(&quot;Could not find outsocket for user &quot; + userId + &quot; in room &quot; + roomId);</span>
+        }
+<span class="fc" id="L192">    }</span>
+
+    private Optional&lt;WebSocket.Out&lt;JsonNode&gt;&gt; getWebSocket(long roomId, long userId) {
+<span class="fc" id="L195">        Map&lt;Long, WebSocket.Out&lt;JsonNode&gt;&gt; room = rooms.get(roomId);</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">        if (room == null) {</span>
+<span class="nc" id="L197">            Logger.error(&quot;Could not find room &quot; + roomId + &quot; in room map&quot;);</span>
+<span class="nc" id="L198">            return Optional.empty();</span>
+        }
+<span class="fc" id="L200">        return Optional.ofNullable(room.get(userId));</span>
+    }
+
+    private Message storeMessage(Talk talk, Jedis jedis) {
+<span class="fc" id="L204">        final long senderId = talk.getUserId();</span>
+<span class="fc" id="L205">        final long roomId = talk.getRoomId();</span>
+<span class="fc" id="L206">        final boolean isAnon = talk.isAnon();</span>
+<span class="fc" id="L207">        User sender = userService.findById(senderId).get();</span>
+<span class="fc" id="L208">        AbstractRoom room = abstractRoomService.findById(roomId).get();</span>
+
+        AbstractUser messageSender;
+<span class="fc bfc" id="L211" title="All 2 branches covered.">        if (isAnon) {</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">            if (room instanceof PublicRoom) {</span>
+<span class="fc" id="L213">                messageSender = anonUserService.getOrCreateAnonUser(sender, (PublicRoom) room);</span>
+            } else {
+<span class="nc" id="L215">                throw new RuntimeException(&quot;Trying to store an anon message in a private room&quot;);</span>
+            }
+        } else {
+<span class="fc" id="L218">            messageSender = sender;</span>
+        }
+
+<span class="fc" id="L221">        Message message = new Message(room, messageSender, talk.getText());</span>
+<span class="fc" id="L222">        abstractRoomService.addMessage(room, message, getUserIdsInRoom(roomId, jedis));</span>
+
+<span class="fc" id="L224">        return message;</span>
+    }
+
+    private void receiveJoin(Join join, Jedis jedis) {
+<span class="fc" id="L228">        Logger.debug(&quot;receiveJoin: &quot; + join);</span>
+<span class="fc" id="L229">        long roomId = join.getRoomId();</span>
+<span class="fc" id="L230">        long userId = join.getUserId();</span>
+
+<span class="fc bfc" id="L232" title="All 2 branches covered.">        if (!rooms.containsKey(roomId)) {</span>
+            // Creating a new room
+<span class="fc" id="L234">            Logger.debug(&quot;Adding new room &quot; + roomId + &quot; and adding a keep alive&quot;);</span>
+<span class="fc" id="L235">            rooms.put(roomId, new HashMap&lt;&gt;());</span>
+<span class="fc" id="L236">            keepAliveService.start(roomId);</span>
+        }
+
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (jedis.sismember(Long.toString(roomId), Long.toString(userId))) {</span>
+<span class="nc" id="L240">            Logger.error(&quot;User &quot; + userId + &quot; is trying to join room: &quot; + roomId + &quot; but the userId is already in use&quot;);</span>
+        } else {
+<span class="fc" id="L242">            jedis.sadd(Long.toString(roomId), Long.toString(userId));</span>
+        }
+
+<span class="fc" id="L245">        rooms.get(roomId).put(userId, join.getChannel());</span>
+
+        //Publish the join notification to all nodes
+<span class="fc" id="L248">        RosterNotification rosterNotify = new RosterNotification(roomId, userId, RosterNotification.Direction.JOIN);</span>
+<span class="fc" id="L249">        jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));</span>
+
+<span class="fc" id="L251">        getSender().tell(OK_JOIN_RESULT, getSelf());</span>
+<span class="fc" id="L252">    }</span>
+
+    private void receiveQuit(Quit quit, Jedis jedis) {
+<span class="fc" id="L255">        Logger.debug(&quot;receiveQuit: &quot; + quit);</span>
+<span class="fc" id="L256">        long roomId = quit.getRoomId();</span>
+<span class="fc" id="L257">        long userId = quit.getUserId();</span>
+
+<span class="fc" id="L259">        Map&lt;Long, WebSocket.Out&lt;JsonNode&gt;&gt; members = rooms.get(roomId);</span>
+<span class="fc" id="L260">        members.remove(userId);</span>
+<span class="fc" id="L261">        jedis.srem(Long.toString(roomId), Long.toString(userId));</span>
+
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        if (members.isEmpty()) {</span>
+<span class="fc" id="L264">            keepAliveService.stop(roomId);</span>
+<span class="fc" id="L265">            rooms.remove(roomId);</span>
+        }
+
+        // Still need to publish to jedis even if there are no more users connected to this dyno
+<span class="fc" id="L269">        RosterNotification rosterNotify = new RosterNotification(roomId, userId, RosterNotification.Direction.QUIT);</span>
+<span class="fc" id="L270">        jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));</span>
+<span class="fc" id="L271">    }</span>
+
+    private void receiveRosterNotification(RosterNotification rosterNotification) {
+<span class="fc" id="L274">        Logger.debug(&quot;receiveRosterNotification: &quot; + rosterNotification);</span>
+
+<span class="fc" id="L276">        RosterNotification.Direction direction = rosterNotification.getDirection();</span>
+<span class="fc" id="L277">        notifyRoom(rosterNotification.getRoomId(), direction.getType(),</span>
+<span class="fc" id="L278">                rosterNotification.getUserId(), direction.getUpdateMessage());</span>
+<span class="fc" id="L279">    }</span>
+
+    // Send a Json event to all members connected to this node
+    private void notifyRoom(long roomId, String kind, long userId, String text) {
+<span class="fc" id="L283">        Logger.debug(&quot;NotifyAll called with kind: &quot; + kind + &quot;, roomId: &quot; + roomId + &quot; and message: &quot; + text);</span>
+
+<span class="fc" id="L285">        Map&lt;Long, WebSocket.Out&lt;JsonNode&gt;&gt; userSocketsInRoom = rooms.get(roomId);</span>
+
+<span class="fc bfc" id="L287" title="All 2 branches covered.">        if (userSocketsInRoom == null) {</span>
+            // There are no users connected to this dyno in this room
+<span class="fc" id="L289">            return;</span>
+        }
+
+<span class="fc" id="L292">        final ObjectNode message = Json.newObject();</span>
+<span class="fc" id="L293">        message.put(EVENT_KEY, kind);</span>
+<span class="fc" id="L294">        message.put(MESSAGE_KEY, text);</span>
+
+        // If its not a talk or keepalive add the user to the message
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        if (!Talk.TYPE.equals(kind)) {</span>
+<span class="fc" id="L298">            User sender = userService.findById(userId).get();</span>
+<span class="fc" id="L299">            message.set(USER_KEY, toJson(sender));</span>
+        }
+
+<span class="fc" id="L302">        logV(&quot;About to notify room with: &quot; + message);</span>
+
+<span class="fc" id="L304">        userSocketsInRoom.values().forEach(channel -&gt; channel.write(message));</span>
+
+<span class="fc" id="L306">        Logger.debug(&quot;Notified users: &quot; + userSocketsInRoom.keySet());</span>
+<span class="fc" id="L307">    }</span>
+
+// -- Messages
+
+<span class="fc" id="L311">    public static class MessageListener extends JedisPubSub {</span>
+
+        @Override
+        public void onMessage(String channel, String messageBody) {
+            //Process messages from the pub/sub channel
+<span class="fc" id="L316">            JsonNode parsedMessage = Json.parse(messageBody);</span>
+
+<span class="fc" id="L318">            Logger.debug(&quot;MessageListener.onMessage: &quot; + parsedMessage);</span>
+            Object message;
+<span class="fc" id="L320">            String messageType = parsedMessage.get(&quot;type&quot;).asText();</span>
+
+<span class="pc bpc" id="L322" title="6 of 18 branches missed.">            switch (messageType) {</span>
+                case Talk.TYPE:
+<span class="fc" id="L324">                    message = new Talk(</span>
+<span class="fc" id="L325">                            parsedMessage.get(&quot;roomId&quot;).asLong(),</span>
+<span class="fc" id="L326">                            parsedMessage.get(&quot;userId&quot;).asLong(),</span>
+<span class="fc" id="L327">                            parsedMessage.get(&quot;text&quot;).asText(),</span>
+<span class="fc" id="L328">                            parsedMessage.get(&quot;anon&quot;).asBoolean());</span>
+<span class="fc" id="L329">                    break;</span>
+                case RosterNotification.TYPE:
+<span class="fc" id="L331">                    message = new RosterNotification(</span>
+<span class="fc" id="L332">                            parsedMessage.get(&quot;roomId&quot;).asLong(),</span>
+<span class="fc" id="L333">                            parsedMessage.get(&quot;userId&quot;).asLong(),</span>
+<span class="fc" id="L334">                            parsedMessage.get(&quot;direction&quot;).asText());</span>
+<span class="fc" id="L335">                    break;</span>
+                case Quit.TYPE:
+<span class="fc" id="L337">                    message = new Quit(</span>
+<span class="fc" id="L338">                            parsedMessage.get(&quot;roomId&quot;).asLong(),</span>
+<span class="fc" id="L339">                            parsedMessage.get(&quot;userId&quot;).asLong());</span>
+<span class="fc" id="L340">                    break;</span>
+                case FavoriteNotification.TYPE:
+<span class="fc" id="L342">                    message = new FavoriteNotification(</span>
+<span class="fc" id="L343">                            parsedMessage.get(&quot;userId&quot;).asLong(),</span>
+<span class="fc" id="L344">                            parsedMessage.get(&quot;messageId&quot;).asLong(),</span>
+<span class="fc" id="L345">                            parsedMessage.get(&quot;action&quot;).asText());</span>
+<span class="fc" id="L346">                    break;</span>
+                default:
+<span class="nc" id="L348">                    throw new RuntimeException(&quot;Message type &quot; + messageType + &quot; is not supported&quot;);</span>
+            }
+<span class="fc" id="L350">            remoteMessage(message);</span>
+<span class="fc" id="L351">        }</span>
+
+        @Override
+        public void onPMessage(String arg0, String arg1, String arg2) {
+<span class="nc" id="L355">        }</span>
+
+        @Override
+        public void onPSubscribe(String arg0, int arg1) {
+<span class="nc" id="L359">        }</span>
+
+        @Override
+        public void onPUnsubscribe(String arg0, int arg1) {
+<span class="nc" id="L363">        }</span>
+
+        @Override
+        public void onSubscribe(String arg0, int arg1) {
+<span class="nc" id="L367">        }</span>
+
+        @Override
+        public void onUnsubscribe(String arg0, int arg1) {
+<span class="nc" id="L371">        }</span>
+
+    }
+
+    private static void logV(String msg) {
+        if (VERBOSE) {
+<span class="fc" id="L377">            Logger.debug(msg);</span>
+        }
+<span class="fc" id="L379">    }</span>
+
+    public static class Join {
+
+        public static final String TYPE = &quot;join&quot;;
+
+        private long roomId;
+        private long userId;
+        private WebSocket.Out&lt;JsonNode&gt; channel;
+
+        // For JSON serialization
+<span class="pc" id="L390">        final String type = TYPE;</span>
+
+<span class="nc" id="L392">        public Join() {</span>
+            // required default constructor
+<span class="nc" id="L394">        }</span>
+
+<span class="fc" id="L396">        public Join(long roomId, long userId, WebSocket.Out&lt;JsonNode&gt; channel) {</span>
+<span class="fc" id="L397">            this.roomId = roomId;</span>
+<span class="fc" id="L398">            this.userId = userId;</span>
+<span class="fc" id="L399">            this.channel = channel;</span>
+<span class="fc" id="L400">        }</span>
+
+        public long getRoomId() {
+            return roomId;
+        }
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public String getType() {
+<span class="nc" id="L411">            return type;</span>
+        }
+
+        public WebSocket.Out&lt;JsonNode&gt; getChannel() {
+            return channel;
+        }
+
+        @Override
+        public String toString() {
+<span class="fc" id="L420">            return MoreObjects.toStringHelper(this)</span>
+<span class="fc" id="L421">                    .add(&quot;roomId&quot;, roomId)</span>
+<span class="fc" id="L422">                    .add(&quot;userId&quot;, userId)</span>
+<span class="fc" id="L423">                    .toString();</span>
+        }
+    }
+
+    public static class RosterNotification {
+
+        public static final String TYPE = &quot;rosterNotify&quot;;
+
+<span class="fc" id="L431">        enum Direction {</span>
+<span class="fc" id="L432">            JOIN(Join.TYPE, &quot;has entered the room&quot;),</span>
+<span class="fc" id="L433">            QUIT(Quit.TYPE, &quot;has left the room&quot;);</span>
+
+            private String type;
+            private String updateMessage;
+
+<span class="fc" id="L438">            Direction(String type, String updateMessage) {</span>
+<span class="fc" id="L439">                this.updateMessage = updateMessage;</span>
+<span class="fc" id="L440">                this.type = type;</span>
+<span class="fc" id="L441">            }</span>
+
+            public String getUpdateMessage() {
+                return updateMessage;
+            }
+
+            public String getType() {
+                return type;
+            }
+        }
+
+        long roomId;
+        long userId;
+        Direction direction;
+
+        // For JSON serialization
+<span class="pc" id="L457">        final String type = TYPE;</span>
+
+<span class="nc" id="L459">        public RosterNotification() {</span>
+
+<span class="nc" id="L461">        }</span>
+
+<span class="fc" id="L463">        public RosterNotification(long roomId, long userId, Direction direction) {</span>
+<span class="fc" id="L464">            this.roomId = roomId;</span>
+<span class="fc" id="L465">            this.userId = userId;</span>
+<span class="fc" id="L466">            this.direction = direction;</span>
+<span class="fc" id="L467">        }</span>
+
+        public RosterNotification(long roomId, long userId, String direction) {
+<span class="fc" id="L470">            this(roomId, userId, Direction.valueOf(direction.toUpperCase()));</span>
+<span class="fc" id="L471">        }</span>
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public Direction getDirection() {
+            return direction;
+        }
+
+        public long getRoomId() {
+            return roomId;
+        }
+
+        public String getType() {
+<span class="fc" id="L486">            return type;</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="fc" id="L491">            return MoreObjects.toStringHelper(this)</span>
+<span class="fc" id="L492">                    .add(&quot;roomId&quot;, roomId)</span>
+<span class="fc" id="L493">                    .add(&quot;userId&quot;, userId)</span>
+<span class="fc" id="L494">                    .add(&quot;direction&quot;, direction)</span>
+<span class="fc" id="L495">                    .toString();</span>
+        }
+    }
+
+    public static class Talk {
+
+        public static final String TYPE = &quot;talk&quot;;
+
+        long roomId;
+        long userId;
+        String text;
+        boolean isAnon;
+
+        // For JSON serialization
+<span class="pc" id="L509">        final String type = TYPE;</span>
+
+<span class="nc" id="L511">        public Talk() {</span>
+            // required default constructor
+<span class="nc" id="L513">        }</span>
+
+<span class="fc" id="L515">        public Talk(long roomId, long userId, String text, boolean isAnon) {</span>
+<span class="fc" id="L516">            this.roomId = roomId;</span>
+<span class="fc" id="L517">            this.userId = userId;</span>
+<span class="fc" id="L518">            this.text = text;</span>
+<span class="fc" id="L519">            this.isAnon = isAnon;</span>
+<span class="fc" id="L520">        }</span>
+
+        public Talk(long roomId, long userId, String text) {
+<span class="fc" id="L523">            this(roomId, userId, text, false);</span>
+<span class="fc" id="L524">        }</span>
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public long getRoomId() {
+            return roomId;
+        }
+
+        public String getType() {
+<span class="fc" id="L539">            return type;</span>
+        }
+
+        public boolean isAnon() {
+            return isAnon;
+        }
+
+        @Override
+        public String toString() {
+<span class="fc" id="L548">            return MoreObjects.toStringHelper(this)</span>
+<span class="fc" id="L549">                    .add(&quot;roomId&quot;, roomId)</span>
+<span class="fc" id="L550">                    .add(&quot;userId&quot;, userId)</span>
+<span class="fc" id="L551">                    .add(&quot;text&quot;, text)</span>
+<span class="fc" id="L552">                    .add(&quot;isAnon&quot;, isAnon)</span>
+<span class="fc" id="L553">                    .toString();</span>
+        }
+    }
+
+    public static class FavoriteNotification {
+
+        public static final String TYPE = &quot;FavoriteNotification&quot;;
+
+<span class="fc" id="L561">        public enum Action {</span>
+
+<span class="fc" id="L563">            ADD(&quot;favorite&quot;),</span>
+<span class="fc" id="L564">            REMOVE(&quot;removeFavorite&quot;);</span>
+
+            private String type;
+
+<span class="fc" id="L568">            Action(String type) {</span>
+<span class="fc" id="L569">                this.type = type;</span>
+<span class="fc" id="L570">            }</span>
+
+            public String getType() {
+                return type;
+            }
+
+            @Override
+            public String toString() {
+                return name().toLowerCase();
+            }
+        }
+
+        private long messageId;
+        private long userId;
+        private Action action;
+
+        // For JSON serialization
+<span class="pc" id="L587">        final String type = TYPE;</span>
+
+<span class="nc" id="L589">        public FavoriteNotification() {</span>
+            // required default constructor
+<span class="nc" id="L591">        }</span>
+
+<span class="fc" id="L593">        public FavoriteNotification(long userId, long messageId, Action action) {</span>
+<span class="fc" id="L594">            this.userId = userId;</span>
+<span class="fc" id="L595">            this.messageId = messageId;</span>
+<span class="fc" id="L596">            this.action = action;</span>
+<span class="fc" id="L597">        }</span>
+
+        public FavoriteNotification(long userId, long messageId, String actionString) {
+<span class="fc" id="L600">            this(userId, messageId, Action.valueOf(actionString.toUpperCase()));</span>
+<span class="fc" id="L601">        }</span>
+
+        public long getMessageId() {
+            return messageId;
+        }
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public Action getAction() {
+            return action;
+        }
+
+        public String getType() {
+<span class="fc" id="L616">            return type;</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="fc" id="L621">            return MoreObjects.toStringHelper(this)</span>
+<span class="fc" id="L622">                    .add(&quot;messageId&quot;, messageId)</span>
+<span class="fc" id="L623">                    .add(&quot;userId&quot;, userId)</span>
+<span class="fc" id="L624">                    .add(&quot;action&quot;, action)</span>
+<span class="fc" id="L625">                    .add(&quot;type&quot;, type)</span>
+<span class="fc" id="L626">                    .toString();</span>
+        }
+    }
+
+    public static class Quit {
+
+        public static final String TYPE = &quot;quit&quot;;
+
+        private long roomId;
+        private long userId;
+
+        // For JSON serialization
+<span class="pc" id="L638">        final String type = TYPE;</span>
+
+<span class="nc" id="L640">        public Quit() {</span>
+            // required default constructor
+<span class="nc" id="L642">        }</span>
+
+<span class="fc" id="L644">        public Quit(long roomId, long userId) {</span>
+<span class="fc" id="L645">            this.roomId = roomId;</span>
+<span class="fc" id="L646">            this.userId = userId;</span>
+<span class="fc" id="L647">        }</span>
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public long getRoomId() {
+            return roomId;
+        }
+
+        public String getType() {
+<span class="nc" id="L658">            return type;</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="fc" id="L663">            return MoreObjects.toStringHelper(this)</span>
+<span class="fc" id="L664">                    .add(&quot;roomId&quot;, roomId)</span>
+<span class="fc" id="L665">                    .add(&quot;userId&quot;, userId)</span>
+<span class="fc" id="L666">                    .toString();</span>
+        }
+
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

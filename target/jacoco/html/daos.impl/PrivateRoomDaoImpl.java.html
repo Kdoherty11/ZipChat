@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PrivateRoomDaoImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">daos.impl</a> &gt; <span class="el_source">PrivateRoomDaoImpl.java</span></div><h1>PrivateRoomDaoImpl.java</h1><pre class="source lang-java linenums">package daos.impl;
+
+import daos.PrivateRoomDao;
+import models.PrivateRoom;
+import play.db.jpa.JPA;
+
+import javax.persistence.TypedQuery;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Created by kdoherty on 6/30/15.
+ */
+public class PrivateRoomDaoImpl extends GenericDaoImpl&lt;PrivateRoom&gt; implements PrivateRoomDao {
+
+    public PrivateRoomDaoImpl() {
+<span class="fc" id="L17">        super(PrivateRoom.class);</span>
+<span class="fc" id="L18">    }</span>
+
+    @Override
+    public List&lt;PrivateRoom&gt; findByUserId(long userId) {
+<span class="fc" id="L22">        String queryString = &quot;select p from PrivateRoom p where (p.sender.userId = :userId and p.senderInRoom = true) or (p.receiver.userId = :userId and p.receiverInRoom = true)&quot;;</span>
+
+<span class="fc" id="L24">        TypedQuery&lt;PrivateRoom&gt; query = JPA.em().createQuery(queryString, PrivateRoom.class)</span>
+<span class="fc" id="L25">                .setParameter(&quot;userId&quot;, userId);</span>
+
+<span class="fc" id="L27">        return query.getResultList();</span>
+    }
+
+    @Override
+    public Optional&lt;PrivateRoom&gt; findByRoomMembers(long user1, long user2) {
+<span class="fc" id="L32">        String queryString = &quot;select p from PrivateRoom p where &quot; +</span>
+                &quot;((p.sender.userId = :user1 and p.receiver.userId = :user2)&quot; +
+                &quot; or (p.receiver.userId = :user1 and p.sender.userId = :user2))&quot; +
+                &quot; and p.senderInRoom = true and p.receiverInRoom = true&quot;;
+
+<span class="fc" id="L37">        TypedQuery&lt;PrivateRoom&gt; query = JPA.em().createQuery(queryString, PrivateRoom.class)</span>
+<span class="fc" id="L38">                .setParameter(&quot;user1&quot;, user1)</span>
+<span class="fc" id="L39">                .setParameter(&quot;user2&quot;, user2);</span>
+
+<span class="fc" id="L41">        List&lt;PrivateRoom&gt; rooms = query.getResultList();</span>
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (rooms.isEmpty()) {</span>
+<span class="fc" id="L44">            return Optional.empty();</span>
+        }
+
+<span class="fc" id="L47">        return Optional.of(rooms.get(0));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

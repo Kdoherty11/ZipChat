@@ -1,0 +1,12 @@
+[0m[[0mdebug[0m] [0mUsing file jacoco.exec to create report[0m
+[0m[[0minfo[0m] [0m[0m
+[0m[[0minfo[0m] [0m------- Jacoco Coverage Report --------[0m
+[0m[[0minfo[0m] [0m[0m
+[0m[[0minfo[0m] [0mLines: 95.95% (>= required 0.0%) covered, 52 of 1285 missed, OK[0m
+[0m[[0minfo[0m] [0mInstructions: 96.82% (>= required 0.0%) covered, 234 of 7352 missed, OK[0m
+[0m[[0minfo[0m] [0mBranches: 94.44% (>= required 0.0%) covered, 24 of 432 missed, OK[0m
+[0m[[0minfo[0m] [0mMethods: 94.3% (>= required 0.0%) covered, 20 of 351 missed, OK[0m
+[0m[[0minfo[0m] [0mComplexity: 92.47% (>= required 0.0%) covered, 43 of 571 missed, OK[0m
+[0m[[0minfo[0m] [0mClass: 96.34% (>= required 0.0%) covered, 3 of 82 missed, OK[0m
+[0m[[0minfo[0m] [0mCheck target/jacoco for detail report[0m
+[0m[[0minfo[0m] [0m[0m

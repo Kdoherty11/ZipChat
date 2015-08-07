@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package models;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = &quot;users&quot;)
+public class User extends AbstractUser {
+
+<span class="fc" id="L15">    public User() { }</span>
+
+<span class="fc" id="L17">    @JsonIgnore</span>
+    @OneToMany(targetEntity = Device.class, mappedBy = &quot;user&quot;, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List&lt;Device&gt; devices = new ArrayList&lt;&gt;();
+
+    @Override
+    public User getActual() {
+<span class="fc" id="L23">        return this;</span>
+    }
+
+    @Override
+    public boolean canEqual(Object other) {
+        return other instanceof User;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (this == other) return true;</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (!(other instanceof User)) return false;</span>
+<span class="fc" id="L35">        User that = (User) other;</span>
+<span class="fc bfc" id="L36" title="All 4 branches covered.">        return that.canEqual(this) &amp;&amp; super.equals(other)</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">                &amp;&amp; Objects.equal(devices, that.devices);</span>
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), devices);
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L47">        return MoreObjects.toStringHelper(this)</span>
+<span class="fc" id="L48">                .add(&quot;userId&quot;, userId)</span>
+<span class="fc" id="L49">                .add(&quot;facebookId&quot;, facebookId)</span>
+<span class="fc" id="L50">                .add(&quot;gender&quot;, gender)</span>
+<span class="fc" id="L51">                .add(&quot;name&quot;, name)</span>
+<span class="fc" id="L52">                .add(&quot;devices&quot;, devices)</span>
+<span class="fc" id="L53">                .add(&quot;createdAt&quot;, createdAt)</span>
+<span class="fc" id="L54">                .toString();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

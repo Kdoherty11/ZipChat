@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AbstractRoom.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">AbstractRoom.java</span></div><h1>AbstractRoom.java</h1><pre class="source lang-java linenums">package models;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Objects;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = &quot;abstract_rooms&quot;)
+@Inheritance(strategy= InheritanceType.TABLE_PER_CLASS)
+<span class="fc" id="L16">public abstract class AbstractRoom {</span>
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE)
+    public long roomId;
+
+<span class="fc" id="L22">    @JsonIgnore</span>
+<span class="fc" id="L23">    public long createdAt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);</span>
+
+<span class="fc" id="L25">    public long lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);</span>
+
+<span class="fc" id="L27">    @JsonIgnore</span>
+    @OneToMany(targetEntity = Message.class, mappedBy = &quot;room&quot;, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List&lt;Message&gt; messages = new ArrayList&lt;&gt;();
+
+    // http://www.artima.com/lejava/articles/equality.html
+    public boolean canEqual(Object other) {
+        return other instanceof AbstractRoom;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (this == other) return true;</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (!(other instanceof AbstractRoom)) return false;</span>
+<span class="fc" id="L40">        AbstractRoom that = (AbstractRoom) other;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        return that.canEqual(this) &amp;&amp;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">                Objects.equal(createdAt, that.createdAt) &amp;&amp;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">                Objects.equal(lastActivity, that.lastActivity);</span>
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(createdAt, lastActivity);
+    }
+
+    public static long getId(AbstractRoom room) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        return room == null ? -1 : room.roomId;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

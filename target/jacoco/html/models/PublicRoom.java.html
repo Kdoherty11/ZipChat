@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PublicRoom.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">PublicRoom.java</span></div><h1>PublicRoom.java</h1><pre class="source lang-java linenums">package models;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+import play.data.validation.Constraints;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+
+@Entity
+@Table(name = &quot;public_rooms&quot;)
+<span class="fc" id="L18">public class PublicRoom extends AbstractRoom {</span>
+
+    @Constraints.Required
+    public String name;
+
+    @Constraints.Required
+    @Constraints.Min(-90)
+    @Constraints.Max(90)
+    @Column(columnDefinition = &quot;NUMERIC&quot;)
+    public Double latitude;
+
+    @Constraints.Required
+    @Constraints.Min(-180)
+    @Constraints.Max(180)
+    @Column(columnDefinition = &quot;NUMERIC&quot;)
+    public Double longitude;
+
+    @Constraints.Required
+    public Integer radius; // in meters
+
+<span class="fc" id="L38">    @JsonIgnore</span>
+    @OneToMany(targetEntity = AnonUser.class, mappedBy = &quot;room&quot;, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List&lt;AnonUser&gt; anonUsers = new ArrayList&lt;&gt;();
+
+<span class="fc" id="L42">    @JsonIgnore</span>
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = &quot;subscriptions&quot;, joinColumns = {@JoinColumn(name = &quot;roomId&quot;)}, inverseJoinColumns = {@JoinColumn(name = &quot;userId&quot;)})
+    public Set&lt;User&gt; subscribers = new LinkedHashSet&lt;&gt;();
+
+    @Override
+    public boolean canEqual(Object other) {
+        return other instanceof PublicRoom;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (this == other) return true;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (!(other instanceof PublicRoom)) return false;</span>
+<span class="fc" id="L56">        PublicRoom that = (PublicRoom) other;</span>
+<span class="fc bfc" id="L57" title="All 4 branches covered.">        return that.canEqual(this) &amp;&amp; super.equals(that) &amp;&amp;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">                Objects.equal(name, that.name) &amp;&amp;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                Objects.equal(latitude, that.latitude) &amp;&amp;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                Objects.equal(longitude, that.longitude) &amp;&amp;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">                Objects.equal(radius, that.radius);</span>
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), name, latitude, longitude, radius);
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L71">        return MoreObjects.toStringHelper(this)</span>
+<span class="fc" id="L72">                .add(&quot;roomId&quot;, roomId)</span>
+<span class="fc" id="L73">                .add(&quot;name&quot;, name)</span>
+<span class="fc" id="L74">                .add(&quot;latitude&quot;, latitude)</span>
+<span class="fc" id="L75">                .add(&quot;longitude&quot;, longitude)</span>
+<span class="fc" id="L76">                .add(&quot;radius&quot;, radius)</span>
+<span class="fc" id="L77">                .add(&quot;anonUsers&quot;, anonUsers)</span>
+<span class="fc" id="L78">                .add(&quot;subscribers&quot;, subscribers)</span>
+<span class="fc" id="L79">                .add(&quot;createdAt&quot;, createdAt)</span>
+<span class="fc" id="L80">                .add(&quot;lastActivity&quot;, lastActivity)</span>
+<span class="fc" id="L81">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

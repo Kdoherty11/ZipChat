@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+	<info organisation="zipchat"
+		module="zipchat_2.11"
+		revision="1.0-SNAPSHOT"
+		status="integration"
+		publication="20150807171807"
+	>
+		<description>
+		ZipChat
+		</description>
+	</info>
+	<configurations>
+		<conf name="compile" visibility="public" description=""/>
+		<conf name="runtime" visibility="public" description="" extends="compile"/>
+		<conf name="test" visibility="public" description="" extends="runtime"/>
+		<conf name="provided" visibility="public" description=""/>
+		<conf name="optional" visibility="public" description=""/>
+		<conf name="compile-internal" visibility="private" description="" extends="compile,optional,provided"/>
+		<conf name="runtime-internal" visibility="private" description="" extends="runtime,optional"/>
+		<conf name="test-internal" visibility="private" description="" extends="test,optional,provided"/>
+		<conf name="plugin" visibility="private" description=""/>
+		<conf name="sources" visibility="public" description=""/>
+		<conf name="docs" visibility="private" description=""/>
+		<conf name="pom" visibility="public" description=""/>
+		<conf name="scala-tool" visibility="private" description=""/>
+		<conf name="jacoco" visibility="private" description="" extends="test"/>
+	</configurations>
+	<publications>
+		<artifact name="zipchat_2.11" type="pom" ext="pom" conf="pom"/>
+		<artifact name="zipchat_2.11" type="jar" ext="jar" conf="compile"/>
+		<artifact name="zipchat_2.11" type="src" ext="jar" conf="sources" e:classifier="sources"/>
+		<artifact name="zipchat_2.11" type="doc" ext="jar" conf="docs" e:classifier="javadoc"/>
+	</publications>
+	<dependencies>
+		<dependency org="org.scala-lang" name="scala-compiler" rev="2.11.6" conf="scala-tool->default,optional(default);compile->default(compile)"/>
+		<dependency org="org.scala-lang" name="scala-library" rev="2.11.6" conf="scala-tool->default,optional(default);compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="twirl-api_2.11" rev="1.1.1" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-enhancer" rev="1.1.0" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-server_2.11" rev="2.4.1" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-test_2.11" rev="2.4.1" conf="test->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-omnidoc_2.11" rev="2.4.1" conf="docs->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-java_2.11" rev="2.4.1" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-netty-server_2.11" rev="2.4.1" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-java-jdbc_2.11" rev="2.4.1" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-java-ws_2.11" rev="2.4.1" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-java-jpa_2.11" rev="2.4.1" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-cache_2.11" rev="2.4.1" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play.modules" name="play-modules-redis_2.11" rev="2.4.1" conf="compile->default(compile)"/>
+		<dependency org="org.postgresql" name="postgresql" rev="9.4-1201-jdbc41" conf="compile->default(compile)"/>
+		<dependency org="org.hibernate" name="hibernate-entitymanager" rev="4.3.10.Final" conf="compile->default(compile)"/>
+		<dependency org="com.notnoop.apns" name="apns" rev="0.1.6" conf="compile->default(compile)"/>
+		<dependency org="com.ganyo" name="gcm-server" rev="1.0.2" conf="compile->default(compile)"/>
+		<dependency org="com.intellij" name="annotations" rev="9.0.4" conf="compile->default(compile)"/>
+		<dependency org="io.jsonwebtoken" name="jjwt" rev="0.5" conf="compile->default(compile)"/>
+		<dependency org="com.github.javafaker" name="javafaker" rev="0.5" conf="compile->default(compile)"/>
+		<dependency org="org.mockito" name="mockito-core" rev="2.0.21-beta" conf="compile->default(compile)"/>
+		<dependency org="com.google.inject" name="guice" rev="4.0" conf="compile->default(compile)"/>
+		<dependency org="com.google.code.gson" name="gson" rev="2.3.1" conf="compile->default(compile)"/>
+		<dependency org="nl.jqno.equalsverifier" name="equalsverifier" rev="1.7.3" conf="compile->default(compile)"/>
+		<dependency org="com.fiftyonred" name="mock-jedis" rev="0.1.2" conf="compile->default(compile)"/>
+		<dependency org="org.jacoco" name="org.jacoco.agent" rev="0.7.1.201405082137" conf="jacoco->default(compile)">
+			<artifact name="org.jacoco.agent" type="jar" ext="jar" conf="*"/>
+		</dependency>
+	</dependencies>
+</ivy-module>

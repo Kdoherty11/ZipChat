@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Validators.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">validation.validators</a> &gt; <span class="el_source">Validators.java</span></div><h1>Validators.java</h1><pre class="source lang-java linenums">package validation.validators;
+
+import com.google.common.collect.Sets;
+import validation.Validator;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * Factory methods for Validators
+ */
+public class Validators {
+
+<span class="fc" id="L15">    private Validators() { }</span>
+
+    public static Validator&lt;Number&gt; positive() {
+<span class="fc" id="L18">        return new MinValidator(1);</span>
+    }
+
+    public static Validator&lt;Number&gt; min(long value) {
+<span class="fc" id="L22">        return new MinValidator(value);</span>
+    }
+
+    public static Validator&lt;Object&gt; required() {
+<span class="fc" id="L26">        return new RequiredValidator();</span>
+    }
+
+    public static Validator&lt;String&gt; enumValue(Class&lt;? extends Enum&gt; enumClass) {
+<span class="fc" id="L30">        Enum[] enumValues = enumClass.getEnumConstants();</span>
+<span class="fc" id="L31">        Set&lt;String&gt; enumValueStrings = Arrays.stream(enumValues).map(Enum::name).collect(Collectors.toSet());</span>
+<span class="fc" id="L32">        return new WhiteListValidator&lt;&gt;(enumValueStrings);</span>
+    }
+
+    @SafeVarargs
+    public static &lt;T&gt; Validator&lt;T&gt; whiteList(T... whiteList) {
+<span class="fc" id="L37">        return new WhiteListValidator&lt;&gt;(Sets.newHashSet(whiteList));</span>
+    }
+
+    public static Validator&lt;String&gt; stringToLong() {
+<span class="fc" id="L41">        return new StringToLongValidator();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

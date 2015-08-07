@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PublicRoomServiceImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">services.impl</a> &gt; <span class="el_source">PublicRoomServiceImpl.java</span></div><h1>PublicRoomServiceImpl.java</h1><pre class="source lang-java linenums">package services.impl;
+
+import com.google.inject.Inject;
+import daos.PublicRoomDao;
+import daos.UserDao;
+import models.Device;
+import models.PublicRoom;
+import models.User;
+import notifications.AbstractNotification;
+import services.NotificationService;
+import services.PublicRoomService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Created by kdoherty on 7/3/15.
+ */
+public class PublicRoomServiceImpl extends GenericServiceImpl&lt;PublicRoom&gt; implements PublicRoomService {
+
+    private final PublicRoomDao publicRoomDao;
+    private final UserDao userDao;
+    private final NotificationService notificationService;
+
+    @Inject
+    public PublicRoomServiceImpl(final PublicRoomDao publicRoomDao, final UserDao userDao, final NotificationService notificationService) {
+<span class="fc" id="L28">        super(publicRoomDao);</span>
+<span class="fc" id="L29">        this.publicRoomDao = publicRoomDao;</span>
+<span class="fc" id="L30">        this.userDao = userDao;</span>
+<span class="fc" id="L31">        this.notificationService = notificationService;</span>
+<span class="fc" id="L32">    }</span>
+
+    @Override
+    public void sendNotification(PublicRoom room, AbstractNotification notification, Set&lt;Long&gt; userIdsInRoom) {
+<span class="fc" id="L36">        Set&lt;User&gt; subscribers = getSubscribers(room);</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (subscribers.isEmpty()) {</span>
+<span class="fc" id="L38">            return;</span>
+        }
+
+<span class="fc" id="L41">        List&lt;String&gt; androidRegIds = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L42">        List&lt;String&gt; iosRegIds = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L44">        subscribers.forEach(user -&gt; {</span>
+            if (!userIdsInRoom.contains(user.userId)) {
+
+                userDao.getDevices(user).forEach(device -&gt; {
+                    if (device.platform == Device.Platform.android) {
+                        androidRegIds.add(device.regId);
+                    } else {
+                        iosRegIds.add(device.regId);
+                    }
+                });
+            }
+        });
+
+<span class="fc" id="L57">        notificationService.send(androidRegIds, iosRegIds, notification);</span>
+<span class="fc" id="L58">    }</span>
+
+    @Override
+    public boolean subscribe(PublicRoom room, User user) {
+<span class="fc" id="L62">        return room.subscribers.add(user);</span>
+    }
+
+    @Override
+    public boolean unsubscribe(PublicRoom room, User user) {
+<span class="fc" id="L67">        return room.subscribers.remove(user);</span>
+    }
+
+    @Override
+    public boolean isSubscribed(PublicRoom room, long userId) {
+<span class="fc" id="L72">        return room.subscribers.stream().anyMatch(user -&gt; user.userId == userId);</span>
+    }
+
+    @Override
+    public List&lt;PublicRoom&gt; allInGeoRange(double lat, double lon) {
+<span class="fc" id="L77">        return publicRoomDao.allInGeoRange(lat, lon);</span>
+    }
+
+    @Override
+    public Set&lt;User&gt; getSubscribers(PublicRoom room) {
+<span class="fc" id="L82">        return publicRoomDao.getSubscribers(room);</span>
+    }
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

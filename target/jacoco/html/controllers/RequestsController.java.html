@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>RequestsController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">controllers</a> &gt; <span class="el_source">RequestsController.java</span></div><h1>RequestsController.java</h1><pre class="source lang-java linenums">package controllers;
+
+import com.google.inject.Inject;
+import models.AbstractUser;
+import models.Request;
+import models.User;
+import play.db.jpa.Transactional;
+import play.mvc.Result;
+import play.mvc.Security;
+import security.Secured;
+import services.AbstractUserService;
+import services.RequestService;
+import services.SecurityService;
+import services.UserService;
+import validation.DataValidator;
+import validation.FieldValidator;
+import validation.validators.Validators;
+
+import java.util.Map;
+import java.util.Optional;
+
+import static play.data.Form.form;
+
+@Security.Authenticated(Secured.class)
+public class RequestsController extends BaseController {
+
+    private final RequestService requestService;
+    private final UserService userService;
+    private final AbstractUserService abstractUserService;
+    private final SecurityService securityService;
+
+    @Inject
+    public RequestsController(final RequestService requestService,
+                              final AbstractUserService abstractUserService,
+                              final UserService userService,
+<span class="fc" id="L36">                              final SecurityService securityService) {</span>
+<span class="fc" id="L37">        this.requestService = requestService;</span>
+<span class="fc" id="L38">        this.abstractUserService = abstractUserService;</span>
+<span class="fc" id="L39">        this.userService = userService;</span>
+<span class="fc" id="L40">        this.securityService = securityService;</span>
+<span class="fc" id="L41">    }</span>
+
+    @Transactional
+    public Result createRequest() {
+<span class="fc" id="L45">        Map&lt;String, String&gt; data = form().bindFromRequest().data();</span>
+
+<span class="fc" id="L47">        String senderKey = &quot;sender&quot;;</span>
+<span class="fc" id="L48">        String receiverKey = &quot;receiver&quot;;</span>
+
+<span class="fc" id="L50">        String senderIdStr = data.get(senderKey);</span>
+<span class="fc" id="L51">        String receiverIdStr = data.get(receiverKey);</span>
+        
+<span class="fc" id="L53">        DataValidator validator = new DataValidator(</span>
+<span class="fc" id="L54">                new FieldValidator&lt;&gt;(senderKey, senderIdStr, Validators.required(), Validators.stringToLong()),</span>
+<span class="fc" id="L55">                new FieldValidator&lt;&gt;(receiverKey, receiverIdStr, Validators.required(), Validators.stringToLong())</span>
+        );
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (validator.hasErrors()) {</span>
+<span class="fc" id="L59">            return badRequest(validator.errorsAsJson());</span>
+        }
+
+<span class="fc" id="L62">        long senderId = Long.parseLong(senderIdStr);</span>
+<span class="fc" id="L63">        long receiverId = Long.parseLong(receiverIdStr);</span>
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (securityService.isUnauthorized(senderId)) {</span>
+<span class="fc" id="L66">            return forbidden();</span>
+        }
+
+<span class="fc" id="L69">        Optional&lt;User&gt; senderOptional = userService.findById(senderId);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (senderOptional.isPresent()) {</span>
+<span class="fc" id="L71">            Optional&lt;AbstractUser&gt; receiverOptional = abstractUserService.findById(receiverId);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">            if (receiverOptional.isPresent()) {</span>
+<span class="fc" id="L73">                userService.sendChatRequest(senderOptional.get(), receiverOptional.get());</span>
+<span class="fc" id="L74">                return OK_RESULT;</span>
+            } else {
+<span class="fc" id="L76">                return entityNotFound(AbstractUser.class, receiverId);</span>
+            }
+        } else {
+<span class="fc" id="L79">            return entityNotFound(User.class, senderId);</span>
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Result getRequestsByReceiver(long receiverId) {
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (securityService.isUnauthorized(receiverId)) {</span>
+<span class="fc" id="L86">            return forbidden();</span>
+        }
+<span class="fc" id="L88">        return okJson(requestService.findPendingRequestsByReceiver(receiverId));</span>
+    }
+
+    @Transactional
+    public Result handleResponse(long requestId) {
+<span class="fc" id="L93">        String responseKey = &quot;status&quot;;</span>
+
+<span class="fc" id="L95">        Map&lt;String, String&gt; formData = form().bindFromRequest(responseKey).data();</span>
+
+<span class="fc" id="L97">        DataValidator validator = new DataValidator(</span>
+<span class="fc" id="L98">                new FieldValidator&lt;&gt;(responseKey, formData.get(responseKey), Validators.required(),</span>
+<span class="fc" id="L99">                        Validators.whiteList(Request.Status.accepted.name(), Request.Status.denied.name()))</span>
+        );
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (validator.hasErrors()) {</span>
+<span class="fc" id="L103">            return badRequest(validator.errorsAsJson());</span>
+        }
+
+<span class="fc" id="L106">        Optional&lt;Request&gt; requestOptional = requestService.findById(requestId);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (requestOptional.isPresent()) {</span>
+
+<span class="fc" id="L109">            Request request = requestOptional.get();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            if (securityService.isUnauthorized(request.receiver.userId)) {</span>
+<span class="fc" id="L111">                return forbidden();</span>
+            }
+
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            if (request.status != Request.Status.pending) {</span>
+<span class="fc" id="L115">                return badRequestJson(&quot;This request has already been responded to&quot;);</span>
+            }
+
+<span class="fc" id="L118">            requestService.handleResponse(request, Request.Status.valueOf(formData.get(responseKey)));</span>
+
+<span class="fc" id="L120">            return OK_RESULT;</span>
+        } else {
+<span class="fc" id="L122">            return entityNotFound(Request.class, requestId);</span>
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Result getStatus(long senderId, long receiverId) {
+<span class="fc" id="L128">        return ok(requestService.getStatus(senderId, receiverId));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

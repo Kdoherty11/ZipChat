@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PrivateRoomServiceImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">services.impl</a> &gt; <span class="el_source">PrivateRoomServiceImpl.java</span></div><h1>PrivateRoomServiceImpl.java</h1><pre class="source lang-java linenums">package services.impl;
+
+import com.google.inject.Inject;
+import daos.PrivateRoomDao;
+import daos.RequestDao;
+import models.PrivateRoom;
+import services.PrivateRoomService;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Created by kdoherty on 7/3/15.
+ */
+public class PrivateRoomServiceImpl extends GenericServiceImpl&lt;PrivateRoom&gt; implements PrivateRoomService {
+
+    private final PrivateRoomDao privateRoomDao;
+    private final RequestDao requestDao;
+
+    @Inject
+    public PrivateRoomServiceImpl(final PrivateRoomDao privateRoomDao, final RequestDao requestDao) {
+<span class="fc" id="L22">        super(privateRoomDao);</span>
+<span class="fc" id="L23">        this.privateRoomDao = privateRoomDao;</span>
+<span class="fc" id="L24">        this.requestDao = requestDao;</span>
+<span class="fc" id="L25">    }</span>
+
+    @Override
+    public boolean removeUser(PrivateRoom room, long userId) {
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (userId == room.sender.userId) {</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">            if (!room.receiverInRoom) {</span>
+<span class="fc" id="L31">                privateRoomDao.remove(room);</span>
+            } else {
+<span class="fc" id="L33">                room.senderInRoom = false;</span>
+            }
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        } else if (userId == room.receiver.userId) {</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">            if (!room.senderInRoom) {</span>
+<span class="fc" id="L37">                privateRoomDao.remove(room);</span>
+            } else {
+<span class="fc" id="L39">                room.receiverInRoom = false;</span>
+            }
+        } else {
+<span class="fc" id="L42">            return false;</span>
+        }
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (room.request != null) {</span>
+            // Allow both users to request each other again
+<span class="fc" id="L47">            requestDao.remove(room.request);</span>
+<span class="fc" id="L48">            room.request = null;</span>
+        }
+
+<span class="fc" id="L51">        return true;</span>
+    }
+
+    @Override
+    public boolean isUserInRoom(PrivateRoom room, long userId) {
+<span class="fc bfc" id="L56" title="All 8 branches covered.">        return (room.sender.userId == userId &amp;&amp; room.senderInRoom) ||</span>
+                (room.receiver.userId == userId &amp;&amp; room.receiverInRoom);
+    }
+
+    @Override
+    public List&lt;PrivateRoom&gt; findByUserId(long userId) {
+<span class="fc" id="L62">        return privateRoomDao.findByUserId(userId);</span>
+    }
+
+    @Override
+    public Optional&lt;PrivateRoom&gt; findByRoomMembers(long senderId, long receiverId) {
+<span class="fc" id="L67">        return privateRoomDao.findByRoomMembers(senderId, receiverId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

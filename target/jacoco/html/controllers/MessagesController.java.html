@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MessagesController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">controllers</a> &gt; <span class="el_source">MessagesController.java</span></div><h1>MessagesController.java</h1><pre class="source lang-java linenums">package controllers;
+
+import com.google.inject.Inject;
+import models.Message;
+import models.User;
+import play.db.jpa.Transactional;
+import play.mvc.Result;
+import play.mvc.Results;
+import play.mvc.Security;
+import security.Secured;
+import services.MessageService;
+import services.SecurityService;
+import services.UserService;
+
+import java.util.Optional;
+
+@Security.Authenticated(Secured.class)
+public class MessagesController extends BaseController {
+
+    private final MessageService messageService;
+    private final UserService userService;
+    private final SecurityService securityService;
+
+    @Inject
+<span class="fc" id="L25">    public MessagesController(final MessageService messageService, final UserService userService, final SecurityService securityService) {</span>
+<span class="fc" id="L26">        this.messageService = messageService;</span>
+<span class="fc" id="L27">        this.userService = userService;</span>
+<span class="fc" id="L28">        this.securityService = securityService;</span>
+<span class="fc" id="L29">    }</span>
+
+    @Transactional
+    public Result favorite(long messageId, long userId) {
+<span class="fc" id="L33">        return messageActionHelper(messageId, userId, new UserMessageAction() {</span>
+            @Override
+            public boolean messageAction(Message message, User user) {
+<span class="fc" id="L36">                return messageService.favorite(message, user);</span>
+            }
+
+            @Override
+            public Result onActionFailed(User user) {
+<span class="fc" id="L41">                return badRequest(&quot;User &quot; + userId + &quot; has already favorited this message&quot;);</span>
+            }
+        });
+    }
+
+    @Transactional
+    public Result removeFavorite(long messageId, long userId) {
+<span class="fc" id="L48">        return messageActionHelper(messageId, userId, new UserMessageAction() {</span>
+            @Override
+            public boolean messageAction(Message message, User user) {
+<span class="fc" id="L51">                return messageService.removeFavorite(message, user);</span>
+            }
+
+            @Override
+            public Result onActionFailed(User user) {
+<span class="fc" id="L56">                return notFound(&quot;User &quot; + userId + &quot; has not favorited this message&quot;);</span>
+            }
+        });
+    }
+
+    @Transactional
+    public Result flag(long messageId, long userId) {
+<span class="fc" id="L63">        return messageActionHelper(messageId, userId, new UserMessageAction() {</span>
+            @Override
+            public boolean messageAction(Message message, User user) {
+<span class="fc" id="L66">                return messageService.flag(message, user);</span>
+            }
+
+            @Override
+            public Result onActionFailed(User user) {
+<span class="fc" id="L71">                return badRequest(&quot;User &quot; + user.userId + &quot; has already flagged this message&quot;);</span>
+            }
+        });
+    }
+
+    @Transactional
+    public Result removeFlag(long messageId, long userId) {
+<span class="fc" id="L78">        return messageActionHelper(messageId, userId, new UserMessageAction() {</span>
+            @Override
+            public boolean messageAction(Message message, User user) {
+<span class="fc" id="L81">                return messageService.removeFlag(message, user);</span>
+            }
+
+            @Override
+            public Result onActionFailed(User user) {
+<span class="fc" id="L86">                return notFound(&quot;User &quot; + user.userId + &quot; has not flagged this message&quot;);</span>
+            }
+        });
+    }
+
+    // Public due to http://stackoverflow.com/a/21442580/3258892
+    public interface UserMessageAction {
+        boolean messageAction(Message message, User user);
+        Result onActionFailed(User user);
+    }
+
+    private Result messageActionHelper(long messageId, long userId, UserMessageAction cb) {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (securityService.isUnauthorized(userId)) {</span>
+<span class="fc" id="L99">            return Results.forbidden();</span>
+        }
+<span class="fc" id="L101">        Optional&lt;Message&gt; messageOptional = messageService.findById(messageId);</span>
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (messageOptional.isPresent()) {</span>
+
+<span class="fc" id="L105">            Optional&lt;User&gt; userOptional = userService.findById(userId);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (userOptional.isPresent()) {</span>
+<span class="fc" id="L107">                User user = userOptional.get();</span>
+<span class="fc" id="L108">                boolean success = cb.messageAction(messageOptional.get(), user);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">                if (!success) {</span>
+<span class="fc" id="L110">                    return cb.onActionFailed(user);</span>
+                }
+<span class="fc" id="L112">                return OK_RESULT;</span>
+            } else {
+<span class="fc" id="L114">                return entityNotFound(User.class, userId);</span>
+            }
+        } else {
+<span class="fc" id="L117">            return entityNotFound(Message.class, messageId);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

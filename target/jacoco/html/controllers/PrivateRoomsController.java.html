@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PrivateRoomsController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">controllers</a> &gt; <span class="el_source">PrivateRoomsController.java</span></div><h1>PrivateRoomsController.java</h1><pre class="source lang-java linenums">package controllers;
+
+import com.google.inject.Inject;
+import models.PrivateRoom;
+import play.db.jpa.Transactional;
+import play.mvc.Result;
+import play.mvc.Security;
+import security.Secured;
+import services.MessageService;
+import services.PrivateRoomService;
+import services.SecurityService;
+
+import java.util.Optional;
+
+@Security.Authenticated(Secured.class)
+public class PrivateRoomsController extends AbstractRoomController {
+
+    private final PrivateRoomService privateRoomService;
+    private final SecurityService securityService;
+
+    @Inject
+    public PrivateRoomsController(final PrivateRoomService privateRoomService, final MessageService messageService,
+                                  final SecurityService securityService) {
+<span class="fc" id="L24">        super(messageService);</span>
+<span class="fc" id="L25">        this.privateRoomService = privateRoomService;</span>
+<span class="fc" id="L26">        this.securityService = securityService;</span>
+<span class="fc" id="L27">    }</span>
+
+    @Transactional(readOnly = true)
+    public Result getRoomsByUserId(long userId) {
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        if (securityService.isUnauthorized(userId)) {</span>
+<span class="fc" id="L32">            return forbidden();</span>
+        }
+<span class="fc" id="L34">        return okJson(privateRoomService.findByUserId(userId));</span>
+    }
+
+    @Transactional
+    public Result leaveRoom(long roomId, long userId) {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (securityService.isUnauthorized(userId)) {</span>
+<span class="fc" id="L40">            return forbidden();</span>
+        }
+
+<span class="fc" id="L43">        Optional&lt;PrivateRoom&gt; roomOptional = privateRoomService.findById(roomId);</span>
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (roomOptional.isPresent()) {</span>
+<span class="fc" id="L46">            PrivateRoom room = roomOptional.get();</span>
+
+<span class="fc" id="L48">            boolean removed = privateRoomService.removeUser(room, userId);</span>
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            if (removed) {</span>
+<span class="fc" id="L51">                return OK_RESULT;</span>
+            } else {
+<span class="fc" id="L53">                return badRequestJson(&quot;Unable to remove user with ID &quot; + userId + &quot; from the room because they are not in it&quot;);</span>
+            }
+
+        } else {
+<span class="fc" id="L57">            return entityNotFound(PrivateRoom.class, roomId);</span>
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Result getMessages(long roomId, int limit, int offset) {
+<span class="fc" id="L63">        Optional&lt;PrivateRoom&gt; privateRoomOptional = privateRoomService.findById(roomId);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (privateRoomOptional.isPresent()) {</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">            if (securityService.isUnauthorized(privateRoomOptional.get())) {</span>
+<span class="fc" id="L66">                return forbidden();</span>
+            }
+        } else {
+<span class="fc" id="L69">            return entityNotFound(PrivateRoom.class, roomId);</span>
+        }
+
+<span class="fc" id="L72">        return getMessagesHelper(roomId, limit, offset);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

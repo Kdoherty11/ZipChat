@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BaseController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">controllers</a> &gt; <span class="el_source">BaseController.java</span></div><h1>BaseController.java</h1><pre class="source lang-java linenums">package controllers;
+
+import play.Logger;
+import play.data.Form;
+import play.db.jpa.JPA;
+import play.mvc.Controller;
+import play.mvc.Result;
+
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import static play.libs.Json.toJson;
+
+<span class="fc" id="L15">public abstract class BaseController extends Controller {</span>
+
+    public static final String OK_STRING = &quot;OK&quot;;
+<span class="fc" id="L18">    public static final Result OK_RESULT = okJson(OK_STRING);</span>
+
+    protected &lt;T&gt; Result create(Class&lt;T&gt; clazz) {
+<span class="nc" id="L21">        Logger.debug(&quot;Creating a &quot; + clazz.getSimpleName());</span>
+
+<span class="nc" id="L23">        Form&lt;T&gt; form = Form.form(clazz).bindFromRequest();</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">        if (form.hasErrors()) {</span>
+<span class="nc" id="L25">            return badRequest(form.errorsAsJson());</span>
+        } else {
+<span class="nc" id="L27">            T entity = form.get();</span>
+<span class="nc" id="L28">            JPA.em().persist(entity);</span>
+<span class="nc" id="L29">            return created(toJson(entity));</span>
+        }
+    }
+
+    protected &lt;T&gt; Result read(Class&lt;T&gt; clazz) {
+<span class="nc" id="L34">        Logger.debug(&quot;Getting all &quot; + clazz.getSimpleName() + &quot;s&quot;);</span>
+
+<span class="nc" id="L36">        CriteriaQuery&lt;T&gt; cq = JPA.em().getCriteriaBuilder().createQuery(clazz);</span>
+<span class="nc" id="L37">        Root&lt;T&gt; root = cq.from(clazz);</span>
+<span class="nc" id="L38">        CriteriaQuery&lt;T&gt; all = cq.select(root);</span>
+<span class="nc" id="L39">        TypedQuery&lt;T&gt; allQuery = JPA.em().createQuery(all);</span>
+
+<span class="nc" id="L41">        return okJson(allQuery.getResultList());</span>
+    }
+
+    public static Result okJson(Object obj) {
+<span class="fc" id="L45">        return ok(toJson(obj));</span>
+    }
+
+    public static Result badRequestJson(Object obj) {
+<span class="fc" id="L49">        return badRequest(toJson(obj));</span>
+    }
+
+    public static String buildEntityNotFoundString(Class clazz, long id) {
+<span class="fc" id="L53">        String errorMessage = clazz.getSimpleName() + &quot; with id &quot; + id + &quot; was not found&quot;;</span>
+<span class="fc" id="L54">        Logger.warn(errorMessage);</span>
+
+<span class="fc" id="L56">        return errorMessage;</span>
+    }
+
+    protected Result entityNotFound(Class clazz, long id) {
+<span class="fc" id="L60">        return notFound(toJson(buildEntityNotFoundString(clazz, id)));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

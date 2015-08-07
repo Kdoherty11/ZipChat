@@ -1,0 +1,85 @@
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.security.SecuredTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.notifications.senders.AndroidNotificationSenderTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.controllers.UsersControllerTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.daos.GenericDaoTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.controllers.MessagesControllerTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.controllers.DevicesControllerTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.GenericServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.validation.DataValidatorTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.controllers.RoomSocketsControllerTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.NotificationServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.models.PrivateRoomTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.daos.PublicRoomDaoTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.sockets.RoomSocketTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.controllers.PrivateRoomsControllerTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.daos.MessageDaoTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.controllers.PublicRoomsControllerTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.controllers.StatusControllerTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.DeviceServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.validation.validators.ValidatorsTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.daos.UserDaoTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.SecurityServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.AbstractRoomServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.models.RequestTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.daos.RequestDaoTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.daos.PrivateRoomDaoTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.RequestServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.PublicRoomServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.JedisServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.notifications.senders.IosNotificationSenderTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.models.DeviceTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.AbstractUserServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.models.UserTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.models.MessageTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.controllers.RequestsControllerTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.daos.AnonUserDaoTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.models.AnonUserTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.MessageServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.UserServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.PrivateRoomServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.services.AnonUserServiceTest, com.novocode.junit.RunWithFingerprint@404570da, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(unit.models.PublicRoomTest, com.novocode.junit.JUnitFingerprint@335957f7, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mSummary for JUnit not available.[0m
+[0m[[0minfo[0m] [0mPassed: Total 343, Failed 0, Errors 0, Passed 343[0m
+[0m[[0mdebug[0m] [0mPassed tests:[0m
+[0m[[0mdebug[0m] [0m	unit.models.UserTest[0m
+[0m[[0mdebug[0m] [0m	unit.models.PrivateRoomTest[0m
+[0m[[0mdebug[0m] [0m	unit.controllers.DevicesControllerTest[0m
+[0m[[0mdebug[0m] [0m	unit.daos.PublicRoomDaoTest[0m
+[0m[[0mdebug[0m] [0m	unit.daos.PrivateRoomDaoTest[0m
+[0m[[0mdebug[0m] [0m	unit.validation.validators.ValidatorsTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.NotificationServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.SecurityServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.controllers.UsersControllerTest[0m
+[0m[[0mdebug[0m] [0m	unit.notifications.senders.AndroidNotificationSenderTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.DeviceServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.daos.RequestDaoTest[0m
+[0m[[0mdebug[0m] [0m	unit.validation.DataValidatorTest[0m
+[0m[[0mdebug[0m] [0m	unit.daos.MessageDaoTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.AnonUserServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.controllers.PublicRoomsControllerTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.MessageServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.controllers.PrivateRoomsControllerTest[0m
+[0m[[0mdebug[0m] [0m	unit.controllers.MessagesControllerTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.JedisServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.controllers.RoomSocketsControllerTest[0m
+[0m[[0mdebug[0m] [0m	unit.controllers.RequestsControllerTest[0m
+[0m[[0mdebug[0m] [0m	unit.models.MessageTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.GenericServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.notifications.senders.IosNotificationSenderTest[0m
+[0m[[0mdebug[0m] [0m	unit.sockets.RoomSocketTest[0m
+[0m[[0mdebug[0m] [0m	unit.security.SecuredTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.UserServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.models.AnonUserTest[0m
+[0m[[0mdebug[0m] [0m	unit.daos.UserDaoTest[0m
+[0m[[0mdebug[0m] [0m	unit.models.DeviceTest[0m
+[0m[[0mdebug[0m] [0m	unit.models.PublicRoomTest[0m
+[0m[[0mdebug[0m] [0m	unit.controllers.StatusControllerTest[0m
+[0m[[0mdebug[0m] [0m	unit.daos.GenericDaoTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.AbstractUserServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.PublicRoomServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.AbstractRoomServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.models.RequestTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.PrivateRoomServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.services.RequestServiceTest[0m
+[0m[[0mdebug[0m] [0m	unit.daos.AnonUserDaoTest[0m

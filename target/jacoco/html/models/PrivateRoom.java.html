@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PrivateRoom.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Coverage Report</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">PrivateRoom.java</span></div><h1>PrivateRoom.java</h1><pre class="source lang-java linenums">package models;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+import play.data.validation.Constraints;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = &quot;private_rooms&quot;)
+public class PrivateRoom extends AbstractRoom {
+
+    @ManyToOne
+    @JoinColumn(name = &quot;sender&quot;)
+    @Constraints.Required
+    public User sender;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;receiver&quot;)
+    @Constraints.Required
+    public User receiver;
+
+<span class="fc" id="L24">    @JsonIgnore</span>
+    public boolean senderInRoom = true;
+
+<span class="fc" id="L27">    @JsonIgnore</span>
+    public boolean receiverInRoom = true;
+
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = &quot;requestId&quot;)
+    public Request request;
+
+<span class="fc" id="L35">    public PrivateRoom() {</span>
+        // Needed for JPA
+<span class="fc" id="L37">    }</span>
+
+<span class="fc" id="L39">    public PrivateRoom(Request request) {</span>
+<span class="fc" id="L40">        this.request = request;</span>
+<span class="fc" id="L41">        this.sender = request.sender;</span>
+<span class="fc" id="L42">        this.receiver = request.receiver;</span>
+<span class="fc" id="L43">    }</span>
+
+    @Override
+    public boolean canEqual(Object other) {
+        return other instanceof PrivateRoom;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (this == other) return true;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (!(other instanceof PrivateRoom)) return false;</span>
+<span class="fc" id="L54">        PrivateRoom that = (PrivateRoom) other;</span>
+<span class="fc bfc" id="L55" title="All 4 branches covered.">        return that.canEqual(this) &amp;&amp; super.equals(that) &amp;&amp;</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">                Objects.equal(senderInRoom, that.senderInRoom) &amp;&amp;</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">                Objects.equal(receiverInRoom, that.receiverInRoom) &amp;&amp;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">                Objects.equal(sender, that.sender) &amp;&amp;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                Objects.equal(receiver, that.receiver) &amp;&amp;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                Objects.equal(request, that.request);</span>
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), sender, receiver, senderInRoom, receiverInRoom, request);
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L70">        return MoreObjects.toStringHelper(this)</span>
+<span class="fc" id="L71">                .add(&quot;roomId&quot;, roomId)</span>
+<span class="fc" id="L72">                .add(&quot;senderId&quot;, AbstractUser.getId(sender))</span>
+<span class="fc" id="L73">                .add(&quot;receiverId&quot;, AbstractUser.getId(receiver))</span>
+<span class="fc" id="L74">                .add(&quot;senderInRoom&quot;, senderInRoom)</span>
+<span class="fc" id="L75">                .add(&quot;receiverInRoom&quot;, receiverInRoom)</span>
+<span class="fc" id="L76">                .add(&quot;requestId&quot;, Request.getId(request))</span>
+<span class="fc" id="L77">                .add(&quot;createdAt&quot;, createdAt)</span>
+<span class="fc" id="L78">                .add(&quot;lastActivity&quot;, lastActivity)</span>
+<span class="fc" id="L79">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>
