@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.RoomSocketsController;
 import factories.*;
-import models.*;
+import models.AnonUser;
+import models.Message;
+import models.PublicRoom;
+import models.User;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
@@ -18,12 +21,10 @@ import play.Application;
 import play.api.Play;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
-import play.mvc.WebSocket;
 import play.test.WithApplication;
 import redis.clients.jedis.Jedis;
 import services.*;
 import services.impl.RoomSocketServiceImpl;
-import sockets.KeepAlive;
 import sockets.RoomSocket;
 import utils.TestUtils;
 
@@ -69,8 +70,6 @@ public class RoomSocketTest extends WithApplication {
 
     private PublicRoom publicRoom;
 
-    private PrivateRoom privateRoom;
-
     private MockJedisService jedisService;
 
     private Jedis jedis;
@@ -91,7 +90,9 @@ public class RoomSocketTest extends WithApplication {
 
     private JsonNode secondEvent;
 
+    private UserFactory userFactory;
 
+    private KeepAliveService keepAliveService;
 
     @Override
     protected Application provideApplication() {
@@ -104,8 +105,10 @@ public class RoomSocketTest extends WithApplication {
     @Before
     public void setUp() throws Exception {
         MockJedis.clean();
+        ((Map) TestUtils.getHiddenField(RoomSocket.class, "rooms")).clear();
 
-        user = new UserFactory().create(PropOverride.of("userId", userId));
+        userFactory = new UserFactory();
+        user = userFactory.create(PropOverride.of("userId", userId));
         when(userService.findById(userId)).thenReturn(Optional.of(user));
 
         publicRoom = new PublicRoomFactory().create(PropOverride.of("roomId", roomId));
@@ -115,8 +118,9 @@ public class RoomSocketTest extends WithApplication {
         jedis = spy(new MockJedis());
         jedisService = new MockJedisService(jedis);
 
+        keepAliveService = spy(Play.current().injector().instanceOf(KeepAliveService.class));
         ActorRef defaultRoomWithMockedServices = Play.current().actorSystem().actorOf(Props.create(RoomSocket.class, () -> {
-            return new RoomSocket(abstractRoomService, userService, anonUserService, messageService, jedisService);
+            return new RoomSocket(abstractRoomService, userService, anonUserService, messageService, jedisService, keepAliveService);
         }));
 
         TestUtils.setPrivateStaticFinalField(RoomSocket.class, "defaultRoom", defaultRoomWithMockedServices);
@@ -175,7 +179,6 @@ public class RoomSocketTest extends WithApplication {
     @Test
     public void joinMemberAlreadyInRoomDoesNotAddUserToJedis() {
         roomSocketsController.joinPublicRoom(roomId, userId, "");
-
         verify(jedis, times(1)).sadd(Long.toString(roomId), Long.toString(userId));
     }
 
@@ -186,10 +189,9 @@ public class RoomSocketTest extends WithApplication {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void joinAddsKeepAlive() throws NoSuchFieldException, IllegalAccessException {
-        Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = (Map<Long, Map<Long, WebSocket.Out<JsonNode>>>) TestUtils.getHiddenField(RoomSocket.class, "rooms");
-        assertTrue(rooms.get(roomId).containsKey(KeepAlive.USER_ID));
+        //assertTrue(keepAliveService.hasKeepAlive(roomId));
+        verify(keepAliveService).start(roomId);
     }
 
     private JsonNode sendMessage(MockWebSocket socket, String message, boolean isAnon) throws Throwable {
@@ -267,18 +269,178 @@ public class RoomSocketTest extends WithApplication {
 
     @Test
     public void keepAliveMessagesAreNotStored() throws InterruptedException {
-        RoomSocket.remoteMessage(new RoomSocket.Talk(roomId, KeepAlive.USER_ID, KeepAlive.HEARTBEAT_MESSAGE));
+        RoomSocket.remoteMessage(new RoomSocket.Talk(roomId, KeepAliveService.ID, KeepAliveService.MSG));
         webSocket.read();
         verify(abstractRoomService, never()).addMessage(any(), any(), any());
     }
 
     @Test
     public void keepAliveMessagesFormat() throws InterruptedException {
-        RoomSocket.remoteMessage(new RoomSocket.Talk(roomId, KeepAlive.USER_ID, KeepAlive.HEARTBEAT_MESSAGE));
+        RoomSocket.remoteMessage(new RoomSocket.Talk(roomId, KeepAliveService.ID, KeepAliveService.MSG));
         JsonNode keepAliveEvent = webSocket.read();
         assertEquals(RoomSocket.Talk.TYPE, keepAliveEvent.get("event").asText());
-        assertEquals(KeepAlive.HEARTBEAT_MESSAGE, keepAliveEvent.get("message").asText());
+        assertEquals(KeepAliveService.MSG, keepAliveEvent.get("message").asText());
     }
+
+    private JsonNode sendFavoriteEvent(MockWebSocket ws, long messageId, RoomSocket.FavoriteNotification.Action action) throws Throwable {
+        JsonNode favoriteEvent = Json.newObject()
+                .put("event", RoomSocket.FavoriteNotification.TYPE)
+                .put("messageId", messageId)
+                .put("action", action.name());
+
+        ws.write(favoriteEvent);
+
+        return favoriteEvent;
+    }
+
+    @Test
+    public void favoriteAMessage() throws Throwable {
+        long messageId = 5;
+        Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
+        when(messageService.findById(messageId)).thenReturn(Optional.of(message));
+        when(messageService.favorite(message, user)).thenReturn(true);
+        RoomSocket.FavoriteNotification.Action action = RoomSocket.FavoriteNotification.Action.ADD;
+
+        sendFavoriteEvent(webSocket, messageId, action);
+
+        JsonNode favoriteEvent = webSocket.read();
+        assertEquals(action.getType(), favoriteEvent.get(RoomSocket.EVENT_KEY).asText());
+        assertEquals(messageId, favoriteEvent.get(RoomSocket.MESSAGE_KEY).asLong());
+        assertEquals(user, fromJson(favoriteEvent.get(RoomSocket.USER_KEY), User.class));
+    }
+
+    @Test
+    public void favoriteAMessageThatHasAlreadyBeenFavoritedByThatUser() throws Throwable {
+        long messageId = 5;
+        Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
+        when(messageService.findById(messageId)).thenReturn(Optional.of(message));
+        when(messageService.favorite(message, user)).thenReturn(false);
+        RoomSocket.FavoriteNotification.Action action = RoomSocket.FavoriteNotification.Action.ADD;
+
+        sendFavoriteEvent(webSocket, messageId, action);
+
+        JsonNode errorEvent = webSocket.read();
+        assertEquals("error", errorEvent.get(RoomSocket.EVENT_KEY).asText());
+        assertEquals("Problem " + action + "ing a favorite", errorEvent.get(RoomSocket.MESSAGE_KEY).asText());
+    }
+
+
+    @Test
+    public void removeFavoriteFromAMessage() throws Throwable {
+        long messageId = 5;
+        Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
+        when(messageService.findById(messageId)).thenReturn(Optional.of(message));
+        when(messageService.removeFavorite(message, user)).thenReturn(true);
+        RoomSocket.FavoriteNotification.Action action = RoomSocket.FavoriteNotification.Action.REMOVE;
+
+        sendFavoriteEvent(webSocket, messageId, action);
+
+        JsonNode favoriteEvent = webSocket.read();
+        assertEquals(action.getType(), favoriteEvent.get(RoomSocket.EVENT_KEY).asText());
+        assertEquals(messageId, favoriteEvent.get(RoomSocket.MESSAGE_KEY).asLong());
+        assertEquals(user, fromJson(favoriteEvent.get(RoomSocket.USER_KEY), User.class));
+    }
+
+    @Test
+    public void removeFavoriteFromAMessageHasNotFavorited() throws Throwable {
+        long messageId = 5;
+        Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
+        when(messageService.findById(messageId)).thenReturn(Optional.of(message));
+        when(messageService.removeFavorite(message, user)).thenReturn(false);
+        RoomSocket.FavoriteNotification.Action action = RoomSocket.FavoriteNotification.Action.REMOVE;
+
+        sendFavoriteEvent(webSocket, messageId, action);
+
+        JsonNode errorEvent = webSocket.read();
+        assertEquals("error", errorEvent.get(RoomSocket.EVENT_KEY).asText());
+        assertEquals("Problem " + action + "ing a favorite", errorEvent.get(RoomSocket.MESSAGE_KEY).asText());
+    }
+
+    @Test
+    public void quitRemovesUserFromJedis() throws Throwable {
+        long otherUserId = 6;
+        User otherUser = userFactory.create(PropOverride.of("userId", otherUserId));
+        when(userService.findById(otherUserId)).thenReturn(Optional.of(otherUser));
+        MockWebSocket otherSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, otherUserId, ""));
+        // Join roster notification and joinSuccess events
+        otherSocket.read();
+        otherSocket.read();
+
+        webSocket.close();
+
+        // wait for quit event
+        otherSocket.read();
+        assertFalse(jedis.smembers(Long.toString(roomId)).contains(Long.toString(userId)));
+    }
+
+    @Test
+    public void quitSendsQuitEvent() throws Throwable {
+        long otherUserId = 6;
+        User otherUser = userFactory.create(PropOverride.of("userId", otherUserId));
+        when(userService.findById(otherUserId)).thenReturn(Optional.of(otherUser));
+        MockWebSocket otherSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, otherUserId, ""));
+        // Join roster notification and joinSuccess events
+        otherSocket.read();
+        otherSocket.read();
+
+        webSocket.close();
+
+        JsonNode quitEvent = otherSocket.read();
+        assertEquals(RoomSocket.Quit.TYPE, quitEvent.get(RoomSocket.EVENT_KEY).asText());
+        assertEquals("has left the room", quitEvent.get(RoomSocket.MESSAGE_KEY).asText());
+        assertEquals(user, fromJson(quitEvent.get(RoomSocket.USER_KEY), User.class));
+    }
+
+    @Test
+    public void quitRemovesKeepAliveIfLastUser() throws Throwable {
+        webSocket.close();
+        webSocket.read();
+
+        verify(keepAliveService).stop(eq(roomId));
+    }
+
+    @Test
+    public void quitDoesNotRemoveKeepAliveIfNotLastUser() throws Throwable {
+        long otherUserId = 6;
+        User otherUser = userFactory.create(PropOverride.of("userId", otherUserId));
+        when(userService.findById(otherUserId)).thenReturn(Optional.of(otherUser));
+        MockWebSocket otherSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, otherUserId, ""));
+        // Join roster notification and joinSuccess events
+        otherSocket.read();
+        otherSocket.read();
+
+        webSocket.close();
+
+        otherSocket.read();
+
+        verify(keepAliveService, never()).stop(eq(roomId));
+    }
+
+    @Test
+    public void quitsCanBeReceivedThroughJedis() throws InterruptedException, InstantiationException, IllegalAccessException {
+        long otherUserId = 6;
+        User otherUser = userFactory.create(PropOverride.of("userId", otherUserId));
+        when(userService.findById(otherUserId)).thenReturn(Optional.of(otherUser));
+        MockWebSocket otherSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, otherUserId, ""));
+        // Join roster notification and joinSuccess events
+        otherSocket.read();
+        otherSocket.read();
+
+        JsonNode quit = Json.newObject()
+                .put("type", RoomSocket.Quit.TYPE)
+                .put("roomId", roomId)
+                .put("userId", userId);
+        jedis.publish(RoomSocket.CHANNEL, Json.stringify(quit));
+
+        JsonNode quitEvent = otherSocket.read();
+        assertEquals(RoomSocket.Quit.TYPE, quitEvent.get(RoomSocket.EVENT_KEY).asText());
+        assertEquals("has left the room", quitEvent.get(RoomSocket.MESSAGE_KEY).asText());
+        assertEquals(user, fromJson(quitEvent.get(RoomSocket.USER_KEY), User.class));
+    }
+
+
+
+
 
 //    @Test
 //    public void anonMessageNotAllowedInPrivateRooms() throws Throwable {

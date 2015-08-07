@@ -14,7 +14,6 @@ import redis.clients.jedis.Jedis;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 import services.*;
-import sockets.KeepAlive;
 import sockets.RoomSocket;
 
 import java.util.List;
@@ -73,7 +72,7 @@ public class RoomSocketServiceImpl implements RoomSocketService {
         JPA.withTransaction(() -> {
             // All room members not including the user themselves
             List<User> roomMembers = RoomSocket.getUserIdsInRoomStream(roomId, jedis)
-                    .filter(id -> id != KeepAlive.USER_ID && id != userId)
+                    .filter(id -> id != KeepAliveService.ID && id != userId)
                     .map(userService::findById)
                     .map(Optional::get)
                     .collect(Collectors.<User>toList());
