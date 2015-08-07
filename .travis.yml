@@ -4,7 +4,8 @@ scala:
 jdk:
   - oraclejdk8
 script:
-  - sbt clean scoverage:test
+  - "sbt ++$TRAVIS_SCALA_VERSION jacoco:cover"
+  - "sbt ++$TRAVIS_SCALA_VERSION publish-local"
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
