@@ -6,11 +6,11 @@
     </properties>
                      <testcase classname="unit.models.PublicRoomTest" name="toStringAllNull" time="0.0">
                                                  
-                                               </testcase><testcase classname="unit.models.PublicRoomTest" name="equalsContract" time="0.055">
+                                               </testcase><testcase classname="unit.models.PublicRoomTest" name="equalsContract" time="0.056">
                                                  
                                                </testcase><testcase classname="unit.models.PublicRoomTest" name="setRoomId" time="0.0">
                                                  
-                                               </testcase><testcase classname="unit.models.PublicRoomTest" name="toStringNonNull" time="0.01">
+                                               </testcase><testcase classname="unit.models.PublicRoomTest" name="toStringNonNull" time="0.009">
                                                  
                                                </testcase>
                      <system-out></system-out>
