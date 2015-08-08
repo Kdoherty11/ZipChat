@@ -4,7 +4,7 @@
 		module="zipchat$sbt_2.11"
 		revision="1.0-SNAPSHOT"
 		status="integration"
-		publication="20150807165137"
+		publication="20150807210949"
 	/>
 	<configurations>
 		<conf name="default" visibility="public"/>

@@ -1,3 +1,4 @@
+import de.johoop.jacoco4sbt.{ScalaHTMLReport, XMLReport}
 
 name := """ZipChat"""
 

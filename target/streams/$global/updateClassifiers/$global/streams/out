@@ -15,7 +15,7 @@
 [debug] == resolving dependencies for zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT [compile]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang#scala-compiler;2.11.6 [compile->default(compile)]
 [info] Resolving org.scala-lang#scala-compiler;2.11.6 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@43dcb8fe
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4320463a
 [debug] sbt-chain: module revision found in cache: org.scala-lang#scala-compiler;2.11.6
 [debug] 	found org.scala-lang#scala-compiler;2.11.6 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang#scala-compiler;2.11.6 [compile->runtime]
@@ -23,7 +23,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang#scala-compiler;2.11.6 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang#scala-library;2.11.6 [compile->default(compile)]
 [info] Resolving org.scala-lang#scala-library;2.11.6 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@473a63e5
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7b74e598
 [debug] sbt-chain: module revision found in cache: org.scala-lang#scala-library;2.11.6
 [debug] 	found org.scala-lang#scala-library;2.11.6 in sbt-chain
 [debug] 	[2.11.6] org.scala-lang#scala-library;2.11.6
@@ -32,7 +32,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang#scala-library;2.11.6 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang#scala-reflect;2.11.6 [compile->default(compile)]
 [info] Resolving org.scala-lang#scala-reflect;2.11.6 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@57e0dec4
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@569adf9f
 [debug] sbt-chain: module revision found in cache: org.scala-lang#scala-reflect;2.11.6
 [debug] 	found org.scala-lang#scala-reflect;2.11.6 in sbt-chain
 [debug] 	[2.11.6] org.scala-lang#scala-reflect;2.11.6
@@ -41,7 +41,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang#scala-reflect;2.11.6 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.3 [compile->default(compile)]
 [info] Resolving org.scala-lang.modules#scala-xml_2.11;1.0.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@73f34813
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5680a1ef
 [debug] sbt-chain: module revision found in cache: org.scala-lang.modules#scala-xml_2.11;1.0.3
 [debug] 	found org.scala-lang.modules#scala-xml_2.11;1.0.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.3 [compile->runtime]
@@ -49,7 +49,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.3 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.3 [compile->default(compile)]
 [info] Resolving org.scala-lang.modules#scala-parser-combinators_2.11;1.0.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@523df7e4
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@207d37a2
 [debug] sbt-chain: module revision found in cache: org.scala-lang.modules#scala-parser-combinators_2.11;1.0.3
 [debug] 	found org.scala-lang.modules#scala-parser-combinators_2.11;1.0.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.3 [compile->runtime]
@@ -57,7 +57,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.3 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#twirl-api_2.11;1.1.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#twirl-api_2.11;1.1.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@8a7befd
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2e61fb7e
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#twirl-api_2.11;1.1.1
 [debug] 	found com.typesafe.play#twirl-api_2.11;1.1.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#twirl-api_2.11;1.1.1 [compile->runtime]
@@ -65,7 +65,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#twirl-api_2.11;1.1.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.commons#commons-lang3;3.4 [compile->default(compile)]
 [info] Resolving org.apache.commons#commons-lang3;3.4 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@54a8a649
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7393a4a5
 [debug] sbt-chain: module revision found in cache: org.apache.commons#commons-lang3;3.4
 [debug] 	found org.apache.commons#commons-lang3;3.4 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.commons#commons-lang3;3.4 [compile->runtime]
@@ -73,7 +73,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.commons#commons-lang3;3.4 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-enhancer;1.1.0 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-enhancer;1.1.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@659fddff
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@622a0e38
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-enhancer;1.1.0
 [debug] 	found com.typesafe.play#play-enhancer;1.1.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-enhancer;1.1.0 [compile->runtime]
@@ -81,7 +81,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-enhancer;1.1.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-server_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-server_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6d492dcb
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@509187a
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-server_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-server_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-server_2.11;2.4.1 [compile->runtime]
@@ -89,7 +89,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-server_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@59bdba15
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6b0e52fb
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play_2.11;2.4.1
 [debug] 	found com.typesafe.play#play_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play_2.11;2.4.1 [compile->runtime]
@@ -97,7 +97,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#build-link;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#build-link;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@51041521
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3cae38ae
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#build-link;2.4.1
 [debug] 	found com.typesafe.play#build-link;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#build-link;2.4.1 [compile->runtime]
@@ -105,7 +105,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#build-link;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-exceptions;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-exceptions;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@739256f9
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@50d66319
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-exceptions;2.4.1
 [debug] 	found com.typesafe.play#play-exceptions;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-exceptions;2.4.1 [compile->runtime]
@@ -113,7 +113,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-exceptions;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.javassist#javassist;3.19.0-GA [compile->default(compile)]
 [info] Resolving org.javassist#javassist;3.19.0-GA ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4ac574fd
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2ca87137
 [debug] sbt-chain: module revision found in cache: org.javassist#javassist;3.19.0-GA
 [debug] 	found org.javassist#javassist;3.19.0-GA in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.javassist#javassist;3.19.0-GA [compile->runtime]
@@ -121,7 +121,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.javassist#javassist;3.19.0-GA [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-iteratees_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-iteratees_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6aeeffd1
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@30c60747
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-iteratees_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-iteratees_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-iteratees_2.11;2.4.1 [compile->runtime]
@@ -129,7 +129,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-iteratees_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-stm#scala-stm_2.11;0.7 [compile->default(compile)]
 [info] Resolving org.scala-stm#scala-stm_2.11;0.7 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@265450da
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@61fa1626
 [debug] sbt-chain: module revision found in cache: org.scala-stm#scala-stm_2.11;0.7
 [debug] 	found org.scala-stm#scala-stm_2.11;0.7 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-stm#scala-stm_2.11;0.7 [compile->runtime]
@@ -137,7 +137,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-stm#scala-stm_2.11;0.7 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe#config;1.3.0 [compile->default(compile)]
 [info] Resolving com.typesafe#config;1.3.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5241a914
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1ec2627c
 [debug] sbt-chain: module revision found in cache: com.typesafe#config;1.3.0
 [debug] 	found com.typesafe#config;1.3.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe#config;1.3.0 [compile->runtime]
@@ -145,7 +145,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe#config;1.3.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-json_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-json_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6cdbf423
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@237d56e2
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-json_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-json_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-json_2.11;2.4.1 [compile->runtime]
@@ -153,7 +153,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-json_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-functional_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-functional_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5d4e9a51
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@325c3af0
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-functional_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-functional_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-functional_2.11;2.4.1 [compile->runtime]
@@ -161,7 +161,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-functional_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-datacommons_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-datacommons_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@61bd30f7
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7761f0d
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-datacommons_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-datacommons_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-datacommons_2.11;2.4.1 [compile->runtime]
@@ -169,7 +169,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-datacommons_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->joda-time#joda-time;2.7 [compile->default(compile)]
 [info] Resolving joda-time#joda-time;2.7 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@584695b3
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@217dd1b0
 [debug] sbt-chain: module revision found in cache: joda-time#joda-time;2.7
 [debug] 	found joda-time#joda-time;2.7 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->joda-time#joda-time;2.7 [compile->runtime]
@@ -177,7 +177,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->joda-time#joda-time;2.7 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.joda#joda-convert;1.7 [compile->default(compile)]
 [info] Resolving org.joda#joda-convert;1.7 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@a722410
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5d0b029d
 [debug] sbt-chain: module revision found in cache: org.joda#joda-convert;1.7
 [debug] 	found org.joda#joda-convert;1.7 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.joda#joda-convert;1.7 [compile->runtime]
@@ -185,7 +185,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.joda#joda-convert;1.7 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.core#jackson-core;2.5.4 [compile->default(compile)]
 [info] Resolving com.fasterxml.jackson.core#jackson-core;2.5.4 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@60d6842
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3efd49bd
 [debug] sbt-chain: module revision found in cache: com.fasterxml.jackson.core#jackson-core;2.5.4
 [debug] 	found com.fasterxml.jackson.core#jackson-core;2.5.4 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.core#jackson-core;2.5.4 [compile->runtime]
@@ -193,7 +193,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.core#jackson-core;2.5.4 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.core#jackson-annotations;2.5.4 [compile->default(compile)]
 [info] Resolving com.fasterxml.jackson.core#jackson-annotations;2.5.4 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@176ba2c7
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7ac102ab
 [debug] sbt-chain: module revision found in cache: com.fasterxml.jackson.core#jackson-annotations;2.5.4
 [debug] 	found com.fasterxml.jackson.core#jackson-annotations;2.5.4 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.core#jackson-annotations;2.5.4 [compile->runtime]
@@ -201,7 +201,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.core#jackson-annotations;2.5.4 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.core#jackson-databind;2.5.4 [compile->default(compile)]
 [info] Resolving com.fasterxml.jackson.core#jackson-databind;2.5.4 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7fe5d4a2
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3e1e474f
 [debug] sbt-chain: module revision found in cache: com.fasterxml.jackson.core#jackson-databind;2.5.4
 [debug] 	found com.fasterxml.jackson.core#jackson-databind;2.5.4 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.core#jackson-databind;2.5.4 [compile->runtime]
@@ -209,7 +209,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.core#jackson-databind;2.5.4 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.datatype#jackson-datatype-jdk8;2.5.4 [compile->default(compile)]
 [info] Resolving com.fasterxml.jackson.datatype#jackson-datatype-jdk8;2.5.4 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7f42eacc
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2b37a633
 [debug] sbt-chain: module revision found in cache: com.fasterxml.jackson.datatype#jackson-datatype-jdk8;2.5.4
 [debug] 	found com.fasterxml.jackson.datatype#jackson-datatype-jdk8;2.5.4 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.datatype#jackson-datatype-jdk8;2.5.4 [compile->runtime]
@@ -217,7 +217,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.datatype#jackson-datatype-jdk8;2.5.4 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.datatype#jackson-datatype-jsr310;2.5.4 [compile->default(compile)]
 [info] Resolving com.fasterxml.jackson.datatype#jackson-datatype-jsr310;2.5.4 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7bac0675
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@66471fe8
 [debug] sbt-chain: module revision found in cache: com.fasterxml.jackson.datatype#jackson-datatype-jsr310;2.5.4
 [debug] 	found com.fasterxml.jackson.datatype#jackson-datatype-jsr310;2.5.4 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.datatype#jackson-datatype-jsr310;2.5.4 [compile->runtime]
@@ -225,7 +225,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml.jackson.datatype#jackson-datatype-jsr310;2.5.4 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-netty-utils;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-netty-utils;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1dabf96a
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2caef868
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-netty-utils;2.4.1
 [debug] 	found com.typesafe.play#play-netty-utils;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-netty-utils;2.4.1 [compile->runtime]
@@ -233,7 +233,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-netty-utils;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.slf4j#slf4j-api;1.7.12 [compile->default(compile)]
 [info] Resolving org.slf4j#slf4j-api;1.7.12 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4c2420ce
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@35f03349
 [debug] sbt-chain: module revision found in cache: org.slf4j#slf4j-api;1.7.12
 [debug] 	found org.slf4j#slf4j-api;1.7.12 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.slf4j#slf4j-api;1.7.12 [compile->runtime]
@@ -241,7 +241,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.slf4j#slf4j-api;1.7.12 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.slf4j#jul-to-slf4j;1.7.12 [compile->default(compile)]
 [info] Resolving org.slf4j#jul-to-slf4j;1.7.12 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6df35e8a
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3f6f68c6
 [debug] sbt-chain: module revision found in cache: org.slf4j#jul-to-slf4j;1.7.12
 [debug] 	found org.slf4j#jul-to-slf4j;1.7.12 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.slf4j#jul-to-slf4j;1.7.12 [compile->runtime]
@@ -249,7 +249,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.slf4j#jul-to-slf4j;1.7.12 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.slf4j#jcl-over-slf4j;1.7.12 [compile->default(compile)]
 [info] Resolving org.slf4j#jcl-over-slf4j;1.7.12 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@656ad771
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7bb7e500
 [debug] sbt-chain: module revision found in cache: org.slf4j#jcl-over-slf4j;1.7.12
 [debug] 	found org.slf4j#jcl-over-slf4j;1.7.12 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.slf4j#jcl-over-slf4j;1.7.12 [compile->runtime]
@@ -257,7 +257,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.slf4j#jcl-over-slf4j;1.7.12 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->ch.qos.logback#logback-core;1.1.3 [compile->default(compile)]
 [info] Resolving ch.qos.logback#logback-core;1.1.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7ab6cc32
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7155671c
 [debug] sbt-chain: module revision found in cache: ch.qos.logback#logback-core;1.1.3
 [debug] 	found ch.qos.logback#logback-core;1.1.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->ch.qos.logback#logback-core;1.1.3 [compile->runtime]
@@ -265,7 +265,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->ch.qos.logback#logback-core;1.1.3 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->ch.qos.logback#logback-classic;1.1.3 [compile->default(compile)]
 [info] Resolving ch.qos.logback#logback-classic;1.1.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@784e20bb
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5e664a72
 [debug] sbt-chain: module revision found in cache: ch.qos.logback#logback-classic;1.1.3
 [debug] 	found ch.qos.logback#logback-classic;1.1.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->ch.qos.logback#logback-classic;1.1.3 [compile->runtime]
@@ -273,7 +273,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->ch.qos.logback#logback-classic;1.1.3 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.11;2.3.11 [compile->default(compile)]
 [info] Resolving com.typesafe.akka#akka-actor_2.11;2.3.11 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5134ec6f
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@527a09aa
 [debug] sbt-chain: module revision found in cache: com.typesafe.akka#akka-actor_2.11;2.3.11
 [debug] 	found com.typesafe.akka#akka-actor_2.11;2.3.11 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.11;2.3.11 [compile->runtime]
@@ -281,7 +281,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.11;2.3.11 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.akka#akka-slf4j_2.11;2.3.11 [compile->default(compile)]
 [info] Resolving com.typesafe.akka#akka-slf4j_2.11;2.3.11 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@717969d2
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@70c94e7
 [debug] sbt-chain: module revision found in cache: com.typesafe.akka#akka-slf4j_2.11;2.3.11
 [debug] 	found com.typesafe.akka#akka-slf4j_2.11;2.3.11 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.akka#akka-slf4j_2.11;2.3.11 [compile->runtime]
@@ -289,7 +289,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.akka#akka-slf4j_2.11;2.3.11 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-codec#commons-codec;1.10 [compile->default(compile)]
 [info] Resolving commons-codec#commons-codec;1.10 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6c3e6e81
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5dbae66e
 [debug] sbt-chain: module revision found in cache: commons-codec#commons-codec;1.10
 [debug] 	found commons-codec#commons-codec;1.10 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-codec#commons-codec;1.10 [compile->runtime]
@@ -297,7 +297,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-codec#commons-codec;1.10 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->xerces#xercesImpl;2.11.0 [compile->default(compile)]
 [info] Resolving xerces#xercesImpl;2.11.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5531f506
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@16ce2ed2
 [debug] sbt-chain: module revision found in cache: xerces#xercesImpl;2.11.0
 [debug] 	found xerces#xercesImpl;2.11.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->xerces#xercesImpl;2.11.0 [compile->runtime]
@@ -305,7 +305,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->xerces#xercesImpl;2.11.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->xml-apis#xml-apis;1.4.01 [compile->default(compile)]
 [info] Resolving xml-apis#xml-apis;1.4.01 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4d6772cc
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6ddbb7fa
 [debug] sbt-chain: module revision found in cache: xml-apis#xml-apis;1.4.01
 [debug] 	found xml-apis#xml-apis;1.4.01 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->xml-apis#xml-apis;1.4.01 [compile->runtime]
@@ -313,7 +313,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->xml-apis#xml-apis;1.4.01 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->javax.transaction#jta;1.1 [compile->default(compile)]
 [info] Resolving javax.transaction#jta;1.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3eadb9ee
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@55c731b4
 [debug] sbt-chain: module revision found in cache: javax.transaction#jta;1.1
 [debug] 	found javax.transaction#jta;1.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->javax.transaction#jta;1.1 [compile->runtime]
@@ -321,7 +321,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->javax.transaction#jta;1.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.inject#guice;4.0 [compile->default(compile)]
 [info] Resolving com.google.inject#guice;4.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6a44713a
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@782f0e62
 [debug] sbt-chain: module revision found in cache: com.google.inject#guice;4.0
 [debug] 	found com.google.inject#guice;4.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.inject#guice;4.0 [compile->runtime]
@@ -329,7 +329,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.inject#guice;4.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->javax.inject#javax.inject;1 [compile->default(compile)]
 [info] Resolving javax.inject#javax.inject;1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@23897fdc
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2f0d34d1
 [debug] sbt-chain: module revision found in cache: javax.inject#javax.inject;1
 [debug] 	found javax.inject#javax.inject;1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->javax.inject#javax.inject;1 [compile->runtime]
@@ -337,7 +337,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->javax.inject#javax.inject;1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->aopalliance#aopalliance;1.0 [compile->default(compile)]
 [info] Resolving aopalliance#aopalliance;1.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4e40f831
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7494e5fc
 [debug] sbt-chain: module revision found in cache: aopalliance#aopalliance;1.0
 [debug] 	found aopalliance#aopalliance;1.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->aopalliance#aopalliance;1.0 [compile->runtime]
@@ -345,9 +345,9 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->aopalliance#aopalliance;1.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.inject.extensions#guice-assistedinject;4.0 [compile->default(compile)]
 [info] Resolving com.google.inject.extensions#guice-assistedinject;4.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3ae2e566
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1589e98d
 [info] Resolving com.google.inject.extensions#guice-assistedinject;4.0 ...
-[debug] sbt-chain-delegate: Checking cache for: sbt.ivyint.MergedDescriptors@3ae2e566
+[debug] sbt-chain-delegate: Checking cache for: sbt.ivyint.MergedDescriptors@1589e98d
 [debug] 		tried /Users/kdoherty/.ivy2/local/com.google.inject.extensions/guice-assistedinject/4.0/ivys/ivy.xml
 [debug] 	local: no ivy file found for com.google.inject.extensions#guice-assistedinject;4.0
 [debug] 		tried /Users/kdoherty/.activator/repository/com.google.inject.extensions/guice-assistedinject/4.0/ivys/ivy.xml
@@ -356,7 +356,7 @@
 [debug] 	activator-local: found md file for com.google.inject.extensions#guice-assistedinject;4.0
 [debug] 		=> /Users/kdoherty/activator-dist-1.3.5/repository/com.google.inject.extensions/guice-assistedinject/4.0/ivys/ivy.xml (4.0)
 [debug] 	[NOT REQUIRED] com.google.inject.extensions#guice-assistedinject;4.0!ivy.xml(ivy.original)
-[debug] problem occurred while resolving sbt.ivyint.MergedDescriptors@3ae2e566 with activator-local: java.text.ParseException: [unknown tag project in file:/Users/kdoherty/.ivy2/cache/com.google.inject.extensions/guice-assistedinject/ivy-4.0.xml.original
+[debug] problem occurred while resolving sbt.ivyint.MergedDescriptors@1589e98d with activator-local: java.text.ParseException: [unknown tag project in file:/Users/kdoherty/.ivy2/cache/com.google.inject.extensions/guice-assistedinject/ivy-4.0.xml.original
 [debug] , unknown tag modelVersion in file:/Users/kdoherty/.ivy2/cache/com.google.inject.extensions/guice-assistedinject/ivy-4.0.xml.original
 [debug] , unknown tag parent in file:/Users/kdoherty/.ivy2/cache/com.google.inject.extensions/guice-assistedinject/ivy-4.0.xml.original
 [debug] , unknown tag groupId in file:/Users/kdoherty/.ivy2/cache/com.google.inject.extensions/guice-assistedinject/ivy-4.0.xml.original
@@ -473,7 +473,7 @@
 [debug] 	public: downloading https://repo1.maven.org/maven2/com/google/inject/extensions/guice-assistedinject/4.0/guice-assistedinject-4.0.pom
 [debug] 	public: downloading https://repo1.maven.org/maven2/com/google/inject/extensions/guice-assistedinject/4.0/guice-assistedinject-4.0.pom.sha1
 [debug] sha1 OK for https://repo1.maven.org/maven2/com/google/inject/extensions/guice-assistedinject/4.0/guice-assistedinject-4.0.pom
-[debug] 	[SUCCESSFUL ] com.google.inject.extensions#guice-assistedinject;4.0!guice-assistedinject.pom(pom.original) (128ms)
+[debug] 	[SUCCESSFUL ] com.google.inject.extensions#guice-assistedinject;4.0!guice-assistedinject.pom(pom.original) (129ms)
 [info] Resolving com.google.inject.extensions#extensions-parent;4.0 ...
 [debug] sbt-chain: Checking cache for: dependency: com.google.inject.extensions#extensions-parent;4.0 {}
 [debug] sbt-chain: module revision found in cache: com.google.inject.extensions#extensions-parent;4.0
@@ -483,7 +483,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.inject.extensions#guice-assistedinject;4.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-java_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@c8e6b58
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6851a383
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-java_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-java_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java_2.11;2.4.1 [compile->runtime]
@@ -491,7 +491,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang.modules#scala-java8-compat_2.11;0.3.0 [compile->default(compile)]
 [info] Resolving org.scala-lang.modules#scala-java8-compat_2.11;0.3.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@e6b8c30
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2eafdf59
 [debug] sbt-chain: module revision found in cache: org.scala-lang.modules#scala-java8-compat_2.11;0.3.0
 [debug] 	found org.scala-lang.modules#scala-java8-compat_2.11;0.3.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang.modules#scala-java8-compat_2.11;0.3.0 [compile->runtime]
@@ -499,7 +499,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-lang.modules#scala-java8-compat_2.11;0.3.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.yaml#snakeyaml;1.15 [compile->default(compile)]
 [info] Resolving org.yaml#snakeyaml;1.15 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@438f22f4
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7937e82f
 [debug] sbt-chain: module revision found in cache: org.yaml#snakeyaml;1.15
 [debug] 	found org.yaml#snakeyaml;1.15 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.yaml#snakeyaml;1.15 [compile->runtime]
@@ -507,7 +507,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.yaml#snakeyaml;1.15 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate#hibernate-validator;5.0.3.Final [compile->default(compile)]
 [info] Resolving org.hibernate#hibernate-validator;5.0.3.Final ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@789633af
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2e8df715
 [debug] sbt-chain: module revision found in cache: org.hibernate#hibernate-validator;5.0.3.Final
 [debug] 	found org.hibernate#hibernate-validator;5.0.3.Final in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate#hibernate-validator;5.0.3.Final [compile->runtime]
@@ -515,7 +515,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate#hibernate-validator;5.0.3.Final [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->javax.validation#validation-api;1.1.0.Final [compile->default(compile)]
 [info] Resolving javax.validation#validation-api;1.1.0.Final ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1f4a709b
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@980edf3
 [debug] sbt-chain: module revision found in cache: javax.validation#validation-api;1.1.0.Final
 [debug] 	found javax.validation#validation-api;1.1.0.Final in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->javax.validation#validation-api;1.1.0.Final [compile->runtime]
@@ -523,7 +523,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->javax.validation#validation-api;1.1.0.Final [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml#classmate;1.0.0 [compile->default(compile)]
 [info] Resolving com.fasterxml#classmate;1.0.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1be478ef
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@476240f4
 [debug] sbt-chain: module revision found in cache: com.fasterxml#classmate;1.0.0
 [debug] 	found com.fasterxml#classmate;1.0.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml#classmate;1.0.0 [compile->runtime]
@@ -531,7 +531,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fasterxml#classmate;1.0.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss.logging#jboss-logging;3.2.1.Final [compile->default(compile)]
 [info] Resolving org.jboss.logging#jboss-logging;3.2.1.Final ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@66074bf6
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@66c762f6
 [debug] sbt-chain: module revision found in cache: org.jboss.logging#jboss-logging;3.2.1.Final
 [debug] 	found org.jboss.logging#jboss-logging;3.2.1.Final in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss.logging#jboss-logging;3.2.1.Final [compile->runtime]
@@ -539,7 +539,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss.logging#jboss-logging;3.2.1.Final [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.springframework#spring-context;4.1.6.RELEASE [compile->default(compile)]
 [info] Resolving org.springframework#spring-context;4.1.6.RELEASE ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7e154371
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@40b7233c
 [debug] sbt-chain: module revision found in cache: org.springframework#spring-context;4.1.6.RELEASE
 [debug] 	found org.springframework#spring-context;4.1.6.RELEASE in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.springframework#spring-context;4.1.6.RELEASE [compile->runtime]
@@ -547,7 +547,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.springframework#spring-context;4.1.6.RELEASE [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.springframework#spring-core;4.1.6.RELEASE [compile->default(compile)]
 [info] Resolving org.springframework#spring-core;4.1.6.RELEASE ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1c260880
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@398b94e4
 [debug] sbt-chain: module revision found in cache: org.springframework#spring-core;4.1.6.RELEASE
 [debug] 	found org.springframework#spring-core;4.1.6.RELEASE in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.springframework#spring-core;4.1.6.RELEASE [compile->runtime]
@@ -555,7 +555,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.springframework#spring-core;4.1.6.RELEASE [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.springframework#spring-beans;4.1.6.RELEASE [compile->default(compile)]
 [info] Resolving org.springframework#spring-beans;4.1.6.RELEASE ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7c768f12
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4cc86fe2
 [debug] sbt-chain: module revision found in cache: org.springframework#spring-beans;4.1.6.RELEASE
 [debug] 	found org.springframework#spring-beans;4.1.6.RELEASE in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.springframework#spring-beans;4.1.6.RELEASE [compile->runtime]
@@ -563,7 +563,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.springframework#spring-beans;4.1.6.RELEASE [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.reflections#reflections;0.9.9 [compile->default(compile)]
 [info] Resolving org.reflections#reflections;0.9.9 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@524ff646
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2dd3cebf
 [debug] sbt-chain: module revision found in cache: org.reflections#reflections;0.9.9
 [debug] 	found org.reflections#reflections;0.9.9 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.reflections#reflections;0.9.9 [compile->runtime]
@@ -571,7 +571,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.reflections#reflections;0.9.9 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.jodah#typetools;0.4.1 [compile->default(compile)]
 [info] Resolving net.jodah#typetools;0.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2b5e1d82
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@f453860
 [debug] sbt-chain: module revision found in cache: net.jodah#typetools;0.4.1
 [debug] 	found net.jodah#typetools;0.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.jodah#typetools;0.4.1 [compile->runtime]
@@ -579,7 +579,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.jodah#typetools;0.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.guava#guava;18.0 [compile->default(compile)]
 [info] Resolving com.google.guava#guava;18.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@32276710
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4f8f6ed8
 [debug] sbt-chain: module revision found in cache: com.google.guava#guava;18.0
 [debug] 	found com.google.guava#guava;18.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.guava#guava;18.0 [compile->runtime]
@@ -587,7 +587,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.guava#guava;18.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.code.findbugs#jsr305;2.0.3 [compile->default(compile)]
 [info] Resolving com.google.code.findbugs#jsr305;2.0.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@50dc5a86
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7f2ffbd6
 [debug] sbt-chain: module revision found in cache: com.google.code.findbugs#jsr305;2.0.3
 [debug] 	found com.google.code.findbugs#jsr305;2.0.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.code.findbugs#jsr305;2.0.3 [compile->runtime]
@@ -595,7 +595,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.code.findbugs#jsr305;2.0.3 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.tomcat#tomcat-servlet-api;8.0.21 [compile->default(compile)]
 [info] Resolving org.apache.tomcat#tomcat-servlet-api;8.0.21 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@451f773b
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@67b8900d
 [debug] sbt-chain: module revision found in cache: org.apache.tomcat#tomcat-servlet-api;8.0.21
 [debug] 	found org.apache.tomcat#tomcat-servlet-api;8.0.21 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.tomcat#tomcat-servlet-api;8.0.21 [compile->runtime]
@@ -603,7 +603,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.tomcat#tomcat-servlet-api;8.0.21 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-netty-server_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-netty-server_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@37cbc8a4
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@8a179b3
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-netty-server_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-netty-server_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-netty-server_2.11;2.4.1 [compile->runtime]
@@ -611,7 +611,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-netty-server_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->io.netty#netty;3.10.3.Final [compile->default(compile)]
 [info] Resolving io.netty#netty;3.10.3.Final ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7c6f9802
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@14a18f45
 [debug] sbt-chain: module revision found in cache: io.netty#netty;3.10.3.Final
 [debug] 	found io.netty#netty;3.10.3.Final in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->io.netty#netty;3.10.3.Final [compile->runtime]
@@ -619,7 +619,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->io.netty#netty;3.10.3.Final [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.netty#netty-http-pipelining;1.1.4 [compile->default(compile)]
 [info] Resolving com.typesafe.netty#netty-http-pipelining;1.1.4 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@c9058b2
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2e377df9
 [debug] sbt-chain: module revision found in cache: com.typesafe.netty#netty-http-pipelining;1.1.4
 [debug] 	found com.typesafe.netty#netty-http-pipelining;1.1.4 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.netty#netty-http-pipelining;1.1.4 [compile->runtime]
@@ -627,7 +627,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.netty#netty-http-pipelining;1.1.4 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java-jdbc_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-java-jdbc_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3338c954
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@198f3bf
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-java-jdbc_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-java-jdbc_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java-jdbc_2.11;2.4.1 [compile->runtime]
@@ -635,7 +635,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java-jdbc_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-jdbc_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-jdbc_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@a77c539
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@52df5db2
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-jdbc_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-jdbc_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-jdbc_2.11;2.4.1 [compile->runtime]
@@ -643,7 +643,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-jdbc_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-jdbc-api_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-jdbc-api_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@412e810e
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@65cb90db
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-jdbc-api_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-jdbc-api_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-jdbc-api_2.11;2.4.1 [compile->runtime]
@@ -651,7 +651,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-jdbc-api_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.jolbox#bonecp;0.8.0.RELEASE [compile->default(compile)]
 [info] Resolving com.jolbox#bonecp;0.8.0.RELEASE ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@9378121
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@72786670
 [debug] sbt-chain: module revision found in cache: com.jolbox#bonecp;0.8.0.RELEASE
 [debug] 	found com.jolbox#bonecp;0.8.0.RELEASE in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.jolbox#bonecp;0.8.0.RELEASE [compile->runtime]
@@ -659,7 +659,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.jolbox#bonecp;0.8.0.RELEASE [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.zaxxer#HikariCP;2.3.7 [compile->default(compile)]
 [info] Resolving com.zaxxer#HikariCP;2.3.7 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2676534b
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@56fc69c5
 [debug] sbt-chain: module revision found in cache: com.zaxxer#HikariCP;2.3.7
 [debug] 	found com.zaxxer#HikariCP;2.3.7 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.zaxxer#HikariCP;2.3.7 [compile->runtime]
@@ -667,7 +667,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.zaxxer#HikariCP;2.3.7 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.h2database#h2;1.4.187 [compile->default(compile)]
 [info] Resolving com.h2database#h2;1.4.187 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@e3026bb
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@61d1801b
 [debug] sbt-chain: module revision found in cache: com.h2database#h2;1.4.187
 [debug] 	found com.h2database#h2;1.4.187 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.h2database#h2;1.4.187 [compile->runtime]
@@ -675,7 +675,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.h2database#h2;1.4.187 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java-ws_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-java-ws_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@8f27f36
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@289c1225
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-java-ws_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-java-ws_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java-ws_2.11;2.4.1 [compile->runtime]
@@ -683,7 +683,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java-ws_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-ws_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-ws_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@17a04624
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3f1633e7
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-ws_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-ws_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-ws_2.11;2.4.1 [compile->runtime]
@@ -691,7 +691,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-ws_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.ning#async-http-client;1.9.21 [compile->default(compile)]
 [info] Resolving com.ning#async-http-client;1.9.21 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2217d4a1
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4e277aaa
 [debug] sbt-chain: module revision found in cache: com.ning#async-http-client;1.9.21
 [debug] 	found com.ning#async-http-client;1.9.21 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.ning#async-http-client;1.9.21 [compile->runtime]
@@ -699,7 +699,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.ning#async-http-client;1.9.21 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->oauth.signpost#signpost-core;1.2.1.2 [compile->default(compile)]
 [info] Resolving oauth.signpost#signpost-core;1.2.1.2 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4267d514
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7bff94c5
 [debug] sbt-chain: module revision found in cache: oauth.signpost#signpost-core;1.2.1.2
 [debug] 	found oauth.signpost#signpost-core;1.2.1.2 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->oauth.signpost#signpost-core;1.2.1.2 [compile->runtime]
@@ -707,7 +707,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->oauth.signpost#signpost-core;1.2.1.2 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->oauth.signpost#signpost-commonshttp4;1.2.1.2 [compile->default(compile)]
 [info] Resolving oauth.signpost#signpost-commonshttp4;1.2.1.2 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3e310402
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@445c7fab
 [debug] sbt-chain: module revision found in cache: oauth.signpost#signpost-commonshttp4;1.2.1.2
 [debug] 	found oauth.signpost#signpost-commonshttp4;1.2.1.2 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->oauth.signpost#signpost-commonshttp4;1.2.1.2 [compile->runtime]
@@ -715,7 +715,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->oauth.signpost#signpost-commonshttp4;1.2.1.2 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpcore;4.0.1 [compile->default(compile)]
 [info] Resolving org.apache.httpcomponents#httpcore;4.0.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7fadd1a2
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@40abe952
 [debug] sbt-chain: module revision found in cache: org.apache.httpcomponents#httpcore;4.0.1
 [debug] 	found org.apache.httpcomponents#httpcore;4.0.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpcore;4.0.1 [compile->runtime]
@@ -723,7 +723,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpcore;4.0.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpclient;4.0.1 [compile->default(compile)]
 [info] Resolving org.apache.httpcomponents#httpclient;4.0.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@f46355b
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@43f040dc
 [debug] sbt-chain: module revision found in cache: org.apache.httpcomponents#httpclient;4.0.1
 [debug] 	found org.apache.httpcomponents#httpclient;4.0.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpclient;4.0.1 [compile->runtime]
@@ -731,7 +731,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpclient;4.0.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-logging#commons-logging;1.1.1 [compile->default(compile)]
 [info] Resolving commons-logging#commons-logging;1.1.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3d1e5122
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2846d2c4
 [debug] sbt-chain: module revision found in cache: commons-logging#commons-logging;1.1.1
 [debug] 	found commons-logging#commons-logging;1.1.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-logging#commons-logging;1.1.1 [compile->runtime]
@@ -739,7 +739,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-logging#commons-logging;1.1.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java-jpa_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-java-jpa_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7a87d03b
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@16030cb5
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-java-jpa_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-java-jpa_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java-jpa_2.11;2.4.1 [compile->runtime]
@@ -747,7 +747,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-java-jpa_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate.javax.persistence#hibernate-jpa-2.1-api;1.0.0.Final [compile->default(compile)]
 [info] Resolving org.hibernate.javax.persistence#hibernate-jpa-2.1-api;1.0.0.Final ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6e21ea2a
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@47960809
 [debug] sbt-chain: module revision found in cache: org.hibernate.javax.persistence#hibernate-jpa-2.1-api;1.0.0.Final
 [debug] 	found org.hibernate.javax.persistence#hibernate-jpa-2.1-api;1.0.0.Final in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate.javax.persistence#hibernate-jpa-2.1-api;1.0.0.Final [compile->runtime]
@@ -755,7 +755,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate.javax.persistence#hibernate-jpa-2.1-api;1.0.0.Final [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-cache_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play#play-cache_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@772897e1
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@65babcd3
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-cache_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-cache_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-cache_2.11;2.4.1 [compile->runtime]
@@ -763,7 +763,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-cache_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sf.ehcache#ehcache-core;2.6.11 [compile->default(compile)]
 [info] Resolving net.sf.ehcache#ehcache-core;2.6.11 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@275875eb
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7c59481f
 [debug] sbt-chain: module revision found in cache: net.sf.ehcache#ehcache-core;2.6.11
 [debug] 	found net.sf.ehcache#ehcache-core;2.6.11 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sf.ehcache#ehcache-core;2.6.11 [compile->runtime]
@@ -771,7 +771,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sf.ehcache#ehcache-core;2.6.11 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play.modules#play-modules-redis_2.11;2.4.1 [compile->default(compile)]
 [info] Resolving com.typesafe.play.modules#play-modules-redis_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@77e04a73
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@228b5111
 [debug] sbt-chain: module revision found in cache: com.typesafe.play.modules#play-modules-redis_2.11;2.4.1
 [debug] 	found com.typesafe.play.modules#play-modules-redis_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play.modules#play-modules-redis_2.11;2.4.1 [compile->runtime]
@@ -779,7 +779,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play.modules#play-modules-redis_2.11;2.4.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->biz.source_code#base64coder;2010-12-19 [compile->default(compile)]
 [info] Resolving biz.source_code#base64coder;2010-12-19 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5788188e
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3e8365de
 [debug] sbt-chain: module revision found in cache: biz.source_code#base64coder;2010-12-19
 [debug] 	found biz.source_code#base64coder;2010-12-19 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->biz.source_code#base64coder;2010-12-19 [compile->runtime]
@@ -787,7 +787,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->biz.source_code#base64coder;2010-12-19 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->redis.clients#jedis;2.4.2 [compile->default(compile)]
 [info] Resolving redis.clients#jedis;2.4.2 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6dd4d020
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1aa01fb4
 [debug] sbt-chain: module revision found in cache: redis.clients#jedis;2.4.2
 [debug] 	found redis.clients#jedis;2.4.2 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->redis.clients#jedis;2.4.2 [compile->runtime]
@@ -795,7 +795,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->redis.clients#jedis;2.4.2 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.commons#commons-pool2;2.0 [compile->default(compile)]
 [info] Resolving org.apache.commons#commons-pool2;2.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@328dfc8a
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@64e73edc
 [debug] sbt-chain: module revision found in cache: org.apache.commons#commons-pool2;2.0
 [debug] 	found org.apache.commons#commons-pool2;2.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.commons#commons-pool2;2.0 [compile->runtime]
@@ -803,7 +803,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.commons#commons-pool2;2.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.postgresql#postgresql;9.4-1201-jdbc41 [compile->default(compile)]
 [info] Resolving org.postgresql#postgresql;9.4-1201-jdbc41 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5b2afbd2
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5529423a
 [debug] sbt-chain: module revision found in cache: org.postgresql#postgresql;9.4-1201-jdbc41
 [debug] 	found org.postgresql#postgresql;9.4-1201-jdbc41 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.postgresql#postgresql;9.4-1201-jdbc41 [compile->runtime]
@@ -811,7 +811,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.postgresql#postgresql;9.4-1201-jdbc41 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate#hibernate-entitymanager;4.3.10.Final [compile->default(compile)]
 [info] Resolving org.hibernate#hibernate-entitymanager;4.3.10.Final ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@e4d6b1a
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1c029a2c
 [debug] sbt-chain: module revision found in cache: org.hibernate#hibernate-entitymanager;4.3.10.Final
 [debug] 	found org.hibernate#hibernate-entitymanager;4.3.10.Final in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate#hibernate-entitymanager;4.3.10.Final [compile->runtime]
@@ -819,7 +819,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate#hibernate-entitymanager;4.3.10.Final [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss.logging#jboss-logging-annotations;1.2.0.Beta1 [compile->default(compile)]
 [info] Resolving org.jboss.logging#jboss-logging-annotations;1.2.0.Beta1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1e56b3a8
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@24be7f23
 [debug] sbt-chain: module revision found in cache: org.jboss.logging#jboss-logging-annotations;1.2.0.Beta1
 [debug] 	found org.jboss.logging#jboss-logging-annotations;1.2.0.Beta1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss.logging#jboss-logging-annotations;1.2.0.Beta1 [compile->runtime]
@@ -827,7 +827,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss.logging#jboss-logging-annotations;1.2.0.Beta1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate#hibernate-core;4.3.10.Final [compile->default(compile)]
 [info] Resolving org.hibernate#hibernate-core;4.3.10.Final ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5f2f3ff7
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@40dff971
 [debug] sbt-chain: module revision found in cache: org.hibernate#hibernate-core;4.3.10.Final
 [debug] 	found org.hibernate#hibernate-core;4.3.10.Final in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate#hibernate-core;4.3.10.Final [compile->runtime]
@@ -835,7 +835,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate#hibernate-core;4.3.10.Final [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss.spec.javax.transaction#jboss-transaction-api_1.2_spec;1.0.0.Final [compile->default(compile)]
 [info] Resolving org.jboss.spec.javax.transaction#jboss-transaction-api_1.2_spec;1.0.0.Final ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@729cf2e7
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3c101d3d
 [debug] sbt-chain: module revision found in cache: org.jboss.spec.javax.transaction#jboss-transaction-api_1.2_spec;1.0.0.Final
 [debug] 	found org.jboss.spec.javax.transaction#jboss-transaction-api_1.2_spec;1.0.0.Final in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss.spec.javax.transaction#jboss-transaction-api_1.2_spec;1.0.0.Final [compile->runtime]
@@ -843,7 +843,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss.spec.javax.transaction#jboss-transaction-api_1.2_spec;1.0.0.Final [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->dom4j#dom4j;1.6.1 [compile->default(compile)]
 [info] Resolving dom4j#dom4j;1.6.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5459eb4d
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@30f80d65
 [debug] sbt-chain: module revision found in cache: dom4j#dom4j;1.6.1
 [debug] 	found dom4j#dom4j;1.6.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->dom4j#dom4j;1.6.1 [compile->runtime]
@@ -851,7 +851,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->dom4j#dom4j;1.6.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate.common#hibernate-commons-annotations;4.0.5.Final [compile->default(compile)]
 [info] Resolving org.hibernate.common#hibernate-commons-annotations;4.0.5.Final ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@580de196
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@629f5182
 [debug] sbt-chain: module revision found in cache: org.hibernate.common#hibernate-commons-annotations;4.0.5.Final
 [debug] 	found org.hibernate.common#hibernate-commons-annotations;4.0.5.Final in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate.common#hibernate-commons-annotations;4.0.5.Final [compile->runtime]
@@ -859,7 +859,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hibernate.common#hibernate-commons-annotations;4.0.5.Final [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss#jandex;1.1.0.Final [compile->default(compile)]
 [info] Resolving org.jboss#jandex;1.1.0.Final ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1ffa335b
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7a6a9ca
 [debug] sbt-chain: module revision found in cache: org.jboss#jandex;1.1.0.Final
 [debug] 	found org.jboss#jandex;1.1.0.Final in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss#jandex;1.1.0.Final [compile->runtime]
@@ -867,7 +867,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.jboss#jandex;1.1.0.Final [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.notnoop.apns#apns;0.1.6 [compile->default(compile)]
 [info] Resolving com.notnoop.apns#apns;0.1.6 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@63a8e67
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@30b1271d
 [debug] sbt-chain: module revision found in cache: com.notnoop.apns#apns;0.1.6
 [debug] 	found com.notnoop.apns#apns;0.1.6 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.notnoop.apns#apns;0.1.6 [compile->runtime]
@@ -875,7 +875,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.notnoop.apns#apns;0.1.6 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.codehaus.jackson#jackson-mapper-asl;1.4.0 [compile->default(compile)]
 [info] Resolving org.codehaus.jackson#jackson-mapper-asl;1.4.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@53a58f74
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1bbf35bb
 [debug] sbt-chain: module revision found in cache: org.codehaus.jackson#jackson-mapper-asl;1.4.0
 [debug] 	found org.codehaus.jackson#jackson-mapper-asl;1.4.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.codehaus.jackson#jackson-mapper-asl;1.4.0 [compile->runtime]
@@ -883,7 +883,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.codehaus.jackson#jackson-mapper-asl;1.4.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.codehaus.jackson#jackson-core-asl;1.4.0 [compile->default(compile)]
 [info] Resolving org.codehaus.jackson#jackson-core-asl;1.4.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@e3781cc
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@b454373
 [debug] sbt-chain: module revision found in cache: org.codehaus.jackson#jackson-core-asl;1.4.0
 [debug] 	found org.codehaus.jackson#jackson-core-asl;1.4.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.codehaus.jackson#jackson-core-asl;1.4.0 [compile->runtime]
@@ -891,7 +891,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.codehaus.jackson#jackson-core-asl;1.4.0 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.ganyo#gcm-server;1.0.2 [compile->default(compile)]
 [info] Resolving com.ganyo#gcm-server;1.0.2 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7592fc3
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@38c0fe75
 [debug] sbt-chain: module revision found in cache: com.ganyo#gcm-server;1.0.2
 [debug] 	found com.ganyo#gcm-server;1.0.2 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.ganyo#gcm-server;1.0.2 [compile->runtime]
@@ -899,7 +899,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.ganyo#gcm-server;1.0.2 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.googlecode.json-simple#json-simple;1.1 [compile->default(compile)]
 [info] Resolving com.googlecode.json-simple#json-simple;1.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@477fead0
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@255f5294
 [debug] sbt-chain: module revision found in cache: com.googlecode.json-simple#json-simple;1.1
 [debug] 	found com.googlecode.json-simple#json-simple;1.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.googlecode.json-simple#json-simple;1.1 [compile->runtime]
@@ -907,7 +907,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.googlecode.json-simple#json-simple;1.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.intellij#annotations;9.0.4 [compile->default(compile)]
 [info] Resolving com.intellij#annotations;9.0.4 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@32aef4fe
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7aca670d
 [debug] sbt-chain: module revision found in cache: com.intellij#annotations;9.0.4
 [debug] 	found com.intellij#annotations;9.0.4 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.intellij#annotations;9.0.4 [compile->runtime]
@@ -915,7 +915,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.intellij#annotations;9.0.4 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->io.jsonwebtoken#jjwt;0.5 [compile->default(compile)]
 [info] Resolving io.jsonwebtoken#jjwt;0.5 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@63ecdde2
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7f20f998
 [debug] sbt-chain: module revision found in cache: io.jsonwebtoken#jjwt;0.5
 [debug] 	found io.jsonwebtoken#jjwt;0.5 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->io.jsonwebtoken#jjwt;0.5 [compile->runtime]
@@ -923,7 +923,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->io.jsonwebtoken#jjwt;0.5 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.github.javafaker#javafaker;0.5 [compile->default(compile)]
 [info] Resolving com.github.javafaker#javafaker;0.5 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@642ab7b5
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5fcd098
 [debug] sbt-chain: module revision found in cache: com.github.javafaker#javafaker;0.5
 [debug] 	found com.github.javafaker#javafaker;0.5 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.github.javafaker#javafaker;0.5 [compile->runtime]
@@ -931,7 +931,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.github.javafaker#javafaker;0.5 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-lang#commons-lang;2.6 [compile->default(compile)]
 [info] Resolving commons-lang#commons-lang;2.6 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1f40c9b2
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@19b6bcc7
 [debug] sbt-chain: module revision found in cache: commons-lang#commons-lang;2.6
 [debug] 	found commons-lang#commons-lang;2.6 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-lang#commons-lang;2.6 [compile->runtime]
@@ -939,7 +939,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-lang#commons-lang;2.6 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.mockito#mockito-core;2.0.21-beta [compile->default(compile)]
 [info] Resolving org.mockito#mockito-core;2.0.21-beta ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7f83f8ef
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1f4a8649
 [debug] sbt-chain: module revision found in cache: org.mockito#mockito-core;2.0.21-beta
 [debug] 	found org.mockito#mockito-core;2.0.21-beta in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.mockito#mockito-core;2.0.21-beta [compile->runtime]
@@ -947,7 +947,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.mockito#mockito-core;2.0.21-beta [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.bytebuddy#byte-buddy;0.6.11 [compile->default(compile)]
 [info] Resolving net.bytebuddy#byte-buddy;0.6.11 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6ae08663
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@e8c704a
 [debug] sbt-chain: module revision found in cache: net.bytebuddy#byte-buddy;0.6.11
 [debug] 	found net.bytebuddy#byte-buddy;0.6.11 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.bytebuddy#byte-buddy;0.6.11 [compile->runtime]
@@ -955,7 +955,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.bytebuddy#byte-buddy;0.6.11 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hamcrest#hamcrest-core;1.1 [compile->default(compile)]
 [info] Resolving org.hamcrest#hamcrest-core;1.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2808916d
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@62f8dcaf
 [debug] sbt-chain: module revision found in cache: org.hamcrest#hamcrest-core;1.1
 [debug] 	found org.hamcrest#hamcrest-core;1.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hamcrest#hamcrest-core;1.1 [compile->runtime]
@@ -963,7 +963,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hamcrest#hamcrest-core;1.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.objenesis#objenesis;2.1 [compile->default(compile)]
 [info] Resolving org.objenesis#objenesis;2.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@39e01eb8
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4206a830
 [debug] sbt-chain: module revision found in cache: org.objenesis#objenesis;2.1
 [debug] 	found org.objenesis#objenesis;2.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.objenesis#objenesis;2.1 [compile->runtime]
@@ -971,7 +971,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.objenesis#objenesis;2.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.code.gson#gson;2.3.1 [compile->default(compile)]
 [info] Resolving com.google.code.gson#gson;2.3.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1a2df7bf
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@70948ac9
 [debug] sbt-chain: module revision found in cache: com.google.code.gson#gson;2.3.1
 [debug] 	found com.google.code.gson#gson;2.3.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.code.gson#gson;2.3.1 [compile->runtime]
@@ -979,7 +979,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.google.code.gson#gson;2.3.1 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->nl.jqno.equalsverifier#equalsverifier;1.7.3 [compile->default(compile)]
 [info] Resolving nl.jqno.equalsverifier#equalsverifier;1.7.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1500c7d2
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@e919ace
 [debug] sbt-chain: module revision found in cache: nl.jqno.equalsverifier#equalsverifier;1.7.3
 [debug] 	found nl.jqno.equalsverifier#equalsverifier;1.7.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->nl.jqno.equalsverifier#equalsverifier;1.7.3 [compile->runtime]
@@ -987,7 +987,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->nl.jqno.equalsverifier#equalsverifier;1.7.3 [compile->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fiftyonred#mock-jedis;0.1.2 [compile->default(compile)]
 [info] Resolving com.fiftyonred#mock-jedis;0.1.2 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@86598d
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@56f9f2e0
 [debug] sbt-chain: module revision found in cache: com.fiftyonred#mock-jedis;0.1.2
 [debug] 	found com.fiftyonred#mock-jedis;0.1.2 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fiftyonred#mock-jedis;0.1.2 [compile->runtime]
@@ -3082,7 +3082,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.fiftyonred#mock-jedis;0.1.2 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-test_2.11;2.4.1 [test->default(compile)]
 [info] Resolving com.typesafe.play#play-test_2.11;2.4.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@579429ba
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@30ad5279
 [debug] sbt-chain: module revision found in cache: com.typesafe.play#play-test_2.11;2.4.1
 [debug] 	found com.typesafe.play#play-test_2.11;2.4.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.typesafe.play#play-test_2.11;2.4.1 [test->runtime]
@@ -3098,7 +3098,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->junit#junit;4.12 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hamcrest#hamcrest-core;1.3 [test->default(compile)]
 [info] Resolving org.hamcrest#hamcrest-core;1.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@25aa0d61
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7b37153
 [debug] sbt-chain: module revision found in cache: org.hamcrest#hamcrest-core;1.3
 [debug] 	found org.hamcrest#hamcrest-core;1.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hamcrest#hamcrest-core;1.3 [test->runtime]
@@ -3106,7 +3106,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.hamcrest#hamcrest-core;1.3 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.novocode#junit-interface;0.11 [test->default(compile)]
 [info] Resolving com.novocode#junit-interface;0.11 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@39784
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3a50e31a
 [debug] sbt-chain: module revision found in cache: com.novocode#junit-interface;0.11
 [debug] 	found com.novocode#junit-interface;0.11 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.novocode#junit-interface;0.11 [test->runtime]
@@ -3114,7 +3114,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->com.novocode#junit-interface;0.11 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->default(compile)]
 [info] Resolving org.scala-sbt#test-interface;1.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3216ba27
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3cf3ab24
 [debug] sbt-chain: module revision found in cache: org.scala-sbt#test-interface;1.0
 [debug] 	found org.scala-sbt#test-interface;1.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->runtime]
@@ -3122,7 +3122,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.fluentlenium#fluentlenium-core;0.10.3 [test->default(compile)]
 [info] Resolving org.fluentlenium#fluentlenium-core;0.10.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@69b84717
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5a6c41df
 [debug] sbt-chain: module revision found in cache: org.fluentlenium#fluentlenium-core;0.10.3
 [debug] 	found org.fluentlenium#fluentlenium-core;0.10.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.fluentlenium#fluentlenium-core;0.10.3 [test->runtime]
@@ -3130,7 +3130,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.fluentlenium#fluentlenium-core;0.10.3 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-java;2.44.0 [test->default(compile)]
 [info] Resolving org.seleniumhq.selenium#selenium-java;2.44.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@286bbfe1
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@10a63fbd
 [debug] sbt-chain: module revision found in cache: org.seleniumhq.selenium#selenium-java;2.44.0
 [debug] 	found org.seleniumhq.selenium#selenium-java;2.44.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-java;2.44.0 [test->runtime]
@@ -3138,7 +3138,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-java;2.44.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-chrome-driver;2.44.0 [test->default(compile)]
 [info] Resolving org.seleniumhq.selenium#selenium-chrome-driver;2.44.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@28dd855b
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5e135f7f
 [debug] sbt-chain: module revision found in cache: org.seleniumhq.selenium#selenium-chrome-driver;2.44.0
 [debug] 	found org.seleniumhq.selenium#selenium-chrome-driver;2.44.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-chrome-driver;2.44.0 [test->runtime]
@@ -3146,7 +3146,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-chrome-driver;2.44.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-remote-driver;2.44.0 [test->default(compile)]
 [info] Resolving org.seleniumhq.selenium#selenium-remote-driver;2.44.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3e6fec24
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1109f78b
 [debug] sbt-chain: module revision found in cache: org.seleniumhq.selenium#selenium-remote-driver;2.44.0
 [debug] 	found org.seleniumhq.selenium#selenium-remote-driver;2.44.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-remote-driver;2.44.0 [test->runtime]
@@ -3154,7 +3154,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-remote-driver;2.44.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->cglib#cglib-nodep;2.1_3 [test->default(compile)]
 [info] Resolving cglib#cglib-nodep;2.1_3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@195ff5e2
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7aa48b85
 [debug] sbt-chain: module revision found in cache: cglib#cglib-nodep;2.1_3
 [debug] 	found cglib#cglib-nodep;2.1_3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->cglib#cglib-nodep;2.1_3 [test->runtime]
@@ -3162,7 +3162,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->cglib#cglib-nodep;2.1_3 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-api;2.44.0 [test->default(compile)]
 [info] Resolving org.seleniumhq.selenium#selenium-api;2.44.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3462cfee
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@767b32a2
 [debug] sbt-chain: module revision found in cache: org.seleniumhq.selenium#selenium-api;2.44.0
 [debug] 	found org.seleniumhq.selenium#selenium-api;2.44.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-api;2.44.0 [test->runtime]
@@ -3170,7 +3170,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-api;2.44.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpclient;4.3.4 [test->default(compile)]
 [info] Resolving org.apache.httpcomponents#httpclient;4.3.4 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@59b98685
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@54e4dcb5
 [debug] sbt-chain: module revision found in cache: org.apache.httpcomponents#httpclient;4.3.4
 [debug] 	found org.apache.httpcomponents#httpclient;4.3.4 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpclient;4.3.4 [test->runtime]
@@ -3178,7 +3178,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpclient;4.3.4 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpcore;4.3.2 [test->default(compile)]
 [info] Resolving org.apache.httpcomponents#httpcore;4.3.2 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@772dac5c
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@44197a94
 [debug] sbt-chain: module revision found in cache: org.apache.httpcomponents#httpcore;4.3.2
 [debug] 	found org.apache.httpcomponents#httpcore;4.3.2 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpcore;4.3.2 [test->runtime]
@@ -3186,7 +3186,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpcore;4.3.2 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-logging#commons-logging;1.1.3 [test->default(compile)]
 [info] Resolving commons-logging#commons-logging;1.1.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3c60ec4f
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2bf9ae74
 [debug] sbt-chain: module revision found in cache: commons-logging#commons-logging;1.1.3
 [debug] 	found commons-logging#commons-logging;1.1.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-logging#commons-logging;1.1.3 [test->runtime]
@@ -3194,7 +3194,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-logging#commons-logging;1.1.3 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.commons#commons-exec;1.1 [test->default(compile)]
 [info] Resolving org.apache.commons#commons-exec;1.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@44cdb0bc
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@22fd6f19
 [debug] sbt-chain: module revision found in cache: org.apache.commons#commons-exec;1.1
 [debug] 	found org.apache.commons#commons-exec;1.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.commons#commons-exec;1.1 [test->runtime]
@@ -3202,7 +3202,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.commons#commons-exec;1.1 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.java.dev.jna#jna;3.4.0 [test->default(compile)]
 [info] Resolving net.java.dev.jna#jna;3.4.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2d3afa1a
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3e044bd8
 [debug] sbt-chain: module revision found in cache: net.java.dev.jna#jna;3.4.0
 [debug] 	found net.java.dev.jna#jna;3.4.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.java.dev.jna#jna;3.4.0 [test->runtime]
@@ -3210,7 +3210,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.java.dev.jna#jna;3.4.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.java.dev.jna#platform;3.4.0 [test->default(compile)]
 [info] Resolving net.java.dev.jna#platform;3.4.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4668f3f6
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@395a5131
 [debug] sbt-chain: module revision found in cache: net.java.dev.jna#platform;3.4.0
 [debug] 	found net.java.dev.jna#platform;3.4.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.java.dev.jna#platform;3.4.0 [test->runtime]
@@ -3218,7 +3218,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.java.dev.jna#platform;3.4.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-htmlunit-driver;2.44.0 [test->default(compile)]
 [info] Resolving org.seleniumhq.selenium#selenium-htmlunit-driver;2.44.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1578086e
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1a88ed65
 [debug] sbt-chain: module revision found in cache: org.seleniumhq.selenium#selenium-htmlunit-driver;2.44.0
 [debug] 	found org.seleniumhq.selenium#selenium-htmlunit-driver;2.44.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-htmlunit-driver;2.44.0 [test->runtime]
@@ -3226,7 +3226,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-htmlunit-driver;2.44.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.htmlunit#htmlunit;2.15 [test->default(compile)]
 [info] Resolving net.sourceforge.htmlunit#htmlunit;2.15 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6c92219a
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@51b65835
 [debug] sbt-chain: module revision found in cache: net.sourceforge.htmlunit#htmlunit;2.15
 [debug] 	found net.sourceforge.htmlunit#htmlunit;2.15 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.htmlunit#htmlunit;2.15 [test->runtime]
@@ -3234,7 +3234,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.htmlunit#htmlunit;2.15 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->xalan#xalan;2.7.1 [test->default(compile)]
 [info] Resolving xalan#xalan;2.7.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@20a6091b
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@25574184
 [debug] sbt-chain: module revision found in cache: xalan#xalan;2.7.1
 [debug] 	found xalan#xalan;2.7.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->xalan#xalan;2.7.1 [test->runtime]
@@ -3242,7 +3242,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->xalan#xalan;2.7.1 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-collections#commons-collections;3.2.1 [test->default(compile)]
 [info] Resolving commons-collections#commons-collections;3.2.1 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5545a4fb
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6707318e
 [debug] sbt-chain: module revision found in cache: commons-collections#commons-collections;3.2.1
 [debug] 	found commons-collections#commons-collections;3.2.1 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-collections#commons-collections;3.2.1 [test->runtime]
@@ -3250,7 +3250,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-collections#commons-collections;3.2.1 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpmime;4.3.3 [test->default(compile)]
 [info] Resolving org.apache.httpcomponents#httpmime;4.3.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3c555886
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@50eea6fc
 [debug] sbt-chain: module revision found in cache: org.apache.httpcomponents#httpmime;4.3.3
 [debug] 	found org.apache.httpcomponents#httpmime;4.3.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpmime;4.3.3 [test->runtime]
@@ -3258,7 +3258,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.apache.httpcomponents#httpmime;4.3.3 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.htmlunit#htmlunit-core-js;2.15 [test->default(compile)]
 [info] Resolving net.sourceforge.htmlunit#htmlunit-core-js;2.15 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@ed76191
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5f639757
 [debug] sbt-chain: module revision found in cache: net.sourceforge.htmlunit#htmlunit-core-js;2.15
 [debug] 	found net.sourceforge.htmlunit#htmlunit-core-js;2.15 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.htmlunit#htmlunit-core-js;2.15 [test->runtime]
@@ -3266,7 +3266,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.htmlunit#htmlunit-core-js;2.15 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.nekohtml#nekohtml;1.9.21 [test->default(compile)]
 [info] Resolving net.sourceforge.nekohtml#nekohtml;1.9.21 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@15e590f6
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1b2c0867
 [debug] sbt-chain: module revision found in cache: net.sourceforge.nekohtml#nekohtml;1.9.21
 [debug] 	found net.sourceforge.nekohtml#nekohtml;1.9.21 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.nekohtml#nekohtml;1.9.21 [test->runtime]
@@ -3274,7 +3274,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.nekohtml#nekohtml;1.9.21 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.cssparser#cssparser;0.9.14 [test->default(compile)]
 [info] Resolving net.sourceforge.cssparser#cssparser;0.9.14 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@9d837d3
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1214ed10
 [debug] sbt-chain: module revision found in cache: net.sourceforge.cssparser#cssparser;0.9.14
 [debug] 	found net.sourceforge.cssparser#cssparser;0.9.14 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.cssparser#cssparser;0.9.14 [test->runtime]
@@ -3282,7 +3282,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->net.sourceforge.cssparser#cssparser;0.9.14 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.w3c.css#sac;1.3 [test->default(compile)]
 [info] Resolving org.w3c.css#sac;1.3 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1ddcc6fc
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@734595f5
 [debug] sbt-chain: module revision found in cache: org.w3c.css#sac;1.3
 [debug] 	found org.w3c.css#sac;1.3 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.w3c.css#sac;1.3 [test->runtime]
@@ -3290,7 +3290,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.w3c.css#sac;1.3 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-io#commons-io;2.4 [test->default(compile)]
 [info] Resolving commons-io#commons-io;2.4 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2fc6d11d
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@351b8c4f
 [debug] sbt-chain: module revision found in cache: commons-io#commons-io;2.4
 [debug] 	found commons-io#commons-io;2.4 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-io#commons-io;2.4 [test->runtime]
@@ -3298,7 +3298,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->commons-io#commons-io;2.4 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-websocket;8.1.15.v20140411 [test->default(compile)]
 [info] Resolving org.eclipse.jetty#jetty-websocket;8.1.15.v20140411 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@bbffdf8
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@751106da
 [debug] sbt-chain: module revision found in cache: org.eclipse.jetty#jetty-websocket;8.1.15.v20140411
 [debug] 	found org.eclipse.jetty#jetty-websocket;8.1.15.v20140411 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-websocket;8.1.15.v20140411 [test->runtime]
@@ -3306,7 +3306,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-websocket;8.1.15.v20140411 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-util;8.1.15.v20140411 [test->default(compile)]
 [info] Resolving org.eclipse.jetty#jetty-util;8.1.15.v20140411 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@78012f2c
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2310f86c
 [debug] sbt-chain: module revision found in cache: org.eclipse.jetty#jetty-util;8.1.15.v20140411
 [debug] 	found org.eclipse.jetty#jetty-util;8.1.15.v20140411 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-util;8.1.15.v20140411 [test->runtime]
@@ -3314,7 +3314,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-util;8.1.15.v20140411 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-io;8.1.15.v20140411 [test->default(compile)]
 [info] Resolving org.eclipse.jetty#jetty-io;8.1.15.v20140411 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@71d021
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@507670fd
 [debug] sbt-chain: module revision found in cache: org.eclipse.jetty#jetty-io;8.1.15.v20140411
 [debug] 	found org.eclipse.jetty#jetty-io;8.1.15.v20140411 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-io;8.1.15.v20140411 [test->runtime]
@@ -3322,7 +3322,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-io;8.1.15.v20140411 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-http;8.1.15.v20140411 [test->default(compile)]
 [info] Resolving org.eclipse.jetty#jetty-http;8.1.15.v20140411 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@61c459f
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6ab96162
 [debug] sbt-chain: module revision found in cache: org.eclipse.jetty#jetty-http;8.1.15.v20140411
 [debug] 	found org.eclipse.jetty#jetty-http;8.1.15.v20140411 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-http;8.1.15.v20140411 [test->runtime]
@@ -3330,7 +3330,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.eclipse.jetty#jetty-http;8.1.15.v20140411 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-firefox-driver;2.44.0 [test->default(compile)]
 [info] Resolving org.seleniumhq.selenium#selenium-firefox-driver;2.44.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@6671eb99
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@523fd90d
 [debug] sbt-chain: module revision found in cache: org.seleniumhq.selenium#selenium-firefox-driver;2.44.0
 [debug] 	found org.seleniumhq.selenium#selenium-firefox-driver;2.44.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-firefox-driver;2.44.0 [test->runtime]
@@ -3338,7 +3338,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-firefox-driver;2.44.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-ie-driver;2.44.0 [test->default(compile)]
 [info] Resolving org.seleniumhq.selenium#selenium-ie-driver;2.44.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7c7e9407
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@30605324
 [debug] sbt-chain: module revision found in cache: org.seleniumhq.selenium#selenium-ie-driver;2.44.0
 [debug] 	found org.seleniumhq.selenium#selenium-ie-driver;2.44.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-ie-driver;2.44.0 [test->runtime]
@@ -3346,7 +3346,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-ie-driver;2.44.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-safari-driver;2.44.0 [test->default(compile)]
 [info] Resolving org.seleniumhq.selenium#selenium-safari-driver;2.44.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@c617f7d
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2a885149
 [debug] sbt-chain: module revision found in cache: org.seleniumhq.selenium#selenium-safari-driver;2.44.0
 [debug] 	found org.seleniumhq.selenium#selenium-safari-driver;2.44.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-safari-driver;2.44.0 [test->runtime]
@@ -3354,7 +3354,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-safari-driver;2.44.0 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.webbitserver#webbit;0.4.14 [test->default(compile)]
 [info] Resolving org.webbitserver#webbit;0.4.14 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@663afa94
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@60fd2ccb
 [debug] sbt-chain: module revision found in cache: org.webbitserver#webbit;0.4.14
 [debug] 	found org.webbitserver#webbit;0.4.14 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.webbitserver#webbit;0.4.14 [test->runtime]
@@ -3362,7 +3362,7 @@
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.webbitserver#webbit;0.4.14 [test->master]
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-support;2.44.0 [test->default(compile)]
 [info] Resolving org.seleniumhq.selenium#selenium-support;2.44.0 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@93c40a0
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@2bf2a1dd
 [debug] sbt-chain: module revision found in cache: org.seleniumhq.selenium#selenium-support;2.44.0
 [debug] 	found org.seleniumhq.selenium#selenium-support;2.44.0 in sbt-chain
 [debug] == resolving dependencies zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT->org.seleniumhq.selenium#selenium-support;2.44.0 [test->runtime]
@@ -10193,7 +10193,7 @@
 [debug] 	[NOT REQUIRED] jline#jline;2.12.1!jline.jar(doc)
 [debug] 	[NOT REQUIRED] org.jacoco#org.jacoco.agent;0.7.1.201405082137!org.jacoco.agent.jar(src)
 [debug] 	[NOT REQUIRED] org.jacoco#org.jacoco.agent;0.7.1.201405082137!org.jacoco.agent.jar(doc)
-[debug] :: resolution report :: resolve 16627ms :: artifacts dl 1152ms
+[debug] :: resolution report :: resolve 16736ms :: artifacts dl 719ms
 [debug] 	report for zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT compile produced in /Users/kdoherty/dev/ideaProjects/ZipChat/target/resolution-cache/reports/zipchat-zipchat$sources_javadoc_2.11-compile.xml
 [debug] 	report for zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT runtime produced in /Users/kdoherty/dev/ideaProjects/ZipChat/target/resolution-cache/reports/zipchat-zipchat$sources_javadoc_2.11-runtime.xml
 [debug] 	report for zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT test produced in /Users/kdoherty/dev/ideaProjects/ZipChat/target/resolution-cache/reports/zipchat-zipchat$sources_javadoc_2.11-test.xml
@@ -10208,4 +10208,4 @@
 [debug] 	report for zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT pom produced in /Users/kdoherty/dev/ideaProjects/ZipChat/target/resolution-cache/reports/zipchat-zipchat$sources_javadoc_2.11-pom.xml
 [debug] 	report for zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT scala-tool produced in /Users/kdoherty/dev/ideaProjects/ZipChat/target/resolution-cache/reports/zipchat-zipchat$sources_javadoc_2.11-scala-tool.xml
 [debug] 	report for zipchat#zipchat$sources_javadoc_2.11;1.0-SNAPSHOT jacoco produced in /Users/kdoherty/dev/ideaProjects/ZipChat/target/resolution-cache/reports/zipchat-zipchat$sources_javadoc_2.11-jacoco.xml
-[debug] 	resolve done (16627ms resolve - 1152ms download)
+[debug] 	resolve done (16736ms resolve - 719ms download)

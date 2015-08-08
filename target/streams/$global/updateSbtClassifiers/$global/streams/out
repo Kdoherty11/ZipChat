@@ -4107,9 +4107,9 @@
 [debug] 	[NOT REQUIRED] com.google.inject#guice;3.0!guice.jar
 [debug] 	[NOT REQUIRED] org.sonatype.sisu.inject#cglib;2.2.1-v20090111!cglib.jar
 [debug] 	[NOT REQUIRED] asm#asm;3.1!asm.jar
-[debug] :: resolution report :: resolve 2327ms :: artifacts dl 65ms
+[debug] :: resolution report :: resolve 3379ms :: artifacts dl 179ms
 [debug] 	report for zipchat#zipchat$sbt_2.11;1.0-SNAPSHOT default produced in /Users/kdoherty/dev/ideaProjects/ZipChat/target/resolution-cache/reports/zipchat-zipchat$sbt_2.11-default.xml
-[debug] 	resolve done (2327ms resolve - 65ms download)
+[debug] 	resolve done (3379ms resolve - 179ms download)
 [debug] Using inline dependencies specified in Scala.
 [debug] :: resolving dependencies :: zipchat#zipchat$sources_2.11;1.0-SNAPSHOT
 [debug] 	confs: [default]
@@ -5369,6 +5369,6 @@
 [debug] 	[NOT REQUIRED] commons-codec#commons-codec;1.9!commons-codec.jar(src)
 [debug] 	[NOT REQUIRED] com.typesafe.sbt#sbt-play-enhancer;1.1.0!sbt-play-enhancer.jar(src)
 [debug] 	[NOT REQUIRED] com.typesafe.play#play-enhancer;1.1.0!play-enhancer.jar(src)
-[debug] :: resolution report :: resolve 1768ms :: artifacts dl 114ms
+[debug] :: resolution report :: resolve 2536ms :: artifacts dl 257ms
 [debug] 	report for zipchat#zipchat$sources_2.11;1.0-SNAPSHOT default produced in /Users/kdoherty/dev/ideaProjects/ZipChat/target/resolution-cache/reports/zipchat-zipchat$sources_2.11-default.xml
-[debug] 	resolve done (1768ms resolve - 114ms download)
+[debug] 	resolve done (2536ms resolve - 257ms download)

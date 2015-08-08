@@ -4,7 +4,7 @@
 		module="zipchat$sources_2.11"
 		revision="1.0-SNAPSHOT"
 		status="integration"
-		publication="20150807165140"
+		publication="20150807210953"
 	/>
 	<configurations>
 		<conf name="default" visibility="public" description=""/>
