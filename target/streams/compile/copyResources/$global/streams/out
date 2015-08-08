@@ -1,8 +1,0 @@
-[0m[[0mdebug[0m] [0mCopy resource mappings: [0m
-[0m[[0mdebug[0m] [0m	(/Users/kdoherty/dev/ideaProjects/ZipChat/conf/application.conf,/Users/kdoherty/dev/ideaProjects/ZipChat/target/scala-2.11/classes/application.conf)[0m
-[0m[[0mdebug[0m] [0m	(/Users/kdoherty/dev/ideaProjects/ZipChat/conf/logback.xml,/Users/kdoherty/dev/ideaProjects/ZipChat/target/scala-2.11/classes/logback.xml)[0m
-[0m[[0mdebug[0m] [0m	(/Users/kdoherty/dev/ideaProjects/ZipChat/conf/META-INF,/Users/kdoherty/dev/ideaProjects/ZipChat/target/scala-2.11/classes/META-INF)[0m
-[0m[[0mdebug[0m] [0m	(/Users/kdoherty/dev/ideaProjects/ZipChat/conf/play.plugins,/Users/kdoherty/dev/ideaProjects/ZipChat/target/scala-2.11/classes/play.plugins)[0m
-[0m[[0mdebug[0m] [0m	(/Users/kdoherty/dev/ideaProjects/ZipChat/conf/routes,/Users/kdoherty/dev/ideaProjects/ZipChat/target/scala-2.11/classes/routes)[0m
-[0m[[0mdebug[0m] [0m	(/Users/kdoherty/dev/ideaProjects/ZipChat/conf/seed_data.yml,/Users/kdoherty/dev/ideaProjects/ZipChat/target/scala-2.11/classes/seed_data.yml)[0m
-[0m[[0mdebug[0m] [0m	(/Users/kdoherty/dev/ideaProjects/ZipChat/conf/META-INF/persistence.xml,/Users/kdoherty/dev/ideaProjects/ZipChat/target/scala-2.11/classes/META-INF/persistence.xml)[0m
