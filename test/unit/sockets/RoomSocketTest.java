@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.RoomSocketsController;
 import factories.*;
-import models.AnonUser;
-import models.Message;
-import models.PublicRoom;
-import models.User;
+import models.*;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
@@ -444,14 +441,9 @@ public class RoomSocketTest extends WithApplication {
         webSocket.write(Json.newObject().put("event", "unsupportedEvent"));
     }
 
-//    @Test
-//    public void anonMessageNotAllowedInPrivateRooms() throws Throwable {
-//        long privateRoomId = 3;
-//        PrivateRoom privateRoom = new PrivateRoomFactory().create(PropOverride.of("roomId", privateRoomId));
-//        when(privateRoomService.findById(privateRoomId)).thenReturn(Optional.of(privateRoom));
-//        when(abstractRoomService.findById(privateRoomId)).thenReturn(Optional.of(privateRoom));
-//
-//        MockWebSocket privateRoomWs = new MockWebSocket(roomSocketsController.joinPrivateRoom(privateRoomId, userId, ""));
-//        sendMessage(privateRoomWs, "msg", true);
-//    }
+    @Test
+    public void anonMessageNotAllowedInPrivateRooms() throws Throwable {
+//        when(abstractRoomService.findById(roomId)).thenReturn(Optional.of(new PrivateRoomFactory().create()));
+//        sendMessage(webSocket, "msg", true);
+    }
 }
