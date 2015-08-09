@@ -10,7 +10,6 @@ import com.google.common.base.MoreObjects;
 import models.*;
 import play.Logger;
 import play.api.Play;
-import play.api.inject.Injector;
 import play.db.jpa.JPA;
 import play.libs.Json;
 import play.mvc.WebSocket;
@@ -19,6 +18,7 @@ import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.duration.Duration;
 import services.*;
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -40,10 +40,14 @@ public class RoomSocket extends UntypedActor {
     public static final String MESSAGE_KEY = "message";
     public static final String USER_KEY = "user";
 
-    public static final ActorRef defaultRoom = Play.current().actorSystem().actorOf(Props.create(RoomSocket.class));
+    public static final ActorRef defaultRoom = Play.current().actorSystem().actorOf(
+            Props.create(RoomSocket.class,
+            () -> Play.current().injector().instanceOf(RoomSocket.class)));
 
     // Key is roomId, value is the users connected to that room
-    static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new ConcurrentHashMap<>();
+    private static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new ConcurrentHashMap<>();
+
+    private static final boolean VERBOSE = true;
 
     static {
         //subscribe to the message channel
@@ -58,8 +62,6 @@ public class RoomSocket extends UntypedActor {
         );
     }
 
-    private static final boolean VERBOSE = true;
-
     private final AbstractRoomService abstractRoomService;
 
     private final AnonUserService anonUserService;
@@ -72,24 +74,16 @@ public class RoomSocket extends UntypedActor {
 
     private final KeepAliveService keepAliveService;
 
-    public RoomSocket(AbstractRoomService abstractRoomService, UserService userService, AnonUserService anonUserService, MessageService messageService, JedisService jedisService, KeepAliveService keepAliveService) {
+    @Inject
+    public RoomSocket(final AbstractRoomService abstractRoomService, final UserService userService,
+                      final AnonUserService anonUserService, final MessageService messageService,
+                      final JedisService jedisService, final KeepAliveService keepAliveService) {
         this.abstractRoomService = abstractRoomService;
         this.userService = userService;
         this.anonUserService = anonUserService;
         this.messageService = messageService;
         this.jedisService = jedisService;
         this.keepAliveService = keepAliveService;
-    }
-
-    public RoomSocket() {
-        // Override abstract module instead
-        Injector injector = Play.current().injector();
-        this.abstractRoomService = injector.instanceOf(AbstractRoomService.class);
-        this.userService = injector.instanceOf(UserService.class);
-        this.anonUserService = injector.instanceOf(AnonUserService.class);
-        this.messageService = injector.instanceOf(MessageService.class);
-        this.jedisService = injector.instanceOf(JedisService.class);
-        this.keepAliveService = injector.instanceOf(KeepAliveService.class);
     }
 
     public static Stream<Long> getUserIdsInRoomStream(long roomId, Jedis j) {
@@ -120,7 +114,6 @@ public class RoomSocket extends UntypedActor {
         } else if (message instanceof Talk) {
             JPA.withTransaction(() -> {
                 jedisService.useJedisResource(jedis -> receiveTalk((Talk) message, jedis));
-
             });
         } else if (message instanceof FavoriteNotification) {
             JPA.withTransaction(() -> {

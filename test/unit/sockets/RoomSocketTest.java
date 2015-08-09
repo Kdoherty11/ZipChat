@@ -76,6 +76,8 @@ public class RoomSocketTest extends WithApplication {
 
     private RoomSocketService roomSocketService;
 
+    private KeepAliveService keepAliveService;
+
     private final long roomId = 1;
 
     private final long userId = 2;
@@ -92,7 +94,6 @@ public class RoomSocketTest extends WithApplication {
 
     private UserFactory userFactory;
 
-    private KeepAliveService keepAliveService;
 
     @Override
     protected Application provideApplication() {
@@ -120,7 +121,7 @@ public class RoomSocketTest extends WithApplication {
 
         keepAliveService = spy(Play.current().injector().instanceOf(KeepAliveService.class));
         ActorRef defaultRoomWithMockedServices = Play.current().actorSystem().actorOf(Props.create(RoomSocket.class, () -> {
-            return new RoomSocket(abstractRoomService, userService, anonUserService, messageService, jedisService, keepAliveService);
+            return spy(new RoomSocket(abstractRoomService, userService, anonUserService, messageService, jedisService, keepAliveService));
         }));
 
         TestUtils.setPrivateStaticFinalField(RoomSocket.class, "defaultRoom", defaultRoomWithMockedServices);
@@ -438,9 +439,10 @@ public class RoomSocketTest extends WithApplication {
         assertEquals(user, fromJson(quitEvent.get(RoomSocket.USER_KEY), User.class));
     }
 
-
-
-
+    @Test(expected = RuntimeException.class)
+    public void unsupportedSocketEvent() throws Throwable {
+        webSocket.write(Json.newObject().put("event", "unsupportedEvent"));
+    }
 
 //    @Test
 //    public void anonMessageNotAllowedInPrivateRooms() throws Throwable {
