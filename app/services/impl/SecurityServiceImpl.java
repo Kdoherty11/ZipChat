@@ -33,7 +33,6 @@ public class SecurityServiceImpl implements SecurityService {
     @Inject
     public SecurityServiceImpl(final PrivateRoomService privateRoomService) {
         this.privateRoomService = privateRoomService;
-        Logger.error("SigningKey: " + SIGNING_KEY);
     }
 
 
