@@ -1,13 +1,14 @@
 package services.impl;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import daos.AnonUserDao;
 import models.AnonUser;
 import models.PublicRoom;
 import models.User;
+import play.api.Play;
 import services.AnonUserService;
+import services.CsvService;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -20,12 +21,17 @@ import java.util.stream.Collectors;
  */
 public class AnonUserServiceImpl extends GenericServiceImpl<AnonUser> implements AnonUserService {
 
-    private static final Set<String> FIRST_NAMES = ImmutableSet.of("John", "Drew", "Carl", "Trevor", "Rahul", "Jim", "Tom", "Dave", "Matt", "Eric");
-    private static final Set<String> LAST_NAMES = ImmutableSet.of("Smith", "Brown", "Doe", "Forgo", "Cogan", "Dexter", "Matthews", "Jordan");
-    private static final Set<String> FULL_NAMES = new HashSet<>(FIRST_NAMES.size() * LAST_NAMES.size());
+    private static final Set<String> FIRST_NAMES;
+    private static final Set<String> LAST_NAMES;
+    private static final Set<String> FULL_NAMES;
 
     static {
-        FIRST_NAMES.forEach(firstName -> LAST_NAMES.forEach(lastName -> FULL_NAMES.add(firstName + " " + lastName)));
+        CsvService csvService = Play.current().injector().instanceOf(CsvService.class);
+        FIRST_NAMES = csvService.readToImmutableSet("anon_first_names.csv");
+        LAST_NAMES = csvService.readToImmutableSet("anon_last_names.csv");
+        FULL_NAMES = new HashSet<>(FIRST_NAMES.size() * LAST_NAMES.size());
+        FIRST_NAMES.forEach(firstName -> LAST_NAMES.forEach(lastName ->
+                FULL_NAMES.add(firstName + " " + lastName)));
     }
 
     private final AnonUserDao anonUserDao;

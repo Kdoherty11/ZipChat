@@ -35,8 +35,6 @@ public class SecurityServiceImpl implements SecurityService {
         this.privateRoomService = privateRoomService;
     }
 
-
-
     @Override
     public String generateAuthToken(long userId) {
         long issuedMillis = System.currentTimeMillis();
