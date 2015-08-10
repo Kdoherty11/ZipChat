@@ -22,8 +22,9 @@ public class SecurityServiceImpl implements SecurityService {
 
     private final PrivateRoomService privateRoomService;
 
-    // TODO Read from ENV
-    private static final String SIGNING_KEY = "myKey";
+    private static final String SIGNING_KEY = Play.application().configuration()
+            .getString("jwt.signing.key", "default_signing_key");
+
     private static final String ISSUER = "ZipChat";
 
     // 1 day in millis
@@ -32,6 +33,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Inject
     public SecurityServiceImpl(final PrivateRoomService privateRoomService) {
         this.privateRoomService = privateRoomService;
+        Logger.error("SigningKey: " + SIGNING_KEY);
     }
 
 
