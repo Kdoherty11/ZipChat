@@ -3,10 +3,12 @@ package unit.sockets;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.RoomSocketsController;
 import factories.*;
-import models.*;
+import models.AnonUser;
+import models.Message;
+import models.PublicRoom;
+import models.User;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
@@ -80,8 +82,6 @@ public class RoomSocketTest extends WithApplication {
     private final long userId = 2;
 
     private User user;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     private static boolean firstTest = true;
 
@@ -161,10 +161,10 @@ public class RoomSocketTest extends WithApplication {
         }
 
         assertEquals("has entered the room", rosterNotification.get("message").asText());
-        assertEquals(user, objectMapper.convertValue(rosterNotification.get("user"), User.class));
+        assertEquals(user, fromJson(rosterNotification.get("user"), User.class));
 
         JsonNode message = joinSuccess.get(RoomSocket.MESSAGE_KEY);
-        User[] roomMembers = objectMapper.readValue(message.get("roomMembers").toString(), User[].class);
+        User[] roomMembers = fromJson(message.get("roomMembers"), User[].class);
         assertEquals(0, roomMembers.length);
         assertFalse(message.get("isSubscribed").asBoolean());
     }
