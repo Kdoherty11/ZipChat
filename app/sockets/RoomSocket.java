@@ -140,6 +140,12 @@ public class RoomSocket extends UntypedActor {
         try {
             Message message = JPA.withTransaction(() -> storeMessage(talk, jedis));
             notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
+
+            JsonNode talkConfirmation = Json.newObject()
+                    .put(EVENT_KEY, "talk-confirmation")
+                    .put("uuid", talk.getUuid());
+
+            notifyUser(roomId, userId, talkConfirmation);
         } catch (Throwable throwable) {
             Logger.error("Problem storing the message", throwable);
             throw new RuntimeException("Problem storing the message", throwable);
@@ -177,11 +183,8 @@ public class RoomSocket extends UntypedActor {
         Logger.debug("sending " + message + " to user " + userId);
         Optional<WebSocket.Out<JsonNode>> outOptional = getWebSocket(roomId, userId);
 
-        if (outOptional.isPresent()) {
-            outOptional.get().write(message);
-        } else {
-            Logger.error("Could not find outsocket for user " + userId + " in room " + roomId);
-        }
+        // Won't always be present if user is on different dyno
+        outOptional.ifPresent(outSocket -> outSocket.write(message));
     }
 
     private Optional<WebSocket.Out<JsonNode>> getWebSocket(long roomId, long userId) {
@@ -286,15 +289,24 @@ public class RoomSocket extends UntypedActor {
         message.put(EVENT_KEY, kind);
         message.put(MESSAGE_KEY, text);
 
-        // If its not a talk or keepalive add the user to the message
-        if (!Talk.TYPE.equals(kind)) {
+        boolean isTalk = Talk.TYPE.equals(kind);
+
+
+        // If its not a talk add the user to the message
+        if (!isTalk) {
             User sender = userService.findById(userId).get();
             message.set(USER_KEY, toJson(sender));
         }
 
         logV("About to notify room with: " + message);
 
-        userSocketsInRoom.values().forEach(channel -> channel.write(message));
+        userSocketsInRoom.entrySet().forEach(entry -> {
+            // Not sending talks to the sending user...
+            // They should get talk-confirmations instead
+            if (!isTalk || userId != entry.getKey()) {
+                entry.getValue().write(message);
+            }
+        });
 
         Logger.debug("Notified users: " + userSocketsInRoom.keySet());
     }
@@ -318,7 +330,8 @@ public class RoomSocket extends UntypedActor {
                             parsedMessage.get("roomId").asLong(),
                             parsedMessage.get("userId").asLong(),
                             parsedMessage.get("text").asText(),
-                            parsedMessage.get("anon").asBoolean());
+                            parsedMessage.get("anon").asBoolean(),
+                            parsedMessage.get("uuid").asText());
                     break;
                 case RosterNotification.TYPE:
                     message = new RosterNotification(
@@ -497,6 +510,7 @@ public class RoomSocket extends UntypedActor {
         long userId;
         String text;
         boolean isAnon;
+        private String uuid;
 
         // For JSON serialization
         final String type = TYPE;
@@ -505,15 +519,16 @@ public class RoomSocket extends UntypedActor {
             // required default constructor
         }
 
-        public Talk(long roomId, long userId, String text, boolean isAnon) {
+        public Talk(long roomId, long userId, String text, boolean isAnon, String uuid) {
             this.roomId = roomId;
             this.userId = userId;
             this.text = text;
             this.isAnon = isAnon;
+            this.uuid = uuid;
         }
 
-        public Talk(long roomId, long userId, String text) {
-            this(roomId, userId, text, false);
+        public Talk(long roomId, long userId, String text, String uuid) {
+            this(roomId, userId, text, false, uuid);
         }
 
         public long getUserId() {
@@ -532,6 +547,10 @@ public class RoomSocket extends UntypedActor {
             return type;
         }
 
+        public String getUuid() {
+            return uuid;
+        }
+
         public boolean isAnon() {
             return isAnon;
         }
@@ -543,6 +562,7 @@ public class RoomSocket extends UntypedActor {
                     .add("userId", userId)
                     .add("text", text)
                     .add("isAnon", isAnon)
+                    .add("uuid", uuid)
                     .toString();
         }
     }
