@@ -240,20 +240,27 @@ public class RoomSocketTest extends WithApplication {
         JsonNode talkEvent = otherSocket.read();
 
         assertEquals(RoomSocket.Talk.TYPE, talkEvent.get("event").asText());
-        JsonNode messageNode = Json.parse(talkEvent.get("message").asText());
-        assertTrue(messageNode.get("messageId").canConvertToLong());
-        assertEquals(user, fromJson(messageNode.get("sender"), User.class));
+        JsonNode messageJson = Json.parse(talkEvent.get("message").asText());
+        assertTrue(messageJson.get("messageId").canConvertToLong());
+        assertEquals(user, fromJson(messageJson.get("sender"), User.class));
+        assertEquals(message, messageJson.get("message").asText());
     }
 
     @Test
     public void talkConfirmationIsSentOut() throws Throwable {
         String uuid = UUID.randomUUID().toString();
-        sendMessage(webSocket, "Hello", false, uuid);
+        String message = "Hello";
+        sendMessage(webSocket, message, false, uuid);
 
         JsonNode talkConfirmation = webSocket.read();
 
         assertEquals("talk-confirmation", talkConfirmation.get("event").asText());
         assertEquals(uuid, talkConfirmation.get("uuid").asText());
+
+        JsonNode messageJson = Json.parse(talkConfirmation.get("message").asText());
+        assertTrue(messageJson.get("messageId").canConvertToLong());
+        assertEquals(user, fromJson(messageJson.get("sender"), User.class));
+        assertEquals(message, messageJson.get("message").asText());
     }
 
     @Test

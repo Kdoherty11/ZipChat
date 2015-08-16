@@ -139,10 +139,12 @@ public class RoomSocket extends UntypedActor {
 
         try {
             Message message = JPA.withTransaction(() -> storeMessage(talk, jedis));
-            notifyRoom(roomId, Talk.TYPE, userId, Json.stringify(toJson(message)));
+            String messageJsonStr = Json.stringify(toJson(message));
+            notifyRoom(roomId, Talk.TYPE, userId, messageJsonStr);
 
             JsonNode talkConfirmation = Json.newObject()
                     .put(EVENT_KEY, "talk-confirmation")
+                    .put(MESSAGE_KEY, messageJsonStr)
                     .put("uuid", talk.getUuid());
 
             notifyUser(roomId, userId, talkConfirmation);
