@@ -120,11 +120,7 @@ public class RoomSocketServiceImpl implements RoomSocketService {
             Object messageObject;
             switch (event) {
                 case RoomSocket.Talk.TYPE:
-                    if (message.has("isAnon") && message.get("isAnon").asBoolean()) {
-                        messageObject = new RoomSocket.Talk(roomId, userId, message.get("message").asText(), true);
-                    } else {
-                        messageObject = new RoomSocket.Talk(roomId, userId, message.get("message").asText());
-                    }
+                    messageObject = new RoomSocket.Talk(roomId, userId, message.get("message").asText(), message.get("isAnon").asBoolean(), message.get("uuid").asText());
                     break;
                 case RoomSocket.FavoriteNotification.TYPE:
                     messageObject = new RoomSocket.FavoriteNotification(userId, Long.parseLong(message.get("messageId").asText()), message.get("action").asText());

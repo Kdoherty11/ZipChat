@@ -30,7 +30,7 @@ public class KeepAliveServiceImpl implements KeepAliveService {
                 Duration.create(INITIAL_DELAY, SECONDS),
                 Duration.create(INTERVAL, SECONDS),
                 RoomSocket.defaultRoom,
-                new RoomSocket.Talk(roomId, ID, MSG),
+                new RoomSocket.Talk(roomId, ID, MSG, ""),
                 Akka.system().dispatcher(),
                 null /** sender **/
         ));

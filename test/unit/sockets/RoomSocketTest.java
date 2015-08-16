@@ -28,10 +28,7 @@ import sockets.RoomSocket;
 import utils.TestUtils;
 
 import javax.inject.Provider;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -192,11 +189,12 @@ public class RoomSocketTest extends WithApplication {
         verify(keepAliveService).start(roomId);
     }
 
-    private JsonNode sendMessage(MockWebSocket socket, String message, boolean isAnon) throws Throwable {
+    private JsonNode sendMessage(MockWebSocket socket, String message, boolean isAnon, String uuid) throws Throwable {
         JsonNode messageJson = Json.newObject()
                 .put("event", RoomSocket.Talk.TYPE)
                 .put("message", message)
-                .put("isAnon", isAnon);
+                .put("isAnon", isAnon)
+                .put("uuid", uuid);
         socket.write(messageJson);
         return messageJson;
     }
@@ -204,7 +202,7 @@ public class RoomSocketTest extends WithApplication {
     @Test
     public void talkStoresMessage() throws Throwable {
         String message = "Hello";
-        sendMessage(webSocket, message, false);
+        sendMessage(webSocket, message, false, "");
 
         // block till we know we got a response
         webSocket.read();
@@ -227,10 +225,19 @@ public class RoomSocketTest extends WithApplication {
 
     @Test
     public void talkEventIsSentOut() throws Throwable {
-        String message = "Hello";
-        sendMessage(webSocket, message, false);
+        long otherUserId = 6;
+        User otherUser = userFactory.create(PropOverride.of("userId", otherUserId));
+        when(userService.findById(otherUserId)).thenReturn(Optional.of(otherUser));
+        MockWebSocket otherSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, otherUserId, ""));
+        // Join roster notification and joinSuccess events
+        otherSocket.read();
+        otherSocket.read();
 
-        JsonNode talkEvent = webSocket.read();
+
+        String message = "Hello";
+        sendMessage(webSocket, message, false, "");
+
+        JsonNode talkEvent = otherSocket.read();
 
         assertEquals(RoomSocket.Talk.TYPE, talkEvent.get("event").asText());
         JsonNode messageNode = Json.parse(talkEvent.get("message").asText());
@@ -239,12 +246,23 @@ public class RoomSocketTest extends WithApplication {
     }
 
     @Test
+    public void talkConfirmationIsSentOut() throws Throwable {
+        String uuid = UUID.randomUUID().toString();
+        sendMessage(webSocket, "Hello", false, uuid);
+
+        JsonNode talkConfirmation = webSocket.read();
+
+        assertEquals("talk-confirmation", talkConfirmation.get("event").asText());
+        assertEquals(uuid, talkConfirmation.get("uuid").asText());
+    }
+
+    @Test
     public void anonTalksAreStoredWithAnonSenders() throws Throwable {
         AnonUser anonUser = new AnonUserFactory().create(PropOverride.of("actual", user));
         when(anonUserService.getOrCreateAnonUser(any(), any())).thenReturn(anonUser);
 
         String message = "Hello";
-        sendMessage(webSocket, message, true);
+        sendMessage(webSocket, message, true, "");
 
         // block till we know we got a response
         webSocket.read();
@@ -267,14 +285,14 @@ public class RoomSocketTest extends WithApplication {
 
     @Test
     public void keepAliveMessagesAreNotStored() throws InterruptedException {
-        RoomSocket.remoteMessage(new RoomSocket.Talk(roomId, KeepAliveService.ID, KeepAliveService.MSG));
+        RoomSocket.remoteMessage(new RoomSocket.Talk(roomId, KeepAliveService.ID, KeepAliveService.MSG, ""));
         webSocket.read();
         verify(abstractRoomService, never()).addMessage(any(), any(), any());
     }
 
     @Test
     public void keepAliveMessagesFormat() throws InterruptedException {
-        RoomSocket.remoteMessage(new RoomSocket.Talk(roomId, KeepAliveService.ID, KeepAliveService.MSG));
+        RoomSocket.remoteMessage(new RoomSocket.Talk(roomId, KeepAliveService.ID, KeepAliveService.MSG, ""));
         JsonNode keepAliveEvent = webSocket.read();
         assertEquals(RoomSocket.Talk.TYPE, keepAliveEvent.get("event").asText());
         assertEquals(KeepAliveService.MSG, keepAliveEvent.get("message").asText());
