@@ -42,7 +42,7 @@ public class RoomSocket extends UntypedActor {
 
     public static final ActorRef defaultRoom = Play.current().actorSystem().actorOf(
             Props.create(RoomSocket.class,
-            () -> Play.current().injector().instanceOf(RoomSocket.class)));
+                    () -> Play.current().injector().instanceOf(RoomSocket.class)));
 
     // Key is roomId, value is the users connected to that room
     private static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new ConcurrentHashMap<>();
@@ -255,7 +255,9 @@ public class RoomSocket extends UntypedActor {
         long userId = quit.getUserId();
 
         Map<Long, WebSocket.Out<JsonNode>> members = rooms.get(roomId);
+
         members.remove(userId);
+
         jedis.srem(Long.toString(roomId), Long.toString(userId));
 
         if (members.isEmpty()) {
