@@ -17,6 +17,7 @@ public class MessageFavoritedNotification extends AbstractNotification {
         return new ImmutableMap.Builder<String, String>()
                 .put(Key.FACEBOOK_NAME, messageFavoritor.name)
                 .put(Key.FACEBOOK_ID, messageFavoritor.facebookId)
+                .put(Key.USER_ID, Long.toString(messageFavoritor.userId))
                 .put(Key.MESSAGE, message.message)
                 .putAll(getRoomData(message.room));
     }

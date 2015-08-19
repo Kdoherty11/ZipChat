@@ -16,6 +16,7 @@ public class MessageNotification extends AbstractNotification {
     private static ImmutableMap.Builder<String, String> getContentBuilder(Message message) {
         ImmutableMap.Builder<String, String> builder = new ImmutableMap.Builder<String, String>()
                 .put(Key.FACEBOOK_NAME, message.sender.name)
+                .put(Key.USER_ID, Long.toString(message.sender.userId))
                 .put(Key.MESSAGE, message.message)
                 .putAll(getRoomData(message.room));
 

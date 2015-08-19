@@ -24,6 +24,7 @@ public abstract class AbstractNotification {
         protected static final String ROOM_RADIUS = "roomRadius";
         protected static final String ROOM_LATITUDE = "roomLatitude";
         protected static final String ROOM_LONGITUDE = "roomLongitude";
+        protected static final String USER_ID = "userId";
     }
 
     protected static class Event {
