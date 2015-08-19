@@ -2,12 +2,12 @@ package services;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.ImplementedBy;
-import services.impl.CsvServiceImpl;
+import services.impl.FileReaderServiceImpl;
 
 /**
  * Created by kdoherty on 8/10/15.
  */
-@ImplementedBy(CsvServiceImpl.class)
-public interface CsvService {
+@ImplementedBy(FileReaderServiceImpl.class)
+public interface FileReaderService {
     ImmutableSet<String> readToImmutableSet(String fileName);
 }

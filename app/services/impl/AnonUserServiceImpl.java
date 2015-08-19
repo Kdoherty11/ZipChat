@@ -8,7 +8,7 @@ import models.PublicRoom;
 import models.User;
 import play.api.Play;
 import services.AnonUserService;
-import services.CsvService;
+import services.FileReaderService;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -26,9 +26,9 @@ public class AnonUserServiceImpl extends GenericServiceImpl<AnonUser> implements
     private static final Set<String> FULL_NAMES;
 
     static {
-        CsvService csvService = Play.current().injector().instanceOf(CsvService.class);
-        FIRST_NAMES = csvService.readToImmutableSet("anon_first_names.csv");
-        LAST_NAMES = csvService.readToImmutableSet("anon_last_names.csv");
+        FileReaderService fileReaderService = Play.current().injector().instanceOf(FileReaderService.class);
+        FIRST_NAMES = fileReaderService.readToImmutableSet("anon_first_names");
+        LAST_NAMES = fileReaderService.readToImmutableSet("anon_last_names");
         FULL_NAMES = new HashSet<>(FIRST_NAMES.size() * LAST_NAMES.size());
         FIRST_NAMES.forEach(firstName -> LAST_NAMES.forEach(lastName ->
                 FULL_NAMES.add(firstName + " " + lastName)));

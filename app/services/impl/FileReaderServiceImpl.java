@@ -2,7 +2,7 @@ package services.impl;
 
 import com.google.common.collect.ImmutableSet;
 import play.Logger;
-import services.CsvService;
+import services.FileReaderService;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,20 +11,19 @@ import java.io.IOException;
 /**
  * Created by kdoherty on 8/10/15.
  */
-public class CsvServiceImpl implements CsvService {
+public class FileReaderServiceImpl implements FileReaderService {
 
     @Override
     public ImmutableSet<String> readToImmutableSet(String fileName) {
         ImmutableSet.Builder<String> builder = new ImmutableSet.Builder<>();
         BufferedReader br = null;
         String line;
-        String cvsSplitBy = ",";
 
         try {
             br = new BufferedReader(new FileReader(fileName));
 
             while ((line = br.readLine()) != null) {
-                builder.add(line.split(cvsSplitBy));
+                builder.add(line.trim());
             }
         } catch (IOException e) {
             throw new RuntimeException("Problem reading csv file " + fileName);
