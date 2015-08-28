@@ -73,27 +73,29 @@ public class RoomSocketServiceImpl implements RoomSocketService {
 
         JPA.withTransaction(() -> {
             // All room members not including the user themselves
-            List<User> roomMembers = RoomSocket.getUserIdsInRoomStream(roomId, jedis)
-                    .filter(id -> id != KeepAliveService.ID && id != userId)
-                    .map(userService::findById)
-                    .map(Optional::get)
-                    .collect(Collectors.<User>toList());
-
-            ObjectNode message = Json.newObject();
-            message.set("roomMembers", toJson(roomMembers));
 
             Optional<AbstractRoom> roomOptional = abstractRoomService.findById(roomId);
             AbstractRoom room = roomOptional.orElseThrow(RuntimeException::new);
 
             if (room instanceof PublicRoom) {
+                List<User> roomMembers = RoomSocket.getUserIdsInRoomStream(roomId, jedis)
+                        .filter(id -> id != KeepAliveService.ID && id != userId)
+                        .map(userService::findById)
+                        .map(Optional::get)
+                        .collect(Collectors.<User>toList());
+
+                ObjectNode message = Json.newObject();
+                message.set("roomMembers", toJson(roomMembers));
+
                 boolean isSubscribed = publicRoomService.isSubscribed((PublicRoom) room, userId);
                 message.put("isSubscribed", isSubscribed);
 
                 Optional<User> user = userService.findById(userId);
                 message.set("anonUser", toJson(anonUserService.getOrCreateAnonUser(user.get(), (PublicRoom) room)));
+
+                event.set(RoomSocket.MESSAGE_KEY, message);
             }
 
-            event.set(RoomSocket.MESSAGE_KEY, message);
         });
 
         return event;
