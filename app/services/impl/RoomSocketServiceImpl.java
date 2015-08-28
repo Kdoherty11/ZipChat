@@ -32,13 +32,15 @@ public class RoomSocketServiceImpl implements RoomSocketService {
     private final AbstractRoomService abstractRoomService;
     private final PublicRoomService publicRoomService;
     private final JedisService jedisService;
+    private final AnonUserService anonUserService;
     private final UserService userService;
 
     @Inject
-    public RoomSocketServiceImpl(AbstractRoomService abstractRoomService, PublicRoomService publicRoomService, UserService userService, JedisService jedisService) {
+    public RoomSocketServiceImpl(AbstractRoomService abstractRoomService, PublicRoomService publicRoomService, UserService userService, AnonUserService anonUserService, JedisService jedisService) {
         this.abstractRoomService = abstractRoomService;
         this.publicRoomService = publicRoomService;
         this.userService = userService;
+        this.anonUserService = anonUserService;
         this.jedisService = jedisService;
     }
 
@@ -86,6 +88,9 @@ public class RoomSocketServiceImpl implements RoomSocketService {
             if (room instanceof PublicRoom) {
                 boolean isSubscribed = publicRoomService.isSubscribed((PublicRoom) room, userId);
                 message.put("isSubscribed", isSubscribed);
+
+                Optional<User> user = userService.findById(userId);
+                message.set("anonUser", toJson(anonUserService.getOrCreateAnonUser(user.get(), (PublicRoom) room)));
             }
 
             event.set(RoomSocket.MESSAGE_KEY, message);

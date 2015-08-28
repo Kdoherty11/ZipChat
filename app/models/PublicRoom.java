@@ -17,6 +17,7 @@ import java.util.Set;
 @Table(name = "public_rooms")
 public class PublicRoom extends AbstractRoom {
 
+    @Column(length=50)
     @Constraints.Required
     public String name;
 

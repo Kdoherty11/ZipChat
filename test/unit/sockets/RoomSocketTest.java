@@ -80,6 +80,8 @@ public class RoomSocketTest extends WithApplication {
 
     private User user;
 
+    private AnonUser anonUser;
+
     private static boolean firstTest = true;
 
     private JsonNode firstEvent;
@@ -87,6 +89,7 @@ public class RoomSocketTest extends WithApplication {
     private JsonNode secondEvent;
 
     private UserFactory userFactory;
+    private AnonUserFactory anonUserFactory;
 
 
     @Override
@@ -110,6 +113,10 @@ public class RoomSocketTest extends WithApplication {
         when(abstractRoomService.findById(roomId)).thenReturn(Optional.of(publicRoom));
         when(publicRoomService.findById(roomId)).thenReturn(Optional.of(publicRoom));
 
+        anonUserFactory = new AnonUserFactory();
+        anonUser = anonUserFactory.create();
+        when(anonUserService.getOrCreateAnonUser(user, publicRoom)).thenReturn(anonUser);
+
         jedis = spy(new MockJedis());
         jedisService = new MockJedisService(jedis);
 
@@ -120,7 +127,7 @@ public class RoomSocketTest extends WithApplication {
 
         TestUtils.setPrivateStaticFinalField(RoomSocket.class, "defaultRoom", defaultRoomWithMockedServices);
 
-        roomSocketService = new RoomSocketServiceImpl(abstractRoomService, publicRoomService, userService, jedisService);
+        roomSocketService = new RoomSocketServiceImpl(abstractRoomService, publicRoomService, userService, anonUserService, jedisService);
         SecurityService securityService = Play.current().injector().instanceOf(SecurityService.class);
         roomSocketsController = new RoomSocketsController(roomSocketService, privateRoomService, securityService);
 
@@ -164,6 +171,8 @@ public class RoomSocketTest extends WithApplication {
         User[] roomMembers = fromJson(message.get("roomMembers"), User[].class);
         assertEquals(0, roomMembers.length);
         assertFalse(message.get("isSubscribed").asBoolean());
+        AnonUser actualAnonUser = fromJson(message.get("anonUser"), AnonUser.class);
+        assertEquals(anonUser, actualAnonUser);
     }
 
     @Test

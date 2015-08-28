@@ -56,7 +56,7 @@ public abstract class AbstractNotification {
     protected static Map<String, String> getRoomData(PublicRoom publicRoom) {
         return new ImmutableMap.Builder<String, String>()
                 .put(Key.ROOM_TYPE, Value.PUBLIC_ROOM_TYPE)
-                .put(Key.ROOM_ID, String.valueOf(publicRoom.roomId))
+                .put(Key.ROOM_ID, Long.toString(publicRoom.roomId))
                 .put(Key.ROOM_NAME, publicRoom.name)
                 .put(Key.ROOM_RADIUS, String.valueOf(publicRoom.radius))
                 .put(Key.ROOM_LATITUDE, String.valueOf(publicRoom.latitude))
