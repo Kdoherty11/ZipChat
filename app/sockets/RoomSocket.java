@@ -256,14 +256,16 @@ public class RoomSocket extends UntypedActor {
 
         Map<Long, WebSocket.Out<JsonNode>> members = rooms.get(roomId);
 
-        members.remove(userId);
+        if (members != null) {
+            members.remove(userId);
+        }
 
-        jedis.srem(Long.toString(roomId), Long.toString(userId));
-
-        if (members.isEmpty()) {
+        if (members == null || members.isEmpty()) {
             keepAliveService.stop(roomId);
             rooms.remove(roomId);
         }
+
+        jedis.srem(Long.toString(roomId), Long.toString(userId));
 
         // Still need to publish to jedis even if there are no more users connected to this dyno
         RosterNotification rosterNotify = new RosterNotification(roomId, userId, RosterNotification.Direction.QUIT);
