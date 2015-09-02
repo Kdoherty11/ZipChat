@@ -5,10 +5,7 @@ import com.google.inject.Inject;
 import daos.PrivateRoomDao;
 import daos.RequestDao;
 import daos.UserDao;
-import models.AbstractUser;
-import models.Device;
-import models.Request;
-import models.User;
+import models.*;
 import notifications.AbstractNotification;
 import notifications.ChatRequestNotification;
 import play.libs.ws.WSClient;
@@ -44,7 +41,11 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Override
     public void sendChatRequest(User sender, AbstractUser receiver) {
         User actualReceiver = receiver.getActual();
-        if (!privateRoomDao.findByRoomMembers(sender.userId, actualReceiver.userId).isPresent()) {
+        if (sender.equals(actualReceiver)) {
+            return;
+        }
+        Optional<PrivateRoom> privateRoomOptional = privateRoomDao.findByRoomMembers(sender.userId, actualReceiver.userId);
+        if (!privateRoomOptional.isPresent()) {
             requestDao.save(new Request(sender, actualReceiver));
             sendNotification(actualReceiver, new ChatRequestNotification(sender));
         }

@@ -41,7 +41,7 @@ public class PublicRoom extends AbstractRoom {
     public List<AnonUser> anonUsers = new ArrayList<>();
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
 

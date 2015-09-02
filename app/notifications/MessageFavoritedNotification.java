@@ -19,6 +19,7 @@ public class MessageFavoritedNotification extends AbstractNotification {
                 .put(Key.FACEBOOK_ID, messageFavoritor.facebookId)
                 .put(Key.USER_ID, Long.toString(messageFavoritor.userId))
                 .put(Key.MESSAGE, message.message)
+                .put(Key.MESSAGE_ID, Long.toString(message.messageId))
                 .putAll(getRoomData(message.room));
     }
 }

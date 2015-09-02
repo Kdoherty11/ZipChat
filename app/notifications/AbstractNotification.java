@@ -18,6 +18,7 @@ public abstract class AbstractNotification {
         protected static final String CHAT_REQUEST_RESPONSE = "response";
         protected static final String FACEBOOK_ID = "facebookId";
         protected static final String MESSAGE = "message";
+        protected static final String MESSAGE_ID = "messageId";
         protected static final String ROOM_NAME = "roomName";
         protected static final String ROOM_ID = "roomId";
         protected static final String ROOM_TYPE = "roomType";
