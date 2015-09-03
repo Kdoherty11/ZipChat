@@ -7,7 +7,6 @@ import models.User;
 import notifications.MessageFavoritedNotification;
 import services.MessageService;
 import services.UserService;
-import sockets.RoomSocket;
 
 import java.util.List;
 
@@ -34,7 +33,6 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
             if (!user.equals(actual)) {
                 // if not favoriting your own message...
                 userService.sendNotification(actual, new MessageFavoritedNotification(message, user));
-                RoomSocket.notifyRoom(message.room.roomId, RoomSocket.FavoriteNotification.Action.ADD.getType(), user.userId, Long.toString(message.messageId));
             }
         }
 
@@ -45,7 +43,6 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
     public boolean removeFavorite(Message message, User user) {
         boolean didRemoveFavorite = message.favorites.remove(user);
         if (didRemoveFavorite) {
-            RoomSocket.notifyRoom(message.room.roomId, RoomSocket.FavoriteNotification.Action.REMOVE.getType(), user.userId, Long.toString(message.messageId));
             message.score--;
         }
         return didRemoveFavorite;

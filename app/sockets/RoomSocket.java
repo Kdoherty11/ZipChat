@@ -281,7 +281,7 @@ public class RoomSocket extends UntypedActor {
     }
 
     // Send a Json event to all members connected to this node
-    public static void notifyRoom(long roomId, String kind, long userId, String text) {
+    public void notifyRoom(long roomId, String kind, long userId, String text) {
         Logger.debug("NotifyAll called with kind: " + kind + ", roomId: " + roomId + " and message: " + text);
 
         Map<Long, WebSocket.Out<JsonNode>> userSocketsInRoom = rooms.get(roomId);
