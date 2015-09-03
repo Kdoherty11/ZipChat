@@ -30,7 +30,7 @@ public abstract class AbstractRoom {
 
     private RoomType type;
 
-    protected enum RoomType {
+    public enum RoomType {
         PUBLIC, PRIVATE
     }
 
