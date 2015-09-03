@@ -3,6 +3,7 @@ package notifications;
 import com.google.common.collect.ImmutableMap;
 import models.Message;
 import models.User;
+import play.libs.Json;
 
 /**
  * Created by kevin on 6/11/15.
@@ -15,11 +16,8 @@ public class MessageFavoritedNotification extends AbstractNotification {
 
     public static ImmutableMap.Builder<String, String> getContentBuilder(Message message, User messageFavoritor) {
         return new ImmutableMap.Builder<String, String>()
-                .put(Key.FACEBOOK_NAME, messageFavoritor.name)
-                .put(Key.FACEBOOK_ID, messageFavoritor.facebookId)
-                .put(Key.USER_ID, Long.toString(messageFavoritor.userId))
-                .put(Key.MESSAGE, message.message)
-                .put(Key.MESSAGE_ID, Long.toString(message.messageId))
-                .putAll(getRoomData(message.room));
+                .put(Key.USER, Json.stringify(Json.toJson(messageFavoritor)))
+                .put(Key.MESSAGE, Json.stringify(Json.toJson(message)))
+                .put(Key.ROOM, Json.stringify(Json.toJson(message.room)));
     }
 }

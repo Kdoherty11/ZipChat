@@ -2,6 +2,7 @@ package notifications;
 
 import com.google.common.collect.ImmutableMap;
 import models.Request;
+import play.libs.Json;
 
 /**
  * Created by kevin on 6/12/15.
@@ -14,7 +15,7 @@ public class ChatResponseNotification extends AbstractNotification {
 
     private static ImmutableMap.Builder<String, String> getContentBuilder(Request request, Request.Status response) {
         return new ImmutableMap.Builder<String, String>()
-                .put(Key.FACEBOOK_NAME, request.receiver.name)
+                .put(Key.USER, Json.stringify(Json.toJson(request.receiver)))
                 .put(Key.CHAT_REQUEST_RESPONSE, response.toString());
     }
 
