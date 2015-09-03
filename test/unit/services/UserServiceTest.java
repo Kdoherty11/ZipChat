@@ -6,6 +6,7 @@ import daos.RequestDao;
 import daos.UserDao;
 import factories.DeviceFactory;
 import factories.PropOverride;
+import factories.UserFactory;
 import models.*;
 import notifications.AbstractNotification;
 import notifications.ChatRequestNotification;
@@ -67,21 +68,19 @@ public class UserServiceTest {
     }
 
     @Test
-    public void sendChatRequest() {
+    public void sendChatRequest() throws InstantiationException, IllegalAccessException {
         AbstractUser mockReceiver = mock(AbstractUser.class);
         User mockActualReceiver = mock(User.class);
         when(mockReceiver.getActual()).thenReturn(mockActualReceiver);
 
-        User mockSender = mock(User.class);
-        when(mockSender.name).thenReturn("TestName");
-        when(mockSender.facebookId).thenReturn("TestFbId");
+        User sender = new UserFactory().create();
 
         when(privateRoomDao.findByRoomMembers(anyLong(), anyLong())).thenReturn(Optional.empty());
 
         doNothing().when(requestDao).save(any(Request.class));
         doNothing().when(userService).sendNotification(refEq(mockActualReceiver), any(ChatRequestNotification.class));
 
-        userService.sendChatRequest(mockSender, mockReceiver);
+        userService.sendChatRequest(sender, mockReceiver);
 
         verify(requestDao).save(any(Request.class));
         verify(userService).sendNotification(refEq(mockActualReceiver), any(ChatRequestNotification.class));

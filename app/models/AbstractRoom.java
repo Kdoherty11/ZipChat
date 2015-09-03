@@ -28,6 +28,14 @@ public abstract class AbstractRoom {
     @OneToMany(targetEntity = Message.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Message> messages = new ArrayList<>();
 
+    private RoomType type;
+
+    protected enum RoomType {
+        PUBLIC, PRIVATE
+    }
+
+    public abstract RoomType getType();
+
     // http://www.artima.com/lejava/articles/equality.html
     public boolean canEqual(Object other) {
         return other instanceof AbstractRoom;

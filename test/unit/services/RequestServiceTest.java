@@ -2,6 +2,7 @@ package unit.services;
 
 import daos.PrivateRoomDao;
 import daos.RequestDao;
+import factories.UserFactory;
 import models.PrivateRoom;
 import models.Request;
 import models.User;
@@ -46,13 +47,12 @@ public class RequestServiceTest {
     }
 
     @Test
-    public void handleAcceptedResponse() {
+    public void handleAcceptedResponse() throws InstantiationException, IllegalAccessException {
         Request.Status status = Request.Status.accepted;
         User mockSender = mock(User.class);
-        User mockReceiver = mock(User.class);
-        when(mockReceiver.name).thenReturn("John Doe");
+        User receiver = new UserFactory().create();
 
-        Request request = new Request(mockSender, mockReceiver);
+        Request request = new Request(mockSender, receiver);
 
         requestService.handleResponse(request, status);
 
@@ -68,13 +68,12 @@ public class RequestServiceTest {
     }
 
     @Test
-    public void handleDeniedResponse() {
+    public void handleDeniedResponse() throws InstantiationException, IllegalAccessException {
         Request.Status status = Request.Status.denied;
         User mockSender = mock(User.class);
-        User mockReceiver = mock(User.class);
-        when(mockReceiver.name).thenReturn("John Doe");
+        User receiver = new UserFactory().create();
 
-        Request request = new Request(mockSender, mockReceiver);
+        Request request = new Request(mockSender, receiver);
 
         requestService.handleResponse(request, status);
 

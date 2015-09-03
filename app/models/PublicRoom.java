@@ -46,6 +46,11 @@ public class PublicRoom extends AbstractRoom {
     public Set<User> subscribers = new LinkedHashSet<>();
 
     @Override
+    public RoomType getType() {
+        return RoomType.PUBLIC;
+    }
+
+    @Override
     public boolean canEqual(Object other) {
         return other instanceof PublicRoom;
     }

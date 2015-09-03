@@ -21,10 +21,8 @@ public class PrivateRoom extends AbstractRoom {
     @Constraints.Required
     public User receiver;
 
-    @JsonIgnore
     public boolean senderInRoom = true;
 
-    @JsonIgnore
     public boolean receiverInRoom = true;
 
     @JsonIgnore
@@ -40,6 +38,11 @@ public class PrivateRoom extends AbstractRoom {
         this.request = request;
         this.sender = request.sender;
         this.receiver = request.receiver;
+    }
+
+    @Override
+    public RoomType getType() {
+        return RoomType.PRIVATE;
     }
 
     @Override
