@@ -46,7 +46,7 @@ public class PublicRoom extends AbstractRoom {
     public Set<User> subscribers = new LinkedHashSet<>();
 
     @Override
-    public RoomType getType() {
+    public AbstractRoom.RoomType getType() {
         return AbstractRoom.RoomType.PUBLIC;
     }
 

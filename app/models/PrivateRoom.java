@@ -41,7 +41,7 @@ public class PrivateRoom extends AbstractRoom {
     }
 
     @Override
-    public RoomType getType() {
+    public AbstractRoom.RoomType getType() {
         return AbstractRoom.RoomType.PRIVATE;
     }
 
