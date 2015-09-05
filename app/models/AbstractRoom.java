@@ -25,9 +25,11 @@ public abstract class AbstractRoom {
     public long lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
     @JsonIgnore
-    @OneToMany(targetEntity = Message.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = Message.class, mappedBy = "room", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Message> messages = new ArrayList<>();
 
+    // For deserialization on client side
+    @SuppressWarnings("unused")
     private RoomType type;
 
     public enum RoomType {

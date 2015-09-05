@@ -15,7 +15,7 @@ public class User extends AbstractUser {
     public User() { }
 
     @JsonIgnore
-    @OneToMany(targetEntity = Device.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = Device.class, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Device> devices = new ArrayList<>();
 
     @Override

@@ -26,7 +26,7 @@ public class PrivateRoom extends AbstractRoom {
     public boolean receiverInRoom = true;
 
     @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "requestId")
     public Request request;
 
