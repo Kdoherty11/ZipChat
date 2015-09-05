@@ -21,6 +21,7 @@ import services.impl.AbstractRoomServiceImpl;
 import utils.TestUtils;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -63,7 +64,7 @@ public class AbstractRoomServiceTest {
         PublicRoom room = publicRoomFactory.create(PropOverride.of("lastActivity", -1));
         Message mockMessage = messageFactory.create(PropOverride.of("room", room),
                 MessageFactory.Trait.WITH_SENDER);
-        Set<Long> userIdsInRoom = Collections.emptySet();
+        Set<Long> userIdsInRoom = new HashSet<>();
 
         abstractRoomService.addMessage(room, mockMessage, userIdsInRoom);
 
@@ -79,7 +80,7 @@ public class AbstractRoomServiceTest {
         PublicRoom room = publicRoomFactory.create();
         Message message = messageFactory.create(PropOverride.of("room", room), MessageFactory.Trait.WITH_SENDER);
 
-        abstractRoomService.addMessage(room, message, Collections.emptySet());
+        abstractRoomService.addMessage(room, message, new HashSet<>());
 
         assertEquals(1, room.messages.size());
         assertTrue(room.messages.contains(message));
@@ -90,7 +91,7 @@ public class AbstractRoomServiceTest {
         PublicRoom room = publicRoomFactory.create(PropOverride.of("lastActivity", -1));
         Message message = messageFactory.create(PropOverride.of("room", room), MessageFactory.Trait.WITH_SENDER);
 
-        abstractRoomService.addMessage(room, message, Collections.emptySet());
+        abstractRoomService.addMessage(room, message, new HashSet<>());
 
         assertTrue(room.lastActivity > 0);
     }
