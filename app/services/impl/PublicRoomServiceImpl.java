@@ -32,7 +32,7 @@ public class PublicRoomServiceImpl extends GenericServiceImpl<PublicRoom> implem
     }
 
     @Override
-    public void sendNotification(PublicRoom room, AbstractNotification notification, Set<Long> userIdsInRoom) {
+    public void sendNotification(PublicRoom room, AbstractNotification notification, Set<Long> excludedUserIds) {
         Set<User> subscribers = getSubscribers(room);
         if (subscribers.isEmpty()) {
             return;
@@ -42,7 +42,7 @@ public class PublicRoomServiceImpl extends GenericServiceImpl<PublicRoom> implem
         List<String> iosRegIds = new ArrayList<>();
 
         subscribers.forEach(user -> {
-            if (!userIdsInRoom.contains(user.userId)) {
+            if (!excludedUserIds.contains(user.userId)) {
 
                 userDao.getDevices(user).forEach(device -> {
                     if (device.platform == Device.Platform.android) {

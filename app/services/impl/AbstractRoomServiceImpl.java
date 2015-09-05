@@ -28,15 +28,17 @@ public class AbstractRoomServiceImpl extends GenericServiceImpl<AbstractRoom> im
         this.userService = userService;
     }
 
-    public void addMessage(AbstractRoom room, Message message, Set<Long> userIdsInRoom) {
+    public void addMessage(AbstractRoom room, Message message, Set<Long> excludedUserIds) {
         room.messages.add(message);
         room.lastActivity = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
         if (room instanceof PublicRoom) {
-            publicRoomService.sendNotification((PublicRoom) room, new MessageNotification(message), userIdsInRoom);
+            // Make sure anon messages don't send notifications to actual user
+            excludedUserIds.add(message.sender.getActual().userId);
+            publicRoomService.sendNotification((PublicRoom) room, new MessageNotification(message), excludedUserIds);
         } else {
             PrivateRoom privateRoom = (PrivateRoom) room;
             User notificationReceiver = privateRoom.sender.equals(message.sender) ? privateRoom.receiver : privateRoom.sender;
-            if (!userIdsInRoom.contains(notificationReceiver.userId)) {
+            if (!excludedUserIds.contains(notificationReceiver.userId)) {
                 userService.sendNotification(notificationReceiver, new MessageNotification(message));
             }
         }

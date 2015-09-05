@@ -15,7 +15,7 @@ import java.util.Set;
 @ImplementedBy(PublicRoomServiceImpl.class)
 public interface PublicRoomService extends PublicRoomDao {
 
-    void sendNotification(PublicRoom room, AbstractNotification notification, Set<Long> userIdsInRoom);
+    void sendNotification(PublicRoom room, AbstractNotification notification, Set<Long> excludedUserIds);
     boolean subscribe(PublicRoom room, User user);
     boolean unsubscribe(PublicRoom room, User user);
     boolean isSubscribed(PublicRoom room, long userId);
