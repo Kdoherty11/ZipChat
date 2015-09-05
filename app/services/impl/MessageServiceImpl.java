@@ -3,6 +3,7 @@ package services.impl;
 import com.google.inject.Inject;
 import daos.MessageDao;
 import models.Message;
+import models.PrivateRoom;
 import models.User;
 import notifications.MessageFavoritedNotification;
 import services.MessageService;
@@ -30,7 +31,14 @@ public class MessageServiceImpl extends GenericServiceImpl<Message> implements M
         if (didFavorite) {
             message.score++;
             User actual = message.sender.getActual();
-            if (!user.equals(actual)) {
+            boolean shouldSendNotification = !user.equals(actual);
+            if (message.room instanceof PrivateRoom) {
+                PrivateRoom room = (PrivateRoom) message.room;
+                boolean isSender = actual.equals(room.sender);
+                boolean otherUserHasNotLeft = isSender ? room.receiverInRoom : room.senderInRoom;
+                shouldSendNotification &= otherUserHasNotLeft;
+            }
+            if (shouldSendNotification) {
                 // if not favoriting your own message...
                 userService.sendNotification(actual, new MessageFavoritedNotification(message, user));
             }
