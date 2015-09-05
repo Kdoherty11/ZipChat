@@ -29,9 +29,7 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
     public boolean removeUser(PrivateRoom room, long userId) {
         if (userId == room.sender.userId) {
             if (!room.receiverInRoom) {
-                Logger.info("Attempting to remove the private room: " + room);
                 privateRoomDao.remove(room);
-                Logger.info("Successfully removed the private room");
             } else {
                 room.senderInRoom = false;
             }
@@ -47,9 +45,7 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
 
         if (room.request != null) {
             // Allow both users to request each other again
-            Logger.info("Attempting to remove the request: " + room.request);
             requestDao.remove(room.request);
-            Logger.info("Successfully removed the request");
             room.request = null;
         }
 

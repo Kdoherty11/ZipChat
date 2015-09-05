@@ -52,7 +52,6 @@ public class PrivateRoomsController extends AbstractRoomController {
             } else {
                 return badRequestJson("Unable to remove user with ID " + userId + " from the room because they are not in it");
             }
-
         } else {
             return entityNotFound(PrivateRoom.class, roomId);
         }
