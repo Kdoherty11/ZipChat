@@ -37,8 +37,10 @@ public class AbstractRoomServiceImpl extends GenericServiceImpl<AbstractRoom> im
             publicRoomService.sendNotification((PublicRoom) room, new MessageNotification(message), excludedUserIds);
         } else {
             PrivateRoom privateRoom = (PrivateRoom) room;
-            User notificationReceiver = privateRoom.sender.equals(message.sender) ? privateRoom.receiver : privateRoom.sender;
-            if (!excludedUserIds.contains(notificationReceiver.userId)) {
+            boolean isSender = privateRoom.sender.equals(message.sender);
+            User notificationReceiver = isSender ? privateRoom.receiver : privateRoom.sender;
+            boolean msgReceiverNotLeftRoom = isSender ? privateRoom.receiverInRoom : privateRoom.senderInRoom;
+            if (msgReceiverNotLeftRoom && !excludedUserIds.contains(notificationReceiver.userId)) {
                 userService.sendNotification(notificationReceiver, new MessageNotification(message));
             }
         }
