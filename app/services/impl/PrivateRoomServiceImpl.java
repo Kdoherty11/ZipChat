@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import daos.PrivateRoomDao;
 import daos.RequestDao;
 import models.PrivateRoom;
-import play.Logger;
 import services.PrivateRoomService;
 
 import java.util.List;
@@ -28,17 +27,9 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
     @Override
     public boolean removeUser(PrivateRoom room, long userId) {
         if (userId == room.sender.userId) {
-            if (!room.receiverInRoom) {
-                privateRoomDao.remove(room);
-            } else {
-                room.senderInRoom = false;
-            }
+            room.senderInRoom = false;
         } else if (userId == room.receiver.userId) {
-            if (!room.senderInRoom) {
-                privateRoomDao.remove(room);
-            } else {
-                room.receiverInRoom = false;
-            }
+            room.receiverInRoom = false;
         } else {
             return false;
         }
@@ -48,8 +39,6 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
             requestDao.remove(room.request);
             room.request = null;
         }
-
-        Logger.info("Success!!");
 
         return true;
     }

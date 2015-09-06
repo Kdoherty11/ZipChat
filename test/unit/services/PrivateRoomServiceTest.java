@@ -103,45 +103,6 @@ public class PrivateRoomServiceTest {
     }
 
     @Test
-    public void removeSenderReceiverAlreadyLeft() {
-        User mockSender = mock(User.class);
-        User mockReceiver = mock(User.class);
-        long senderId = 1;
-        long receiverId = 2;
-        when(mockSender.userId).thenReturn(senderId);
-        when(mockReceiver.userId).thenReturn(receiverId);
-
-        Request request = new Request(mockSender, mockReceiver);
-        PrivateRoom privateRoom = new PrivateRoom(request);
-        privateRoomService.removeUser(privateRoom, receiverId);
-
-        boolean removed = privateRoomService.removeUser(privateRoom, senderId);
-
-        assertTrue(removed);
-        verify(privateRoomDao).remove(privateRoom);
-        verify(requestDao).remove(request);
-    }
-
-    @Test
-    public void removeReceiverSenderAlreadyLeft() {
-        User mockSender = mock(User.class);
-        User mockReceiver = mock(User.class);
-        long senderId = 1;
-        long receiverId = 2;
-        when(mockSender.userId).thenReturn(senderId);
-        when(mockReceiver.userId).thenReturn(receiverId);
-
-        Request request = new Request(mockSender, mockReceiver);
-        PrivateRoom privateRoom = new PrivateRoom(request);
-        privateRoomService.removeUser(privateRoom, senderId);
-        boolean removed = privateRoomService.removeUser(privateRoom, receiverId);
-
-        assertTrue(removed);
-        verify(privateRoomDao).remove(privateRoom);
-        verify(requestDao).remove(request);
-    }
-
-    @Test
     public void isUserInRoomSenderTrue() {
         User sender = mock(User.class);
         User receiver = mock(User.class);
