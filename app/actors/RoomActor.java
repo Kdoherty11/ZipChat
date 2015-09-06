@@ -1,4 +1,4 @@
-package sockets;
+package actors;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 
 import static play.libs.Json.toJson;
 
-public class RoomSocket extends UntypedActor {
+public class RoomActor extends UntypedActor {
 
     public static final String CHANNEL = "messages";
 
@@ -41,13 +41,13 @@ public class RoomSocket extends UntypedActor {
     public static final String USER_KEY = "user";
 
     public static final ActorRef defaultRoom = Play.current().actorSystem().actorOf(
-            Props.create(RoomSocket.class,
-                    () -> Play.current().injector().instanceOf(RoomSocket.class)));
+            Props.create(RoomActor.class,
+                    () -> Play.current().injector().instanceOf(RoomActor.class)));
 
     // Key is roomId, value is the users connected to that room
     private static final Map<Long, Map<Long, WebSocket.Out<JsonNode>>> rooms = new ConcurrentHashMap<>();
 
-    private static final boolean VERBOSE = true;
+    private static final boolean VERBOSE = false;
 
     static {
         //subscribe to the message channel
@@ -75,9 +75,9 @@ public class RoomSocket extends UntypedActor {
     private final KeepAliveService keepAliveService;
 
     @Inject
-    public RoomSocket(final AbstractRoomService abstractRoomService, final UserService userService,
-                      final AnonUserService anonUserService, final MessageService messageService,
-                      final JedisService jedisService, final KeepAliveService keepAliveService) {
+    public RoomActor(final AbstractRoomService abstractRoomService, final UserService userService,
+                     final AnonUserService anonUserService, final MessageService messageService,
+                     final JedisService jedisService, final KeepAliveService keepAliveService) {
         this.abstractRoomService = abstractRoomService;
         this.userService = userService;
         this.anonUserService = anonUserService;
@@ -126,7 +126,7 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void receiveTalk(Talk talk, Jedis jedis) {
-        Logger.debug("receiveTalk: " + talk);
+        //Logger.debug("receiveTalk: " + talk);
 
         long roomId = talk.getRoomId();
         long userId = talk.getUserId();
@@ -155,7 +155,7 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void receiveFavoriteNotification(FavoriteNotification favoriteNotification) {
-        Logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
+        //Logger.debug("ReceiveFavoriteNotification: " + favoriteNotification);
 
         long messageId = favoriteNotification.getMessageId();
         Message message = messageService.findById(messageId).get();
@@ -182,7 +182,7 @@ public class RoomSocket extends UntypedActor {
     }
 
     private void notifyUser(long roomId, long userId, JsonNode message) {
-        Logger.debug("sending " + message + " to user " + userId);
+        //Logger.debug("sending " + message + " to user " + userId);
         Optional<WebSocket.Out<JsonNode>> outOptional = getWebSocket(roomId, userId);
 
         // Won't always be present if user is on different dyno
@@ -229,7 +229,7 @@ public class RoomSocket extends UntypedActor {
 
         if (!rooms.containsKey(roomId)) {
             // Creating a new room
-            Logger.debug("Adding new room " + roomId + " and adding a keep alive");
+            //Logger.debug("Adding new room " + roomId + " and adding a keep alive");
             rooms.put(roomId, new HashMap<>());
             keepAliveService.start(roomId);
         }
@@ -244,9 +244,11 @@ public class RoomSocket extends UntypedActor {
 
         //Publish the join notification to all nodes
         RosterNotification rosterNotify = new RosterNotification(roomId, userId, RosterNotification.Direction.JOIN);
-        jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
+        jedis.publish(RoomActor.CHANNEL, Json.stringify(toJson(rosterNotify)));
 
         getSender().tell(OK_JOIN_RESULT, getSelf());
+
+        Logger.debug("Join success");
     }
 
     private void receiveQuit(Quit quit, Jedis jedis) {
@@ -269,11 +271,13 @@ public class RoomSocket extends UntypedActor {
 
         // Still need to publish to jedis even if there are no more users connected to this dyno
         RosterNotification rosterNotify = new RosterNotification(roomId, userId, RosterNotification.Direction.QUIT);
-        jedis.publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
+        jedis.publish(RoomActor.CHANNEL, Json.stringify(toJson(rosterNotify)));
+
+        Logger.debug("Quit success");
     }
 
     private void receiveRosterNotification(RosterNotification rosterNotification) {
-        Logger.debug("receiveRosterNotification: " + rosterNotification);
+        //Logger.debug("receiveRosterNotification: " + rosterNotification);
 
         RosterNotification.Direction direction = rosterNotification.getDirection();
         notifyRoom(rosterNotification.getRoomId(), direction.getType(),
@@ -282,7 +286,7 @@ public class RoomSocket extends UntypedActor {
 
     // Send a Json event to all members connected to this node
     public void notifyRoom(long roomId, String kind, long userId, String text) {
-        Logger.debug("NotifyAll called with kind: " + kind + ", roomId: " + roomId + " and message: " + text);
+        //Logger.debug("NotifyAll called with kind: " + kind + ", roomId: " + roomId + " and message: " + text);
 
         Map<Long, WebSocket.Out<JsonNode>> userSocketsInRoom = rooms.get(roomId);
 
@@ -314,7 +318,7 @@ public class RoomSocket extends UntypedActor {
             }
         });
 
-        Logger.debug("Notified users: " + userSocketsInRoom.keySet());
+        //Logger.debug("Notified users: " + userSocketsInRoom.keySet());
     }
 
 // -- Messages
@@ -326,7 +330,7 @@ public class RoomSocket extends UntypedActor {
             //Process messages from the pub/sub channel
             JsonNode parsedMessage = Json.parse(messageBody);
 
-            Logger.debug("MessageListener.onMessage: " + parsedMessage);
+            //Logger.debug("MessageListener.onMessage: " + parsedMessage);
             Object message;
             String messageType = parsedMessage.get("type").asText();
 

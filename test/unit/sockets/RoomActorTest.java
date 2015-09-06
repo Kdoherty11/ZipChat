@@ -1,5 +1,6 @@
 package unit.sockets;
 
+import actors.RoomActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,7 +25,6 @@ import play.test.WithApplication;
 import redis.clients.jedis.Jedis;
 import services.*;
 import services.impl.RoomSocketServiceImpl;
-import sockets.RoomSocket;
 import utils.TestUtils;
 
 import javax.inject.Provider;
@@ -40,7 +40,7 @@ import static play.libs.Json.toJson;
  * Created by kdoherty on 8/3/15.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class RoomSocketTest extends WithApplication {
+public class RoomActorTest extends WithApplication {
 
     private RoomSocketsController roomSocketsController;
 
@@ -103,7 +103,7 @@ public class RoomSocketTest extends WithApplication {
     @Before
     public void setUp() throws Exception {
         MockJedis.clean();
-        ((Map) TestUtils.getHiddenField(RoomSocket.class, "rooms")).clear();
+        ((Map) TestUtils.getHiddenField(RoomActor.class, "rooms")).clear();
 
         userFactory = new UserFactory();
         user = userFactory.create(PropOverride.of("userId", userId));
@@ -121,19 +121,19 @@ public class RoomSocketTest extends WithApplication {
         jedisService = new MockJedisService(jedis);
 
         keepAliveService = spy(Play.current().injector().instanceOf(KeepAliveService.class));
-        ActorRef defaultRoomWithMockedServices = Play.current().actorSystem().actorOf(Props.create(RoomSocket.class, () -> {
-            return spy(new RoomSocket(abstractRoomService, userService, anonUserService, messageService, jedisService, keepAliveService));
+        ActorRef defaultRoomWithMockedServices = Play.current().actorSystem().actorOf(Props.create(RoomActor.class, () -> {
+            return spy(new RoomActor(abstractRoomService, userService, anonUserService, messageService, jedisService, keepAliveService));
         }));
 
-        TestUtils.setPrivateStaticFinalField(RoomSocket.class, "defaultRoom", defaultRoomWithMockedServices);
+        TestUtils.setPrivateStaticFinalField(RoomActor.class, "defaultRoom", defaultRoomWithMockedServices);
 
         roomSocketService = new RoomSocketServiceImpl(abstractRoomService, publicRoomService, userService, anonUserService, jedisService);
         SecurityService securityService = Play.current().injector().instanceOf(SecurityService.class);
         roomSocketsController = new RoomSocketsController(roomSocketService, privateRoomService, securityService);
 
-        // Hack to do mock static initialization block from RoomSocket
-        if (((MockJedis) jedis).getSubscribers(RoomSocket.CHANNEL).isEmpty() && !firstTest) {
-            jedis.subscribe(new RoomSocket.MessageListener(), RoomSocket.CHANNEL);
+        // Hack to do mock static initialization block from RoomActor
+        if (((MockJedis) jedis).getSubscribers(RoomActor.CHANNEL).isEmpty() && !firstTest) {
+            jedis.subscribe(new RoomActor.MessageListener(), RoomActor.CHANNEL);
         }
 
         firstTest = false;
@@ -149,9 +149,9 @@ public class RoomSocketTest extends WithApplication {
         JsonNode rosterNotification;
         JsonNode joinSuccess;
 
-        boolean event1IsRosterNotification = RoomSocket.Join.TYPE.equals(firstEvent.get("event").asText());
+        boolean event1IsRosterNotification = RoomActor.Join.TYPE.equals(firstEvent.get("event").asText());
         boolean event1IsJoinSuccess = "joinSuccess".equals(firstEvent.get("event").asText());
-        boolean event2IsRosterNotification = RoomSocket.Join.TYPE.equals(secondEvent.get("event").asText());
+        boolean event2IsRosterNotification = RoomActor.Join.TYPE.equals(secondEvent.get("event").asText());
         boolean event2IsJoinSuccess = "joinSuccess".equals(secondEvent.get("event").asText());
 
         if (event1IsRosterNotification && event2IsJoinSuccess) {
@@ -167,7 +167,7 @@ public class RoomSocketTest extends WithApplication {
         assertEquals("has entered the room", rosterNotification.get("message").asText());
         assertEquals(user, fromJson(rosterNotification.get("user"), User.class));
 
-        JsonNode message = joinSuccess.get(RoomSocket.MESSAGE_KEY);
+        JsonNode message = joinSuccess.get(RoomActor.MESSAGE_KEY);
         User[] roomMembers = fromJson(message.get("roomMembers"), User[].class);
         assertEquals(0, roomMembers.length);
         assertFalse(message.get("isSubscribed").asBoolean());
@@ -188,8 +188,8 @@ public class RoomSocketTest extends WithApplication {
 
     @Test
     public void joinSendsRosterNotifyToRedis() {
-        RoomSocket.RosterNotification rosterNotify = new RoomSocket.RosterNotification(roomId, userId, RoomSocket.Join.TYPE);
-        verify(jedis).publish(RoomSocket.CHANNEL, Json.stringify(toJson(rosterNotify)));
+        RoomActor.RosterNotification rosterNotify = new RoomActor.RosterNotification(roomId, userId, RoomActor.Join.TYPE);
+        verify(jedis).publish(RoomActor.CHANNEL, Json.stringify(toJson(rosterNotify)));
     }
 
     @Test
@@ -200,7 +200,7 @@ public class RoomSocketTest extends WithApplication {
 
     private JsonNode sendMessage(MockWebSocket socket, String message, boolean isAnon, String uuid) throws Throwable {
         JsonNode messageJson = Json.newObject()
-                .put("event", RoomSocket.Talk.TYPE)
+                .put("event", RoomActor.Talk.TYPE)
                 .put("message", message)
                 .put("isAnon", isAnon)
                 .put("uuid", uuid);
@@ -248,7 +248,7 @@ public class RoomSocketTest extends WithApplication {
 
         JsonNode talkEvent = otherSocket.read();
 
-        assertEquals(RoomSocket.Talk.TYPE, talkEvent.get("event").asText());
+        assertEquals(RoomActor.Talk.TYPE, talkEvent.get("event").asText());
         JsonNode messageJson = Json.parse(talkEvent.get("message").asText());
         assertTrue(messageJson.get("messageId").canConvertToLong());
         assertEquals(user, fromJson(messageJson.get("sender"), User.class));
@@ -301,22 +301,22 @@ public class RoomSocketTest extends WithApplication {
 
     @Test
     public void keepAliveMessagesAreNotStored() throws InterruptedException {
-        RoomSocket.remoteMessage(new RoomSocket.Talk(roomId, KeepAliveService.ID, KeepAliveService.MSG, ""));
+        RoomActor.remoteMessage(new RoomActor.Talk(roomId, KeepAliveService.ID, KeepAliveService.MSG, ""));
         webSocket.read();
         verify(abstractRoomService, never()).addMessage(any(), any(), any());
     }
 
     @Test
     public void keepAliveMessagesFormat() throws InterruptedException {
-        RoomSocket.remoteMessage(new RoomSocket.Talk(roomId, KeepAliveService.ID, KeepAliveService.MSG, ""));
+        RoomActor.remoteMessage(new RoomActor.Talk(roomId, KeepAliveService.ID, KeepAliveService.MSG, ""));
         JsonNode keepAliveEvent = webSocket.read();
-        assertEquals(RoomSocket.Talk.TYPE, keepAliveEvent.get("event").asText());
+        assertEquals(RoomActor.Talk.TYPE, keepAliveEvent.get("event").asText());
         assertEquals(KeepAliveService.MSG, keepAliveEvent.get("message").asText());
     }
 
-    private JsonNode sendFavoriteEvent(MockWebSocket ws, long messageId, RoomSocket.FavoriteNotification.Action action) throws Throwable {
+    private JsonNode sendFavoriteEvent(MockWebSocket ws, long messageId, RoomActor.FavoriteNotification.Action action) throws Throwable {
         JsonNode favoriteEvent = Json.newObject()
-                .put("event", RoomSocket.FavoriteNotification.TYPE)
+                .put("event", RoomActor.FavoriteNotification.TYPE)
                 .put("messageId", messageId)
                 .put("action", action.name());
 
@@ -331,14 +331,14 @@ public class RoomSocketTest extends WithApplication {
         Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
         when(messageService.findById(messageId)).thenReturn(Optional.of(message));
         when(messageService.favorite(message, user)).thenReturn(true);
-        RoomSocket.FavoriteNotification.Action action = RoomSocket.FavoriteNotification.Action.ADD;
+        RoomActor.FavoriteNotification.Action action = RoomActor.FavoriteNotification.Action.ADD;
 
         sendFavoriteEvent(webSocket, messageId, action);
 
         JsonNode favoriteEvent = webSocket.read();
-        assertEquals(action.getType(), favoriteEvent.get(RoomSocket.EVENT_KEY).asText());
-        assertEquals(messageId, favoriteEvent.get(RoomSocket.MESSAGE_KEY).asLong());
-        assertEquals(user, fromJson(favoriteEvent.get(RoomSocket.USER_KEY), User.class));
+        assertEquals(action.getType(), favoriteEvent.get(RoomActor.EVENT_KEY).asText());
+        assertEquals(messageId, favoriteEvent.get(RoomActor.MESSAGE_KEY).asLong());
+        assertEquals(user, fromJson(favoriteEvent.get(RoomActor.USER_KEY), User.class));
     }
 
     @Test
@@ -347,13 +347,13 @@ public class RoomSocketTest extends WithApplication {
         Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
         when(messageService.findById(messageId)).thenReturn(Optional.of(message));
         when(messageService.favorite(message, user)).thenReturn(false);
-        RoomSocket.FavoriteNotification.Action action = RoomSocket.FavoriteNotification.Action.ADD;
+        RoomActor.FavoriteNotification.Action action = RoomActor.FavoriteNotification.Action.ADD;
 
         sendFavoriteEvent(webSocket, messageId, action);
 
         JsonNode errorEvent = webSocket.read();
-        assertEquals("error", errorEvent.get(RoomSocket.EVENT_KEY).asText());
-        assertEquals("Problem " + action + "ing a favorite", errorEvent.get(RoomSocket.MESSAGE_KEY).asText());
+        assertEquals("error", errorEvent.get(RoomActor.EVENT_KEY).asText());
+        assertEquals("Problem " + action + "ing a favorite", errorEvent.get(RoomActor.MESSAGE_KEY).asText());
     }
 
 
@@ -363,14 +363,14 @@ public class RoomSocketTest extends WithApplication {
         Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
         when(messageService.findById(messageId)).thenReturn(Optional.of(message));
         when(messageService.removeFavorite(message, user)).thenReturn(true);
-        RoomSocket.FavoriteNotification.Action action = RoomSocket.FavoriteNotification.Action.REMOVE;
+        RoomActor.FavoriteNotification.Action action = RoomActor.FavoriteNotification.Action.REMOVE;
 
         sendFavoriteEvent(webSocket, messageId, action);
 
         JsonNode favoriteEvent = webSocket.read();
-        assertEquals(action.getType(), favoriteEvent.get(RoomSocket.EVENT_KEY).asText());
-        assertEquals(messageId, favoriteEvent.get(RoomSocket.MESSAGE_KEY).asLong());
-        assertEquals(user, fromJson(favoriteEvent.get(RoomSocket.USER_KEY), User.class));
+        assertEquals(action.getType(), favoriteEvent.get(RoomActor.EVENT_KEY).asText());
+        assertEquals(messageId, favoriteEvent.get(RoomActor.MESSAGE_KEY).asLong());
+        assertEquals(user, fromJson(favoriteEvent.get(RoomActor.USER_KEY), User.class));
     }
 
     @Test
@@ -379,13 +379,13 @@ public class RoomSocketTest extends WithApplication {
         Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
         when(messageService.findById(messageId)).thenReturn(Optional.of(message));
         when(messageService.removeFavorite(message, user)).thenReturn(false);
-        RoomSocket.FavoriteNotification.Action action = RoomSocket.FavoriteNotification.Action.REMOVE;
+        RoomActor.FavoriteNotification.Action action = RoomActor.FavoriteNotification.Action.REMOVE;
 
         sendFavoriteEvent(webSocket, messageId, action);
 
         JsonNode errorEvent = webSocket.read();
-        assertEquals("error", errorEvent.get(RoomSocket.EVENT_KEY).asText());
-        assertEquals("Problem " + action + "ing a favorite", errorEvent.get(RoomSocket.MESSAGE_KEY).asText());
+        assertEquals("error", errorEvent.get(RoomActor.EVENT_KEY).asText());
+        assertEquals("Problem " + action + "ing a favorite", errorEvent.get(RoomActor.MESSAGE_KEY).asText());
     }
 
     @Test
@@ -418,9 +418,9 @@ public class RoomSocketTest extends WithApplication {
         webSocket.close();
 
         JsonNode quitEvent = otherSocket.read();
-        assertEquals(RoomSocket.Quit.TYPE, quitEvent.get(RoomSocket.EVENT_KEY).asText());
-        assertEquals("has left the room", quitEvent.get(RoomSocket.MESSAGE_KEY).asText());
-        assertEquals(user, fromJson(quitEvent.get(RoomSocket.USER_KEY), User.class));
+        assertEquals(RoomActor.Quit.TYPE, quitEvent.get(RoomActor.EVENT_KEY).asText());
+        assertEquals("has left the room", quitEvent.get(RoomActor.MESSAGE_KEY).asText());
+        assertEquals(user, fromJson(quitEvent.get(RoomActor.USER_KEY), User.class));
     }
 
     @Test
@@ -459,15 +459,15 @@ public class RoomSocketTest extends WithApplication {
         otherSocket.read();
 
         JsonNode quit = Json.newObject()
-                .put("type", RoomSocket.Quit.TYPE)
+                .put("type", RoomActor.Quit.TYPE)
                 .put("roomId", roomId)
                 .put("userId", userId);
-        jedis.publish(RoomSocket.CHANNEL, Json.stringify(quit));
+        jedis.publish(RoomActor.CHANNEL, Json.stringify(quit));
 
         JsonNode quitEvent = otherSocket.read();
-        assertEquals(RoomSocket.Quit.TYPE, quitEvent.get(RoomSocket.EVENT_KEY).asText());
-        assertEquals("has left the room", quitEvent.get(RoomSocket.MESSAGE_KEY).asText());
-        assertEquals(user, fromJson(quitEvent.get(RoomSocket.USER_KEY), User.class));
+        assertEquals(RoomActor.Quit.TYPE, quitEvent.get(RoomActor.EVENT_KEY).asText());
+        assertEquals("has left the room", quitEvent.get(RoomActor.MESSAGE_KEY).asText());
+        assertEquals(user, fromJson(quitEvent.get(RoomActor.USER_KEY), User.class));
     }
 
     @Test(expected = RuntimeException.class)

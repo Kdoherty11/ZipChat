@@ -1,11 +1,11 @@
 package services.impl;
 
+import actors.RoomActor;
 import akka.actor.Cancellable;
 import play.api.Play;
 import play.libs.Akka;
 import scala.concurrent.duration.Duration;
 import services.KeepAliveService;
-import sockets.RoomSocket;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,8 +29,8 @@ public class KeepAliveServiceImpl implements KeepAliveService {
         keepAlives.putIfAbsent(roomId, Play.current().actorSystem().scheduler().schedule(
                 Duration.create(INITIAL_DELAY, SECONDS),
                 Duration.create(INTERVAL, SECONDS),
-                RoomSocket.defaultRoom,
-                new RoomSocket.Talk(roomId, ID, MSG, ""),
+                RoomActor.defaultRoom,
+                new RoomActor.Talk(roomId, ID, MSG, ""),
                 Akka.system().dispatcher(),
                 null /** sender **/
         ));
