@@ -90,6 +90,11 @@ public class PublicRoomsControllerTest extends WithApplication {
             return this;
         }
 
+        public CreateRequestSender setCreatorId(String creatorId) {
+            params.put("creatorId", creatorId);
+            return this;
+        }
+
         @Override
         public Result send() {
             RequestBuilder requestBuilder = getRequestBuilder();
@@ -105,15 +110,23 @@ public class PublicRoomsControllerTest extends WithApplication {
         Double latitude = 10.0;
         Double longitude = 12.0;
         Integer radius = 5;
+        long creatorId = 7;
+        User creator = mock(User.class);
+        when(userService.findById(creatorId)).thenReturn(Optional.of(creator));
 
         String roomName = "roomName";
         String latitudeStr = latitude.toString();
         String longitudeStr = longitude.toString();
         String radiusStr = radius.toString();
+        String creatorIdStr = Long.toString(creatorId);
 
         Result createResult = new CreateRequestSender()
-                .setName(roomName).setLatitude(latitudeStr).setLongitude(longitudeStr).setRadius(radiusStr).send();
-
+                .setName(roomName)
+                .setLatitude(latitudeStr)
+                .setLongitude(longitudeStr)
+                .setRadius(radiusStr)
+                .setCreatorId(creatorIdStr)
+                .send();
 
         assertEquals(CREATED, createResult.status());
         Gson gson = new Gson();
@@ -154,6 +167,20 @@ public class PublicRoomsControllerTest extends WithApplication {
         Result noRadiusResult = new CreateRequestSender().setName("name").setLatitude("4.0").setLongitude("3.0").send();
 
         assertEquals(BAD_REQUEST, noRadiusResult.status());
+        verifyZeroInteractions(publicRoomService);
+    }
+
+    public void createRoomNoCreator() {
+        Result noRadiusResult = new CreateRequestSender().setName("name").setLatitude("4.0").setLongitude("3.0").setRadius("10").send();
+
+        assertEquals(BAD_REQUEST, noRadiusResult.status());
+        verifyZeroInteractions(publicRoomService);
+    }
+
+    public void createRoomCreatorNotFound() {
+        Result noRadiusResult = new CreateRequestSender().setName("name").setLatitude("4.0").setLongitude("3.0").setRadius("10").setCreatorId("7").send();
+
+        assertEquals(NOT_FOUND, noRadiusResult.status());
         verifyZeroInteractions(publicRoomService);
     }
 

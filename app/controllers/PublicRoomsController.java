@@ -47,9 +47,29 @@ public class PublicRoomsController extends AbstractRoomController {
         if (form.hasErrors()) {
             return badRequest(form.errorsAsJson());
         } else {
-            PublicRoom room = form.get();
-            publicRoomService.save(room);
-            return created(toJson(room));
+            String creatorIdKey = "creatorId";
+            Map<String, String> formData = Form.form().bindFromRequest(creatorIdKey).data();
+            String creatorIdStr = formData.get(creatorIdKey);
+
+            DataValidator dataValidator = new DataValidator(
+                    new FieldValidator<>(creatorIdKey, creatorIdStr,
+                            Validators.required(), Validators.stringToLong()));
+
+            if (dataValidator.hasErrors()) {
+                return badRequest(dataValidator.errorsAsJson());
+            }
+
+            long creatorId = Longs.tryParse(creatorIdStr);
+
+            Optional<User> creatorOptional = userService.findById(creatorId);
+            if (creatorOptional.isPresent()) {
+                PublicRoom room = form.get();
+                room.creator = creatorOptional.get();
+                publicRoomService.save(room);
+                return created(toJson(room));
+            } else {
+                return entityNotFound(User.class, creatorId);
+            }
         }
     }
 
@@ -120,7 +140,9 @@ public class PublicRoomsController extends AbstractRoomController {
     // Public due to http://stackoverflow.com/a/21442580/3258892
     public interface PublicRoomUserAction {
         boolean publicRoomAction(PublicRoom publicRoom, User user);
+
         Result onActionSuccess();
+
         Result onActionFailed(User user);
     }
 

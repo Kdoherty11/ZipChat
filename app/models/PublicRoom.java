@@ -17,7 +17,7 @@ import java.util.Set;
 @Table(name = "public_rooms")
 public class PublicRoom extends AbstractRoom {
 
-    @Column(length=50)
+    @Column(length = 50)
     @Constraints.Required
     public String name;
 
@@ -35,6 +35,11 @@ public class PublicRoom extends AbstractRoom {
 
     @Constraints.Required
     public Integer radius; // in meters
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "creator")
+    public User creator;
 
     @JsonIgnore
     @OneToMany(targetEntity = AnonUser.class, mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -64,12 +69,13 @@ public class PublicRoom extends AbstractRoom {
                 Objects.equal(name, that.name) &&
                 Objects.equal(latitude, that.latitude) &&
                 Objects.equal(longitude, that.longitude) &&
-                Objects.equal(radius, that.radius);
+                Objects.equal(radius, that.radius) &&
+                Objects.equal(creator, that.creator);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), name, latitude, longitude, radius);
+        return Objects.hashCode(super.hashCode(), name, latitude, longitude, radius, creator);
     }
 
     @Override
@@ -80,6 +86,7 @@ public class PublicRoom extends AbstractRoom {
                 .add("latitude", latitude)
                 .add("longitude", longitude)
                 .add("radius", radius)
+                .add("creator", creator)
                 .add("anonUsers", anonUsers)
                 .add("subscribers", subscribers)
                 .add("createdAt", createdAt)
