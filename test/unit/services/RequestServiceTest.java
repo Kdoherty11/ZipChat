@@ -2,7 +2,7 @@ package unit.services;
 
 import daos.PrivateRoomDao;
 import daos.RequestDao;
-import factories.PropOverride;
+import factories.FieldOverride;
 import factories.RequestFactory;
 import factories.UserFactory;
 import models.PrivateRoom;
@@ -129,7 +129,7 @@ public class RequestServiceTest {
     public void getStatusNoPrivateRoomWithOppositeRequest() throws InstantiationException, IllegalAccessException {
         long senderId = 1;
         long receiverId = 2;
-        Request request = new RequestFactory().create(PropOverride.of("status", Request.Status.pending));
+        Request request = new RequestFactory().create(FieldOverride.of("status", Request.Status.pending));
         when(privateRoomDao.findByRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
         when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
         when(requestService.findBySenderAndReceiver(receiverId, senderId)).thenReturn(Optional.of(request));

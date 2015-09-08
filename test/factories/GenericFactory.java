@@ -34,8 +34,8 @@ public abstract class GenericFactory<T> implements Factory<T> {
         for (ObjectMutator<T> mutator : mutators) {
             mutator.apply(createdObj);
 
-            if (mutator instanceof PropOverride) {
-                overriddenFields.add(((PropOverride) mutator).getFieldName());
+            if (mutator instanceof FieldOverride) {
+                overriddenFields.add(((FieldOverride) mutator).getFieldName());
             }
         }
 

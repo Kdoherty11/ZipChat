@@ -106,10 +106,10 @@ public class RoomActorTest extends WithApplication {
         ((Map) TestUtils.getHiddenField(RoomActor.class, "rooms")).clear();
 
         userFactory = new UserFactory();
-        user = userFactory.create(PropOverride.of("userId", userId));
+        user = userFactory.create(FieldOverride.of("userId", userId));
         when(userService.findById(userId)).thenReturn(Optional.of(user));
 
-        publicRoom = new PublicRoomFactory().create(PropOverride.of("roomId", roomId));
+        publicRoom = new PublicRoomFactory().create(FieldOverride.of("roomId", roomId));
         when(abstractRoomService.findById(roomId)).thenReturn(Optional.of(publicRoom));
         when(publicRoomService.findById(roomId)).thenReturn(Optional.of(publicRoom));
 
@@ -235,7 +235,7 @@ public class RoomActorTest extends WithApplication {
     @Test
     public void talkEventIsSentOut() throws Throwable {
         long otherUserId = 6;
-        User otherUser = userFactory.create(PropOverride.of("userId", otherUserId));
+        User otherUser = userFactory.create(FieldOverride.of("userId", otherUserId));
         when(userService.findById(otherUserId)).thenReturn(Optional.of(otherUser));
         MockWebSocket otherSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, otherUserId, ""));
         // Join roster notification and joinSuccess events
@@ -274,7 +274,7 @@ public class RoomActorTest extends WithApplication {
 
     @Test
     public void anonTalksAreStoredWithAnonSenders() throws Throwable {
-        AnonUser anonUser = new AnonUserFactory().create(PropOverride.of("actual", user));
+        AnonUser anonUser = new AnonUserFactory().create(FieldOverride.of("actual", user));
         when(anonUserService.getOrCreateAnonUser(any(), any())).thenReturn(anonUser);
 
         String message = "Hello";
@@ -328,7 +328,7 @@ public class RoomActorTest extends WithApplication {
     @Test
     public void favoriteAMessage() throws Throwable {
         long messageId = 5;
-        Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
+        Message message = new MessageFactory().create(FieldOverride.of("room", publicRoom));
         when(messageService.findById(messageId)).thenReturn(Optional.of(message));
         when(messageService.favorite(message, user)).thenReturn(true);
         RoomActor.FavoriteNotification.Action action = RoomActor.FavoriteNotification.Action.ADD;
@@ -344,7 +344,7 @@ public class RoomActorTest extends WithApplication {
     @Test
     public void favoriteAMessageThatHasAlreadyBeenFavoritedByThatUser() throws Throwable {
         long messageId = 5;
-        Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
+        Message message = new MessageFactory().create(FieldOverride.of("room", publicRoom));
         when(messageService.findById(messageId)).thenReturn(Optional.of(message));
         when(messageService.favorite(message, user)).thenReturn(false);
         RoomActor.FavoriteNotification.Action action = RoomActor.FavoriteNotification.Action.ADD;
@@ -360,7 +360,7 @@ public class RoomActorTest extends WithApplication {
     @Test
     public void removeFavoriteFromAMessage() throws Throwable {
         long messageId = 5;
-        Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
+        Message message = new MessageFactory().create(FieldOverride.of("room", publicRoom));
         when(messageService.findById(messageId)).thenReturn(Optional.of(message));
         when(messageService.removeFavorite(message, user)).thenReturn(true);
         RoomActor.FavoriteNotification.Action action = RoomActor.FavoriteNotification.Action.REMOVE;
@@ -376,7 +376,7 @@ public class RoomActorTest extends WithApplication {
     @Test
     public void removeFavoriteFromAMessageHasNotFavorited() throws Throwable {
         long messageId = 5;
-        Message message = new MessageFactory().create(PropOverride.of("room", publicRoom));
+        Message message = new MessageFactory().create(FieldOverride.of("room", publicRoom));
         when(messageService.findById(messageId)).thenReturn(Optional.of(message));
         when(messageService.removeFavorite(message, user)).thenReturn(false);
         RoomActor.FavoriteNotification.Action action = RoomActor.FavoriteNotification.Action.REMOVE;
@@ -391,7 +391,7 @@ public class RoomActorTest extends WithApplication {
     @Test
     public void quitRemovesUserFromJedis() throws Throwable {
         long otherUserId = 6;
-        User otherUser = userFactory.create(PropOverride.of("userId", otherUserId));
+        User otherUser = userFactory.create(FieldOverride.of("userId", otherUserId));
         when(userService.findById(otherUserId)).thenReturn(Optional.of(otherUser));
         MockWebSocket otherSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, otherUserId, ""));
         // Join roster notification and joinSuccess events
@@ -408,7 +408,7 @@ public class RoomActorTest extends WithApplication {
     @Test
     public void quitSendsQuitEvent() throws Throwable {
         long otherUserId = 6;
-        User otherUser = userFactory.create(PropOverride.of("userId", otherUserId));
+        User otherUser = userFactory.create(FieldOverride.of("userId", otherUserId));
         when(userService.findById(otherUserId)).thenReturn(Optional.of(otherUser));
         MockWebSocket otherSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, otherUserId, ""));
         // Join roster notification and joinSuccess events
@@ -434,7 +434,7 @@ public class RoomActorTest extends WithApplication {
     @Test
     public void quitDoesNotRemoveKeepAliveIfNotLastUser() throws Throwable {
         long otherUserId = 6;
-        User otherUser = userFactory.create(PropOverride.of("userId", otherUserId));
+        User otherUser = userFactory.create(FieldOverride.of("userId", otherUserId));
         when(userService.findById(otherUserId)).thenReturn(Optional.of(otherUser));
         MockWebSocket otherSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, otherUserId, ""));
         // Join roster notification and joinSuccess events
@@ -451,7 +451,7 @@ public class RoomActorTest extends WithApplication {
     @Test
     public void quitsCanBeReceivedThroughJedis() throws InterruptedException, InstantiationException, IllegalAccessException {
         long otherUserId = 6;
-        User otherUser = userFactory.create(PropOverride.of("userId", otherUserId));
+        User otherUser = userFactory.create(FieldOverride.of("userId", otherUserId));
         when(userService.findById(otherUserId)).thenReturn(Optional.of(otherUser));
         MockWebSocket otherSocket = new MockWebSocket(roomSocketsController.joinPublicRoom(roomId, otherUserId, ""));
         // Join roster notification and joinSuccess events
