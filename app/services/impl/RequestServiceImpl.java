@@ -57,7 +57,12 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
         if (requestOptional.isPresent()) {
             return requestOptional.get().status.name();
         } else {
-            return "none";
+            Optional<Request> oppositeRequestOptional = findBySenderAndReceiver(receiverId, senderId);
+            if (oppositeRequestOptional.isPresent() && oppositeRequestOptional.get().status == Request.Status.pending) {
+                return Request.Status.pending.name();
+            } else {
+                return "none";
+            }
         }
     }
 

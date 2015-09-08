@@ -50,6 +50,7 @@ public class PublicRoom extends AbstractRoom {
     @JoinTable(name = "subscriptions", joinColumns = {@JoinColumn(name = "roomId")}, inverseJoinColumns = {@JoinColumn(name = "userId")})
     public Set<User> subscribers = new LinkedHashSet<>();
 
+    @Transient
     @Override
     public AbstractRoom.RoomType getType() {
         return AbstractRoom.RoomType.PUBLIC;

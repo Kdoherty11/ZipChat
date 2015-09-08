@@ -36,6 +36,7 @@ public abstract class AbstractRoom {
         PUBLIC, PRIVATE
     }
 
+    @Transient
     public abstract RoomType getType();
 
     // http://www.artima.com/lejava/articles/equality.html
