@@ -119,7 +119,7 @@ public class RequestServiceTest {
         long receiverId = 2;
         when(privateRoomDao.findByRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
         when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
-        when(requestService.findBySenderAndReceiver(receiverId, receiverId)).thenReturn(Optional.empty());
+        when(requestService.findBySenderAndReceiver(receiverId, senderId)).thenReturn(Optional.empty());
         String status = requestService.getStatus(senderId, receiverId);
 
         assertEquals(status, "none");
