@@ -44,7 +44,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         if (sender.equals(actualReceiver)) {
             return;
         }
-        Optional<PrivateRoom> privateRoomOptional = privateRoomDao.findByRoomMembers(sender.userId, actualReceiver.userId);
+        Optional<PrivateRoom> privateRoomOptional = privateRoomDao.findByActiveRoomMembers(sender.userId, actualReceiver.userId);
         if (!privateRoomOptional.isPresent()) {
             requestDao.save(new Request(sender, actualReceiver));
             sendNotification(actualReceiver, new ChatRequestNotification(sender));

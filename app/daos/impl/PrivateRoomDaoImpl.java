@@ -28,11 +28,30 @@ public class PrivateRoomDaoImpl extends GenericDaoImpl<PrivateRoom> implements P
     }
 
     @Override
-    public Optional<PrivateRoom> findByRoomMembers(long user1, long user2) {
+    public Optional<PrivateRoom> findByActiveRoomMembers(long user1, long user2) {
         String queryString = "select p from PrivateRoom p where " +
                 "((p.sender.userId = :user1 and p.receiver.userId = :user2)" +
                 " or (p.receiver.userId = :user1 and p.sender.userId = :user2))" +
                 " and p.senderInRoom = true and p.receiverInRoom = true";
+
+        TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
+                .setParameter("user1", user1)
+                .setParameter("user2", user2);
+
+        List<PrivateRoom> rooms = query.getResultList();
+
+        if (rooms.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(rooms.get(0));
+    }
+
+    @Override
+    public Optional<PrivateRoom> findByRoomMembers(long user1, long user2) {
+        String queryString = "select p from PrivateRoom p where " +
+                "((p.sender.userId = :user1 and p.receiver.userId = :user2)" +
+                " or (p.receiver.userId = :user1 and p.sender.userId = :user2))";
 
         TypedQuery<PrivateRoom> query = JPA.em().createQuery(queryString, PrivateRoom.class)
                 .setParameter("user1", user1)

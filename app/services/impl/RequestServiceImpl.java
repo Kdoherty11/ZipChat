@@ -39,25 +39,31 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
         userService.sendNotification(request.sender, new ChatResponseNotification(request, status));
 
         if (status == Request.Status.accepted) {
-            PrivateRoom room = new PrivateRoom(request);
-            privateRoomDao.save(room);
+            Optional<PrivateRoom> existingRoom = privateRoomDao.findByActiveRoomMembers(request.sender.userId, request.receiver.userId);
+            if (existingRoom.isPresent()) {
+                PrivateRoom existing = existingRoom.get();
+                existing.senderInRoom = true;
+                existing.receiverInRoom = true;
+            } else {
+                PrivateRoom room = new PrivateRoom(request);
+                privateRoomDao.save(room);
+            }
         }
     }
 
     @Override
-    public String getStatus(long senderId, long receiverId) {
-
-        Optional<PrivateRoom> privateRoomOptional = privateRoomDao.findByRoomMembers(senderId, receiverId);
+    public String getStatus(long potentialSenderId, long potentialReceiverId) {
+        Optional<PrivateRoom> privateRoomOptional = privateRoomDao.findByActiveRoomMembers(potentialSenderId, potentialReceiverId);
 
         if (privateRoomOptional.isPresent()) {
             return Long.toString(privateRoomOptional.get().roomId);
         }
 
-        Optional<Request> requestOptional = findBySenderAndReceiver(senderId, receiverId);
+        Optional<Request> requestOptional = findBySenderAndReceiver(potentialSenderId, potentialReceiverId);
         if (requestOptional.isPresent()) {
             return requestOptional.get().status.name();
         } else {
-            Optional<Request> oppositeRequestOptional = findBySenderAndReceiver(receiverId, senderId);
+            Optional<Request> oppositeRequestOptional = findBySenderAndReceiver(potentialReceiverId, potentialSenderId);
             if (oppositeRequestOptional.isPresent() && oppositeRequestOptional.get().status == Request.Status.pending) {
                 return Request.Status.pending.name();
             } else {
