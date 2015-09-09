@@ -3,6 +3,7 @@ package unit.services;
 import daos.PrivateRoomDao;
 import daos.RequestDao;
 import factories.FieldOverride;
+import factories.PrivateRoomFactory;
 import factories.RequestFactory;
 import factories.UserFactory;
 import models.PrivateRoom;
@@ -15,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import play.libs.Json;
 import services.RequestService;
 import services.UserService;
 import services.impl.RequestServiceImpl;
@@ -86,16 +88,15 @@ public class RequestServiceTest {
     }
 
     @Test
-    public void getStatusPrivateRoomExists() {
+    public void getStatusPrivateRoomExists() throws InstantiationException, IllegalAccessException {
         long senderId = 1;
         long receiverId = 2;
         long roomId = 3;
-        PrivateRoom mockRoom = mock(PrivateRoom.class);
-        when(mockRoom.roomId).thenReturn(roomId);
-        when(privateRoomDao.findByRoomMembers(senderId, receiverId)).thenReturn(Optional.of(mockRoom));
+        PrivateRoom room = new PrivateRoomFactory().create(FieldOverride.of("roomId", roomId));
+        when(privateRoomDao.findByRoomMembers(senderId, receiverId)).thenReturn(Optional.of(room));
         String status = requestService.getStatus(senderId, receiverId);
 
-        assertEquals(status, Long.toString(roomId));
+        assertEquals(status, Json.stringify(Json.toJson(room)));
     }
 
     @Test

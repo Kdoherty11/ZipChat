@@ -6,6 +6,7 @@ import daos.RequestDao;
 import models.PrivateRoom;
 import models.Request;
 import notifications.ChatResponseNotification;
+import play.libs.Json;
 import services.RequestService;
 import services.UserService;
 
@@ -50,7 +51,7 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
         Optional<PrivateRoom> privateRoomOptional = privateRoomDao.findByRoomMembers(senderId, receiverId);
 
         if (privateRoomOptional.isPresent()) {
-            return Long.toString(privateRoomOptional.get().roomId);
+            return Json.stringify(Json.toJson(privateRoomOptional.get()));
         }
 
         Optional<Request> requestOptional = findBySenderAndReceiver(senderId, receiverId);
