@@ -13,5 +13,5 @@ import java.util.Optional;
 @ImplementedBy(RequestDaoImpl.class)
 public interface RequestDao extends GenericDao<Request> {
     List<Request> findPendingRequestsByReceiver(long receiverId);
-    Optional<Request> findBySenderAndReceiver(long senderId, long receiverId);
+    Optional<Request> findByUsers(long userId1, long userId2);
 }

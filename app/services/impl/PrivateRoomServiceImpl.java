@@ -55,7 +55,12 @@ public class PrivateRoomServiceImpl extends GenericServiceImpl<PrivateRoom> impl
     }
 
     @Override
-    public Optional<PrivateRoom> findByRoomMembers(long senderId, long receiverId) {
-        return privateRoomDao.findByRoomMembers(senderId, receiverId);
+    public Optional<PrivateRoom> findByActiveRoomMembers(long senderId, long receiverId) {
+        return privateRoomDao.findByActiveRoomMembers(senderId, receiverId);
+    }
+
+    @Override
+    public Optional<PrivateRoom> findByRoomMembers(long user1, long user2) {
+        return privateRoomDao.findByRoomMembers(user1, user2);
     }
 }

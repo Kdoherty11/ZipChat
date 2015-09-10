@@ -11,6 +11,6 @@ import services.impl.RequestServiceImpl;
 @ImplementedBy(RequestServiceImpl.class)
 public interface RequestService extends RequestDao {
 
-    String getStatus(long senderId, long receiverId);
+    String getStatus(long potentialSenderId, long potentialReceiverId);
     void handleResponse(Request request, Request.Status status);
 }

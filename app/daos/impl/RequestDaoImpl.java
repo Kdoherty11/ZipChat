@@ -29,12 +29,14 @@ public class RequestDaoImpl extends GenericDaoImpl<Request> implements RequestDa
     }
 
     @Override
-    public Optional<Request> findBySenderAndReceiver(long senderId, long receiverId) {
-        String queryString = "select r from Request r where r.sender.userId = :senderId and r.receiver.userId = :receiverId";
+    public Optional<Request> findByUsers(long userId1, long userId2) {
+        String queryString = "select r from Request r where " +
+                "(r.sender.userId = :userId1 and r.receiver.userId = :userId2) " +
+                "or (r.receiver.userId = :userId1 and r.sender.userId = :userId2)";
 
         TypedQuery<Request> query = JPA.em().createQuery(queryString, Request.class)
-                .setParameter("senderId", senderId)
-                .setParameter("receiverId", receiverId);
+                .setParameter("userId1", userId1)
+                .setParameter("userId2", userId2);
 
         List<Request> requests = query.getResultList();
         if (requests.isEmpty()) {
