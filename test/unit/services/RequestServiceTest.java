@@ -130,18 +130,65 @@ public class RequestServiceTest {
     }
 
     @Test
-    public void getStatusNoPrivateRoomWithRequest() {
+    public void getStatusNoPrivateRoomWithRequestIsSender() throws InstantiationException, IllegalAccessException {
         long senderId = 1;
         long receiverId = 2;
         when(privateRoomDao.findByActiveRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
 
-        Request mockRequest = mock(Request.class);
         Request.Status requestStatus = Request.Status.denied;
-        when(mockRequest.status).thenReturn(requestStatus);
-        when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.of(mockRequest));
+        UserFactory userFactory = new UserFactory();
+        User sender = userFactory.create(FieldOverride.of("userId", senderId));
+        User receiver = userFactory.create(FieldOverride.of("userId", receiverId));
+        Request request = new RequestFactory().create(
+                FieldOverride.of("sender", sender),
+                FieldOverride.of("receiver", receiver),
+                FieldOverride.of("status", requestStatus));
+        when(requestService.findByUsers(senderId, receiverId)).thenReturn(Optional.of(request));
         String status = requestService.getStatus(senderId, receiverId);
 
-        assertEquals(status, requestStatus.name());
+        assertEquals(requestStatus.name(), status);
+    }
+
+    @Test
+    public void getStatusNoPrivateRoomWithRequestNotSender() throws InstantiationException, IllegalAccessException {
+        long senderId = 1;
+        long receiverId = 2;
+        when(privateRoomDao.findByActiveRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
+
+        UserFactory userFactory = new UserFactory();
+        User receiver = userFactory.create(FieldOverride.of("userId", senderId));
+        User sender = userFactory.create(FieldOverride.of("userId", receiverId));
+
+        Request.Status requestStatus = Request.Status.denied;
+        Request request = new RequestFactory().create(
+                FieldOverride.of("receiver", receiver),
+                FieldOverride.of("sender", sender),
+                FieldOverride.of("status", requestStatus));
+        when(requestService.findByUsers(senderId, receiverId)).thenReturn(Optional.of(request));
+        String status = requestService.getStatus(senderId, receiverId);
+
+        assertEquals("none", status);
+    }
+
+    @Test
+    public void getStatusNoPrivateRoomWithRequestNotSenderPendingStatus() throws InstantiationException, IllegalAccessException {
+        long senderId = 1;
+        long receiverId = 2;
+        when(privateRoomDao.findByActiveRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
+
+        UserFactory userFactory = new UserFactory();
+        User sender = userFactory.create(FieldOverride.of("userId", senderId));
+        User receiver = userFactory.create(FieldOverride.of("userId", receiverId));
+
+        Request.Status requestStatus = Request.Status.pending;
+        Request request = new RequestFactory().create(
+                FieldOverride.of("receiver", sender),
+                FieldOverride.of("sender", receiver),
+                FieldOverride.of("status", requestStatus));
+        when(requestService.findByUsers(senderId, receiverId)).thenReturn(Optional.of(request));
+        String status = requestService.getStatus(senderId, receiverId);
+
+        assertEquals(Request.Status.pending.name(), status);
     }
 
     @Test
@@ -149,24 +196,10 @@ public class RequestServiceTest {
         long senderId = 1;
         long receiverId = 2;
         when(privateRoomDao.findByActiveRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
-        when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
-        when(requestService.findBySenderAndReceiver(receiverId, senderId)).thenReturn(Optional.empty());
+        when(requestService.findByUsers(senderId, receiverId)).thenReturn(Optional.empty());
         String status = requestService.getStatus(senderId, receiverId);
 
-        assertEquals(status, "none");
-    }
-
-    @Test
-    public void getStatusNoPrivateRoomWithOppositeRequest() throws InstantiationException, IllegalAccessException {
-        long senderId = 1;
-        long receiverId = 2;
-        Request request = new RequestFactory().create(FieldOverride.of("status", Request.Status.pending));
-        when(privateRoomDao.findByActiveRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
-        when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
-        when(requestService.findBySenderAndReceiver(receiverId, senderId)).thenReturn(Optional.of(request));
-        String status = requestService.getStatus(senderId, receiverId);
-
-        assertEquals(status, Request.Status.pending.name());
+        assertEquals("none", status);
     }
 
     @Test
@@ -180,13 +213,13 @@ public class RequestServiceTest {
     }
 
     @Test
-    public void findBySenderAndReceiver() {
+    public void findByUsers() {
         long senderId = 1;
         long receiverId = 2;
         Optional<Request> expected = Optional.empty();
-        when(requestDao.findBySenderAndReceiver(senderId, receiverId)).thenReturn(expected);
-        Optional<Request> requestOptional = requestService.findBySenderAndReceiver(senderId, receiverId);
-        verify(requestDao).findBySenderAndReceiver(senderId, receiverId);
+        when(requestDao.findByUsers(senderId, receiverId)).thenReturn(expected);
+        Optional<Request> requestOptional = requestService.findByUsers(senderId, receiverId);
+        verify(requestDao).findByUsers(senderId, receiverId);
         assertSame(expected, requestOptional);
     }
 }

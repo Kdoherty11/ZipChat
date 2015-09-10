@@ -60,27 +60,22 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
             return Json.stringify(Json.toJson(privateRoomOptional.get()));
         }
 
-        Optional<Request> requestOptional = findBySenderAndReceiver(potentialSenderId, potentialReceiverId);
+        Optional<Request> requestOptional = findByUsers(potentialSenderId, potentialReceiverId);
         if (requestOptional.isPresent()) {
-            return requestOptional.get().status.name();
-        } else {
-            Optional<Request> oppositeRequestOptional = findBySenderAndReceiver(potentialReceiverId, potentialSenderId);
-            if (oppositeRequestOptional.isPresent() && oppositeRequestOptional.get().status == Request.Status.pending) {
+            Request request = requestOptional.get();
+            if (request.sender.userId == potentialSenderId) {
+                return requestOptional.get().status.name();
+            } else if (request.status == Request.Status.pending){
                 return Request.Status.pending.name();
-            } else {
-                return "none";
             }
         }
+
+        return "none";
     }
 
     @Override
     public List<Request> findPendingRequestsByReceiver(long receiverId) {
         return requestDao.findPendingRequestsByReceiver(receiverId);
-    }
-
-    @Override
-    public Optional<Request> findBySenderAndReceiver(long senderId, long receiverId) {
-        return requestDao.findBySenderAndReceiver(senderId, receiverId);
     }
 
     @Override
