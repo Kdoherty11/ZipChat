@@ -76,7 +76,7 @@ public class PrivateRoomDaoTest extends AbstractDaoTest {
     }
 
     @Test
-    public void findByRoomMembersReturnEmptyIfNoneExists() {
+    public void findByActiveRoomMembersReturnEmptyIfNoneExists() {
         JPA.withTransaction(() -> {
             Optional<PrivateRoom> optional = privateRoomDao.findByActiveRoomMembers(1, 2);
             assertFalse(optional.isPresent());
@@ -84,7 +84,7 @@ public class PrivateRoomDaoTest extends AbstractDaoTest {
     }
 
     @Test
-    public void findBySenderAndReceiverReturnsEmptyIfSenderNotInRoom() {
+    public void findByActiveRoomMembersReturnsEmptyIfSenderNotInRoom() {
         JPA.withTransaction(() -> {
             PrivateRoom room = privateRoomFactory.create(
                     PrivateRoomFactory.Trait.WITH_PERSISTED_REQUEST,
@@ -96,7 +96,7 @@ public class PrivateRoomDaoTest extends AbstractDaoTest {
     }
 
     @Test
-    public void findBySenderAndReceiverReturnsEmptyIfReceiverNotInRoom() {
+    public void findByActiveRoomMembersReturnsEmptyIfReceiverNotInRoom() {
         JPA.withTransaction(() -> {
             PrivateRoom room = privateRoomFactory.create(
                     PrivateRoomFactory.Trait.WITH_PERSISTED_REQUEST,
@@ -108,7 +108,7 @@ public class PrivateRoomDaoTest extends AbstractDaoTest {
     }
 
     @Test
-    public void findBySenderAndReceiverReturnsNonEmptyIfBothMatchAndBothAreInRoom() {
+    public void findByActiveRoomMembersReturnsNonEmptyIfBothMatchAndBothAreInRoom() {
         JPA.withTransaction(() -> {
             PrivateRoom room = privateRoomFactory.create(PrivateRoomFactory.Trait.PERSISTED_WITH_REQUEST);
             JPA.em().flush();
@@ -119,5 +119,30 @@ public class PrivateRoomDaoTest extends AbstractDaoTest {
             assertTrue(switchedOptional.isPresent());
         });
     }
+
+    @Test
+    public void findByRoomMembersReturnsRegardlessOfIfUsersHaveLeftTheRoom() {
+        JPA.withTransaction(() -> {
+            PrivateRoom room = privateRoomFactory.create(
+                    PrivateRoomFactory.Trait.WITH_PERSISTED_REQUEST,
+                    FieldOverride.of("receiverInRoom", false),
+                    PrivateRoomFactory.Trait.PERSISTED);
+
+            Optional<PrivateRoom> optional = privateRoomDao.findByRoomMembers(room.sender.userId, room.receiver.userId);
+            assertTrue(optional.isPresent());
+
+            Optional<PrivateRoom> switchedOptional = privateRoomDao.findByRoomMembers(room.receiver.userId, room.sender.userId);
+            assertTrue(switchedOptional.isPresent());
+        });
+    }
+
+    @Test
+    public void findByRoomMembersReturnEmptyIfNoneExists() {
+        JPA.withTransaction(() -> {
+            Optional<PrivateRoom> optional = privateRoomDao.findByRoomMembers(1, 2);
+            assertFalse(optional.isPresent());
+        });
+    }
+
 
 }

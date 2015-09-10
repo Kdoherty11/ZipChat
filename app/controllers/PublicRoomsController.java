@@ -74,11 +74,6 @@ public class PublicRoomsController extends AbstractRoomController {
     }
 
     @Transactional(readOnly = true)
-    public Result getRooms() {
-        return read(PublicRoom.class);
-    }
-
-    @Transactional(readOnly = true)
     public Result getGeoRooms(double lat, double lon) {
         return okJson(publicRoomService.allInGeoRange(lat, lon));
     }
@@ -189,4 +184,11 @@ public class PublicRoomsController extends AbstractRoomController {
 
         return getMessagesHelper(roomId, limit, offset);
     }
+
+//    Used for testing
+//    ---------------
+//    @Transactional(readOnly = true)
+//    public Result getRooms() {
+//        return read(PublicRoom.class);
+//    }
 }

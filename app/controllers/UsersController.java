@@ -31,11 +31,6 @@ public class UsersController extends BaseController {
     }
 
     @Transactional
-    public Result testCreate() {
-        return create(User.class);
-    }
-
-    @Transactional
     public Result createUser() {
         Map<String, String> data = form().bindFromRequest().data();
         String fbAccessTokenKey = "fbAccessToken";

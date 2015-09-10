@@ -1,9 +1,12 @@
 package unit.services;
 
 import daos.MessageDao;
+import factories.FieldOverride;
 import factories.MessageFactory;
+import factories.PrivateRoomFactory;
 import factories.UserFactory;
 import models.Message;
+import models.PrivateRoom;
 import models.User;
 import notifications.MessageFavoritedNotification;
 import org.junit.Before;
@@ -44,6 +47,38 @@ public class MessageServiceTest {
         messageService = new MessageServiceImpl(messageDao, userService);
         messageFactory = new MessageFactory();
         userFactory = new UserFactory();
+    }
+
+    @Test
+    public void favoriteDoesNotSendNotificationIfSenderLeftThePrivateRoom() throws InstantiationException, IllegalAccessException {
+        User msgSender = userFactory.create();
+        PrivateRoom room = new PrivateRoomFactory().create(
+                FieldOverride.of("sender", msgSender),
+                FieldOverride.of("senderInRoom", false));
+
+        Message message = messageFactory.create(
+                FieldOverride.of("room", room),
+                FieldOverride.of("sender", msgSender));
+        User msgFavoritor = userFactory.create();
+        messageService.favorite(message, msgFavoritor);
+
+        verify(userService, never()).sendNotification(any(), any());
+    }
+
+    @Test
+    public void favoriteDoesSendNotificationIfSenderHasNotLeftThePrivateRoom() throws InstantiationException, IllegalAccessException {
+        User msgSender = userFactory.create();
+        PrivateRoom room = new PrivateRoomFactory().create(
+                FieldOverride.of("sender", msgSender));
+
+        Message message = messageFactory.create(
+                FieldOverride.of("room", room),
+                FieldOverride.of("sender", msgSender));
+
+        User msgFavoritor = userFactory.create();
+        messageService.favorite(message, msgFavoritor);
+
+        verify(userService).sendNotification(refEq(msgSender), any(MessageFavoritedNotification.class));
     }
 
     @Test
@@ -279,6 +314,4 @@ public class MessageServiceTest {
 
         assertSame(expected, actual);
     }
-
-
 }
