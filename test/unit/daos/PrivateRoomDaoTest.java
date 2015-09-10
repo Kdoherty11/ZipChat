@@ -3,7 +3,7 @@ package unit.daos;
 import daos.PrivateRoomDao;
 import daos.impl.PrivateRoomDaoImpl;
 import factories.PrivateRoomFactory;
-import factories.PropOverride;
+import factories.FieldOverride;
 import models.PrivateRoom;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ public class PrivateRoomDaoTest extends AbstractDaoTest {
     @Test
     public void findByUserIdReturnsEmptyWhenSenderAndNotInRoom() {
         JPA.withTransaction(() -> {
-            PrivateRoom room = privateRoomFactory.create(PropOverride.of("senderInRoom", false), PrivateRoomFactory.Trait.PERSISTED_WITH_REQUEST);
+            PrivateRoom room = privateRoomFactory.create(FieldOverride.of("senderInRoom", false), PrivateRoomFactory.Trait.PERSISTED_WITH_REQUEST);
             List<PrivateRoom> privateRooms = privateRoomDao.findByUserId(room.sender.userId);
             assertTrue(privateRooms.isEmpty());
         });
@@ -49,7 +49,7 @@ public class PrivateRoomDaoTest extends AbstractDaoTest {
     @Test
     public void findByUserIdReturnsEmptyWhenReceiverAndNotInRoom() {
         JPA.withTransaction(() -> {
-            PrivateRoom room = privateRoomFactory.create(PropOverride.of("receiverInRoom", false), PrivateRoomFactory.Trait.PERSISTED_WITH_REQUEST);
+            PrivateRoom room = privateRoomFactory.create(FieldOverride.of("receiverInRoom", false), PrivateRoomFactory.Trait.PERSISTED_WITH_REQUEST);
             List<PrivateRoom> privateRooms = privateRoomDao.findByUserId(room.receiver.userId);
             assertTrue(privateRooms.isEmpty());
         });
@@ -88,7 +88,7 @@ public class PrivateRoomDaoTest extends AbstractDaoTest {
         JPA.withTransaction(() -> {
             PrivateRoom room = privateRoomFactory.create(
                     PrivateRoomFactory.Trait.WITH_PERSISTED_REQUEST,
-                    PropOverride.of("senderInRoom", false),
+                    FieldOverride.of("senderInRoom", false),
                     PrivateRoomFactory.Trait.PERSISTED);
             Optional<PrivateRoom> optional = privateRoomDao.findByActiveRoomMembers(room.sender.userId, room.receiver.userId);
             assertFalse(optional.isPresent());
@@ -100,7 +100,7 @@ public class PrivateRoomDaoTest extends AbstractDaoTest {
         JPA.withTransaction(() -> {
             PrivateRoom room = privateRoomFactory.create(
                     PrivateRoomFactory.Trait.WITH_PERSISTED_REQUEST,
-                    PropOverride.of("receiverInRoom", false),
+                    FieldOverride.of("receiverInRoom", false),
                     PrivateRoomFactory.Trait.PERSISTED);
             Optional<PrivateRoom> optional = privateRoomDao.findByActiveRoomMembers(room.sender.userId, room.receiver.userId);
             assertFalse(optional.isPresent());

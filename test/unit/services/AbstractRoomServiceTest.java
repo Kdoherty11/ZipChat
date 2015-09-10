@@ -3,7 +3,7 @@ package unit.services;
 import daos.AbstractRoomDao;
 import factories.MessageFactory;
 import factories.PrivateRoomFactory;
-import factories.PropOverride;
+import factories.FieldOverride;
 import factories.PublicRoomFactory;
 import models.Message;
 import models.PrivateRoom;
@@ -61,8 +61,8 @@ public class AbstractRoomServiceTest {
 
     @Test
     public void addMessageToPublicRoom() throws InstantiationException, IllegalAccessException {
-        PublicRoom room = publicRoomFactory.create(PropOverride.of("lastActivity", -1));
-        Message mockMessage = messageFactory.create(PropOverride.of("room", room),
+        PublicRoom room = publicRoomFactory.create(FieldOverride.of("lastActivity", -1));
+        Message mockMessage = messageFactory.create(FieldOverride.of("room", room),
                 MessageFactory.Trait.WITH_SENDER);
         Set<Long> userIdsInRoom = new HashSet<>();
 
@@ -78,7 +78,7 @@ public class AbstractRoomServiceTest {
     @Test
     public void addMessageToPublicRoomAddsToRoomMessages() throws InstantiationException, IllegalAccessException {
         PublicRoom room = publicRoomFactory.create();
-        Message message = messageFactory.create(PropOverride.of("room", room), MessageFactory.Trait.WITH_SENDER);
+        Message message = messageFactory.create(FieldOverride.of("room", room), MessageFactory.Trait.WITH_SENDER);
 
         abstractRoomService.addMessage(room, message, new HashSet<>());
 
@@ -88,8 +88,8 @@ public class AbstractRoomServiceTest {
 
     @Test
     public void addMessageToPublicRoomSetsRoomLastActivity() throws InstantiationException, IllegalAccessException {
-        PublicRoom room = publicRoomFactory.create(PropOverride.of("lastActivity", -1));
-        Message message = messageFactory.create(PropOverride.of("room", room), MessageFactory.Trait.WITH_SENDER);
+        PublicRoom room = publicRoomFactory.create(FieldOverride.of("lastActivity", -1));
+        Message message = messageFactory.create(FieldOverride.of("room", room), MessageFactory.Trait.WITH_SENDER);
 
         abstractRoomService.addMessage(room, message, new HashSet<>());
 
@@ -99,7 +99,7 @@ public class AbstractRoomServiceTest {
     @Test
     public void addMessageToPrivateRoomAddsToRoomMessages() throws InstantiationException, IllegalAccessException {
         PrivateRoom room = privateRoomFactory.create(PrivateRoomFactory.Trait.WITH_SENDER_AND_RECEIVER);
-        Message message = messageFactory.create(PropOverride.of("room", room), PropOverride.of("sender", room.sender));
+        Message message = messageFactory.create(FieldOverride.of("room", room), FieldOverride.of("sender", room.sender));
 
         abstractRoomService.addMessage(room, message, Collections.emptySet());
 
@@ -109,8 +109,8 @@ public class AbstractRoomServiceTest {
 
     @Test
     public void addMessageToPrivateRoomSetsRoomLastActivity() throws InstantiationException, IllegalAccessException {
-        PrivateRoom room = privateRoomFactory.create(PrivateRoomFactory.Trait.WITH_SENDER_AND_RECEIVER, PropOverride.of("lastActivity", -1));
-        Message message = messageFactory.create(PropOverride.of("room", room), PropOverride.of("sender", room.sender));
+        PrivateRoom room = privateRoomFactory.create(PrivateRoomFactory.Trait.WITH_SENDER_AND_RECEIVER, FieldOverride.of("lastActivity", -1));
+        Message message = messageFactory.create(FieldOverride.of("room", room), FieldOverride.of("sender", room.sender));
 
         abstractRoomService.addMessage(room, message, Collections.emptySet());
 
@@ -119,26 +119,26 @@ public class AbstractRoomServiceTest {
 
     @Test
     public void addMessageToPrivateRoomSendsNotificationToCorrectUser() throws InstantiationException, IllegalAccessException {
-        PrivateRoom room = privateRoomFactory.create(PrivateRoomFactory.Trait.WITH_SENDER_AND_RECEIVER, PropOverride.of("lastActivity", -1));
+        PrivateRoom room = privateRoomFactory.create(PrivateRoomFactory.Trait.WITH_SENDER_AND_RECEIVER, FieldOverride.of("lastActivity", -1));
 
-        Message message = messageFactory.create(PropOverride.of("room", room), PropOverride.of("sender", room.sender));
+        Message message = messageFactory.create(FieldOverride.of("room", room), FieldOverride.of("sender", room.sender));
         abstractRoomService.addMessage(room, message, Collections.emptySet());
         verify(userService).sendNotification(refEq(room.receiver), any(MessageNotification.class));
 
-        Message response = messageFactory.create(PropOverride.of("room", room), PropOverride.of("sender", room.receiver));
+        Message response = messageFactory.create(FieldOverride.of("room", room), FieldOverride.of("sender", room.receiver));
         abstractRoomService.addMessage(room, response, Collections.emptySet());
         verify(userService).sendNotification(refEq(room.sender), any(MessageNotification.class));
     }
 
     @Test
     public void addMessageToPrivateRoomDoesNotSendNotificationIfReceiverIsInRoom() throws InstantiationException, IllegalAccessException {
-        PrivateRoom room = privateRoomFactory.create(PrivateRoomFactory.Trait.WITH_SENDER_AND_RECEIVER, PropOverride.of("lastActivity", -1));
+        PrivateRoom room = privateRoomFactory.create(PrivateRoomFactory.Trait.WITH_SENDER_AND_RECEIVER, FieldOverride.of("lastActivity", -1));
         long senderId = 1;
         long receiverId = 2;
         room.sender.userId = senderId;
         room.receiver.userId = receiverId;
 
-        Message message = messageFactory.create(PropOverride.of("room", room), PropOverride.of("sender", room.sender));
+        Message message = messageFactory.create(FieldOverride.of("room", room), FieldOverride.of("sender", room.sender));
         abstractRoomService.addMessage(room, message, TestUtils.setOf(receiverId));
         verifyZeroInteractions(userService);
     }

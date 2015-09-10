@@ -3,18 +3,18 @@ package factories;
 /**
  * Created by kdoherty on 7/5/15.
  */
-public class PropOverride<T> implements ObjectMutator<T> {
+public class FieldOverride<T> implements ObjectMutator<T> {
 
     private String fieldName;
     private Object fieldValue;
 
-    private PropOverride(String fieldName, Object fieldValue) {
+    private FieldOverride(String fieldName, Object fieldValue) {
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
     }
 
-    public static PropOverride of(String fieldName, Object fieldValue) {
-        return new PropOverride(fieldName, fieldValue);
+    public static FieldOverride of(String fieldName, Object fieldValue) {
+        return new FieldOverride(fieldName, fieldValue);
     }
 
     public String getFieldName() {

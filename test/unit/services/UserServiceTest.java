@@ -5,7 +5,7 @@ import daos.PrivateRoomDao;
 import daos.RequestDao;
 import daos.UserDao;
 import factories.DeviceFactory;
-import factories.PropOverride;
+import factories.FieldOverride;
 import factories.UserFactory;
 import models.*;
 import notifications.AbstractNotification;
@@ -123,7 +123,7 @@ public class UserServiceTest {
         AbstractNotification mockNotification = mock(AbstractNotification.class);
         doNothing().when(notificationService).send(anyListOf(String.class), anyListOf(String.class), refEq(mockNotification));
 
-        List<Device> devices = deviceFactory.createList(1, PropOverride.of("platform", Device.Platform.android));
+        List<Device> devices = deviceFactory.createList(1, FieldOverride.of("platform", Device.Platform.android));
         when(userDao.getDevices(mockReceiver)).thenReturn(devices);
 
 
@@ -138,7 +138,7 @@ public class UserServiceTest {
         AbstractNotification mockNotification = mock(AbstractNotification.class);
         doNothing().when(notificationService).send(anyListOf(String.class), anyListOf(String.class), refEq(mockNotification));
 
-        List<Device> devices = deviceFactory.createList(1, PropOverride.of("platform", Device.Platform.ios));
+        List<Device> devices = deviceFactory.createList(1, FieldOverride.of("platform", Device.Platform.ios));
         when(userDao.getDevices(mockReceiver)).thenReturn(devices);
 
         userService.sendNotification(mockReceiver, mockNotification);

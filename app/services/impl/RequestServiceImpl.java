@@ -6,6 +6,7 @@ import daos.RequestDao;
 import models.PrivateRoom;
 import models.Request;
 import notifications.ChatResponseNotification;
+import play.libs.Json;
 import services.RequestService;
 import services.UserService;
 
@@ -39,7 +40,7 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
         userService.sendNotification(request.sender, new ChatResponseNotification(request, status));
 
         if (status == Request.Status.accepted) {
-            Optional<PrivateRoom> existingRoom = privateRoomDao.findByActiveRoomMembers(request.sender.userId, request.receiver.userId);
+            Optional<PrivateRoom> existingRoom = privateRoomDao.findByRoomMembers(request.sender.userId, request.receiver.userId);
             if (existingRoom.isPresent()) {
                 PrivateRoom existing = existingRoom.get();
                 existing.senderInRoom = true;
@@ -56,7 +57,7 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
         Optional<PrivateRoom> privateRoomOptional = privateRoomDao.findByActiveRoomMembers(potentialSenderId, potentialReceiverId);
 
         if (privateRoomOptional.isPresent()) {
-            return Long.toString(privateRoomOptional.get().roomId);
+            return Json.stringify(Json.toJson(privateRoomOptional.get()));
         }
 
         Optional<Request> requestOptional = findBySenderAndReceiver(potentialSenderId, potentialReceiverId);
@@ -81,4 +82,11 @@ public class RequestServiceImpl extends GenericServiceImpl<Request> implements R
     public Optional<Request> findBySenderAndReceiver(long senderId, long receiverId) {
         return requestDao.findBySenderAndReceiver(senderId, receiverId);
     }
+
+    @Override
+    public Optional<Request> findByUsers(long userId1, long userId2) {
+        return requestDao.findByUsers(userId1, userId2);
+    }
+
+
 }

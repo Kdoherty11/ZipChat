@@ -2,7 +2,8 @@ package unit.services;
 
 import daos.PrivateRoomDao;
 import daos.RequestDao;
-import factories.PropOverride;
+import factories.FieldOverride;
+import factories.PrivateRoomFactory;
 import factories.RequestFactory;
 import factories.UserFactory;
 import models.PrivateRoom;
@@ -15,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import play.libs.Json;
 import services.RequestService;
 import services.UserService;
 import services.impl.RequestServiceImpl;
@@ -49,24 +51,53 @@ public class RequestServiceTest {
     }
 
     @Test
-    public void handleAcceptedResponse() throws InstantiationException, IllegalAccessException {
+    public void handleAcceptedResponseNoExistingRoom() throws InstantiationException, IllegalAccessException {
         Request.Status status = Request.Status.accepted;
-        User mockSender = mock(User.class);
-        User receiver = new UserFactory().create();
+        long senderId = 1;
+        long receiverId = 2;
+        User sender = mock(User.class);
+        when(sender.userId).thenReturn(senderId);
+        User receiver = new UserFactory().create(FieldOverride.of("userId", receiverId));
+        when(privateRoomDao.findByRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
 
-        Request request = new Request(mockSender, receiver);
+        Request request = new Request(sender, receiver);
 
         requestService.handleResponse(request, status);
 
         assertEquals(status, request.status);
         assertTrue(request.respondedTimeStamp > 0);
-        verify(userService).sendNotification(refEq(mockSender), any(ChatResponseNotification.class));
+        verify(userService).sendNotification(refEq(sender), any(ChatResponseNotification.class));
         verify(privateRoomDao).save(argThat(new ArgumentMatcher<PrivateRoom>() {
             @Override
             public boolean matches(Object o) {
                 return o instanceof PrivateRoom && ((PrivateRoom) o).request == request;
             }
         }));
+    }
+
+    @Test
+    public void handleAcceptedResponseWithExistingRoom() throws InstantiationException, IllegalAccessException {
+        Request.Status status = Request.Status.accepted;
+        long senderId = 1;
+        long receiverId = 2;
+        User sender = mock(User.class);
+        when(sender.userId).thenReturn(senderId);
+        User receiver = new UserFactory().create(FieldOverride.of("userId", receiverId));
+        PrivateRoom room = new PrivateRoomFactory().create(
+                FieldOverride.of("senderInRoom", false),
+                FieldOverride.of("receiverInRoom", false));
+        when(privateRoomDao.findByRoomMembers(senderId, receiverId)).thenReturn(Optional.of(room));
+
+        Request request = new Request(sender, receiver);
+
+        requestService.handleResponse(request, status);
+
+        assertEquals(status, request.status);
+        assertTrue(request.respondedTimeStamp > 0);
+        verify(userService).sendNotification(refEq(sender), any(ChatResponseNotification.class));
+        verify(privateRoomDao, never()).save(any());
+        assertTrue(room.senderInRoom);
+        assertTrue(room.receiverInRoom);
     }
 
     @Test
@@ -86,16 +117,16 @@ public class RequestServiceTest {
     }
 
     @Test
-    public void getStatusPrivateRoomExists() {
+    public void getStatusPrivateRoomExists() throws InstantiationException, IllegalAccessException {
         long senderId = 1;
         long receiverId = 2;
         long roomId = 3;
-        PrivateRoom mockRoom = mock(PrivateRoom.class);
-        when(mockRoom.roomId).thenReturn(roomId);
-        when(privateRoomDao.findByActiveRoomMembers(senderId, receiverId)).thenReturn(Optional.of(mockRoom));
+
+        PrivateRoom room = new PrivateRoomFactory().create(FieldOverride.of("roomId", roomId));
+        when(privateRoomDao.findByActiveRoomMembers(senderId, receiverId)).thenReturn(Optional.of(room));
         String status = requestService.getStatus(senderId, receiverId);
 
-        assertEquals(status, Long.toString(roomId));
+        assertEquals(status, Json.stringify(Json.toJson(room)));
     }
 
     @Test
@@ -129,7 +160,7 @@ public class RequestServiceTest {
     public void getStatusNoPrivateRoomWithOppositeRequest() throws InstantiationException, IllegalAccessException {
         long senderId = 1;
         long receiverId = 2;
-        Request request = new RequestFactory().create(PropOverride.of("status", Request.Status.pending));
+        Request request = new RequestFactory().create(FieldOverride.of("status", Request.Status.pending));
         when(privateRoomDao.findByActiveRoomMembers(senderId, receiverId)).thenReturn(Optional.empty());
         when(requestService.findBySenderAndReceiver(senderId, receiverId)).thenReturn(Optional.empty());
         when(requestService.findBySenderAndReceiver(receiverId, senderId)).thenReturn(Optional.of(request));

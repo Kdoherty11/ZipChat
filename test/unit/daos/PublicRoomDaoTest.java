@@ -2,7 +2,7 @@ package unit.daos;
 
 import daos.PublicRoomDao;
 import daos.impl.PublicRoomDaoImpl;
-import factories.PropOverride;
+import factories.FieldOverride;
 import factories.PublicRoomFactory;
 import models.PublicRoom;
 import models.User;
@@ -52,12 +52,12 @@ public class PublicRoomDaoTest extends AbstractDaoTest {
         int meterDistance = 1322;
 
         JPA.withTransaction(() -> {
-            PropOverride latOverride = PropOverride.of("latitude", lat1);
-            PropOverride lonOverride = PropOverride.of("longitude", lon1);
+            FieldOverride latOverride = FieldOverride.of("latitude", lat1);
+            FieldOverride lonOverride = FieldOverride.of("longitude", lon1);
 
-            PublicRoom room1 = publicRoomFactory.create(latOverride, lonOverride, PropOverride.of("radius", meterDistance), PublicRoomFactory.Trait.PERSISTED);
-            PublicRoom room2 = publicRoomFactory.create(latOverride, lonOverride, PropOverride.of("radius", meterDistance - 1), PublicRoomFactory.Trait.PERSISTED);
-            PublicRoom room3 = publicRoomFactory.create(latOverride, lonOverride, PropOverride.of("radius", meterDistance + 1), PublicRoomFactory.Trait.PERSISTED);
+            PublicRoom room1 = publicRoomFactory.create(latOverride, lonOverride, FieldOverride.of("radius", meterDistance), PublicRoomFactory.Trait.PERSISTED);
+            PublicRoom room2 = publicRoomFactory.create(latOverride, lonOverride, FieldOverride.of("radius", meterDistance - 1), PublicRoomFactory.Trait.PERSISTED);
+            PublicRoom room3 = publicRoomFactory.create(latOverride, lonOverride, FieldOverride.of("radius", meterDistance + 1), PublicRoomFactory.Trait.PERSISTED);
 
             List<PublicRoom> rooms = publicRoomDao.allInGeoRange(lat2, lon2);
             assertEquals(2, rooms.size());

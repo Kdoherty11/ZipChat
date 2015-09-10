@@ -2,7 +2,7 @@ package unit.daos;
 
 import daos.RequestDao;
 import daos.impl.RequestDaoImpl;
-import factories.PropOverride;
+import factories.FieldOverride;
 import factories.RequestFactory;
 import models.Request;
 import org.junit.Before;
@@ -41,7 +41,7 @@ public class RequestDaoTest extends AbstractDaoTest {
         JPA.withTransaction(() -> {
             Request request = requestFactory.create(
                     RequestFactory.Trait.WITH_PERSISTED_SENDER_AND_RECEIVER,
-                    PropOverride.of("status", Request.Status.accepted),
+                    FieldOverride.of("status", Request.Status.accepted),
                     RequestFactory.Trait.PERSISTED);
             List<Request> requests = requestDao.findPendingRequestsByReceiver(request.receiver.userId);
             assertTrue(requests.isEmpty());
