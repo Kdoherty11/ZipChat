@@ -170,17 +170,29 @@ public class PublicRoomsControllerTest extends WithApplication {
         verifyZeroInteractions(publicRoomService);
     }
 
+    @Test
     public void createRoomNoCreator() {
-        Result noRadiusResult = new CreateRequestSender().setName("name").setLatitude("4.0").setLongitude("3.0").setRadius("10").send();
+        Result noCreatorResult = new CreateRequestSender().setName("name").setLatitude("4.0").setLongitude("3.0").setRadius("10").send();
 
-        assertEquals(BAD_REQUEST, noRadiusResult.status());
+        assertEquals(BAD_REQUEST, noCreatorResult.status());
         verifyZeroInteractions(publicRoomService);
     }
 
+    @Test
     public void createRoomCreatorNotFound() {
-        Result noRadiusResult = new CreateRequestSender().setName("name").setLatitude("4.0").setLongitude("3.0").setRadius("10").setCreatorId("7").send();
+        long creatorId = 7;
+        when(userService.findById(creatorId)).thenReturn(Optional.empty());
+        Result result = new CreateRequestSender().setName("name").setLatitude("4.0").setLongitude("3.0").setRadius("10").setCreatorId(Long.toString(creatorId)).send();
 
-        assertEquals(NOT_FOUND, noRadiusResult.status());
+        assertEquals(NOT_FOUND, result.status());
+        verifyZeroInteractions(publicRoomService);
+    }
+
+    @Test
+    public void createRoomCreatorNotALong() {
+        Result result = new CreateRequestSender().setName("name").setLatitude("4.0").setLongitude("3.0").setRadius("10").setCreatorId("NotALong").send();
+
+        assertEquals(BAD_REQUEST, result.status());
         verifyZeroInteractions(publicRoomService);
     }
 
