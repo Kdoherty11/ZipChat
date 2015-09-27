@@ -34,5 +34,6 @@ PUT           /requests/:requestId                              controllers.Requ
 
 GET           /status                                           controllers.StatusController.status()
 GET           /privacyPolicy                                    controllers.Assets.at(path="/public/html", file="privacyPolicy.html")
+GET           /termsAndConditions                               controllers.Assets.at(path="/public/html", file="termsAndConditions.html")
 #GET           /test                                             controllers.PublicRoomsController.getRooms()
 #POST          /users                                            controllers.UsersController.testCreate()
