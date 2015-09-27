@@ -33,5 +33,6 @@ GET           /requests/status                                  controllers.Requ
 PUT           /requests/:requestId                              controllers.RequestsController.handleResponse(requestId: Long)
 
 GET           /status                                           controllers.StatusController.status()
+GET           /privacyPolicy                                    controllers.Assets.at(path="/public/html", file="privacyPolicy.html")
 #GET           /test                                             controllers.PublicRoomsController.getRooms()
 #POST          /users                                            controllers.UsersController.testCreate()
